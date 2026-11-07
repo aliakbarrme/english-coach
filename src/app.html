@@ -701,7 +701,7 @@ function viewMe(){
     ${APP.confirm?.type==="import"?`<div class="warnbox small">Restore করলে ${esc(P.name)}-এর এখনকার অগ্রগতির উপর লেখা হবে। <button class="btn sm bad" data-act="doImport">Restore</button> <button class="btn sm ghost" data-act="cancel">বাতিল</button></div>`:""}</div>`;
   const help=`<details class="card"><summary><b>ডেস্কটপ আর মোবাইলে কীভাবে ব্যবহার করবে</b></summary><div class="stack small">
     <p><b>Web app${WEB_URL?` (<a href="${WEB_URL}" target="_blank" rel="noopener">${esc(WEB_URL.replace(/^https?:\/\//,""))}</a>)`:""}:</b> ফোনে লিংক খুলে ব্রাউজার মেনু → "Add to Home screen" / "Install app"। আইকন থেকে অ্যাপের মতো খুলবে, অফলাইনেও চলে। Natural voice, বলার যাচাই আর রেকর্ডিং এখানে কাজ করে।</p>
-    <p><b>Android অ্যাপ:</b> <a href="https://github.com/aliakbarrme/english-coach/releases/latest/download/English-Coach-Android.apk" target="_blank" rel="noopener">APK ডাউনলোড করো</a>, তারপর ফাইলে চেপে Install।</p>
+    <p><b>Android অ্যাপ:</b> <a href="https://github.com/aliakbarrme/english-coach/releases/latest/download/Bolo-English-Android.apk" target="_blank" rel="noopener">APK ডাউনলোড করো</a>, তারপর ফাইলে চেপে Install।</p>
     <p><b>Claude ভার্সন:</b> AI কোচ, নতুন ইউনিট আর cloud sync। এখানে মাইক্রোফোন নেই।</p>
     <p><b>নতুন কেউ:</b> বদলাও → "প্রোফাইল যোগ করো"। প্রত্যেক প্রোফাইলের অগ্রগতি আলাদা।</p></div></details>`;
   const del=`<div class="card"><h3>প্রোফাইল মুছে দাও</h3><p class="small muted">${esc(P.name)}-এর সব অগ্রগতি এই ডিভাইস থেকে মুছে যাবে।</p>
