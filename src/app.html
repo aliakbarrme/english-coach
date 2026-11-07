@@ -1,11 +1,11 @@
-<title>Ali's English Coach</title>
+<title>English Coach</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..800&family=Geist+Mono:wght@400..600&family=Hind+Siliguri:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..800&family=Geist+Mono:wght@400..600&family=Anek+Bangla:wght@400..700&family=Baloo+Da+2:wght@500..800&display=swap">
 <style>/*__STYLE__*/</style>
 
-<div id="root"><main class="view"><h1>Loading…</h1><p class="muted">Tomar progress load hocche.</p></main></div>
+<div id="root"><main class="view"><h1>Loading…</h1></main></div>
 <nav class="tabs" aria-label="Main"><div class="navbrand brand" aria-hidden="true"><i>AE</i>English Coach</div><div class="in" id="tabs"><span class="pill"></span></div></nav>
 <div class="toast" id="toast" hidden></div>
 
@@ -42,6 +42,8 @@ const IC={
  close:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
  flame:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2s5 4.5 5 10a5 5 0 0 1-10 0c0-2.2 1.2-3.8 2-4.6 0 1.6.8 2.6 2 2.6 0-3.2-1-5.5 1-8z"/></svg>',
  mic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
+ cards:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="13" height="15" rx="2.5"/><path d="M8 3h10.5A2.5 2.5 0 0 1 21 5.5V17"/></svg>',
+ swap:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4L3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7"/></svg>',
  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>'
 };
 
@@ -50,27 +52,22 @@ const WEB_URL="/*__WEB_URL__*/";
 const ENV={claude:!!window.claude, ai:null, aiState:"off", micOk:!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&window.MediaRecorder&&window.isSecureContext)};
 if(ENV.claude) ENV.micOk=false; // artifact pages cannot use the microphone
 
-/* ================= speech (device text-to-speech) ================= */
-const TTS={
- ok:"speechSynthesis" in window, q:[],
- voice(){try{const vs=speechSynthesis.getVoices()||[];return vs.find(v=>/en[-_](US|GB)/i.test(v.lang)&&/natural|google|aria|jenny|samantha|daniel/i.test(v.name))||vs.find(v=>/^en/i.test(v.lang))||null;}catch(e){return null;}},
- utter(t,rate){const u=new SpeechSynthesisUtterance(t);const v=this.voice();if(v)u.voice=v;u.lang=v?.lang||"en-US";u.rate=rate||S?.rate||.9;return u;},
- say(t,rate){if(!this.ok){toast("Ei device e awaj (text-to-speech) nei.");return;}try{speechSynthesis.cancel();speechSynthesis.speak(this.utter(t,rate));}catch(e){}},
- sayLong(t,rate,onEnd){if(!this.ok)return;try{speechSynthesis.cancel();const parts=t.replace(/\n+/g," ").split(/(?<=[.!?])\s+/).filter(Boolean);parts.forEach((p,i)=>{const u=this.utter(p,rate);if(i===parts.length-1&&onEnd)u.onend=onEnd;speechSynthesis.speak(u);});}catch(e){}},
- stop(){try{speechSynthesis.cancel();}catch(e){}}
-};
+/*__VOICE__*/
 const fill=s=>String(s).replace(/\{d1\}/g,S.names.d1||"sweetie").replace(/\{d2\}/g,S.names.d2||"baby");
 const fillBn=s=>String(s).replace(/\{d1\}/g,S.names.d1||"সোনা").replace(/\{d2\}/g,S.names.d2||"বাবু");
 
 /* ================= state & storage ================= */
-function defaultState(){return {v:3,names:{d1:"",d2:""},goal:30,warmReq:true,rate:.9,autoplay:true,sound:true,onboarded:false,
-  xp:0,days:{},done:{},storyDone:{},srs:{},recs:[],stats:{c:0,t:0},warmCount:0,created:new Date().toISOString()};}
+function defaultState(){return {v:4,names:{d1:"",d2:""},goal:30,warmReq:true,warmMode:"full",rate:.9,autoplay:true,sound:true,onboarded:true,
+  xp:0,days:{},done:{},storyDone:{},srs:{},recs:[],stats:{c:0,t:0},warmCount:0,badges:[],stickers:[],best:0,perfect:0,speakTotal:0,created:new Date().toISOString()};}
 let S=defaultState(), CUSTOM={}, MARKS={}, ASSESS=null;
+const aliProfile=()=>({id:"ali",name:"Ali",avatar:"🧑🏽‍💻",age:"adult",goals:["family","client","everyday"],created:new Date().toISOString()});
 const Store={
  mode:"local", db:null, uid:null, chain:Promise.resolve(), timer:null, failed:false,
- base(){return this.db.doc(`data/users/${this.uid}/duo`);},
- lsGet(k){try{return JSON.parse(localStorage.getItem("aec3:"+k)||"null");}catch(e){return null;}},
- lsSet(k,v){try{localStorage.setItem("aec3:"+k,JSON.stringify(v));return true;}catch(e){return false;}},
+ docName(){return PID==="ali"?"duo":"duo_"+PID;},
+ base(){return this.db.doc(`data/users/${this.uid}/${this.docName()}`);},
+ lsGet(k){try{return JSON.parse(localStorage.getItem("aec4:"+k)||"null");}catch(e){return null;}},
+ lsSet(k,v){try{localStorage.setItem("aec4:"+k,JSON.stringify(v));return true;}catch(e){return false;}},
+ pk(k){return "p:"+PID+":"+k;},
  async init(){
    if(ENV.claude){
      claude.use("sample").then(s=>{ENV.ai=s;ENV.aiState=s?"ready":"off";render();});
@@ -79,44 +76,73 @@ const Store={
      if(db&&id){this.mode="cloud";this.db=db;this.uid=id;}
    }
  },
- async load(){
+ async loadProfiles(){
    if(this.mode==="cloud"){
-     const [st,units,marks,as]=await Promise.all([this.base().get(),this.base().collection("units").get(),this.base().collection("marks").get(),this.db.doc(`data/users/${this.uid}/assessment`).get()]);
+     const [pd,as]=await Promise.all([this.db.doc(`data/users/${this.uid}/profiles`).get(),this.db.doc(`data/users/${this.uid}/assessment`).get()]);
+     if(as.exists&&as.data().status==="done")ASSESS=clone(as.data().result);
+     if(pd.exists){PROFILES=clone(pd.data().list||[]);PID=pd.data().active||null;}
+     else{const old=await this.db.doc(`data/users/${this.uid}/duo`).get();if(old.exists){PROFILES=[aliProfile()];PID="ali";await this.saveProfiles();}}
+   }else{
+     PROFILES=this.lsGet("profiles")||[];PID=this.lsGet("active");
+     if(!PROFILES.length){let old=null;try{old=localStorage.getItem("aec3:state");}catch(e){}
+       if(old){PROFILES=[aliProfile()];PID="ali";try{["state","units","marks"].forEach(k=>{const v=localStorage.getItem("aec3:"+k);if(v)localStorage.setItem("aec4:p:ali:"+k,v);});}catch(e){}this.saveProfiles();}}
+   }
+   if(PID&&!prof())PID=null;
+ },
+ saveProfiles(){
+   this.lsSet("active",PID);
+   if(this.mode==="cloud")return this.db.doc(`data/users/${this.uid}/profiles`).set({list:clone(PROFILES),active:PID}).catch(()=>{});
+   this.lsSet("profiles",PROFILES);return Promise.resolve();
+ },
+ async load(){
+   S=defaultState();CUSTOM={};MARKS={};if(!PID)return;
+   if(this.mode==="cloud"){
+     const [st,units,marks]=await Promise.all([this.base().get(),this.base().collection("units").get(),this.base().collection("marks").get()]);
      if(st.exists)S=Object.assign(defaultState(),clone(st.data()));
      units.docs.forEach(d=>CUSTOM[d.id]=clone(d.data()));
      marks.docs.forEach(d=>MARKS[d.id]=clone(d.data()));
-     if(as.exists&&as.data().status==="done")ASSESS=clone(as.data().result);
    }else{
-     const st=this.lsGet("state");if(st)S=Object.assign(defaultState(),st);
-     CUSTOM=this.lsGet("units")||{};MARKS=this.lsGet("marks")||{};
+     const st=this.lsGet(this.pk("state"));if(st)S=Object.assign(defaultState(),st);
+     CUSTOM=this.lsGet(this.pk("units"))||{};MARKS=this.lsGet(this.pk("marks"))||{};
    }
+   if(!warmAllowed())S.warmReq=false;
  },
  save(){clearTimeout(this.timer);this.timer=setTimeout(()=>this.flush(),500);},
  flush(){
-   const body=clone(S);
+   if(!PID)return this.chain;
+   clearTimeout(this.timer);
+   S.best=Math.max(S.best||0,streak());
+   const p=prof();if(p){p.wk=p.wk||{};p.wk[weekKey()]=weekXP(S);p.xp=S.xp;}
+   const body=clone(S),key=this.pk("state"),base=this.mode==="cloud"?this.base():null;
    this.chain=this.chain.then(async()=>{
-     if(this.mode==="cloud")await this.base().set(body);
-     else if(!this.lsSet("state",body))throw {code:"local_full"};
+     if(base)await base.set(body);
+     else if(!this.lsSet(key,body))throw {code:"local_full"};
+     await this.saveProfiles();
      if(this.failed){this.failed=false;render();}
    }).catch(()=>{this.failed=true;render();});
    return this.chain;
  },
- async saveUnit(u){CUSTOM[u.id]=u;if(this.mode==="cloud")await this.base().collection("units").doc(u.id).set(clone(u));else this.lsSet("units",CUSTOM);},
- async delUnit(id){delete CUSTOM[id];if(this.mode==="cloud")await this.base().collection("units").doc(id).delete();else this.lsSet("units",CUSTOM);}
+ async saveUnit(u){CUSTOM[u.id]=u;if(this.mode==="cloud")await this.base().collection("units").doc(u.id).set(clone(u));else this.lsSet(this.pk("units"),CUSTOM);},
+ async delUnit(id){delete CUSTOM[id];if(this.mode==="cloud")await this.base().collection("units").doc(id).delete();else this.lsSet(this.pk("units"),CUSTOM);},
+ async delProfile(id){
+   if(this.mode==="cloud"){try{await this.db.doc(`data/users/${this.uid}/${id==="ali"?"duo":"duo_"+id}`).delete();}catch(e){}}
+   else try{["state","units","marks"].forEach(k=>localStorage.removeItem("aec4:p:"+id+":"+k));}catch(e){}
+ }
 };
-function day(d){d=d||today();return S.days[d]||(S.days[d]={xp:0,warm:false,warmMin:0,lessons:0,practice:0,c:0,t:0});}
+function day(d){d=d||today();return S.days[d]||(S.days[d]={xp:0,warm:false,warmMin:0,lessons:0,practice:0,c:0,t:0,speak:0,story:0,cards:0});}
 function addXP(n){S.xp+=n;day().xp+=n;}
-function streak(){let n=0;let d=new Date();const ok=k=>{const r=S.days[k];return r&&r.warm&&(r.lessons+r.practice)>0;};if(!ok(dstr(d)))d.setDate(d.getDate()-1);while(ok(dstr(d))){n++;d.setDate(d.getDate()-1);}return n;}
+function streak(){let n=0;let d=new Date();const ok=k=>{const r=S.days[k];return r&&(r.lessons+r.practice)>0;};if(!ok(dstr(d)))d.setDate(d.getDate()-1);while(ok(dstr(d))){n++;d.setDate(d.getDate()-1);}return n;}
 function warmToday(){return !!S.days[today()]?.warm;}
 
 /* ================= course helpers ================= */
-const TRACKS=[["family","Family","পরিবার"],["client","Client","ক্লায়েন্ট"],["everyday","Everyday","সবার সাথে"]];
+const TRACKS=[["kids","Kids","ছোটদের জগৎ"],["family","Family","পরিবার"],["client","Work","কাজ ও ক্লায়েন্ট"],["everyday","Everyday","সবার সাথে"]];
+/*__EXTRAS__*/
 function allUnits(){return [...COURSE.units,...Object.values(CUSTOM).sort((a,b)=>(a.created||"").localeCompare(b.created||""))];}
 function unitById(id){return allUnits().find(u=>u.id===id);}
 function nodesOf(track){const out=[];allUnits().filter(u=>u.track===track).forEach(u=>{u.lessons.forEach((l,i)=>out.push({type:"lesson",u,li:i,key:u.id+":"+i}));out.push({type:"story",u,key:u.id+":story"});});return out;}
 function nodeDone(n){return n.type==="lesson"?!!S.done[n.key]:!!S.storyDone[n.u.id]?.read;}
 function nodeStates(track){const ns=nodesOf(track);let prevDone=true;let curFound=false;return ns.map(n=>{const done=nodeDone(n);const unlocked=prevDone||n.u.custom;let st=done?"done":unlocked?(curFound?"open":"cur"):"lock";if(st==="cur")curFound=true;prevDone=done;return Object.assign(n,{st});});}
-function lessonItems(u,li){return u.lessons[li].items.map((it,i)=>({id:u.id+":"+li+":"+i,en:fill(it[0]),bn:fillBn(it[1]),track:u.track}));}
+function lessonItems(u,li){return u.lessons[li].items.map((it,i)=>({id:u.id+":"+li+":"+i,en:fill(it[0]),bn:fillBn(it[1]),em:it[2]||"",track:u.track}));}
 function allItems(){const out=[];allUnits().forEach(u=>u.lessons.forEach((l,li)=>out.push(...lessonItems(u,li))));return out;}
 function itemById(id){const [uid,li,i]=id.split(":");const u=unitById(uid);if(!u||!u.lessons[li])return null;return lessonItems(u,+li)[+i]||null;}
 
@@ -134,12 +160,25 @@ const STOP=new Set(["the","a","an","to","and","or","of","in","on","is","are","it
 
 /* ================= exercise builder ================= */
 function makeExercises(items,pool,isNew){
+  if(items[0]&&items[0].track==="kids")return makeKid(items,pool,isNew);
   const ex=[];
   items.forEach((it,i)=>{if(isNew&&!S.srs[it.id])ex.push({t:"intro",it});ex.push({t:i%2?"build":"meaning",it});});
   if(items.length>=3)ex.push({t:"match",items:pick(items,Math.min(5,items.length))});
-  const second=["listen","fill","type","build","speak","listen"];
+  const second=HEAR.avail()?["listen","speak","fill","type","build","speak"]:["listen","fill","type","build","speak","listen"];
   shuffle(items).forEach((it,i)=>{let t=second[i%second.length];if(t==="listen"&&!TTS.ok)t="build";if(t==="fill"&&!fillWord(it))t="type";ex.push({t,it});});
   return ex.map(e=>prepare(e,pool));
+}
+function makeKid(items,pool,isNew){
+  const kp=pool.filter(p=>p.track==="kids"&&p.em),ex=[];
+  items.forEach(it=>{if(isNew&&!S.srs[it.id])ex.push({t:"kintro",it});ex.push({t:"kpick",it});});
+  shuffle(items).slice(0,3).forEach(it=>ex.push({t:"kfind",it}));
+  if(HEAR.avail())shuffle(items).slice(0,3).forEach(it=>ex.push({t:"ksay",it}));
+  else shuffle(items).slice(0,2).forEach(it=>ex.push({t:"ksay",it}));
+  return ex.map(e=>{
+    const unit=e.it.id.split(":")[0];const others=kp.filter(o=>o.id!==e.it.id&&o.em!==e.it.em);
+    const ordered=[...shuffle(others.filter(o=>o.id.startsWith(unit+":"))),...shuffle(others.filter(o=>!o.id.startsWith(unit+":")))];
+    const need=e.t==="kfind"?5:2,uniq=[];for(const o of ordered){if(!uniq.some(u=>u.em===o.em))uniq.push(o);if(uniq.length>=need)break;}
+    e.opts=shuffle([e.it,...uniq]);e.wrong=[];return e;});
 }
 function fillWord(it){const ws=words(it.en);const cand=ws.filter(w=>w.length>=3&&!STOP.has(w.toLowerCase()));return cand.sort((a,b)=>b.length-a.length)[0]||null;}
 function prepare(e,pool){
@@ -160,7 +199,25 @@ function startSession(kind,items,meta){
   render();playIfAuto();
 }
 function cur(){return L.ex[L.i];}
-function playIfAuto(){const e=L&&cur();if(!e)return;if(S.autoplay&&(e.t==="intro"||e.t==="listen"||e.t==="meaning"||e.t==="speak"))setTimeout(()=>TTS.say(e.it.en),250);}
+function playIfAuto(){const e=L&&cur();if(!e)return;if(e.it&&(["kintro","kpick","kfind","ksay"].includes(e.t)||(S.autoplay&&["intro","listen","meaning","speak"].includes(e.t))))setTimeout(()=>{if(L&&cur()===e)TTS.say(e.it.en);},350);}
+function isSpeakEx(e){return e&&(e.t==="speak"||e.t==="ksay");}
+function speakPass(){const e=cur();L.t++;L.c++;day().t++;day().c++;S.stats.t++;S.stats.c++;day().speak=(day().speak||0)+1;S.speakTotal=(S.speakTotal||0)+1;L.fb={ok:true,show:"",bn:""};SND.play("ok");render();}
+function hearNow(){
+  const e=cur();if(!e||L.fb)return;e.hs=e.hs||{tries:0};
+  if(HEAR.on){HEAR.stop();e.hs.state=null;render();return;}
+  e.hs.state="listen";e.hs.err=null;TTS.stop();render();
+  HEAR.start(e.it.en,{onInterim:b=>{if(cur()!==e)return;const w=wordMatch(e.it.en,b.text);e.hs.words=w.words;render();},
+   onDone:(err,b)=>{if(!L||cur()!==e)return;e.hs.state=null;
+    if(!b.text){e.hs.err=hearErr(err||"no-speech");render();return;}
+    const w=wordMatch(e.it.en,b.text);e.hs.words=w.words;e.hs.score=w.score;e.hs.heard=b.text;
+    if(w.score>=(e.t==="ksay"?.5:.75))speakPass();else{e.hs.tries++;SND.play("no");render();}}});
+}
+function kidChoose(id){
+  const e=cur();if(L.fb||e.wrong.includes(id))return;
+  L.t++;day().t++;S.stats.t++;
+  if(id===e.it.id){L.c++;day().c++;S.stats.c++;L.fb={ok:true,show:"",bn:""};SND.play("ok");render();const i=L.i;setTimeout(()=>{if(L&&L.i===i&&L.fb)next();},1300);}
+  else{e.wrong.push(id);L.mistakes[e.it.id]=1;SND.play("no");render();}
+}
 function grade(){
   const e=cur();let ok=false,show="";
   if(e.t==="meaning"||e.t==="fill"){if(L.answer==null)return;ok=e.t==="meaning"?L.answer===e.it.bn:L.answer.toLowerCase()===e.word.toLowerCase();show=e.t==="meaning"?e.it.bn:e.it.en;}
@@ -172,7 +229,7 @@ function grade(){
   SND.play(ok?"ok":"no");
 }
 function next(){
-  L.fb=null;L.answer=null;L.typo=false;L.typed=null;L.i++;
+  HEAR.stop();L.fb=null;L.answer=null;L.typo=false;L.typed=null;L.i++;
   if(L.i>=L.ex.length){finishSession();return;}
   render();playIfAuto();
 }
@@ -182,7 +239,9 @@ function finishSession(){
   let xp=L.kind==="lesson"?10+(perfect?5:0):8;
   addXP(xp);
   if(L.kind==="lesson"){S.done[L.key]={at:today(),acc:L.t?Math.round(L.c/L.t*100):null};day().lessons++;}else day().practice++;
-  L.done=true;L.xp=xp;L.secs=Math.round((Date.now()-L.started)/1000);Store.save();render();SND.play("done");
+  if(Object.keys(L.mistakes).length===0&&L.kind==="lesson")S.perfect=(S.perfect||0)+1;
+  if(L.items[0]?.track==="kids"&&L.kind==="lesson"){const em=L.items.map(x=>x.em).filter(Boolean);L.sticker=em[Math.floor(Math.random()*em.length)]||"⭐";S.stickers=(S.stickers||[]).concat(L.sticker);}
+  L.done=true;L.xp=xp;L.secs=Math.round((Date.now()-L.started)/1000);Store.save();render();SND.play("done");confetti();checkBadges();
 }
 
 /* ================= recording (standalone only) ================= */
@@ -215,16 +274,16 @@ async function recStart(forId){
 }
 function recStop(){clearInterval(REC.timer);wake(false);if(REC.mr&&REC.mr.state!=="inactive")REC.mr.stop();}
 function recExt(){const t=REC.blob?.type||"";return t.includes("mp4")?"m4a":t.includes("ogg")?"ogg":"webm";}
-function recFilename(base){return `Ali_${base}_${today()}.${recExt()}`;}
+function recFilename(base){return `${myName().replace(/[^\w]+/g,"")||"Me"}_${base}_${today()}.${recExt()}`;}
 function downloadBlob(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},2000);}
 let wakeLock=null;
 async function wake(on){try{if(on&&navigator.wakeLock)wakeLock=await navigator.wakeLock.request("screen");else if(wakeLock){wakeLock.release();wakeLock=null;}}catch(e){}}
 function noMicHTML(base){
   if(ENV.claude)return `<div class="note small stack"><b>Claude version e microphone nei</b><span>Claude er vitore kono app microphone use korte pare na. Record korar 2 ta upay:</span>
     ${WEB_URL?`<a class="btn wide" href="${WEB_URL}" target="_blank" rel="noopener">${IC.mic.replace("<svg",'<svg width="18" height="18"')} Web app e record koro</a><span class="tiny muted">Web app (GitHub) e app er vitorei record hoy. Oikhane progress alada thake.</span>`:""}
-    <span>Ba phone er <b>Voice Recorder</b> app diye record koro, file er naam <b>${esc("Ali_"+base+"_"+today())}</b>.</span></div>`;
+    <span>Ba phone er <b>Voice Recorder</b> app diye record koro, file er naam <b>${esc(myName().replace(/[^\w]+/g,"")+"_"+base+"_"+today())}</b>.</span></div>`;
   const why=!window.isSecureContext?"Ei address e (http) browser microphone dey na. https link ba desktop file hisebe kholo.":!window.MediaRecorder?"Ei browser e recording support nei. Chrome ba Safari use koro.":"Ei browser e microphone pawa jacche na.";
-  return `<div class="note small">${why} Na hole phone er <b>Voice Recorder</b> diye record koro, file er naam <b>${esc("Ali_"+base+"_"+today())}</b>.</div>`;}
+  return `<div class="note small">${why} Na hole phone er <b>Voice Recorder</b> diye record koro, file er naam <b>${esc(myName().replace(/[^\w]+/g,"")+"_"+base+"_"+today())}</b>.</div>`;}
 function recorderHTML(forId,base,label){
   if(!ENV.micOk) return noMicHTML(base);
   const mine=REC.forId===forId, rec=mine&&REC.state==="rec";
@@ -238,7 +297,8 @@ function recorderHTML(forId,base,label){
 
 /* ================= AI (Claude mode only) ================= */
 function levelLine(){return ASSESS?`Provisional level ${ASSESS.level} (${ASSESS.range}). Priorities: ${(ASSESS.priorities||[]).join("; ")}.`:"Level about A2+ to B1.";}
-const CTX=()=>`You are a friendly English coach for Ali, a Bangladeshi web developer (founder of BD Webhut) whose native language is Bangla. ${levelLine()} He has a wife and two daughters under 5 and wants to speak English with them at home. Use modern, natural English. Bangla must be in Bangla script, simple and natural. Never shame mistakes.`;
+const CTX=()=>{const P=prof();if(PID==="ali")return `You are a friendly English coach for Ali, a Bangladeshi web developer (founder of BD Webhut) whose native language is Bangla. ${levelLine()} He has a wife and two daughters under 5 and wants to speak English with them at home. Use modern, natural English. Bangla must be in Bangla script, simple and natural. Never shame mistakes.`;
+  return `You are a friendly English coach for ${P?.name||"a learner"}, a Bangla-speaking ${P?.age==="teen"?"teenager (8-15)":P?.age==="kid"?"young child":"adult"} from Bangladesh. Goals: ${(P?.goals||[]).join(", ")}. Level: beginner to intermediate. Use modern, natural English. Bangla must be in Bangla script, simple and natural. Never shame mistakes.`;};
 function aiErr(e){const c=e&&e.code;if(["not_granted","sampling_disabled","not_declared","capability_disabled"].includes(c)){ENV.aiState="off";return "AI ei view e chalu nei (Claude permission deya hoy ni).";}if(c==="rate_limited")return "Claude usage limit. Kichukkhon pore try koro.";if(c==="invalid_json")return "AI er uttor thik format e ashe ni, abar try koro.";return "AI theke uttor ana gelo na. Abar try koro.";}
 async function aiJSON(p,tier){if(!ENV.ai)throw {code:"not_granted"};return ENV.ai.json(p,{modelTier:tier||"default",cache:false});}
 
@@ -246,55 +306,62 @@ async function aiJSON(p,tier){if(!ENV.ai)throw {code:"not_granted"};return ENV.a
 
 /* ================= app state ================= */
 const APP={tab:"learn",track:"family",pop:null,modal:null,busy:null,warm:null,story:null,cards:null,chat:null,confirm:null,check:{}};
-const TABS=[["learn","Learn",IC.learn],["warm","Warm-up",IC.warm],["practice","Practice",IC.practice],["stories","Stories",IC.story],["me","Me",IC.me]];
+function TABS_FOR(){return isKid()?[["learn","Learn",IC.learn],["practice","Play",IC.cards],["stories","Stories",IC.story],["me","Me",IC.me]]
+  :[["learn","Learn",IC.learn],...(warmAllowed()?[["warm","Warm-up",IC.warm]]:[]),["practice","Practice",IC.practice],["stories","Stories",IC.story],["me","Me",IC.me]];}
 
 let LASTKEY=null,LASTSUB=null;
-function viewKey(){if(L)return L.done?"L:done":"L";if(APP.busy)return "busy";if(APP.warm)return "warm:"+APP.warm.step;if(APP.story)return "story:"+APP.story;if(APP.cards)return "cards";if(APP.chat)return "chat";return "tab:"+APP.tab;}
-function subKey(){if(L&&!L.done)return "ex"+L.i;if(APP.warm)return "w"+APP.warm.ex+":"+APP.warm.tw+":"+(APP.warm.noPen?1:0);if(APP.cards)return "c"+APP.cards.i;if(!L&&!APP.busy&&!APP.story&&!APP.chat&&APP.tab==="learn")return "t:"+APP.track;return "";}
+function viewKey(){if(APP.welcome)return "welcome";if(APP.onb)return "onb:"+(APP.onb.edit||"new");if(APP.picker)return "picker";if(L)return L.done?"L:done":"L";if(APP.busy)return "busy";if(APP.warm)return "warm:"+APP.warm.step;if(APP.story)return "story:"+APP.story;if(APP.cards)return "cards";if(APP.chat)return "chat";return "tab:"+APP.tab;}
+function subKey(){if(APP.onb)return "o"+APP.onb.step;if(L&&!L.done)return "ex"+L.i;if(APP.warm)return "w"+APP.warm.ex+":"+APP.warm.tw+":"+(APP.warm.noPen?1:0);if(APP.cards)return "c"+APP.cards.i;if(!L&&!APP.busy&&!APP.story&&!APP.chat&&APP.tab==="learn")return "t:"+APP.track;return "";}
 function renderNav(instant){
-  const t=$("#tabs");
-  if(!t.querySelector("button"))t.insertAdjacentHTML("beforeend",TABS.map(([id,l,i])=>`<button data-act="tab" data-v="${id}">${i}<span>${l}</span></button>`).join(""));
+  const t=$("#tabs"),tabs=TABS_FOR(),sig=tabs.map(x=>x[0]).join();
+  if(t.dataset.sig!==sig){t.querySelectorAll("button").forEach(b=>b.remove());t.insertAdjacentHTML("beforeend",tabs.map(([id,l,i])=>`<button data-act="tab" data-v="${id}">${i}<span>${l}</span></button>`).join(""));t.dataset.sig=sig;t.style.setProperty("--n",tabs.length);instant=true;}
+  if(!tabs.some(x=>x[0]===APP.tab))APP.tab="learn";
   t.querySelectorAll("button").forEach(b=>{if(b.dataset.v===APP.tab)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current");});
   placePill(t.querySelector(".pill"),t.querySelector("[aria-current]"),instant);
 }
 function placeSeg(instant){const tr=$(".tracks");if(tr)placePill(tr.querySelector(".seg-pill"),tr.querySelector('[aria-pressed="true"]'),instant);}
 function render(){
   let html;
-  if(L) html=viewLesson();
+  document.body.classList.toggle("kid",isKid());
+  if(APP.welcome) html=viewWelcome();
+  else if(APP.onb) html=viewOnb();
+  else if(APP.picker) html=viewPicker();
+  else if(L) html=viewLesson();
   else if(APP.busy) html=`<main class="view"><div class="stack-lg" style="padding-top:20vh;text-align:center"><h2>${esc(APP.busy)}</h2><p class="muted">Claude kaj korche, 20 second theke 2 minute lagte pare.</p></div></main>`;
   else if(APP.warm) html=viewWarmRun();
   else if(APP.story) html=viewStory();
   else if(APP.cards) html=viewCards();
   else if(APP.chat) html=viewChat();
-  else html=`<main class="view">${topbar()}${saveWarn()}${({learn:viewLearn,warm:viewWarm,practice:viewPractice,stories:viewStories,me:viewMe})[APP.tab]()}</main>`;
+  else html=`<main class="view ${APP.tab==="learn"?"dash":""}">${topbar()}${saveWarn()}${({learn:viewLearn,warm:viewWarm,practice:viewPractice,stories:viewStories,me:viewMe})[APP.tab]()}</main>`;
   if(APP.modal) html+=APP.modal;
   const root=$("#root"),key=viewKey(),sub=subKey(),first=LASTKEY===null;
   const nav=document.querySelector("nav.tabs"),navWasHidden=nav.hidden;
-  nav.hidden=!!(L||APP.warm);
+  nav.hidden=!!(L||APP.warm||APP.welcome||APP.onb||APP.picker);
   if(key!==LASTKEY){root.innerHTML=html;placeSeg(true);enterView(root,first);}
   else{const subChanged=sub!==LASTSUB;morph(root,html,subChanged);placeSeg(subChanged&&!sub.startsWith("t:"));if(subChanged)enterSub(root);}
-  renderNav(first||navWasHidden);
+  if(!nav.hidden)renderNav(first||navWasHidden);
   if(navWasHidden&&!nav.hidden)rise([nav],{y:30,dur:600,scale:1,ease:EZ.out3});
   LASTKEY=key;LASTSUB=sub;
 }
 function saveWarn(){return Store.failed?`<p class="warnbox small">Progress save hoy ni (internet ba storage). <button class="btn sm" data-act="retrySave">Abar save</button></p>`:"";}
 function topbar(){
-  const st=streak(), dx=day().xp, g=S.goal, p=Math.min(1,dx/g);
+  const st=streak(), dx=day().xp, g=S.goal, p=Math.min(1,dx/g), P=prof();
   const C=2*Math.PI*9;
-  return `<div class="topbar"><div class="brand"><i>${IC.learn}</i><span>Coach</span></div>
-   <div class="stats">${warmToday()?`<span class="chip warmchip ok" title="Warm-up done">${IC.check.replace("<svg",'<svg width="13" height="13"')} warm-up</span>`:`<button class="chip warmchip todo" data-act="tab" data-v="warm">Warm-up</button>`}
-   <span class="stat" title="Streak"><span class="flame ${warmToday()&&(day().lessons+day().practice)>0?"":"off"}">${IC.flame}</span><span class="num">${st}</span></span>
-   <span class="stat" id="xpstat" title="Aj er XP"><svg class="ring" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="var(--well)" stroke-width="3.5"/><circle cx="12" cy="12" r="9" fill="none" stroke="var(--warm)" stroke-width="3.5" stroke-dasharray="${(C*p).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 12 12)" stroke-linecap="round"/></svg><span class="num">${dx}<span class="muted" style="font-weight:500">/${g}</span></span></span></div></div>`;
+  const warmChip=warmAllowed()&&S.warmReq?(warmToday()?`<span class="chip warmchip ok" title="Warm-up done">${IC.check.replace("<svg",'<svg width="13" height="13"')} warm-up</span>`:`<button class="chip warmchip todo" data-act="tab" data-v="warm">Warm-up</button>`):"";
+  return `<div class="topbar"><button class="avbtn" data-act="switchProfile" title="Profile bodlao"><span class="av">${esc(P?.avatar||"🙂")}</span><span class="avname">${esc(myName())}</span></button>
+   <div class="stats">${warmChip}
+   <span class="stat" title="Streak: ${st} din"><span class="flame ${(day().lessons+day().practice)>0?"":"off"}">${IC.flame}</span><span class="num">${st}</span></span>
+   <span class="stat" id="xpstat" title="Aj er XP"><svg class="ring" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="var(--well)" stroke-width="3.5"/><circle cx="12" cy="12" r="9" fill="none" stroke="var(--warm)" stroke-width="3.5" stroke-dasharray="${(C*p).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 12 12)" stroke-linecap="round"/></svg><span class="num">${dx}<span class="muted dim">/${g}</span></span></span></div></div>`;
 }
 function hello(){const h=new Date().getHours();const g=h<5?"Good night":h<12?"Good morning":h<17?"Good afternoon":"Good evening";
   const d=new Date().toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});
-  return `<div class="hello"><span class="eyebrow">${esc(d)} · ${warmToday()?"warm-up done":"warm-up first"}</span><h1>${g}, Ali</h1></div>`;}
-
-/* ================= LEARN (path) ================= */
+  const sub=isKid()?"Let's play and learn!":warmAllowed()&&S.warmReq?(warmToday()?"warm-up done, lesson ready":"age warm-up, tarpor lesson"):"ajker lesson ready";
+  return `<div class="hello"><span class="eyebrow">${esc(d)} · ${sub}</span><h1>${g}, ${esc(myName())}${isKid()?" 👋":""}</h1></div>`;}
 function viewLearn(){
   const tr=APP.track, ns=nodeStates(tr);
   const offs=[0,44,70,44,0,-44,-70,-44];
-  let html=`${hello()}<div class="tracks"><span class="seg-pill"></span>${TRACKS.map(([id,l,bn])=>`<button class="trackbtn ${id}" data-act="track" data-v="${id}" aria-pressed="${tr===id}"><b>${l}</b><span>${bn}</span></button>`).join("")}</div>`;
+  const mt=myTracks();if(!mt.some(t=>t[0]===APP.track)){APP.track=mt[0][0];return viewLearn();}
+  let html=`${hello()}<div class="mob-only">${questCard()}</div>${mt.length>1?`<div class="tracks" style="grid-template-columns:repeat(${mt.length},1fr)"><span class="seg-pill"></span>${mt.map(([id,l,bn])=>`<button class="trackbtn ${id}" data-act="track" data-v="${id}" aria-pressed="${tr===id}"><b>${l}</b><span>${bn}</span></button>`).join("")}</div>`:""}`;
   let k=0;
   allUnits().filter(u=>u.track===tr).forEach((u,ui)=>{
     const un=ns.filter(n=>n.u.id===u.id);const doneN=un.filter(n=>n.st==="done").length;
@@ -302,7 +369,8 @@ function viewLearn(){
     un.forEach(n=>{
       const off=offs[k++%offs.length];
       const isStory=n.type==="story";
-      const icon=n.st==="lock"?IC.lock:n.st==="done"?IC.check:isStory?IC.book:IC.star;
+      const kidEm=tr==="kids"&&!isStory?n.u.lessons[n.li].items[0][2]:"";
+      const icon=n.st==="lock"?(kidEm?`<span class="nem dim">${kidEm}</span>`:IC.lock):n.st==="done"?IC.check:isStory?IC.book:kidEm?`<span class="nem">${kidEm}</span>`:IC.star;
       const label=isStory?"Story":n.u.lessons[n.li].title;
       html+=`<div class="nodewrap" style="transform:translateX(${off}px)"><button class="node ${tr} ${isStory?"storyn":""} ${n.st}" data-act="node" data-key="${esc(n.key)}" aria-label="${esc(label)} (${n.st})">${icon}<span class="lbl">${esc(label)}</span></button></div>`;
       if(APP.pop===n.key) html+=`<div class="startpop" style="margin-top:24px">${popHTML(n)}</div>`;
@@ -310,12 +378,13 @@ function viewLearn(){
     });
     html+=`</div>`;
   });
-  if(ENV.claude) html+=`<div class="card"><h3>Notun unit chao?</h3><p class="small muted">Je kono topic likho, Claude tomar level er moto 3 ta lesson ar ekta story baniye path e jog korbe.</p>${newUnitForm()}</div>`;
-  return html;
+  if(ENV.claude&&!isKid()) html+=`<div class="card"><h3>Notun unit chao?</h3><p class="small muted">Je kono topic likho, Claude tomar level er moto 3 ta lesson ar ekta story baniye path e jog korbe.</p>${newUnitForm()}</div>`;
+  html+=`<div class="mob-only">${leagueCard()}</div>`;
+  return `<div class="maincol">${html}</div><aside class="sidecol">${questCard()}${leagueCard()}${isKid()?stickerBook():""}</aside>`;
 }
 function popHTML(n){
   if(n.st==="lock") return `<b>${IC.lock.replace("<svg",'<svg width="14" height="14" style="vertical-align:-1px"')} Locked</b><p class="small muted">Ager lesson gulo shesh korle eta khulbe.</p>`;
-  if(n.type==="story") return `<b>${esc(n.u.story.title)}</b><p class="small muted">Unit er shob kichu niye ekta golpo. Pore shono, jore pore record koro, Claude ke mark korte pathao.</p><button class="btn story wide" data-act="openStory" data-id="${esc(n.u.id)}">Story kholo</button>`;
+  if(n.type==="story") return `<b>${esc(n.u.story.title)}</b><p class="small muted">${n.u.track==="kids"?"Choto golpo: eksathe shuno ar bolo.":"Unit er shob kichu niye ekta golpo. Shuno, jore poro, record koro."}</p><button class="btn story wide" data-act="openStory" data-id="${esc(n.u.id)}">Story kholo</button>`;
   const l=n.u.lessons[n.li], d=S.done[n.key];
   const gate=S.warmReq&&!warmToday();
   return `<b>${esc(l.title)}</b><p class="small muted">${l.items.length} ta sentence · ~4–6 min${d?` · last: ${d.acc??"–"}% first-try`:""}</p>
@@ -333,9 +402,9 @@ function viewLesson(){
   if(L.done){
     const acc=L.t?Math.round(L.c/L.t*100):100;
     return `<div class="player"><div class="body" style="justify-content:center;text-align:center;padding-bottom:40px">
-      <div class="done-hero">${IC.check}</div><h1>${L.kind==="lesson"?"Lesson complete!":"Practice complete!"}</h1>
+      ${L.sticker?`<div class="sticker-win"><span>${L.sticker}</span></div><p class="small muted">Notun sticker pele!</p>`:`<div class="done-hero">${IC.check}</div>`}<h1>${L.kind==="lesson"?"Lesson complete!":"Practice complete!"}</h1>
       <div class="row center" style="gap:12px"><div class="metric" style="min-width:110px"><span class="tag n">XP</span><b>+<span data-count="${L.xp}">${L.xp}</span></b></div><div class="metric" style="min-width:110px"><span class="tag m">first-try</span><b><span data-count="${acc}">${acc}</span>%</b></div><div class="metric" style="min-width:110px"><span class="tag n">time</span><b>${fmt(L.secs)}</b></div></div>
-      ${Object.keys(L.mistakes).length?`<div class="card" style="text-align:left"><h3>Revise korar sentence</h3>${Object.keys(L.mistakes).map(id=>{const it=itemById(id);return it?`<div class="row between" style="flex-wrap:nowrap"><span>${esc(it.en)}<br><span class="small bn muted">${esc(it.bn)}</span></span><button class="icon-btn" data-act="say" data-t="${esc(it.en)}" aria-label="Listen">${IC.speak}</button></div>`:"";}).join("")}<p class="tiny muted">Egulo kal Practice e abar ashbe.</p></div>`:`<p class="okbox">Kono bhul nei! +5 bonus XP.</p>`}
+      ${Object.keys(L.mistakes).length?`<div class="card" style="text-align:left"><h3>${L.items[0]?.track==="kids"?"Ei gulo abar dekhbo":"Revise korar sentence"}</h3>${Object.keys(L.mistakes).map(id=>{const it=itemById(id);return it?`<div class="row between" style="flex-wrap:nowrap"><span>${esc(it.en)}<br><span class="small bn muted">${esc(it.bn)}</span></span><button class="icon-btn" data-act="say" data-t="${esc(it.en)}" aria-label="Listen">${IC.speak}</button></div>`:"";}).join("")}<p class="tiny muted">Egulo kal Practice e abar ashbe.</p></div>`:`<p class="okbox">Kono bhul nei! +5 bonus XP.</p>`}
       <button class="btn good wide" data-act="closeLesson">Continue</button></div></div>`;
   }
   const e=cur(), done=L.i, total=L.ex.length;
@@ -349,11 +418,24 @@ function viewLesson(){
   if(e.t==="fill"){body=`<p class="eyebrow">Khali jayga puron koro</p><div class="prompt">${esc(e.blanked)}</div><p class="small bn muted">${esc(e.it.bn)}</p><div class="opts">${e.opts.map(o=>`<button class="opt" data-act="choose" data-v="${esc(o)}" aria-pressed="${L.answer===o}" ${L.fb?"disabled":""}>${esc(o)}</button>`).join("")}</div>`;canCheck=L.answer!=null;}
   if(e.t==="type"){body=`<p class="eyebrow">English e type koro</p><div class="prompt bn">${esc(e.it.bn)}</div><textarea id="typein" data-key="t${L.i}" placeholder="Type in English…" ${L.fb?"disabled":""} autocapitalize="sentences">${esc(L.typed||"")}</textarea><p class="tiny muted">Phone keyboard er mic diye bolleo cholbe.</p>`;canCheck=!!(L.typed||"").trim();}
   if(e.t==="match"){body=`<p class="eyebrow">Jora milao</p><div class="match"><div class="stack">${e.left.map(x=>`<button class="opt ${e.gone.includes(x.id)?"gone":""} ${e.flash===x.id?"err":""}" data-act="mL" data-id="${esc(x.id)}" aria-pressed="${e.selL===x.id}">${esc(x.txt)}</button>`).join("")}</div><div class="stack">${e.right.map(x=>`<button class="opt bn ${e.gone.includes(x.id)?"gone":""} ${e.flashR===x.id?"err":""}" data-act="mR" data-id="${esc(x.id)}" aria-pressed="${e.selR===x.id}">${esc(x.txt)}</button>`).join("")}</div></div>`;canCheck=false;}
-  if(e.t==="speak"){body=`<p class="eyebrow">Jore jore bolo</p><div class="speaker">${sp(e.it.en,true)}<div class="prompt">${esc(e.it.en)}</div></div><p class="small bn muted">${esc(e.it.bn)}</p>
-    ${ENV.micOk?recorderMini(e.it.id):`<p class="note small">Shono, tarpor 3 bar jore jore bolo. (Ei app tomar uccharon shune score dite pare na.)</p>`}`;checkLabel="Ami bolechi";}
+  const hasSR=HEAR.avail(), hs=e.hs||{};
+  const sayWords=()=>hs.words?`<span class="said">${hs.words.map(w=>`<span class="${w.ok?"ok":"bad"}">${esc(w.w)}</span>`).join(" ")}</span>`:esc(e.it.en);
+  const micBlock=()=>`<button class="micbig ${hs.state==="listen"?"on":""}" data-act="hear" aria-label="${hs.state==="listen"?"Stop":"Tap and speak"}">${IC.mic}</button>
+    <p class="tiny muted center">${hs.state==="listen"?"Shunchi… bolo":"Tap kore bolo"}</p>
+    ${hs.err?`<p class="warnbox small">${esc(hs.err)}</p>`:""}
+    ${hs.score!=null&&!L.fb?`<p class="note small center">${Math.round(hs.score*100)}% word mileche. Laal word gulo abar bolo.${hs.tries>=2?" Chaile Continue chapo.":""}</p>`:""}`;
+  if(e.t==="speak"){body=`<p class="eyebrow">Jore jore bolo</p><div class="speaker">${sp(e.it.en,true)}<button class="icon-btn" data-act="saySlow" data-t="${esc(e.it.en)}" aria-label="Slow">${IC.slow}</button></div><div class="prompt">${sayWords()}</div><p class="small bn muted">${esc(e.it.bn)}</p>
+    ${hasSR?micBlock()+`<button class="linkbtn" data-act="noSpeak">Ekhon bolte parchi na</button><p class="tiny muted center">App browser er speech recognition diye word milay. Eta pronunciation score na.</p>`
+    :ENV.micOk?recorderMini(e.it.id):`<p class="note small">Shono, tarpor 3 bar jore jore bolo.</p>`}`;checkLabel="Ami bolechi";}
+  if(e.t==="kintro"){body=`<div class="kidstage"><button class="kemoji" data-act="say" data-t="${esc(e.it.en)}">${e.it.em}</button><div class="kword">${esc(e.it.en)}</div><div class="bn muted kbn">${esc(e.it.bn)}</div>${sp(e.it.en,true)}</div>`;checkLabel="Next";}
+  if(e.t==="kpick"||e.t==="kfind"){body=`<div class="kidstage"><button class="bigspeak kidspeak" data-act="say" data-t="${esc(e.it.en)}" aria-label="Listen again">${IC.speak}</button><p class="kq">Shuno, tarpor chobi te tap koro</p></div>
+    <div class="kgrid ${e.t==="kfind"?"six":""}">${e.opts.map(o=>`<button class="ktile ${e.wrong.includes(o.id)?"err":""} ${L.fb&&o.id===e.it.id?"right":""}" data-act="kchoose" data-id="${esc(o.id)}" ${e.wrong.includes(o.id)||L.fb?"disabled":""} aria-label="picture">${o.em}</button>`).join("")}</div>`;}
+  if(e.t==="ksay"){body=`<div class="kidstage"><span class="kemoji">${e.it.em}</span><div class="kword">${sayWords()}</div>${sp(e.it.en,true)}</div>${hasSR?micBlock():`<p class="small muted center">Shuno, tarpor jore bolo!</p>`}`;checkLabel=hasSR?"Skip":"Bolechi!";}
   let foot;
-  if(L.fb){const f=L.fb;foot=`<div class="foot ${f.ok?"ok":"no"}"><div class="in"><div class="fbtitle"><i>${f.ok?IC.check:IC.close}</i>${f.ok?(L.typo?"Thik! (choto typo)":["Darun!","Excellent!","Perfect!","Thik!"][L.i%4]):"Thik uttor:"}</div>${!f.ok||L.typo?`<div><b class="${f.show===f.bn?"bn":""}">${esc(f.show)}</b>${f.show!==f.bn&&f.bn?`<br><span class="small bn">${esc(f.bn)}</span>`:""}</div>`:""}<button class="btn ${f.ok?"good":"bad"} wide" data-act="next">Continue</button></div></div>`;}
-  else foot=`<div class="foot"><div class="in">${e.t==="match"?`<p class="small muted center">Bam ar dan theke mil kore tap koro.</p>`:`<button class="btn good wide" data-act="${e.t==="intro"||e.t==="speak"?"skipEx":"check"}" ${canCheck?"":"disabled"}>${checkLabel}</button>`}</div></div>`;
+  if(L.fb){const f=L.fb;foot=`<div class="foot ${f.ok?"ok":"no"}"><div class="in"><div class="fbtitle"><i>${f.ok?IC.check:IC.close}</i>${f.ok?(L.typo?"Thik! (choto typo)":(e.t&&e.t[0]==="k"&&e.t!=="kintro"?["Yay! 🎉","Great job! ⭐","Super! 🌟","Wow! 🎈"]:["Darun!","Excellent!","Perfect!","Thik!"])[L.i%4]):"Thik uttor:"}</div>${!f.ok||L.typo?`<div><b class="${f.show===f.bn?"bn":""}">${esc(f.show)}</b>${f.show!==f.bn&&f.bn?`<br><span class="small bn">${esc(f.bn)}</span>`:""}</div>`:""}<button class="btn ${f.ok?"good":"bad"} wide" data-act="next">Continue</button></div></div>`;}
+  else if(e.t==="kpick"||e.t==="kfind")foot=`<div class="foot"><div class="in"><p class="small muted center">${e.wrong.length?"Abar try koro! 🔊 chepe abar shuno.":"Ki shunle?"}</p></div></div>`;
+  else if(e.t==="speak"&&hasSR)foot=`<div class="foot"><div class="in">${hs.tries>=2?`<button class="btn good wide" data-act="skipEx">Continue</button>`:`<p class="small muted center">Mic e tap kore sentence ta bolo</p>`}</div></div>`;
+  else foot=`<div class="foot"><div class="in">${e.t==="match"?`<p class="small muted center">Bam ar dan theke mil kore tap koro.</p>`:`<button class="btn ${e.t==="ksay"&&hasSR?"ghost":"good"} wide" data-act="${["intro","speak","kintro","ksay"].includes(e.t)?"skipEx":"check"}" ${canCheck?"":"disabled"}>${checkLabel}</button>`}</div></div>`;
   return `<div class="player"><div class="head"><button class="icon-btn" data-act="quitLesson" aria-label="Close lesson">${IC.close}</button><div class="pbar"><i style="width:${Math.round(done/total*100)}%"></i></div></div><div class="body">${body}</div>${foot}</div>`;
 }
 function recorderMini(id){
@@ -364,6 +446,10 @@ function recorderMini(id){
 }
 
 /* ================= WARM-UP ================= */
+const quickW=()=>S.warmMode==="quick";
+const warmEx=()=>quickW()?COURSE.warmup.exercises.slice(0,5):COURSE.warmup.exercises;
+const twN=()=>quickW()?1:3;
+const penSecs=()=>quickW()?120:300;
 function todaysWarm(){
   const lv=Math.min(3,1+Math.floor((S.warmCount||0)/7));
   const tw=COURSE.warmup.twisters;const idx=(S.warmCount||0)*3;
@@ -373,41 +459,41 @@ function todaysWarm(){
 }
 function viewWarm(){
   const w=todaysWarm(), done=warmToday(), dd=S.days[today()]||{};
-  const exSecs=COURSE.warmup.exercises.reduce((a,x)=>a+x.secs,0);
+  const exSecs=warmEx().reduce((a,x)=>a+x.secs,0);
   return `<div class="stack"><h1>Daily mouth warm-up</h1><p class="muted">Lesson er age protidin 10–15 minute. Mukher jorota kate, jibh ar thot English er sound er jonno ready hoy.</p></div>
    ${done?`<p class="okbox">Ajker warm-up shesh (${dd.warmMin||0} min). Ekhon lesson khola ache!</p>`:""}
    <div class="stack">
-    <div class="warmstep ${dd.w1?"done":""}"><span class="num">${dd.w1?IC.check.replace("<svg",'<svg width="18" height="18"'):"1"}</span><div><h3>Mouth & tongue exercises</h3><p class="small muted">${COURSE.warmup.exercises.length} ta exercise · ${Math.round(exSecs/60)} min · timer diye guide</p></div><button class="btn sm warm" data-act="warmGo" data-s="1">${dd.w1?"Again":"Start"}</button></div>
-    <div class="warmstep ${dd.w2?"done":""}"><span class="num">${dd.w2?IC.check.replace("<svg",'<svg width="18" height="18"'):"2"}</span><div><h3>Tongue twisters</h3><p class="small muted">Ajker 3 ta (level ${w.lv}) · ~4 min · dhire 3 bar, druto 3 bar</p></div><button class="btn sm warm" data-act="warmGo" data-s="2">${dd.w2?"Again":"Start"}</button></div>
-    <div class="warmstep ${dd.w3?"done":""}"><span class="num">${dd.w3?IC.check.replace("<svg",'<svg width="18" height="18"'):"3"}</span><div><h3>Pen-in-mouth reading</h3><p class="small muted">5 min · “${esc(w.passage.title)}”</p></div><button class="btn sm warm" data-act="warmGo" data-s="3">${dd.w3?"Again":"Start"}</button></div>
+    <div class="warmstep ${dd.w1?"done":""}"><span class="num">${dd.w1?IC.check.replace("<svg",'<svg width="18" height="18"'):"1"}</span><div><h3>Mouth & tongue exercises</h3><p class="small muted">${warmEx().length} ta exercise · ${Math.round(exSecs/60)} min · timer diye guide</p></div><button class="btn sm warm" data-act="warmGo" data-s="1">${dd.w1?"Again":"Start"}</button></div>
+    <div class="warmstep ${dd.w2?"done":""}"><span class="num">${dd.w2?IC.check.replace("<svg",'<svg width="18" height="18"'):"2"}</span><div><h3>Tongue twisters</h3><p class="small muted">Ajker ${twN()} ta (level ${w.lv}) · dhire 3 bar, druto 3 bar</p></div><button class="btn sm warm" data-act="warmGo" data-s="2">${dd.w2?"Again":"Start"}</button></div>
+    <div class="warmstep ${dd.w3?"done":""}"><span class="num">${dd.w3?IC.check.replace("<svg",'<svg width="18" height="18"'):"3"}</span><div><h3>Pen-in-mouth reading</h3><p class="small muted">${penSecs()/60} min · “${esc(w.passage.title)}”</p></div><button class="btn sm warm" data-act="warmGo" data-s="3">${dd.w3?"Again":"Start"}</button></div>
    </div>
    <button class="btn warm wide" data-act="warmGo" data-s="1">${done?"Abar puro warm-up":"Puro warm-up shuru (1 → 2 → 3)"}</button>
    <details class="card"><summary><b>Pen diye reading kivabe korbe</b></summary><div class="stack small bn"><p>• একটা পরিষ্কার কলম আড়াআড়ি করে সামনের দাঁত দিয়ে হালকা কামড়ে ধরো, গভীরে ঢোকাবে না।</p><p>• কলম মুখে রেখেই জোরে জোরে, ধীরে, প্রতিটা শব্দ স্পষ্ট করার চেষ্টা করে পড়ো। জিভ আর ঠোঁটকে বেশি কাজ করতে হবে।</p><p>• শেষে কলম ছাড়া এক মিনিট পড়ো — শব্দ অনেক হালকা আর পরিষ্কার লাগবে।</p><p>• চোয়ালে ব্যথা লাগলে থামো। ছোট বাচ্চাদের দিয়ে এটা করাবে না।</p></div></details>
    ${S.warmReq?`<p class="tiny muted">Settings e "Lesson er age warm-up lagbe" chalu ache.</p>`:""}`;
 }
 function startWarm(step){APP.warm={step,ex:0,left:null,run:false,tw:0,reps:0,end:null};wake(true);if(step===1)warmTimerFor(0);render();}
-function warmTimerFor(i){const x=COURSE.warmup.exercises[i];APP.warm.ex=i;APP.warm.left=x.secs;APP.warm.run=false;}
+function warmTimerFor(i){const x=warmEx()[i];APP.warm.ex=i;APP.warm.left=x.secs;APP.warm.run=false;}
 let warmInt=null;
 function warmTick(){
   const W=APP.warm;if(!W||!W.run)return;
   W.left-=1;const el=$("#wt");if(el)el.textContent=fmt(Math.max(0,W.left));const rg=$("#wring");if(rg)rg.style.strokeDashoffset=(515.2*(1-Math.max(0,W.left)/+rg.dataset.total)).toFixed(1);if(W.left>0&&W.left<=3)SND.play("tick");
   if(W.left<=0){
     SND.play("ok");
-    if(W.step===1){if(W.ex<COURSE.warmup.exercises.length-1){warmTimerFor(W.ex+1);W.run=true;if(TTS.ok)TTS.say("Next: "+COURSE.warmup.exercises[W.ex].name,1);render();}else{W.run=false;warmStepDone(1);}}
+    if(W.step===1){if(W.ex<warmEx().length-1){warmTimerFor(W.ex+1);W.run=true;if(TTS.ok)TTS.say("Next: "+warmEx()[W.ex].name,1);render();}else{W.run=false;warmStepDone(1);}}
     else if(W.step===3){W.run=false;if(!W.noPen){W.noPen=true;W.left=60;render();toast("Pen ber koro. Ebar 1 minute pen chara poro.");W.run=true;}else{warmStepDone(3);}}
   }
 }
 function warmStepDone(s){const d=day();d["w"+s]=true;const W=APP.warm;d.warmMin=(d.warmMin||0)+(s===1?5:s===2?4:6);
   if(d.w1&&d.w2&&d.w3&&!d.warm){d.warm=true;S.warmCount=(S.warmCount||0)+1;addXP(15);toast("Warm-up shesh! +15 XP. Lesson khule geche.");SND.play("done");}
   Store.save();
-  if(s<3){APP.warm={step:s+1,ex:0,left:null,run:false,tw:0,reps:0};if(s+1===3){APP.warm.left=300;}}else{APP.warm=null;wake(false);}
+  if(s<3){APP.warm={step:s+1,ex:0,left:null,run:false,tw:0,reps:0};if(s+1===3){APP.warm.left=penSecs();}}else{APP.warm=null;wake(false);}
   render();}
 function viewWarmRun(){
   const W=APP.warm, w=todaysWarm();
-  const head=`<div class="row between"><button class="icon-btn" data-act="warmExit" aria-label="Close">${IC.close}</button><span class="eyebrow">Warm-up · step ${W.step} of 3</span><span></span></div>`;
+  const head=`<div class="row between"><button class="icon-btn" data-act="warmExit" aria-label="Close">${IC.close}</button><span class="eyebrow">${quickW()?"Quick w":"W"}arm-up · step ${W.step} of 3</span><span></span></div>`;
   let body="";
   if(W.step===1){
-    const xs=COURSE.warmup.exercises, x=xs[W.ex];
+    const xs=warmEx(), x=xs[W.ex];
     if(W.left==null)warmTimerFor(0);
     body=`<div class="pbar" style="height:10px"><i style="width:${W.ex/xs.length*100}%;background:var(--warm)"></i></div>
      <p class="eyebrow">${W.ex+1} / ${xs.length}</p><h1>${esc(x.name)}</h1><p class="bn" style="font-size:1.05rem">${esc(x.bn)}</p><p class="muted"><i>${esc(x.cue)}</i></p>
@@ -416,7 +502,7 @@ function viewWarmRun(){
   }
   if(W.step===2){
     const t=w.tws[W.tw];
-    body=`<p class="eyebrow">Twister ${W.tw+1} of 3 · focus: ${esc(t.focus)}</p><div class="card"><div class="twister">${esc(t.t)}</div><p class="small bn muted center">${esc(t.bn)}</p></div>
+    body=`<p class="eyebrow">Twister ${W.tw+1} of ${twN()} · focus: ${esc(t.focus)}</p><div class="card"><div class="twister">${esc(t.t)}</div><p class="small bn muted center">${esc(t.bn)}</p></div>
      <div class="row center"><button class="btn ghost" data-act="saySlow" data-t="${esc(t.t)}">${IC.slow.replace("<svg",'<svg width="18" height="18" style="vertical-align:-3px"')} Slow</button><button class="btn ghost" data-act="say" data-t="${esc(t.t)}">${IC.speak.replace("<svg",'<svg width="18" height="18" style="vertical-align:-3px"')} Normal</button></div>
      <p class="center small">${W.reps<3?"Dhire dhire bolo, protita sound spashto":"Ebar druto bolo, kintu sound thik rekhe"} — protibar bolar por tap koro</p>
      <div class="reps">${[0,1,2,3,4,5].map(k=>`<i class="${k<W.reps?"on":""}"></i>`).join("")}</div>
@@ -424,11 +510,11 @@ function viewWarmRun(){
      ${ENV.micOk?recorderMini("tw-"+W.tw):""}`;
   }
   if(W.step===3){
-    if(W.left==null)W.left=300;
+    if(W.left==null)W.left=penSecs();
     const p=w.passage;
     body=`<div class="row between"><h2>${esc(p.title)}</h2><div class="timer" id="wt" style="font-size:2rem">${fmt(W.left)}</div></div>
      <p class="note small bn">${W.noPen?"এবার কলম ছাড়া পড়ো — পার্থক্য খেয়াল করো।":"কলম আড়াআড়ি দাঁতে ধরে জোরে জোরে, ধীরে পড়ো। শেষ হলে আবার শুরু থেকে পড়ো।"}</p>
-     <div class="row center"><button class="btn warm" data-act="warmToggle">${W.run?"Pause":W.left===300?"Start 5:00":"Resume"}</button>${W.left<300?`<button class="btn ghost" data-act="warmFinish3">Shesh</button>`:""}</div>
+     <div class="row center"><button class="btn warm" data-act="warmToggle">${W.run?"Pause":W.left===penSecs()?"Start "+fmt(penSecs()):"Resume"}</button>${W.left<penSecs()?`<button class="btn ghost" data-act="warmFinish3">Shesh</button>`:""}</div>
      <div class="card"><div class="passage">${esc(p.text)}</div></div>`;
   }
   return `<main class="view" style="padding-bottom:40px">${head}${body}</main>`;
@@ -437,13 +523,18 @@ function viewWarmRun(){
 /* ================= PRACTICE ================= */
 function viewPractice(){
   const due=dueItems(), learned=Object.keys(S.srs).length;
+  if(isKid())return `<h1>Play</h1><p class="muted">Chobi card dekho, awaj shuno, eksathe bolo!</p>
+   <div class="playgrid">${allUnits().filter(u=>u.track==="kids").map(u=>`<button class="playcard" data-act="openCards" data-u="${esc(u.id)}"><span class="pem">${u.lessons[0].items[0][2]}</span><b>${esc(u.title)}</b><span class="tiny bn muted">${esc(u.bn)}</span></button>`).join("")}</div>
+   <div class="card"><div class="row between"><div><span class="eyebrow">Review</span><h3>${due.length} ta word abar dekho</h3></div><button class="btn" data-act="practiceDue" ${learned?"":"disabled"}>Khelo</button></div></div>`;
+  const cardTrack=myTracks().some(t=>t[0]==="family")?"family":myTracks().some(t=>t[0]==="kids")?"kids":null;
+  const scen=SCEN.filter(x=>myTracks().some(t=>t[0]===x.track)&&(PID==="ali"||!["daughter","wife"].includes(x.id)));
   return `<h1>Practice</h1>
    <div class="card"><div class="row between"><div><span class="eyebrow">Revision due</span><h2 class="num">${due.length} sentence</h2></div><button class="btn" data-act="practiceDue" ${learned?"":"disabled"}>Start</button></div>
-    <p class="small muted">Bhul kora ar purono sentence gulo shomoy moto abar ashe: 1 → 2 → 4 → 7 → 15 → 30 din.${!due.length&&learned?" Aj kichu due nei, tobu practice korle weak sentence gulo ashbe.":""}</p></div>
-   <div class="card"><h3>Family time cards</h3><p class="small muted">Boro boro card, meyeder shathe bose eksathe bolo. Tap korle awaj.</p><button class="btn fam" data-act="openCards">Card kholo</button></div>
-   ${ENV.claude?`<div class="card"><h3>AI conversation coach</h3><p class="small muted">Claude ekjon client, dokandar ba tomar 4 bochor er meye hoye kotha bolbe. Shesh e feedback dibe.</p>
-     <div class="list">${SCEN.map(s=>`<div class="item"><div class="grow"><b>${esc(s.title)}</b><span class="tiny muted">${esc(s.brief)}</span></div><button class="btn sm ${s.track==="family"?"fam":s.track==="everyday"?"eve":""}" data-act="startChat" data-id="${s.id}" ${ENV.aiState==="ready"?"":"disabled"}>Start</button></div>`).join("")}</div></div>`
-   :`<p class="note small">AI conversation coach ar notun unit banano shudhu Claude version e (claude.ai link) kaj kore.</p>`}`;
+    <p class="small muted">Bhul kora ar purono sentence gulo shomoy moto abar ashe: 1 → 2 → 4 → 7 → 15 → 30 din.${!due.length&&learned?" Aj kichu due nei, tobu practice korle weak sentence gulo ashbe.":""}${!learned?" Age ekta lesson koro.":""}</p></div>
+   ${cardTrack?`<div class="card"><h3>${cardTrack==="kids"?"Picture cards (bachchader shathe)":"Family time cards"}</h3><p class="small muted">Boro boro card: eksathe bose bolo. Tap korle awaj.</p><button class="btn fam" data-act="openCards" data-u="">Card kholo</button></div>`:""}
+   ${ENV.claude&&scen.length?`<div class="card"><h3>AI conversation coach</h3><p class="small muted">Claude ekjon client, dokandar ba poribarer kau hoye kotha bolbe. Shesh e feedback dibe.</p>
+     <div class="list">${scen.map(s=>`<div class="item"><div class="grow"><b>${esc(s.title)}</b><span class="tiny muted">${esc(s.brief)}</span></div><button class="btn sm ${s.track==="family"?"fam":s.track==="everyday"?"eve":""}" data-act="startChat" data-id="${s.id}" ${ENV.aiState==="ready"?"":"disabled"}>Start</button></div>`).join("")}</div></div>`
+   :!ENV.claude?`<p class="note small">AI conversation coach ar notun unit banano Claude version e (claude.ai link) kaj kore.</p>`:""}`;
 }
 function startPractice(){
   let items=dueItems();
@@ -452,13 +543,15 @@ function startPractice(){
   startSession("practice",items);
 }
 function viewCards(){
-  const C=APP.cards;const it=C.items[C.i];
-  return `<main class="view" style="padding-bottom:40px"><div class="row between"><button class="icon-btn" data-act="closeCards" aria-label="Close">${IC.close}</button><span class="eyebrow">${C.i+1} / ${C.items.length}</span><select id="cardunit" style="width:auto" aria-label="Unit">${COURSE.units.concat(Object.values(CUSTOM)).filter(u=>u.track==="family").map(u=>`<option value="${u.id}" ${C.unit===u.id?"selected":""}>${esc(u.title)}</option>`).join("")}</select></div>
-   <button class="kidcard" data-act="say" data-t="${esc(it.en)}" style="font:inherit;color:inherit"><span class="en">${esc(it.en)}</span><span class="bn muted" style="font-size:1.1rem">${esc(it.bn)}</span><span class="chip">${IC.speak.replace("<svg",'<svg width="16" height="16"')} tap to hear</span></button>
+  const C=APP.cards;const it=C.items[C.i];const u=unitById(C.unit);const kid=u?.track==="kids";
+  return `<main class="view" style="padding-bottom:40px"><div class="row between"><button class="icon-btn" data-act="closeCards" aria-label="Close">${IC.close}</button><span class="eyebrow">${C.i+1} / ${C.items.length}</span><select id="cardunit" style="width:auto" aria-label="Unit">${allUnits().filter(x=>x.track===u.track).map(x=>`<option value="${x.id}" ${C.unit===x.id?"selected":""}>${esc(x.title)}</option>`).join("")}</select></div>
+   <button class="kidcard ${kid?"pic":""}" data-act="say" data-t="${esc(it.en)}">${it.em?`<span class="cardem">${it.em}</span>`:""}<span class="en">${esc(it.en)}</span><span class="bn muted cbn">${esc(it.bn)}</span><span class="chip">${IC.speak.replace("<svg",'<svg width="16" height="16"')} tap to hear</span></button>
    <div class="row center"><button class="btn ghost" data-act="cardPrev" ${C.i?"":"disabled"}>Back</button><button class="btn fam" data-act="cardNext">${C.i<C.items.length-1?"Next":"Shuru theke"}</button></div>
-   <p class="small muted center">Tip: tumi bolo, tarpor meye ke repeat korte bolo. Haat-taali diye protibar celebrate koro!</p></main>`;
+   <p class="small muted center">${kid?"Tumi bolo, tarpor bachcha repeat korbe. Protibar haat-taali!":"Tip: tumi bolo, tarpor bachcha ke repeat korte bolo. Haat-taali diye protibar celebrate koro!"}</p></main>`;
 }
-function openCards(uid){const units=allUnits().filter(u=>u.track==="family");const u=uid?unitById(uid):units.find(x=>!nodeStates("family").filter(n=>n.u.id===x.id).every(n=>n.st==="done"))||units[0];APP.cards={unit:u.id,items:u.lessons.flatMap((l,li)=>lessonItems(u,li)),i:0};render();}
+function openCards(uid){const tr=uid?unitById(uid)?.track:(myTracks().some(t=>t[0]==="family")?"family":"kids");const units=allUnits().filter(u=>u.track===tr);if(!units.length)return;
+  const u=uid?unitById(uid):units.find(x=>!nodeStates(tr).filter(n=>n.u.id===x.id).every(n=>n.st==="done"))||units[0];
+  APP.cards={unit:u.id,items:u.lessons.flatMap((l,li)=>lessonItems(u,li)),i:0};day().cards=(day().cards||0)+1;Store.save();render();TTS.say(APP.cards.items[0].en);}
 
 /* ================= AI coach ================= */
 const SCEN=[
@@ -484,24 +577,24 @@ function viewChat(){
 }
 async function chatTurn(text,meta){
   const C=APP.chat;if(text)C.turns.push({r:"me",t:text});C.busy=true;C.err=null;render();
-  const tr=C.turns.filter(t=>t.r!=="meta").map(t=>(t.r==="ai"?"PARTNER: ":"ALI: ")+t.t).join("\n");
-  const req=meta==="hint"?"Ali is stuck: give a one-line hint in Bangla with a short English sentence starter. Do not continue the role-play.":meta==="bangla"?"Explain your last message in simple Bangla, then repeat it in easy English.":"";
-  try{const r=await aiJSON(`${CTX()}\nRole-play. You are ${C.s.role}. Respond naturally to what Ali actually said, one short message (1-2 sentences), ask one thing at a time. Do not correct small errors; only if an error blocks meaning, add a quick fix.\n${tr}\n${req?"SPECIAL: "+req:""}\nReply with only JSON {"reply":"...","fix":null or {"original":"","better":"","why_bn":""}}`,"quick");
+  const tr=C.turns.filter(t=>t.r!=="meta").map(t=>(t.r==="ai"?"PARTNER: ":"LEARNER: ")+t.t).join("\n");
+  const req=meta==="hint"?`${myName()} is stuck: give a one-line hint in Bangla with a short English sentence starter. Do not continue the role-play.`:meta==="bangla"?"Explain your last message in simple Bangla, then repeat it in easy English.":"";
+  try{const r=await aiJSON(`${CTX()}\nRole-play. You are ${C.s.role}. Respond naturally to what ${myName()} actually said, one short message (1-2 sentences), ask one thing at a time. Do not correct small errors; only if an error blocks meaning, add a quick fix.\n${tr}\n${req?"SPECIAL: "+req:""}\nReply with only JSON {"reply":"...","fix":null or {"original":"","better":"","why_bn":""}}`,"quick");
     if(req)C.turns.push({r:"meta",t:r.reply});else{C.turns.push({r:"ai",t:r.reply,fix:r.fix&&r.fix.original?r.fix:null});if(S.autoplay)TTS.say(r.reply);}
   }catch(e){if(text){C.turns.pop();setTimeout(()=>{const t=$("#chatin");if(t)t.value=text;},0);}C.err=aiErr(e);}
   C.busy=false;render();
 }
 async function chatEnd(){const C=APP.chat;C.busy=true;render();
-  try{C.fb=await aiJSON(`${CTX()}\nGive feedback on Ali's English in this conversation.\n${C.turns.filter(t=>t.r!=="meta").map(t=>(t.r==="ai"?"PARTNER: ":"ALI: ")+t.t).join("\n")}\nReply with only JSON {"summary_bn":"2-3 encouraging sentences in Bangla","corrections":[{"original":"his words","natural":"natural version","why_bn":""}] (max 4),"try_again":"one improved sentence"}. No pronunciation comments.`,"default");addXP(10);Store.save();}
+  try{C.fb=await aiJSON(`${CTX()}\nGive feedback on ${myName()}'s English in this conversation.\n${C.turns.filter(t=>t.r!=="meta").map(t=>(t.r==="ai"?"PARTNER: ":"LEARNER: ")+t.t).join("\n")}\nReply with only JSON {"summary_bn":"2-3 encouraging sentences in Bangla","corrections":[{"original":"his words","natural":"natural version","why_bn":""}] (max 4),"try_again":"one improved sentence"}. No pronunciation comments.`,"default");addXP(10);Store.save();}
   catch(e){C.err=aiErr(e);}C.busy=false;render();}
 
 /* ================= STORIES ================= */
 function viewStories(){
   const units=allUnits();
   const recs=S.recs.slice(-5).reverse();
-  return `<h1>Stories</h1><p class="muted">Protita unit shesh e ekta golpo (~5 minute jore pora). Shono, practice koro, record kore Claude ke mark korte pathao.</p>
-   ${ENV.claude?`<div class="card"><h3>Ajker shekha diye notun story</h3><p class="small muted">Aj ja ja lesson korecho, segulo diye Claude ekta 5-minute communication story banabe.</p><button class="btn story" data-act="genToday" ${ENV.aiState==="ready"&&Object.values(S.done).some(d=>d.at===today())?"":"disabled"}>Story banao</button>${Object.values(S.done).some(d=>d.at===today())?"":`<p class="tiny muted">Age aj kompokkhe 1 ta lesson koro.</p>`}</div>`:""}
-   ${TRACKS.map(([tr,l])=>`<span class="eyebrow">${l}</span><div class="list">${units.filter(u=>u.track===tr).map(u=>{const ok=nodeStates(tr).find(n=>n.key===u.id+":story");const sd=S.storyDone[u.id];const mk=Object.values(MARKS).filter(m=>m.story===u.id).sort((a,b)=>(b.date||"").localeCompare(a.date||""))[0];
+  return `<h1>Stories</h1><p class="muted">${isKid()?"Choto choto golpo. Shuno ar eksathe bolo!":"Protita unit shesh e ekta golpo (~5 minute). Shuno (sentence highlight hobe), jore poro, record koro."}</p>
+   ${ENV.claude&&!isKid()?`<div class="card"><h3>Ajker shekha diye notun story</h3><p class="small muted">Aj ja ja lesson korecho, segulo diye Claude ekta 5-minute communication story banabe.</p><button class="btn story" data-act="genToday" ${ENV.aiState==="ready"&&Object.values(S.done).some(d=>d.at===today())?"":"disabled"}>Story banao</button>${Object.values(S.done).some(d=>d.at===today())?"":`<p class="tiny muted">Age aj kompokkhe 1 ta lesson koro.</p>`}</div>`:""}
+   ${myTracks().map(([tr,l])=>`<span class="eyebrow">${l}</span><div class="list">${units.filter(u=>u.track===tr).map(u=>{const ok=nodeStates(tr).find(n=>n.key===u.id+":story");const sd=S.storyDone[u.id];const mk=Object.values(MARKS).filter(m=>m.story===u.id).sort((a,b)=>(b.date||"").localeCompare(a.date||""))[0];
      return `<div class="item"><div class="grow"><b>${esc(u.story.title)}</b><span class="tiny muted">${esc(u.title)} · ${Math.round(u.story.text.split(/\s+/).length)} words${sd?.read?" · read ✓":""}${mk?` · marked ${mk.total}/100`:""}</span></div>${ok&&ok.st==="lock"?`<button class="btn sm ghost" data-act="lockedInfo" data-t="${esc(u.title)}">${IC.lock.replace("<svg",'<svg width="14" height="14"')} Locked</button>`:`<button class="btn sm story" data-act="openStory" data-id="${esc(u.id)}">Open</button>`}</div>`;}).join("")}</div>`).join("")}
    ${Object.values(CUSTOM).filter(u=>u.track==="story").length?`<span class="eyebrow">Daily stories</span><div class="list">${Object.values(CUSTOM).filter(u=>u.track==="story").sort((a,b)=>(b.created||"").localeCompare(a.created||"")).map(u=>`<div class="item"><div class="grow"><b>${esc(u.story.title)}</b><span class="tiny muted">${esc((u.created||"").slice(0,10))}${S.storyDone[u.id]?.read?" · read ✓":""}</span></div><button class="btn sm story" data-act="openStory" data-id="${esc(u.id)}">Open</button></div>`).join("")}</div>`:""}
    ${Object.values(MARKS).length?`<span class="eyebrow">Claude er marks</span><div class="list">${Object.values(MARKS).sort((a,b)=>(b.date||"").localeCompare(a.date||"")).map(m=>`<button class="item" style="width:100%;text-align:left;background:transparent;border-left:0;border-right:0;border-top:0" data-act="openMark" data-id="${esc(m.id)}"><div class="grow"><b>${esc(m.title||m.story)}</b><span class="tiny muted">${esc(m.date||"")}</span></div><b class="num">${esc(m.total)}/100</b></button>`).join("")}</div>`:""}
@@ -511,24 +604,31 @@ function storyOf(id){if(id.startsWith("today-")){return CUSTOM[id]?.story?Object
 function viewStory(){
   const id=APP.story, st=storyOf(id);if(!st)return `<main class="view"><p>Story pawa jay ni.</p></main>`;
   const text=fill(st.text), wc=text.split(/\s+/).length, mins=Math.round((wc/100+1.5)*10)/10;
-  const part2=retellPrompts(st);
+  const kid=st.unit?.track==="kids";
   const sd=S.storyDone[id]||{};
   const base="story_"+id;
   const mk=Object.values(MARKS).filter(m=>m.story===id).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+  let si=0;const paras=text.split(/\n+/).map(p=>`<p>${splitSentences(p).map(x=>`<span class="sent" data-act="saySent" data-i="${si++}">${esc(x)}</span>`).join(" ")}</p>`).join("");
+  const listen=`<div class="listenbar"><button class="btn story" data-act="sayLong" data-id="${esc(id)}">${IC.speak} ${kid?"Golpo shuno":"Puro golpo shuno"}</button><button class="btn ghost" data-act="stopSay">Stop</button><span class="tiny muted">Je kono sentence e tap korle sekhan theke shuru</span></div>`;
+  if(kid)return `<main class="view" style="padding-bottom:40px"><div class="row between"><button class="icon-btn" data-act="closeStory" aria-label="Back">${IC.back}</button><span class="eyebrow">Story time</span><span></span></div>
+   <h1>${esc(st.title)}</h1><p class="bn muted">${esc(st.bn)}</p>${listen}
+   <div class="card storytext kidstory">${paras}</div>
+   ${sd.read?`<p class="okbox small">Shuna hoyeche! ⭐</p>`:`<button class="btn story wide xl" data-act="storyRead" data-id="${esc(id)}">Shuna shesh! (+10 XP)</button>`}</main>`;
+  const part2=retellPrompts(st);
   return `<main class="view" style="padding-bottom:40px"><div class="row between"><button class="icon-btn" data-act="closeStory" aria-label="Back">${IC.back}</button><span class="eyebrow">Story · ${wc} words · ~${mins} min with retell</span><span></span></div>
    <h1>${esc(st.title)}</h1><p class="bn muted">${esc(st.bn)}</p>
    <div class="row">${(st.phrases||[]).map(p=>`<span class="chip">${esc(p)}</span>`).join("")}</div>
-   <div class="row">${TTS.ok?`<button class="btn ghost" data-act="sayLong" data-id="${esc(id)}">${IC.speak.replace("<svg",'<svg width="18" height="18" style="vertical-align:-3px"')} Puro golpo shono</button><button class="btn ghost" data-act="stopSay">Stop</button>`:""}</div>
-   <div class="card"><div class="storytext">${esc(text)}</div></div>
+   ${listen}
+   <div class="card storytext">${paras}</div>
    <div class="card"><h3>Part 2 · Nijer golpo (60–90 sec)</h3><p class="small muted">Pora shesh hole, book na dekhe ei proshno gulor uttor dao. Recording e eta-o rakho.</p><ol style="margin:0;padding-left:1.2em">${part2.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></div>
-   <div class="panel small bn"><b>কীভাবে করবে:</b> ১) একবার শোনো। ২) নিজে দুবার জোরে জোরে পড়ো। ৩) রেকর্ড করো: প্রথমে গল্পটা পড়ো (Part 1), তারপর না দেখে Part 2-এর প্রশ্নের উত্তর দাও — মোট প্রায় ৫ মিনিট। ৪) ফাইলটা Claude-কে পাঠাও।</div>
+   <div class="panel small bn"><b>কীভাবে করবে:</b> ১) একবার শোনো (sentence গুলো হাইলাইট হবে)। ২) নিজে দুবার জোরে জোরে পড়ো। ৩) রেকর্ড করো: প্রথমে গল্পটা পড়ো (Part 1), তারপর না দেখে Part 2-এর প্রশ্নের উত্তর দাও। ৪) নিজের রেকর্ডিং শুনে মূল অডিওর সাথে মিলাও।</div>
    ${sd.read?`<p class="okbox small">Pora hoyeche (${esc(sd.read)}).</p>`:`<button class="btn story wide" data-act="storyRead" data-id="${esc(id)}">Jore jore porechi (+10 XP)</button>`}
    ${recorderHTML("story-"+id,base,"Story record koro")}
-   <div class="card"><h3>Claude ke mark korte pathao</h3>
-    <p class="small bn">রেকর্ডিং ফাইলটা <b>D:\\Claude\\Artifacts\\recordings</b> ফোল্ডারে রাখো (ফোনের ফাইল হলে কম্পিউটারে নিয়ে এসো), তারপর Claude Code-এ লেখো:</p>
+   ${PID==="ali"?`<div class="card"><h3>Claude ke mark korte pathao</h3>
+    <p class="small bn">রেকর্ডিং ফাইলটা <b>D:\Claude\Artifacts\recordings</b> ফোল্ডারে রাখো (ফোনের ফাইল হলে কম্পিউটারে নিয়ে এসো), তারপর Claude Code-এ লেখো:</p>
     <div class="panel"><code id="sendtxt">Mark my story recording: "${esc(st.title)}" (story id ${esc(id)})</code></div>
     <button class="btn sm ghost" data-act="copySend">Copy</button>
-    <p class="tiny muted">Claude Whisper diye recording ke text e convert kore content, grammar, fluency (words/minute, thama), ar clarity mark korbe. Eta ashol pronunciation lab test na, transcript-bhittik estimate.</p></div>
+    <p class="tiny muted">Claude Whisper diye recording ke text e convert kore content, grammar, fluency (words/minute, thama), ar clarity mark korbe. Eta ashol pronunciation lab test na, transcript-bhittik estimate.</p></div>`:""}
    ${mk.length?`<span class="eyebrow">Marks</span>${mk.map(m=>markHTML(m)).join("")}`:""}</main>`;
 }
 function retellPrompts(st){
@@ -547,60 +647,68 @@ function markHTML(m){
 
 /* ================= ME ================= */
 function viewMe(){
-  const st=streak(), last=[];for(let i=13;i>=0;i--){const k=addDays(-i);const r=S.days[k];last.push({k,c:r?(r.warm?((r.lessons+r.practice)>0?"f":"w"):""):""});}
+  const P=prof(), st=streak(), last=[];for(let i=13;i>=0;i--){const k=addDays(-i);const r=S.days[k];last.push({k,c:r?((r.lessons+r.practice)>0?"f":(r.warm?"w":"")):""});}
   const lessonsBy=t=>Object.keys(S.done).filter(k=>unitById(k.split(":")[0])?.track===t).length;
   const totalBy=t=>allUnits().filter(u=>u.track===t).reduce((a,u)=>a+u.lessons.length,0);
   const srs=Object.values(S.srs), strong=srs.filter(r=>r.box>=3).length;
   const acc=S.stats.t?Math.round(S.stats.c/S.stats.t*100):null;
   const ms=Object.values(MARKS), mavg=ms.length?Math.round(ms.reduce((a,m)=>a+(+m.total||0),0)/ms.length):null;
   const metric=(tag,cls,val,label,sub)=>`<div class="metric"><span class="tag ${cls}">${tag}</span><b>${typeof val==="number"?`<span data-count="${val}">${val}</span>`:val}</b><span class="small muted">${label}</span>${sub?`<span class="tiny muted">${sub}</span>`:""}</div>`;
-  return `<h1>Me</h1>
-   ${ASSESS?`<div class="card"><span class="eyebrow">Placement level (provisional)</span><div class="row"><b style="font:800 2rem var(--display)">${esc(ASSESS.level)}</b><span class="muted">${esc(ASSESS.range)}</span></div><p class="small muted">Focus: ${esc((ASSESS.priorities||[]).slice(0,2).join(" · "))}</p></div>`:""}
+  const head=`<div class="card profhead"><span class="av xl">${esc(P.avatar)}</span><div class="grow"><h2>${esc(P.name)}</h2><div class="row">${P.age==="kid"?`<span class="chip">Kids 3–7</span>`:P.age==="teen"?`<span class="chip">Teen</span>`:`<span class="chip">Adult</span>`}${myTracks().map(t=>`<span class="chip trk ${t[0]}">${t[1]}</span>`).join("")}</div></div>
+    <div class="profbtns"><button class="btn sm ghost" data-act="editProfile">Edit</button><button class="btn sm ghost" data-act="switchProfile">${IC.swap} Switch</button></div></div>`;
+  const kid=isKid();
+  return `<h1>Me</h1>${head}
+   ${!kid&&ASSESS&&PID==="ali"?`<div class="card"><span class="eyebrow">Placement level (provisional)</span><div class="row"><b class="lvl">${esc(ASSESS.level)}</b><span class="muted">${esc(ASSESS.range)}</span></div><p class="small muted">Focus: ${esc((ASSESS.priorities||[]).slice(0,2).join(" · "))}</p></div>`:""}
+   ${kid?stickerBook():""}
    <div class="metrics">
-    ${metric("streak","m",st,"din","warm-up + kompokkhe 1 lesson/practice")}
-    ${metric("xp","n",S.xp,"total XP",`aj ${day().xp}`)}
-    ${metric("count","m",`${lessonsBy("family")}/${totalBy("family")}`,"Family lessons","")}
-    ${metric("count","m",`${lessonsBy("client")}/${totalBy("client")}`,"Client lessons","")}
-    ${metric("count","m",`${lessonsBy("everyday")}/${totalBy("everyday")}`,"Everyday lessons","")}
-    ${metric("count","m",S.warmCount||0,"warm-up din","")}
+    ${metric("streak","m",st,"din",`best ${Math.max(S.best||0,st)} din`)}
+    ${metric("xp","n",S.xp,"total XP",`aj ${day().xp} · ei shoptaho ${weekXP(S)}`)}
+    ${myTracks().map(([t,l])=>metric("count","m",`${lessonsBy(t)}/${totalBy(t)}`,l+" lessons","")).join("")}
+    ${!kid&&warmAllowed()?metric("count","m",S.warmCount||0,"warm-up din",""):""}
     ${metric("measured","m",acc==null?"—":acc+"%","first-try accuracy",S.stats.t?`${S.stats.c}/${S.stats.t} exercise`:"no data yet")}
-    ${metric("measured","m",`${srs.length} / ${strong}`,"sentence seen / strong","strong = 3+ bar thik, spaced")}
-    ${metric("by Claude","c",mavg==null?"—":mavg+"/100","story marks",`${ms.length} recording marked`)}
-    ${metric("not measured","n","—","live pronunciation","app nije awaj score kore na")}
+    ${metric("measured","m",S.speakTotal||0,kid?"word bolecho":"sentence bolecho",HEAR.avail()?"speech recognition e mileche":"self-check")}
+    ${!kid?metric("measured","m",`${srs.length} / ${strong}`,"sentence seen / strong","strong = 3+ bar thik, spaced"):""}
+    ${PID==="ali"?metric("by Claude","c",mavg==null?"—":mavg+"/100","story marks",`${ms.length} recording marked`):""}
    </div>
-   <div class="card"><span class="eyebrow">Last 14 days</span><div class="grid14">${last.map(x=>`<i class="${x.c}" title="${x.k}"></i>`).join("")}</div><p class="tiny muted">Halka = shudhu warm-up · gaar = warm-up + lesson</p></div>
+   <div class="card"><div class="row between"><h3>Badges</h3><span class="chip">${(S.badges||[]).length}/${BADGES.length}</span></div>${badgeGrid()}</div>
+   ${leagueCard()}
+   <div class="card"><span class="eyebrow">Last 14 days</span><div class="grid14">${last.map(x=>`<i class="${x.c}" title="${x.k}"></i>`).join("")}</div><p class="tiny muted">Gaar = lesson/practice korecho · halka = shudhu warm-up</p></div>
    <div class="card"><h3>Settings</h3>
-    <label class="lbl">Boro meyer naam (optional)<input type="text" id="s-d1" value="${esc(S.names.d1)}" placeholder="sweetie"></label>
-    <label class="lbl">Choto meyer naam (optional)<input type="text" id="s-d2" value="${esc(S.names.d2)}" placeholder="baby"></label>
-    <label class="lbl">Daily goal<select id="s-goal">${[20,30,50,80].map(g=>`<option value="${g}" ${S.goal===g?"selected":""}>${g} XP</option>`).join("")}</select></label>
+    ${myTracks().some(t=>t[0]==="family")?`<label class="lbl">Boro bachchar naam (optional)<input type="text" id="s-d1" value="${esc(S.names.d1)}" placeholder="sweetie"></label>
+    <label class="lbl">Choto bachchar naam (optional)<input type="text" id="s-d2" value="${esc(S.names.d2)}" placeholder="baby"></label>`:""}
+    <label class="lbl">Daily goal<select id="s-goal">${[10,20,30,50,80].map(g=>`<option value="${g}" ${S.goal===g?"selected":""}>${g} XP</option>`).join("")}</select></label>
     <label class="lbl">Awaj er speed<select id="s-rate">${[[.7,"Slow"],[.9,"Normal-slow"],[1,"Normal"]].map(([v,l])=>`<option value="${v}" ${+S.rate===v?"selected":""}>${l}</option>`).join("")}</select></label>
-    <label class="sw-row">Lesson er age warm-up lagbe<input type="checkbox" class="switch" id="s-warm" ${S.warmReq?"checked":""}></label>
+    ${warmAllowed()?`<label class="sw-row">Lesson er age warm-up lagbe<input type="checkbox" class="switch" id="s-warm" ${S.warmReq?"checked":""}></label>
+    <label class="lbl">Warm-up length<select id="s-wmode"><option value="full" ${S.warmMode!=="quick"?"selected":""}>Full (10–15 min)</option><option value="quick" ${S.warmMode==="quick"?"selected":""}>Quick (5 min)</option></select></label>`:""}
     <label class="sw-row">Sentence automatic pore shonao<input type="checkbox" class="switch" id="s-auto" ${S.autoplay?"checked":""}></label>
     <label class="sw-row">Click sound (soft)<input type="checkbox" class="switch" id="s-sound" ${S.sound!==false?"checked":""}></label>
     <button class="btn" data-act="saveSettings">Save</button></div>
    <div class="card"><h3>Device check</h3><div class="list">
-    <div class="item"><div class="grow"><b>Saving</b><span class="tiny muted">${esc(APP.check.db||(Store.mode==="cloud"?"Cloud (claude.ai private database) — desktop ar phone e same data":"Ei browser e (localStorage) — onno device e jabe na"))}</span></div><button class="btn sm ghost" data-act="checkDb">Test</button></div>
-    <div class="item"><div class="grow"><b>Awaj (read-aloud)</b><span class="tiny muted">${esc(APP.check.tts||(TTS.ok?"Browser e ache, test koro":"Nei"))}</span></div><button class="btn sm ghost" data-act="checkTts" ${TTS.ok?"":"disabled"}>Test</button></div>
-    <div class="item"><div class="grow"><b>Microphone recording</b><span class="tiny muted">${ENV.micOk?"Ache (ei version e app er vitore record hobe)":ENV.claude?"Claude version e nei — phone voice recorder use koro":"Ei browser/address e nei (https ba file hisebe kholo)"}</span></div></div>
+    <div class="item"><div class="grow"><b>Voice</b><span class="tiny muted">${esc(APP.check.tts||TTS.label())}</span></div><button class="btn sm ghost" data-act="checkTts">Test</button></div>
+    <div class="item"><div class="grow"><b>Speaking check</b><span class="tiny muted">${HEAR.avail()?"Ache: browser speech recognition (Chrome/Edge/Safari), internet lage":ENV.claude?"Claude version e nei, web app e kaj kore":"Ei browser e nei (Chrome ba Edge use koro)"}</span></div></div>
+    <div class="item"><div class="grow"><b>Microphone recording</b><span class="tiny muted">${ENV.micOk?"Ache (app er vitore record hobe)":ENV.claude?"Claude version e nei, web app e kaj kore":"Ei browser/address e nei (https link e kholo)"}</span></div></div>
+    <div class="item"><div class="grow"><b>Saving</b><span class="tiny muted">${esc(APP.check.db||(Store.mode==="cloud"?"Cloud (claude.ai private database)":"Ei device er browser e. Backup download kore rakho"))}</span></div><button class="btn sm ghost" data-act="checkDb">Test</button></div>
     <div class="item"><div class="grow"><b>AI coach</b><span class="tiny muted">${ENV.claude?(ENV.aiState==="ready"?"Ready (tomar Claude usage khoroch hoy)":"Off"):"Shudhu Claude version e"}</span></div></div></div></div>
-   <div class="card"><h3>Backup</h3><div class="row"><button class="btn sm ghost" data-act="exportData">Backup download</button><label class="btn sm ghost" style="cursor:pointer">Restore<input type="file" id="importFile" accept=".json,application/json" hidden></label></div>
-    ${APP.confirm?.type==="import"?`<div class="warnbox small">Backup restore korle ekhonkar progress er upor likhbe. <button class="btn sm bad" data-act="doImport">Restore</button> <button class="btn sm ghost" data-act="cancel">Cancel</button></div>`:""}</div>
+   <div class="card"><h3>Backup</h3><p class="small muted">${esc(P.name)} er progress file hisebe rakho, onno device e Restore koro.</p><div class="row"><button class="btn sm ghost" data-act="exportData">Backup download</button><label class="btn sm ghost">Restore<input type="file" id="importFile" accept=".json,application/json" hidden></label></div>
+    ${APP.confirm?.type==="import"?`<div class="warnbox small">Backup restore korle ${esc(P.name)} er ekhonkar progress er upor likhbe. <button class="btn sm bad" data-act="doImport">Restore</button> <button class="btn sm ghost" data-act="cancel">Cancel</button></div>`:""}</div>
    <details class="card"><summary><b>Desktop ar mobile e kivabe use korbe</b></summary><div class="stack small">
-    <p><b>1. Claude version (AI shoho):</b> claude.ai artifact link ta desktop browser e ba Claude mobile app e kholo. AI coach, notun unit, cloud sync — duita device e same progress. Ekhane microphone nei.</p>
-    <p><b>2. Offline file version:</b> <code>Ali-English-Coach.html</code> file ta desktop e double-click korlei Chrome/Edge e khulbe. App er vitore recording hobe. AI nei, progress shudhu oi browser e.</p>
-    <p><b>3. Mobile e file version:</b> file ta tomar hosting e upload koro (jemon bdwebhut.com/english/index.html), phone e oi link kholo, browser menu theke "Add to Home screen". https hole recording o kaj korbe.</p></div></details>`;
+    <p><b>Web app${WEB_URL?` (<a href="${WEB_URL}" target="_blank" rel="noopener">${esc(WEB_URL.replace(/^https?:\/\//,""))}</a>)`:""}:</b> phone e link khule browser menu → "Add to Home screen" / "Install app". Icon theke app er moto khulbe, offline o chole. Natural voice, speaking check ar recording ekhane kaj kore.</p>
+    <p><b>Claude version:</b> AI coach, notun unit ar cloud sync. Microphone ekhane nei.</p>
+    <p><b>Notun manush:</b> Switch → "Profile jog koro". Protita profile er progress alada.</p></div></details>
+   <div class="card"><h3>Profile muchhe dao</h3><p class="small muted">${esc(P.name)} er shob progress ei device theke muchhe jabe.</p>
+    ${APP.confirm?.type==="delprof"?`<div class="warnbox small">Sure? Eta undo kora jabe na. <button class="btn sm bad" data-act="doDelProfile">Haa, muchhe dao</button> <button class="btn sm ghost" data-act="cancel">Cancel</button></div>`:`<button class="btn sm ghost" data-act="delProfile">Delete profile</button>`}</div>`;
 }
 
 /* ================= AI generation ================= */
 async function genUnit(topic,track){
   APP.busy="Notun unit banano hocche: "+topic;render();
   try{
-    const kid=track==="family";
+    const kid=track==="family"||track==="kids", pic=track==="kids";
     const r=await aiJSON(`${CTX()}
-Create a new learning unit about: "${topic}" for the ${track} track${kid?" (sentences Ali says at home to his daughters under 5, or to his wife: very short 2-6 word sentences, warm and playful)":track==="client"?" (freelance web developer talking to international clients; practice past tense, articles and polite softening)":" (everyday situations)"}.
-Reply with only JSON: {"title":"short unit title","bn":"Bangla title","lessons":[3 lessons {"title":"short","items":[6 pairs ["English sentence","natural Bangla translation"]]}],"story":{"title":"","bn":"one-sentence Bangla summary","text":"a ${kid?"warm family":"realistic"} story of about 420 words (5 minutes read aloud), mostly dialogue, using many of the unit's sentences, about Ali${kid?", his wife and his two little daughters":""}; paragraphs separated by blank lines","phrases":["5 key phrases"]}}`,"default");
+Create a new learning unit about: "${topic}" for the ${track} track${kid?" (sentences a parent says at home to young children or to their spouse: very short 2-6 word sentences, warm and playful)":track==="client"?" (freelance web developer talking to international clients; practice past tense, articles and polite softening)":" (everyday situations)"}.
+Reply with only JSON: {"title":"short unit title","bn":"Bangla title","lessons":[3 lessons {"title":"short","items":[6 ${pic?"triples [\"English word or 2-5 word phrase for a 3-7 year old\",\"Bangla\",\"one matching emoji\"]":"pairs [\"English sentence\",\"natural Bangla translation\"]"}]}],"story":{"title":"","bn":"one-sentence Bangla summary","text":"a ${kid?"warm family":"realistic"} story of about 420 words (5 minutes read aloud), mostly dialogue, using many of the unit's sentences, about ${myName()}${kid?" and family":""}; paragraphs separated by blank lines","phrases":["5 key phrases"]}}`,"default");
     if(!r?.lessons?.length||!r.story?.text)throw {code:"invalid_json"};
-    const u={id:"x"+rid(),custom:true,track,title:r.title,bn:r.bn,lessons:r.lessons.slice(0,3).map(l=>({title:l.title,items:l.items.filter(x=>Array.isArray(x)&&x[0]&&x[1]).slice(0,8)})),story:r.story,created:new Date().toISOString()};
+    const u={id:"x"+rid(),custom:true,track,title:r.title,bn:r.bn,lessons:r.lessons.slice(0,3).map(l=>({title:l.title,items:l.items.filter(x=>Array.isArray(x)&&x[0]&&x[1]&&(!pic||x[2])).slice(0,8)})),story:r.story,created:new Date().toISOString()};
     await Store.saveUnit(u);APP.busy=null;APP.track=track;APP.tab="learn";toast("Notun unit path e jog hoyeche!");
   }catch(e){APP.busy=null;toast(aiErr(e));}
   render();
@@ -610,7 +718,7 @@ async function genToday(){
   const sents=keys.flatMap(k=>{const [uid,li]=k.split(":");const u=unitById(uid);return u?lessonItems(u,+li).map(x=>x.en):[];}).slice(0,30);
   APP.busy="Ajker story banano hocche…";render();
   try{const r=await aiJSON(`${CTX()}
-Write today's communication story for Ali to read aloud and record (about 5 minutes: around 420 words). Use as many of these sentences he learned today as naturally possible: ${JSON.stringify(sents)}. Make it a realistic, mostly-dialogue story about Ali's life (family, clients or daily life, matching the sentences). B1 level, short paragraphs separated by blank lines.
+Write today's communication story for ${myName()} to read aloud and record (about 5 minutes: around 420 words). Use as many of these sentences he learned today as naturally possible: ${JSON.stringify(sents)}. Make it a realistic, mostly-dialogue story about ${myName()}'s life (family, clients or daily life, matching the sentences). B1 level, short paragraphs separated by blank lines.
 Reply with only JSON {"title":"","bn":"one-sentence Bangla summary","text":"","phrases":["5 key phrases"]}`,"default");
     const id="today-"+today().replace(/-/g,"")+"-"+rid().slice(-3);
     await Store.saveUnit({id,custom:true,track:"story",title:"Today "+today(),bn:"",lessons:[],story:r,created:new Date().toISOString()});
@@ -632,7 +740,23 @@ const ACT={
  tile(el){const e=cur();if(L.fb)return;const i=+el.dataset.i;if(!e.sel.includes(i))e.sel.push(i);render();},
  untile(el){const e=cur();if(L.fb)return;e.sel.splice(+el.dataset.k,1);render();},
  check(){grade();},
- skipEx(){L.i++;if(L.i>=L.ex.length){finishSession();return;}render();playIfAuto();},
+ skipEx(){const e=cur();HEAR.stop();if(isSpeakEx(e)&&!HEAR.avail()){day().speak=(day().speak||0)+1;S.speakTotal=(S.speakTotal||0)+1;}L.fb=null;L.i++;if(L.i>=L.ex.length){finishSession();return;}render();playIfAuto();},
+ hear(){hearNow();},
+ noSpeak(){HEAR.stop();L.ex=L.ex.slice(0,L.i+1).concat(L.ex.slice(L.i+1).filter(x=>!isSpeakEx(x)));L.fb=null;L.i++;if(L.i>=L.ex.length){finishSession();return;}toast("Ei lesson e ar bolar exercise ashbe na.");render();playIfAuto();},
+ kchoose(el){kidChoose(el.dataset.id);},
+ openChest(){const d=day();if(d.chest)return;d.chest=true;addXP(10);Store.save();SND.play("done");confetti(90);toast("🎁 +10 XP! Shob quest shesh!");render();checkBadges();},
+ onbStart(){APP.welcome=false;APP.onb={step:0,draft:{goals:[]}};render();},
+ onbSet(el){const O=APP.onb;O.draft[el.dataset.k]=el.dataset.k==="goal"?+el.dataset.v:el.dataset.v;if(el.dataset.k==="age"&&el.dataset.v==="kid")O.draft.goals=["kids"];render();},
+ onbGoal(el){const g=APP.onb.draft.goals=APP.onb.draft.goals||[];const i=g.indexOf(el.dataset.v);if(i>=0)g.splice(i,1);else g.push(el.dataset.v);render();},
+ onbBack(){const O=APP.onb;if(O.step>0){O.step--;render();}else{APP.onb=null;if(!PID)APP.picker=PROFILES.length>0,APP.welcome=!PROFILES.length;render();}},
+ onbNext(){onbNext();},
+ pickProfile(el){switchProfile(el.dataset.id);},
+ addProfile(){APP.picker=false;APP.onb={step:0,draft:{goals:[]}};render();},
+ switchProfile(){Store.flush();APP.picker=true;render();},
+ editProfile(){const p=prof();APP.onb={step:0,edit:p.id,draft:{name:p.name,avatar:p.avatar,age:p.age,goals:[...(p.goals||[])],goal:S.goal,warm:!S.warmReq?"off":S.warmMode||"full"}};render();},
+ delProfile(){APP.confirm={type:"delprof"};render();},
+ async doDelProfile(){const id=PID;await Store.delProfile(id);PROFILES=PROFILES.filter(p=>p.id!==id);PID=null;APP.confirm=null;await Store.saveProfiles();APP.picker=PROFILES.length>0;APP.welcome=!PROFILES.length;render();},
+ saySent(el){const i=+el.dataset.i;const sents=[...document.querySelectorAll(".sent")];TTS.play(sents.slice(i).map(x=>x.textContent),null,k=>markSent(k<0?-1:i+k));},
  next(){next();},
  mL(el){matchPick("L",el.dataset.id);},
  mR(el){matchPick("R",el.dataset.id);},
@@ -643,12 +767,12 @@ const ACT={
  recSave(el){const name=recFilename(el.dataset.base);downloadBlob(REC.blob,name);const id=el.dataset.for.replace(/^story-/,"");const st=storyOf(id);S.recs.push({id:rid(),story:id,title:st?.title||id,date:today(),secs:REC.secs||0,file:name});addXP(20);Store.save();toast("Download hoyeche: "+name+" (+20 XP)");render();},
  warmGo(el){startWarm(+el.dataset.s);},
  warmToggle(){const W=APP.warm;W.run=!W.run;if(W.run&&!warmInt)warmInt=setInterval(warmTick,1000);render();},
- warmSkip(){const W=APP.warm;if(W.ex<COURSE.warmup.exercises.length-1){warmTimerFor(W.ex+1);APP.warm.run=true;}else warmStepDone(1);render();},
+ warmSkip(){const W=APP.warm;if(W.ex<warmEx().length-1){warmTimerFor(W.ex+1);APP.warm.run=true;}else warmStepDone(1);render();},
  warmFinish3(){warmStepDone(3);},
  warmExit(){APP.warm=null;wake(false);TTS.stop();render();},
- rep(){const W=APP.warm;if(W.reps<6){W.reps++;render();return;}if(W.tw<2){W.tw++;W.reps=0;render();}else warmStepDone(2);},
+ rep(){const W=APP.warm;if(W.reps<6){W.reps++;render();return;}if(W.tw<twN()-1){W.tw++;W.reps=0;render();}else warmStepDone(2);},
  practiceDue(){startPractice();},
- openCards(){openCards();},
+ openCards(el){openCards(el.dataset.u||"");},
  closeCards(){APP.cards=null;render();},
  cardNext(){const C=APP.cards;C.i=C.i<C.items.length-1?C.i+1:0;render();if(S.autoplay)TTS.say(C.items[C.i].en);},
  cardPrev(){APP.cards.i=Math.max(0,APP.cards.i-1);render();},
@@ -659,9 +783,9 @@ const ACT={
  chatEnd(){chatEnd();},
  openStory(el){APP.story=el.dataset.id;APP.pop=null;render();window.scrollTo(0,0);},
  closeStory(){APP.story=null;TTS.stop();render();},
- sayLong(el){const st=storyOf(el.dataset.id);TTS.sayLong(fill(st.text));},
- stopSay(){TTS.stop();},
- storyRead(el){const id=el.dataset.id;S.storyDone[id]=Object.assign(S.storyDone[id]||{},{read:today()});addXP(10);day().practice++;Store.save();toast("+10 XP! Porer unit khule geche.");render();SND.play("done");},
+ sayLong(el){const st=storyOf(el.dataset.id);const n=document.querySelectorAll(".sent").length;TTS.sayLong(fill(st.text),null,null,i=>{markSent(i);if(i===n-1){day().story=(day().story||0)+1;Store.save();}});},
+ stopSay(){TTS.stop();markSent(-1);},
+ storyRead(el){const id=el.dataset.id;S.storyDone[id]=Object.assign(S.storyDone[id]||{},{read:today()});addXP(10);day().practice++;day().story=(day().story||0)+1;Store.save();toast("+10 XP! Porer unit khule geche.");render();SND.play("done");confetti();checkBadges();},
  copySend(){const t=$("#sendtxt").textContent;navigator.clipboard?.writeText(t).then(()=>toast("Copied"),()=>toast("Text ta select kore copy koro"));},
  openMark(el){const m=MARKS[el.dataset.id];APP.modal=`<div class="modal" data-act="closeModal"><div class="card" style="max-height:85vh;overflow:auto">${markHTML(m)}<button class="btn wide" data-act="closeModal">Close</button></div></div>`;render();},
  closeModal(){APP.modal=null;render();},
@@ -669,9 +793,9 @@ const ACT={
  genUnit(){const t=$("#nu-topic").value.trim();if(!t){toast("Topic likho");return;}genUnit(t,$("#nu-track").value);},
  genToday(){genToday();},
  retrySave(){Store.flush();},
- saveSettings(){S.names.d1=$("#s-d1").value.trim();S.names.d2=$("#s-d2").value.trim();S.goal=+$("#s-goal").value;S.rate=+$("#s-rate").value;S.warmReq=$("#s-warm").checked;S.autoplay=$("#s-auto").checked;S.sound=$("#s-sound").checked;Store.save();toast("Saved");render();},
+ saveSettings(){if($("#s-d1")){S.names.d1=$("#s-d1").value.trim();S.names.d2=$("#s-d2").value.trim();}S.goal=+$("#s-goal").value;S.rate=+$("#s-rate").value;if($("#s-warm")){S.warmReq=$("#s-warm").checked;S.warmMode=$("#s-wmode").value;}S.autoplay=$("#s-auto").checked;S.sound=$("#s-sound").checked;Store.save();toast("Saved");render();},
  async checkDb(){APP.check.db="Testing…";render();try{if(Store.mode==="cloud"){const ref=Store.db.doc(`data/users/${Store.uid}/probe`);const t=Date.now();await ref.set({t});const s=await ref.get();await ref.delete();APP.check.db=s.exists&&s.data().t===t?"Works: cloud e likhe, pore, muchhe test korechi.":"Read-back mile ni.";}else{Store.lsSet("probe",{t:1});APP.check.db=Store.lsGet("probe")?"Works (shudhu ei browser e).":"Browser storage blocked — progress save hobe na.";}}catch(e){APP.check.db="Failed: "+(e.code||e.name||"error");}render();},
- checkTts(){APP.check.tts="Bolche… “Hello Ali” shunte pele works.";render();try{const u=TTS.utter("Hello Ali. Let's practice English.");let ok=false;u.onstart=()=>{ok=true;APP.check.tts="Works ("+(TTS.voice()?.name||"default voice")+")";render();};u.onerror=e=>{APP.check.tts="Failed: "+e.error;render();};speechSynthesis.cancel();speechSynthesis.speak(u);setTimeout(()=>{if(!ok){APP.check.tts="Ei view e awaj shuru holo na.";render();}},4000);}catch(e){APP.check.tts="Failed";render();}},
+ checkTts(){APP.check.tts="Bolche… shunte pele works. ("+TTS.label()+")";render();TTS.say("Hello! Let's practice English together.").then(()=>{APP.check.tts="Works: "+TTS.label();render();});},
  async exportData(){const data=JSON.stringify({app:"ali-english-coach-duo",v:3,at:new Date().toISOString(),S,CUSTOM},null,1);const name=`english-coach-backup-${today()}.json`;
    if(ENV.claude){const dl=await claude.use("downloads");if(!dl){toast("Download ei view e nei");return;}try{await dl.save({filename:name,data});}catch(e){if(e.code!=="declined")toast("Download hoy ni");}}else downloadBlob(new Blob([data],{type:"application/json"}),name);},
  async doImport(){const d=APP.confirm.data;APP.confirm=null;S=Object.assign(defaultState(),d.S||{});for(const u of Object.values(d.CUSTOM||{}))await Store.saveUnit(u);await Store.flush();toast("Restore hoyeche");render();},
@@ -679,6 +803,25 @@ const ACT={
  obSave(){S.names.d1=$("#ob-d1").value.trim();S.names.d2=$("#ob-d2").value.trim();S.onboarded=true;APP.modal=null;Store.save();render();}
 };
 function confirmQuit(){return true;}
+function markSent(i){document.querySelectorAll(".sent.cur").forEach(x=>x.classList.remove("cur"));if(i>=0){const el=document.querySelectorAll(".sent")[i];if(el){el.classList.add("cur");const r=el.getBoundingClientRect();if(r.top<80||r.bottom>innerHeight-120)el.scrollIntoView({block:"center",behavior:"smooth"});}}}
+async function switchProfile(id){
+  TTS.stop();HEAR.stop();if(PID)await Store.flush();PID=id;await Store.saveProfiles();await Store.load();
+  APP.picker=false;APP.tab="learn";APP.track=myTracks()[0]?.[0]||"everyday";APP.story=APP.cards=APP.chat=APP.warm=null;L=null;LASTKEY=null;render();window.scrollTo(0,0);
+}
+async function onbNext(){
+  const O=APP.onb,d=O.draft,steps=d.age==="kid"?["name","avatar","age","goal","done"]:["name","avatar","age","goals","goal","warm","done"];
+  if(steps[O.step]==="name"){const v=($("#onb-name")?.value||"").trim();if(!v){toast("Naam likho");return;}d.name=v.slice(0,20);}
+  if(steps[O.step]==="age"&&!d.goal)d.goal=d.age==="kid"?20:30;
+  if(O.step<steps.length-1){O.step++;render();return;}
+  const goals=d.age==="kid"?["kids"]:(d.goals.length?d.goals:["everyday"]);
+  if(O.edit){const p=PROFILES.find(x=>x.id===O.edit);Object.assign(p,{name:d.name,avatar:d.avatar,age:d.age,goals});
+    S.goal=+d.goal||S.goal;S.warmReq=d.age!=="kid"&&d.warm!=="off";S.warmMode=d.warm==="quick"?"quick":"full";APP.onb=null;await Store.flush();APP.track=myTracks()[0][0];toast("Profile update hoyeche");render();return;}
+  if(PID)await Store.flush();
+  const p={id:"p"+rid(),name:d.name,avatar:d.avatar,age:d.age,goals,created:new Date().toISOString()};
+  PROFILES.push(p);PID=p.id;S=defaultState();CUSTOM={};MARKS={};
+  S.goal=+d.goal||30;S.warmReq=d.age!=="kid"&&d.warm!=="off";S.warmMode=d.warm==="quick"?"quick":"full";
+  APP.onb=null;APP.tab="learn";APP.track=myTracks()[0][0];await Store.flush();LASTKEY=null;render();confetti();SND.play("done");
+}
 function matchPick(side,id){
   const e=cur();if(e.gone.includes(id))return;
   if(side==="L")e.selL=id;else e.selR=id;e.flash=e.flashR=null;
@@ -708,13 +851,12 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)Store.flush
 
 /* ================= boot ================= */
 (async()=>{
-  try{await Store.init();await Promise.race([Store.load(),new Promise((_,r)=>setTimeout(()=>r(new Error("timeout")),12000))]);}
-  catch(e){toast("Cloud load hoy ni, local mode e cholche.");Store.mode="local";await Store.load();}
-  if(!S.onboarded){APP.modal=`<div class="modal"><div class="card"><h2>Welcome, Ali!</h2><p class="small bn">প্রতিদিনের নিয়ম: আগে ১০–১৫ মিনিট মুখের warm-up, তারপর lesson। প্রতিটা unit শেষে একটা গল্প জোরে পড়ে রেকর্ড করে Claude-কে পাঠাবে।</p>
-    <p class="small">Meyeder naam dile Family lesson e naam diye sentence ashbe (optional).</p>
-    <label class="lbl">Boro meyer naam<input type="text" id="ob-d1" placeholder="optional"></label><label class="lbl">Choto meyer naam<input type="text" id="ob-d2" placeholder="optional"></label>
-    <button class="btn wide" data-act="obSave">Shuru kori</button></div></div>`;}
+  const boot=async()=>{await Store.init();await Store.loadProfiles();if(PID)await Store.load();};
+  try{await Promise.race([boot(),new Promise((_,r)=>setTimeout(()=>r(new Error("timeout")),12000))]);}
+  catch(e){toast("Cloud load hoy ni, local mode e cholche.");Store.mode="local";try{await Store.loadProfiles();if(PID)await Store.load();}catch(x){}}
+  if(PID){APP.track=myTracks()[0]?.[0]||"everyday";if(PROFILES.length>1)APP.picker=true;}
+  else if(PROFILES.length)APP.picker=true;else APP.welcome=true;
   render();
-  if(TTS.ok)try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{};}catch(e){}
+  if(TTS.dev)try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{};}catch(e){}
 })();
 </script>

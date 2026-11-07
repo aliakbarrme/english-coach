@@ -76,12 +76,13 @@ function floatUp(el,text){
 
 /* entrance choreography when the whole view changes */
 function enterView(root,first){
-  const main=root.querySelector("main.view"), player=root.querySelector(".player");
+  const main=root.querySelector("main.view"), player=root.querySelector(".player"), solo=root.querySelector("main.welcome,main.onb,main.picker");
+  if(solo){revealHead(solo.querySelector("h1"),80);rise([...solo.querySelectorAll(".onb-body>*:not(h1),.wl-hero>*:not(h1),.method>*,.pgrid>*,main>.btn,.onb-foot,.onb-head")],{delay:120,stagger:60});}
   if(main){
     if(first)rise(main.querySelectorAll(".topbar>*"),{y:-12,dur:600,stagger:50,scale:1});
     revealHead(main.querySelector("h1"),first?120:40);
-    const blocks=[...main.children].filter(el=>!el.classList.contains("topbar"));
-    rise(blocks,{delay:first?160:60});
+    const blocks=[...main.children].flatMap(el=>el.classList.contains("maincol")||el.classList.contains("sidecol")?[...el.children]:[el]).filter(el=>!el.classList.contains("topbar")&&el.offsetParent!==null);
+    rise(blocks,{delay:first?160:30,dur:first?900:650,stagger:first?70:45});
     popIn(main.querySelectorAll(".node"),{delay:260,stagger:40});
     rise(main.querySelectorAll(".list .item,.warmstep"),{y:12,dur:550,stagger:45,delay:220,scale:1});
   }
@@ -101,6 +102,7 @@ function enterSub(root){
   const body=root.querySelector(".player .body");
   if(body){rise(body.children,{x:28,y:0,scale:1,dur:520,stagger:55,ease:EZ.out3});
     rise(body.querySelectorAll(".tile,.opt"),{y:10,dur:480,stagger:30,delay:120,scale:.96,max:12});return;}
+  const ob=root.querySelector(".onb-body");if(ob){revealHead(ob.querySelector("h1"));rise([...ob.children].filter(x=>x.tagName!=="H1"),{x:26,y:0,scale:1,dur:520,stagger:50});popIn(ob.querySelectorAll(".avpick"),{stagger:18,max:24});return;}
   const main=root.querySelector("main.view");if(!main)return;
   const k=main.querySelector(".kidcard");if(k){tilt([k]);return;}
   const path=main.querySelectorAll(".unitban,.nodewrap");

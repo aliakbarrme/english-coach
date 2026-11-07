@@ -1,6 +1,7 @@
 {
- "name": "Ali's English Coach",
+ "name": "English Coach",
  "short_name": "English Coach",
+ "description": "Daily English for the whole family",
  "id": "./",
  "start_url": "./",
  "scope": "./",
