@@ -77,7 +77,7 @@ function floatUp(el,text){
 /* entrance choreography when the whole view changes */
 function enterView(root,first){
   const main=root.querySelector("main.view"), player=root.querySelector(".player"), solo=root.querySelector("main.welcome,main.onb,main.picker,main.picker2");
-  if(solo){revealHead(solo.querySelector("h1"),80);rise([...solo.querySelectorAll(".onb-body>*:not(h1),.wl-hero>*:not(h1),.method>*,.pgrid>*,.pk-grid>*,.pk-top,.pk-hi,.pk-head p,.pk-foot,main>.btn,.onb-foot,.onb-head")],{delay:120,stagger:60});}
+  if(solo){revealHead(solo.querySelector("h1"),80);rise([...solo.querySelectorAll(".onb-body>*:not(h1),.wl-hero>*:not(h1),.method>*,.pgrid>*,.pk-grid>*,.pk-top,.pk-hi,.pk-head p,.pk-add,main>.btn,.onb-foot,.onb-head")],{delay:120,stagger:60});}
   if(main){
     if(first)rise(main.querySelectorAll(".topbar>*"),{y:-12,dur:600,stagger:50,scale:1});
     revealHead(main.querySelector("h1"),first?120:40);
