@@ -139,7 +139,8 @@ function viewWelcome(){
    <p class="muted bn">ছোট-বড় সবার জন্য: বাচ্চারা ছবি আর খেলায়, বড়রা কাজ, পরিবার আর দৈনন্দিন কথায়। প্রতিদিন ১০–২০ মিনিট।</p></div>
    <div class="method">${[["👄","Warm-up","মুখ আর জিভ রেডি","m-warm"],["🧩","Learn","ছোট ছোট লেসন, গেমের মতো","m-learn"],["🎤","Speak","বলো, অ্যাপ শুনে মিলিয়ে দেখে","m-speak"],["📖","Story","গল্প শুনে নিজে বলো","m-story"]].map(([i,t,b,a],k)=>`<div class="mstep">${ART_OK?art(a,"mart"):`<span class="mic">${i}</span>`}<b>${k+1}. ${t}</b><span class="tiny bn muted">${b}</span></div>`).join("")}</div>
    <button class="btn wide xl" data-act="onbStart">শুরু করি</button>
-   <p class="tiny muted center">অ্যাকাউন্ট লাগবে না। অগ্রগতি এই ডিভাইসে থাকে, backup নেওয়া যায়।</p></main>`;
+   ${CLOUD.avail()?`<div class="orline"><span>অথবা</span></div>${gBtn("Continue with Google","wide")}${CLOUD.err?`<p class="warnbox small">${esc(CLOUD.err)}</p>`:""}`:""}
+   <p class="tiny muted center">লগইন ছাড়াও চলে। Google দিয়ে লগইন করলে সব ডিভাইসে একই অগ্রগতি থাকবে।</p></main>`;
 }
 function viewOnb(){
   const O=APP.onb,d=O.draft,steps=d.age==="kid"?["name","avatar","age","goal","done"]:["name","avatar","age","goals","goal","warm","done"];
@@ -165,7 +166,7 @@ function viewPicker(){
   const role=p=>p.age==="kid"?"Kids · 3–7":p.age==="teen"?"Teen":"Adult";
   const last=p=>!p.last?"New":p.last===today()?"Active today":p.last===addDays(-1)?"Yesterday":"";
   return `<main class="picker2"><div class="pk-glow" aria-hidden="true"></div>
-   <div class="pk-top"><span class="pk-logo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3h-8l-4.5 3.2c-.5.4-1.2 0-1.2-.6V17.5H5a3 3 0 0 1-3-3v-7a3 3 0 0 1 3-3z" fill="#fff"/><rect x="7.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/><rect x="10.8" y="7.4" width="2.4" height="8.2" rx="1.2" fill="#f2b632"/><rect x="14.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/></svg></span><span class="pk-brand">Bolo English</span></div>
+   <div class="pk-top">${CLOUD.avail()?(CLOUD.user?`<span class="pk-acct" title="${esc(CLOUD.user.email||"")}">${CLOUD.user.photo?`<img src="${esc(CLOUD.user.photo)}" alt="" referrerpolicy="no-referrer">`:"☁️"}<i>Synced</i></span>`:`<button class="pk-acct signin" data-act="googleSignIn">${GLOGO}<i>Sign in</i></button>`):""}<span class="pk-logo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3h-8l-4.5 3.2c-.5.4-1.2 0-1.2-.6V17.5H5a3 3 0 0 1-3-3v-7a3 3 0 0 1 3-3z" fill="#fff"/><rect x="7.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/><rect x="10.8" y="7.4" width="2.4" height="8.2" rx="1.2" fill="#f2b632"/><rect x="14.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/></svg></span><span class="pk-brand">Bolo English</span></div>
    <div class="pk-head"><span class="pk-hi"><i></i>${g}</span><h1>Who's learning today?</h1><p>Choose your profile. Everyone keeps their own progress.</p></div>
    <div class="pk-grid">${PROFILES.map(p=>`<button class="pk-card ${p.age==="kid"?"kid":""}" data-act="pickProfile" data-id="${esc(p.id)}">
       ${last(p)?`<span class="pk-last ${p.last===today()?"live":""}">${last(p)}</span>`:""}

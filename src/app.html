@@ -158,11 +158,12 @@ const Store={
    clearTimeout(this.timer);
    S.best=Math.max(S.best||0,streak());
    const p=prof();if(p){p.wk=p.wk||{};p.wk[weekKey()]=weekXP(S);p.xp=S.xp;p.streak=streak();p.last=today();}
-   const body=clone(S),key=this.pk("state"),base=this.mode==="cloud"?this.base():null;
+   S.updatedAt=Date.now();const body=clone(S),key=this.pk("state"),base=this.mode==="cloud"?this.base():null;
    this.chain=this.chain.then(async()=>{
      if(base)await base.set(body);
      else if(!this.lsSet(key,body))throw {code:"local_full"};
      await this.saveProfiles();
+     if(this.mode!=="cloud")CLOUD.queue();
      if(this.failed){this.failed=false;render();}
    }).catch(()=>{this.failed=true;render();});
    return this.chain;
@@ -764,7 +765,7 @@ function viewMe(){
   const days=`<div class="card"><span class="eyebrow">গত ১৪ দিন</span><div class="grid14">${last.map(x=>`<i class="${x.c}" title="${x.k}"></i>`).join("")}</div><p class="tiny muted">গাঢ় = লেসন/প্র্যাকটিস করেছ · হালকা = শুধু warm-up</p></div>`;
   const badges=`<div class="card"><div class="row between"><h3>Badges</h3><span class="chip">${(S.badges||[]).length}/${BADGES.length}</span></div>${badgeGrid()}</div>`;
   return `<h1>আমার অগ্রগতি</h1><div class="cols"><div class="col">${head}${progressReport()}${kid?stickerBook():""}${stats}${badges}</div>
-   <div class="col">${leagueCard()}${days}${settings}${device}${backup}${help}${about}${del}</div></div>`;
+   <div class="col">${acctCard()}${leagueCard()}${days}${settings}${device}${backup}${help}${about}${del}</div></div>`;
 }
 
 /* ================= AI generation ================= */
@@ -823,7 +824,7 @@ const ACT={
  switchProfile(){Store.flush();APP.picker=true;render();},
  editProfile(){const p=prof();APP.onb={step:0,edit:p.id,draft:{name:p.name,avatar:p.avatar,photo:p.photo,age:p.age,goals:[...(p.goals||[])],goal:S.goal,warm:!S.warmReq?"off":S.warmMode||"full"}};render();},
  delProfile(){APP.confirm={type:"delprof"};render();},
- async doDelProfile(){const id=PID;await Store.delProfile(id);PROFILES=PROFILES.filter(p=>p.id!==id);PID=null;APP.confirm=null;await Store.saveProfiles();APP.picker=PROFILES.length>0;APP.welcome=!PROFILES.length;render();},
+ async doDelProfile(){const id=PID;await Store.delProfile(id);CLOUD.removeProfile(id);PROFILES=PROFILES.filter(p=>p.id!==id);PID=null;APP.confirm=null;await Store.saveProfiles();APP.picker=PROFILES.length>0;APP.welcome=!PROFILES.length;render();},
  saySent(el){const i=+el.dataset.i;const sents=[...document.querySelectorAll(".sent")];TTS.play(sents.slice(i).map(x=>x.textContent),null,k=>markSent(k<0?-1:i+k));},
  next(){next();},
  mL(el){matchPick("L",el.dataset.id);},
@@ -846,6 +847,9 @@ const ACT={
  flipCard(el,e){if(e&&e.target.closest(".cardspk"))return;APP.cards.flip=!APP.cards.flip;render();if(!APP.cards.flip)TTS.say(APP.cards.items[APP.cards.i].en);},
  cardMenu(){APP.cardMenu=!APP.cardMenu;render();},
  pickCardUnit(el){APP.cardMenu=false;openCards(el.dataset.u);},
+ googleSignIn(){CLOUD.signIn();},
+ googleSignOut(){CLOUD.signOut();},
+ syncNow(){CLOUD.busy=true;render();CLOUD.syncNow().then(()=>{CLOUD.busy=false;render();});},
  toggleTheme(){setTheme(isDark()?"light":"dark");SND.play("toggle");render();},
  toggleRail(){const on=document.documentElement.classList.toggle("rail-mini");UI.set("rail",on?"1":"0");SND.play("toggle");setTimeout(()=>{renderNav(true);placeSeg(true);},360);},
  goSettings(){APP.tab="me";APP.story=APP.cards=APP.chat=null;render();setTimeout(()=>document.getElementById("settings")?.scrollIntoView({behavior:"smooth",block:"start"}),200);},
@@ -939,6 +943,7 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)Store.flush
     if(here&&here.pid===PID){APP.tab=here.tab||"learn";if(here.track&&myTracks().some(t=>t[0]===here.track))APP.track=here.track;if(here.story&&storyOf(here.story))APP.story=here.story;}
     else if(PROFILES.length>1)APP.picker=true;}
   else if(PROFILES.length)APP.picker=true;else APP.welcome=true;
+  if(CLOUD.avail()&&UI.get("acct"))CLOUD.load().catch(()=>{});
   const sp=document.getElementById("splash"),left=Math.max(0,1700-(Date.now()-(window.__t0||Date.now())));
   await new Promise(r=>setTimeout(r,left));
   if(sp){sp.classList.add("out");setTimeout(()=>sp.remove(),650);}

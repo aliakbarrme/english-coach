@@ -950,6 +950,24 @@ html.pk-on,html.pk-on body{background:#081f1d}
 .about .ab-logo .bmark{display:grid;place-items:center;width:100%;height:100%;font-style:normal}
 .about .ab-logo svg{width:62%;height:62%}
 .about .grow{display:flex;flex-direction:column}
+
+/* ===================== v15: account / Google sign-in ===================== */
+.gbtn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:0 18px;border-radius:999px;border:1px solid var(--line-2);background:var(--raised);color:var(--ink);font:650 .95rem var(--font);box-shadow:0 1px 2px #10231f14,0 8px 18px -14px #10231f55;transition:transform .3s var(--spring),box-shadow .3s}
+.gbtn.wide{width:100%}
+.gbtn:active{transform:scale(.97)}
+@media (hover:hover){.gbtn:hover{box-shadow:0 0 0 4px color-mix(in srgb,var(--primary) 12%,transparent),0 8px 18px -14px #10231f55}}
+.gbtn:disabled{opacity:.6}
+.orline{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.8rem}
+.orline::before,.orline::after{content:"";flex:1;height:1px;background:var(--line-2)}
+.acct .row .grow{flex:1;min-width:0;display:flex;flex-direction:column}
+.acct .av img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+.okchip{background:var(--good-s);color:var(--good)}
+.pk-top{width:100%;max-width:640px;justify-content:center;position:relative}
+.pk-acct{position:absolute;right:0;top:50%;translate:0 -50%;display:inline-flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;border-radius:999px;background:#ffffff14;border:1px solid #ffffff24;color:#dff3ec;font:600 .72rem var(--font)}
+.pk-acct img{width:26px;height:26px;border-radius:50%}
+.pk-acct i{font-style:normal}
+.pk-acct.signin{padding:6px 12px 6px 8px;background:#fff;color:#1f2a28;border-color:transparent;cursor:pointer}
+.pk-acct.signin svg{width:16px;height:16px}
 </style>
 
 <div id="splash" aria-label="Bolo English loading"><img class="sp-native" src="icon-512.png" alt="" onerror="this.remove()"><div class="sp-in">
@@ -2003,11 +2021,12 @@ const Store={
    clearTimeout(this.timer);
    S.best=Math.max(S.best||0,streak());
    const p=prof();if(p){p.wk=p.wk||{};p.wk[weekKey()]=weekXP(S);p.xp=S.xp;p.streak=streak();p.last=today();}
-   const body=clone(S),key=this.pk("state"),base=this.mode==="cloud"?this.base():null;
+   S.updatedAt=Date.now();const body=clone(S),key=this.pk("state"),base=this.mode==="cloud"?this.base():null;
    this.chain=this.chain.then(async()=>{
      if(base)await base.set(body);
      else if(!this.lsSet(key,body))throw {code:"local_full"};
      await this.saveProfiles();
+     if(this.mode!=="cloud")CLOUD.queue();
      if(this.failed){this.failed=false;render();}
    }).catch(()=>{this.failed=true;render();});
    return this.chain;
@@ -2167,7 +2186,8 @@ function viewWelcome(){
    <p class="muted bn">ছোট-বড় সবার জন্য: বাচ্চারা ছবি আর খেলায়, বড়রা কাজ, পরিবার আর দৈনন্দিন কথায়। প্রতিদিন ১০–২০ মিনিট।</p></div>
    <div class="method">${[["👄","Warm-up","মুখ আর জিভ রেডি","m-warm"],["🧩","Learn","ছোট ছোট লেসন, গেমের মতো","m-learn"],["🎤","Speak","বলো, অ্যাপ শুনে মিলিয়ে দেখে","m-speak"],["📖","Story","গল্প শুনে নিজে বলো","m-story"]].map(([i,t,b,a],k)=>`<div class="mstep">${ART_OK?art(a,"mart"):`<span class="mic">${i}</span>`}<b>${k+1}. ${t}</b><span class="tiny bn muted">${b}</span></div>`).join("")}</div>
    <button class="btn wide xl" data-act="onbStart">শুরু করি</button>
-   <p class="tiny muted center">অ্যাকাউন্ট লাগবে না। অগ্রগতি এই ডিভাইসে থাকে, backup নেওয়া যায়।</p></main>`;
+   ${CLOUD.avail()?`<div class="orline"><span>অথবা</span></div>${gBtn("Continue with Google","wide")}${CLOUD.err?`<p class="warnbox small">${esc(CLOUD.err)}</p>`:""}`:""}
+   <p class="tiny muted center">লগইন ছাড়াও চলে। Google দিয়ে লগইন করলে সব ডিভাইসে একই অগ্রগতি থাকবে।</p></main>`;
 }
 function viewOnb(){
   const O=APP.onb,d=O.draft,steps=d.age==="kid"?["name","avatar","age","goal","done"]:["name","avatar","age","goals","goal","warm","done"];
@@ -2193,7 +2213,7 @@ function viewPicker(){
   const role=p=>p.age==="kid"?"Kids · 3–7":p.age==="teen"?"Teen":"Adult";
   const last=p=>!p.last?"New":p.last===today()?"Active today":p.last===addDays(-1)?"Yesterday":"";
   return `<main class="picker2"><div class="pk-glow" aria-hidden="true"></div>
-   <div class="pk-top"><span class="pk-logo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3h-8l-4.5 3.2c-.5.4-1.2 0-1.2-.6V17.5H5a3 3 0 0 1-3-3v-7a3 3 0 0 1 3-3z" fill="#fff"/><rect x="7.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/><rect x="10.8" y="7.4" width="2.4" height="8.2" rx="1.2" fill="#f2b632"/><rect x="14.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/></svg></span><span class="pk-brand">Bolo English</span></div>
+   <div class="pk-top">${CLOUD.avail()?(CLOUD.user?`<span class="pk-acct" title="${esc(CLOUD.user.email||"")}">${CLOUD.user.photo?`<img src="${esc(CLOUD.user.photo)}" alt="" referrerpolicy="no-referrer">`:"☁️"}<i>Synced</i></span>`:`<button class="pk-acct signin" data-act="googleSignIn">${GLOGO}<i>Sign in</i></button>`):""}<span class="pk-logo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3h-8l-4.5 3.2c-.5.4-1.2 0-1.2-.6V17.5H5a3 3 0 0 1-3-3v-7a3 3 0 0 1 3-3z" fill="#fff"/><rect x="7.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/><rect x="10.8" y="7.4" width="2.4" height="8.2" rx="1.2" fill="#f2b632"/><rect x="14.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/></svg></span><span class="pk-brand">Bolo English</span></div>
    <div class="pk-head"><span class="pk-hi"><i></i>${g}</span><h1>Who's learning today?</h1><p>Choose your profile. Everyone keeps their own progress.</p></div>
    <div class="pk-grid">${PROFILES.map(p=>`<button class="pk-card ${p.age==="kid"?"kid":""}" data-act="pickProfile" data-id="${esc(p.id)}">
       ${last(p)?`<span class="pk-last ${p.last===today()?"live":""}">${last(p)}</span>`:""}
@@ -2306,6 +2326,95 @@ function warmPic(ai,thumb){
       el.dataset.k=step;el.dataset.t=now;const imgs=el.querySelectorAll("img");imgs.forEach((im,i)=>im.classList.toggle("on",i===seq[step]));});
   },100);
 })();
+
+/* ================= account: Google sign-in + Firestore sync (web app only; local-first) ================= */
+const FB_CONF={apiKey:"AIzaSyDrZYHIpXYKQo5Xa0KpcJUGwCp_j5ddtLw",authDomain:"bolo-english-24438.firebaseapp.com",projectId:"bolo-english-24438",
+  storageBucket:"bolo-english-24438.firebasestorage.app",messagingSenderId:"226486160021",appId:"1:226486160021:web:037ed5d63778d2b705299c"};
+const FBV="10.12.2";
+function authErr(e){const c=(e&&e.code)||"";
+  if(/popup-closed|cancelled-popup/.test(c))return "লগইন বাতিল হয়েছে।";
+  if(/network/.test(c))return "ইন্টারনেট নেই, পরে আবার চেষ্টা করো।";
+  if(/unauthorized-domain/.test(c))return "এই ঠিকানা থেকে লগইন চালু নেই।";
+  return "লগইন হয়নি ("+(c||"error")+")।";}
+const CLOUD={
+ user:null,busy:false,err:null,last:null,api:null,timer:null,
+ avail(){return !ENV.claude&&(location.protocol==="https:"||/^(localhost|127\.0\.0\.1)$/.test(location.hostname));},
+ async load(){
+  if(this.api)return this.api;
+  const b=`https://www.gstatic.com/firebasejs/${FBV}/`;
+  const [app,auth,fs]=await Promise.all([import(b+"firebase-app.js"),import(b+"firebase-auth.js"),import(b+"firebase-firestore-lite.js")]);
+  const a=app.initializeApp(FB_CONF),au=auth.getAuth(a),db=fs.getFirestore(a);
+  this.api={auth,fs,au,db};
+  auth.getRedirectResult(au).catch(e=>{this.err=authErr(e);render();});
+  auth.onAuthStateChanged(au,u=>this.onUser(u));
+  return this.api;
+ },
+ async signIn(){
+  this.err=null;this.busy=true;render();
+  try{const {auth,au}=await this.load();const p=new auth.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});
+   UI.set("acct","pending");
+   try{await auth.signInWithPopup(au,p);}
+   catch(e){if(/popup-blocked|operation-not-supported|web-storage-unsupported/.test(e.code||""))await auth.signInWithRedirect(au,p);else throw e;}
+  }catch(e){this.err=authErr(e);if(!this.user)UI.set("acct","");}
+  this.busy=false;render();
+ },
+ async signOut(){const {auth,au}=await this.load();await auth.signOut(au);this.user=null;UI.set("acct","");toast("লগআউট হয়েছে। অগ্রগতি এই ডিভাইসেও রাখা আছে।");render();},
+ async onUser(u){
+  const was=this.user&&this.user.uid;
+  this.user=u?{uid:u.uid,email:u.email,name:u.displayName,photo:u.photoURL}:null;
+  UI.set("acct",u?"1":"");
+  if(u&&u.uid!==was){await this.pull();toast("☁️ "+(u.email||"Google")+" দিয়ে লগইন হয়েছে");}
+  render();
+ },
+ ref(...p){const {fs,db}=this.api;return fs.doc(db,"users",this.user.uid,...p);},
+ localPack(pid){
+  if(pid===PID)return {state:clone(S),units:clone(CUSTOM),marks:clone(MARKS)};
+  return {state:Store.lsGet("p:"+pid+":state")||null,units:Store.lsGet("p:"+pid+":units")||{},marks:Store.lsGet("p:"+pid+":marks")||{}};
+ },
+ async pushProfile(pid){const d=this.localPack(pid);if(!d.state)return;await this.api.fs.setDoc(this.ref("p",pid),{...d,updated:d.state.updatedAt||Date.now()});},
+ async pushRoot(){await this.api.fs.setDoc(this.ref(),{profiles:clone(PROFILES),email:this.user.email||"",updated:Date.now()});},
+ async pull(){
+  if(!this.user)return;this.busy=true;this.err=null;render();
+  try{
+   const {fs}=this.api,root=await fs.getDoc(this.ref()),remote=root.exists()?root.data():null;
+   if(!remote||!(remote.profiles||[]).length){for(const p of PROFILES)await this.pushProfile(p.id);if(PROFILES.length)await this.pushRoot();}
+   else{
+    const byId=new Map(PROFILES.map(p=>[p.id,p]));
+    for(const rp of remote.profiles){
+     const snap=await fs.getDoc(this.ref("p",rp.id)),rd=snap.exists()?snap.data():null;
+     const ls=rp.id===PID?S:Store.lsGet("p:"+rp.id+":state"),lu=(ls&&ls.updatedAt)||0,ru=(rd&&rd.updated)||0;
+     if(rd&&(!byId.has(rp.id)||ru>lu)){Store.lsSet("p:"+rp.id+":state",rd.state);Store.lsSet("p:"+rp.id+":units",rd.units||{});Store.lsSet("p:"+rp.id+":marks",rd.marks||{});byId.set(rp.id,{...(byId.get(rp.id)||{}),...rp});}
+     else if(byId.has(rp.id))await this.pushProfile(rp.id);
+    }
+    for(const p of PROFILES)if(!remote.profiles.some(r=>r.id===p.id))await this.pushProfile(p.id);
+    PROFILES=[...byId.values()];Store.lsSet("profiles",PROFILES);await this.pushRoot();
+    if(PID&&prof())await Store.load();
+    else if(PROFILES.length){APP.welcome=false;APP.onb=null;APP.picker=true;}
+   }
+   this.last=Date.now();
+  }catch(e){this.err="Sync হয়নি ("+((e&&e.code)||"error")+")।";}
+  this.busy=false;render();
+ },
+ queue(){if(!this.user||!this.api)return;clearTimeout(this.timer);this.timer=setTimeout(()=>this.syncNow(true),2000);},
+ async syncNow(quiet){
+  if(!this.user)return;
+  try{if(PID)await this.pushProfile(PID);await this.pushRoot();this.last=Date.now();this.err=null;if(!quiet){toast("☁️ Sync হয়েছে");render();}}
+  catch(e){this.err="Sync হয়নি ("+((e&&e.code)||"error")+")।";if(!quiet)render();}
+ },
+ async removeProfile(id){if(!this.user)return;try{await this.api.fs.deleteDoc(this.ref("p",id));await this.pushRoot();}catch(e){}}
+};
+const GLOGO='<svg viewBox="0 0 48 48" width="18" height="18" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
+function gBtn(label,cls=""){return `<button class="gbtn ${cls}" data-act="googleSignIn" ${CLOUD.busy?"disabled":""}>${GLOGO}<span>${CLOUD.busy?"অপেক্ষা করো…":label}</span></button>`;}
+function acctCard(){
+  if(!CLOUD.avail())return "";
+  const u=CLOUD.user;
+  if(u)return `<div class="card acct"><div class="row"><span class="av">${u.photo?`<img src="${esc(u.photo)}" alt="" referrerpolicy="no-referrer">`:"☁️"}</span><div class="grow"><b>${esc(u.name||"Google account")}</b><span class="tiny muted">${esc(u.email||"")}</span></div><span class="chip okchip">Synced</span></div>
+    <p class="small muted">এই Gmail দিয়ে যেকোনো ডিভাইসে লগইন করলে সব প্রোফাইলের অগ্রগতি পাবে।${CLOUD.last?` শেষ sync: ${new Date(CLOUD.last).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})}`:""}</p>
+    ${CLOUD.err?`<p class="warnbox small">${esc(CLOUD.err)}</p>`:""}
+    <div class="row"><button class="btn sm" data-act="syncNow" ${CLOUD.busy?"disabled":""}>${CLOUD.busy?"Sync হচ্ছে…":"এখনই sync"}</button><button class="btn sm ghost" data-act="googleSignOut">লগআউট</button></div></div>`;
+  return `<div class="card acct"><h3>অ্যাকাউন্ট</h3><p class="small muted">Gmail দিয়ে লগইন করো: ফোন, ল্যাপটপ, যেকোনো ডিভাইসে একই অগ্রগতি থাকবে। লগইন ছাড়াও অ্যাপ চলে।</p>
+    ${CLOUD.err?`<p class="warnbox small">${esc(CLOUD.err)}</p>`:""}${gBtn("Continue with Google","wide")}</div>`;
+}
 
 function allUnits(){return [...COURSE.units,...Object.values(CUSTOM).sort((a,b)=>(a.created||"").localeCompare(b.created||""))];}
 function unitById(id){return allUnits().find(u=>u.id===id);}
@@ -3045,7 +3154,7 @@ function viewMe(){
   const days=`<div class="card"><span class="eyebrow">গত ১৪ দিন</span><div class="grid14">${last.map(x=>`<i class="${x.c}" title="${x.k}"></i>`).join("")}</div><p class="tiny muted">গাঢ় = লেসন/প্র্যাকটিস করেছ · হালকা = শুধু warm-up</p></div>`;
   const badges=`<div class="card"><div class="row between"><h3>Badges</h3><span class="chip">${(S.badges||[]).length}/${BADGES.length}</span></div>${badgeGrid()}</div>`;
   return `<h1>আমার অগ্রগতি</h1><div class="cols"><div class="col">${head}${progressReport()}${kid?stickerBook():""}${stats}${badges}</div>
-   <div class="col">${leagueCard()}${days}${settings}${device}${backup}${help}${about}${del}</div></div>`;
+   <div class="col">${acctCard()}${leagueCard()}${days}${settings}${device}${backup}${help}${about}${del}</div></div>`;
 }
 
 /* ================= AI generation ================= */
@@ -3104,7 +3213,7 @@ const ACT={
  switchProfile(){Store.flush();APP.picker=true;render();},
  editProfile(){const p=prof();APP.onb={step:0,edit:p.id,draft:{name:p.name,avatar:p.avatar,photo:p.photo,age:p.age,goals:[...(p.goals||[])],goal:S.goal,warm:!S.warmReq?"off":S.warmMode||"full"}};render();},
  delProfile(){APP.confirm={type:"delprof"};render();},
- async doDelProfile(){const id=PID;await Store.delProfile(id);PROFILES=PROFILES.filter(p=>p.id!==id);PID=null;APP.confirm=null;await Store.saveProfiles();APP.picker=PROFILES.length>0;APP.welcome=!PROFILES.length;render();},
+ async doDelProfile(){const id=PID;await Store.delProfile(id);CLOUD.removeProfile(id);PROFILES=PROFILES.filter(p=>p.id!==id);PID=null;APP.confirm=null;await Store.saveProfiles();APP.picker=PROFILES.length>0;APP.welcome=!PROFILES.length;render();},
  saySent(el){const i=+el.dataset.i;const sents=[...document.querySelectorAll(".sent")];TTS.play(sents.slice(i).map(x=>x.textContent),null,k=>markSent(k<0?-1:i+k));},
  next(){next();},
  mL(el){matchPick("L",el.dataset.id);},
@@ -3127,6 +3236,9 @@ const ACT={
  flipCard(el,e){if(e&&e.target.closest(".cardspk"))return;APP.cards.flip=!APP.cards.flip;render();if(!APP.cards.flip)TTS.say(APP.cards.items[APP.cards.i].en);},
  cardMenu(){APP.cardMenu=!APP.cardMenu;render();},
  pickCardUnit(el){APP.cardMenu=false;openCards(el.dataset.u);},
+ googleSignIn(){CLOUD.signIn();},
+ googleSignOut(){CLOUD.signOut();},
+ syncNow(){CLOUD.busy=true;render();CLOUD.syncNow().then(()=>{CLOUD.busy=false;render();});},
  toggleTheme(){setTheme(isDark()?"light":"dark");SND.play("toggle");render();},
  toggleRail(){const on=document.documentElement.classList.toggle("rail-mini");UI.set("rail",on?"1":"0");SND.play("toggle");setTimeout(()=>{renderNav(true);placeSeg(true);},360);},
  goSettings(){APP.tab="me";APP.story=APP.cards=APP.chat=null;render();setTimeout(()=>document.getElementById("settings")?.scrollIntoView({behavior:"smooth",block:"start"}),200);},
@@ -3220,6 +3332,7 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)Store.flush
     if(here&&here.pid===PID){APP.tab=here.tab||"learn";if(here.track&&myTracks().some(t=>t[0]===here.track))APP.track=here.track;if(here.story&&storyOf(here.story))APP.story=here.story;}
     else if(PROFILES.length>1)APP.picker=true;}
   else if(PROFILES.length)APP.picker=true;else APP.welcome=true;
+  if(CLOUD.avail()&&UI.get("acct"))CLOUD.load().catch(()=>{});
   const sp=document.getElementById("splash"),left=Math.max(0,1700-(Date.now()-(window.__t0||Date.now())));
   await new Promise(r=>setTimeout(r,left));
   if(sp){sp.classList.add("out");setTimeout(()=>sp.remove(),650);}
