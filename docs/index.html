@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="Bolo English: speak English every day, for the whole family. Kids learn with pictures and sound, adults practise work, family and everyday English.">
+<style>html{background:#eef2ef}@media (prefers-color-scheme:dark){html{background:#0b1312}}</style>
 <meta name="theme-color" content="#eef2ef" media="(prefers-color-scheme: light)">
 <title>Bolo English</title>
 <meta name="theme-color" content="#0b1312" media="(prefers-color-scheme: dark)">
@@ -49,9 +50,13 @@
 @keyframes spUp{to{transform:none}}
 @keyframes spFade{to{opacity:1}}
 @keyframes spLoad{0%{transform:translateX(-100%)}100%{transform:translateX(250%)}}
+.sp-native{display:none}
+.from-native .sp-native{display:block;position:absolute;left:50%;top:50%;width:min(83vw,430px);height:auto;aspect-ratio:1;translate:-50% -50%;z-index:2;animation:spShrink .75s .05s cubic-bezier(.65,0,.35,1) forwards}
+.from-native .sp-logo{animation-delay:.55s}.from-native .sp-bub{animation-delay:.7s}
+@keyframes spShrink{to{width:104px;border-radius:32px;translate:-50% calc(-50% - 54px);opacity:0}}
 @media (prefers-reduced-motion:reduce){#splash *{animation-duration:.01s!important;animation-iteration-count:1!important}}
 </style>
-<script>try{var t=localStorage.getItem("aec4:theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;if(localStorage.getItem("aec4:rail")==="1")document.documentElement.classList.add("rail-mini");}catch(e){}window.__t0=Date.now();</script>
+<script>try{var t=localStorage.getItem("aec4:theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;if(localStorage.getItem("aec4:rail")==="1")document.documentElement.classList.add("rail-mini");}catch(e){}window.__t0=Date.now();try{if(matchMedia("(display-mode: standalone)").matches||document.referrer.indexOf("android-app://")===0)document.documentElement.classList.add("from-native");}catch(e){}</script>
 <style>/* Design: Tend-style soft SaaS. Geist + Hind Siliguri, teal-on-mist, soft depth, pill controls.
    Motion vocabulary: --ease (expo-ish out), --spring (soft overshoot). */
 :root{
@@ -827,9 +832,29 @@ nav.tabs .navbrand i.bmark{background:#0d5c55!important}
 :root[data-theme="dark"] .advice{background:color-mix(in srgb,var(--warm) 10%,var(--surface))}
 html{transition:background-color .4s}
 body{transition:background-color .4s,color .4s}
+
+/* ===================== v11: Bangla shaping, sidebar button, segmented pill, dark switch ===================== */
+/* Any letter-spacing breaks Bangla conjuncts and vowel signs (e.g. "শিখবে", "অগ্রগতি") in Chrome, so headings use normal spacing */
+h1,h2,h3,.eyebrow,.wl-hero h1,.lvbig,.prompt,.fbtitle,.metric b,.cardcount,.trackbtn,.unitban h2,.hello h1,.sp-name,.bname,.tag{letter-spacing:normal}
+.eyebrow{text-transform:none;font-weight:650}
+.intro .en,.face .en,.kword,.twister{letter-spacing:-.02em}
+/* sidebar collapse button (was squeezed to 0x0 by the nav button rule) */
+@media (min-width:900px){
+  nav.tabs .railbtn{display:grid;place-items:center;width:34px;height:34px;min-width:34px;padding:0;margin-left:auto;flex:none;flex-direction:row;gap:0;border-radius:11px;border:1px solid #ffffff24;background:#ffffff10;color:var(--on-side);font-size:0}
+  nav.tabs .railbtn svg{width:18px;height:18px}
+  nav.tabs .railbtn:hover{background:#ffffff22}
+  .rail-mini nav.tabs .railbtn{margin:0 auto}
+  /* real toggle switch for dark mode */
+  .nf-sw{width:40px;height:22px;border-radius:999px;background:#ffffff26;box-shadow:inset 0 0 0 1px #ffffff1f}
+  .nf-sw::after{top:3px;left:3px;width:16px;height:16px;box-shadow:0 2px 4px #0004}
+  .nf-sw.on{background:#5cd0b4}.nf-sw.on::after{transform:translateX(18px)}
+  .nf-link[data-act="toggleTheme"]{background:#ffffff08}
+}
+/* segmented pill sits exactly on the active button (JS adds the offset) */
+.seg-pill{top:0;left:0}
 </style>
 
-<div id="splash" aria-label="Bolo English loading"><div class="sp-in">
+<div id="splash" aria-label="Bolo English loading"><img class="sp-native" src="icon-512.png" alt="" onerror="this.remove()"><div class="sp-in">
  <div class="sp-logo"><span class="sp-ring"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path class="sp-bub" d="M5 4.5h14a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3h-8l-4.5 3.2c-.5.4-1.2 0-1.2-.6V17.5H5a3 3 0 0 1-3-3v-7a3 3 0 0 1 3-3z" fill="#fff"/><rect class="sp-b b1" x="7.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/><rect class="sp-b b2" x="10.8" y="7.4" width="2.4" height="8.2" rx="1.2" fill="#f2b632"/><rect class="sp-b b3" x="14.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/></svg><span class="sp-leaf"></span></div>
  <div class="sp-name"><span style="--i:0">B</span><span style="--i:1">o</span><span style="--i:2">l</span><span style="--i:3">o</span><span style="--i:4">&nbsp;</span><span style="--i:5">E</span><span style="--i:6">n</span><span style="--i:7">g</span><span style="--i:8">l</span><span style="--i:9">i</span><span style="--i:10">s</span><span style="--i:11">h</span></div>
  <div class="sp-tag">Speak English, every day</div><div class="sp-bar"><i></i></div></div></div><div id="root"></div>

@@ -34,7 +34,7 @@ const clips = fs.existsSync(audioDir) ? fs.readdirSync(audioDir).filter(f => f.e
 const emoDir = path.join(root, "docs", "e");
 const emojis = fs.existsSync(emoDir) ? fs.readdirSync(emoDir).filter(f => f.endsWith(".webp")).map(f => f.slice(0, -5)) : [];
 const pageWith = (audio, emo = []) => src("app.html")
-  .replace("/*__STYLE__*/", () => [src("style.css"), src("style-v6.css"), src("style-v7.css"), src("style-v8.css"), src("style-v9.css"), src("style-v10.css")].join("\n"))
+  .replace("/*__STYLE__*/", () => [src("style.css"), src("style-v6.css"), src("style-v7.css"), src("style-v8.css"), src("style-v9.css"), src("style-v10.css"), src("style-v11.css")].join("\n"))
   .replace("/*__VOICE__*/", () => src("voice.js").replace("/*__AUDIO__*/[]", JSON.stringify(audio)))
   .replace("/*__EXTRAS__*/", () => [src("extras.js").replace("/*__EMOJI__*/[]", JSON.stringify(emo)).replace("/*__ART__*/false", emo.length ? "true" : "false"), src("progress.js"), src("warmart.js")].join("\n"))
   .replace("/*__MOTION__*/", () => src("motion.js"))
@@ -49,6 +49,7 @@ const head = (body, extra) => `<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="Bolo English: speak English every day, for the whole family. Kids learn with pictures and sound, adults practise work, family and everyday English.">
+<style>html{background:#eef2ef}@media (prefers-color-scheme:dark){html{background:#0b1312}}</style>
 <meta name="theme-color" content="#eef2ef" media="(prefers-color-scheme: light)">
 <title>Bolo English</title>
 <meta name="theme-color" content="#0b1312" media="(prefers-color-scheme: dark)">
@@ -83,14 +84,16 @@ fs.writeFileSync(path.join(docs, "manifest.webmanifest"), JSON.stringify({
           { src: "icon-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" }]
 }, null, 1));
 const ver = require("crypto").createHash("sha1").update(pwa).digest("hex").slice(0, 10);
-fs.writeFileSync(path.join(docs, "sw.js"), `// Offline cache: network-first for the page (fresh when online), cache-first for voice clips.
+fs.writeFileSync(path.join(docs, "sw.js"), `// Offline cache: stale-while-revalidate (opens instantly from cache, updates in the background), cache-first for media.
 const C="coach-${ver}",A="coach-audio-v1";
 self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(["./","./index.html","./manifest.webmanifest","./icon-192.png"])).then(()=>self.skipWaiting()));});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C&&k!==A).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
 self.addEventListener("fetch",e=>{const r=e.request;if(r.method!=="GET")return;const u=new URL(r.url);
   if(u.origin===location.origin&&(u.pathname.includes("/a/")||u.pathname.includes("/e/")||u.pathname.includes("/i/"))){e.respondWith(caches.open(A).then(c=>c.match(r).then(m=>m||fetch(r).then(res=>{if(res.ok)c.put(r,res.clone());return res;}))));return;}
-  e.respondWith(fetch(r).then(res=>{if(res.ok&&(u.origin===location.origin||r.url.includes("fonts.g"))){const cp=res.clone();caches.open(C).then(c=>c.put(r,cp));}return res;})
-   .catch(()=>caches.match(r).then(m=>m||(r.mode==="navigate"?caches.match("./index.html"):Response.error()))));});
+  e.respondWith(caches.match(r,{ignoreSearch:r.mode==="navigate"}).then(m=>{
+    const net=fetch(r).then(res=>{if(res.ok&&(u.origin===location.origin||r.url.includes("fonts.g"))){const cp=res.clone();caches.open(C).then(c=>c.put(r,cp));}return res;})
+      .catch(()=>m||(r.mode==="navigate"?caches.match("./index.html"):Response.error()));
+    if(m){e.waitUntil(net.catch(()=>{}));return m;}return net;}));});
 `);
 fs.writeFileSync(path.join(docs, ".nojekyll"), "");
 

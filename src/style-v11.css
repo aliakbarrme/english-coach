@@ -1,0 +1,19 @@
+/* ===================== v11: Bangla shaping, sidebar button, segmented pill, dark switch ===================== */
+/* Any letter-spacing breaks Bangla conjuncts and vowel signs (e.g. "শিখবে", "অগ্রগতি") in Chrome, so headings use normal spacing */
+h1,h2,h3,.eyebrow,.wl-hero h1,.lvbig,.prompt,.fbtitle,.metric b,.cardcount,.trackbtn,.unitban h2,.hello h1,.sp-name,.bname,.tag{letter-spacing:normal}
+.eyebrow{text-transform:none;font-weight:650}
+.intro .en,.face .en,.kword,.twister{letter-spacing:-.02em}
+/* sidebar collapse button (was squeezed to 0x0 by the nav button rule) */
+@media (min-width:900px){
+  nav.tabs .railbtn{display:grid;place-items:center;width:34px;height:34px;min-width:34px;padding:0;margin-left:auto;flex:none;flex-direction:row;gap:0;border-radius:11px;border:1px solid #ffffff24;background:#ffffff10;color:var(--on-side);font-size:0}
+  nav.tabs .railbtn svg{width:18px;height:18px}
+  nav.tabs .railbtn:hover{background:#ffffff22}
+  .rail-mini nav.tabs .railbtn{margin:0 auto}
+  /* real toggle switch for dark mode */
+  .nf-sw{width:40px;height:22px;border-radius:999px;background:#ffffff26;box-shadow:inset 0 0 0 1px #ffffff1f}
+  .nf-sw::after{top:3px;left:3px;width:16px;height:16px;box-shadow:0 2px 4px #0004}
+  .nf-sw.on{background:#5cd0b4}.nf-sw.on::after{transform:translateX(18px)}
+  .nf-link[data-act="toggleTheme"]{background:#ffffff08}
+}
+/* segmented pill sits exactly on the active button (JS adds the offset) */
+.seg-pill{top:0;left:0}
