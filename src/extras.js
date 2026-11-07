@@ -1,6 +1,6 @@
 /* ================= profiles ================= */
 const AVATARS=["🧑🏽‍💻","👨🏽","👩🏽","🧔🏽","👩🏽‍🦱","👧🏽","👦🏽","👶🏽","🧒🏽","👵🏽","👴🏽","🦁","🐯","🐼","🦊","🐰","🐱","🐶","🦄","🐸","🐧","🦋","🚀","⭐"];
-const AGES=[["kid","Kid","3–7 বছর","🧸","Picture + awaj diye khela, porte lagbe na"],["teen","Teen","8–15 বছর","🎒","School, bondhu, daily kotha"],["adult","Adult","16+","💼","Kaj, family, everyday kotha"]];
+const AGES=[["kid","Kid","3–7 বছর","🧸","ছবি আর আওয়াজে খেলা, পড়তে হবে না"],["teen","Teen","8–15 বছর","🎒","স্কুল, বন্ধু, প্রতিদিনের কথা"],["adult","Adult","16+","💼","কাজ, পরিবার, প্রতিদিনের কথা"]];
 const GOALS=[["family","Family & home","ঘরে পরিবারের সাথে","🏡"],["client","Work & clients","কাজ ও ক্লায়েন্ট","💼"],["everyday","Everyday talk","সবার সাথে কথা","☕"],["kids","Teach my little kids","ছোটদের শেখাতে","🧸"]];
 let PROFILES=[], PID=null;
 const prof=()=>PROFILES.find(p=>p.id===PID)||null;
@@ -15,18 +15,18 @@ function weekXP(st){const wk=weekKey();let x=0;for(const [k,v] of Object.entries
 /* ================= daily quests ================= */
 const QUESTS={
  adult:[
-  {id:"l2",ic:"📘",t:"2 ta lesson ba practice shesh koro",n:2,v:d=>d.lessons+d.practice},
-  {id:"c15",ic:"🎯",t:"15 ta uttor thik dao",n:15,v:d=>d.c},
-  {id:"sp5",ic:"🎤",t:"5 ta sentence jore jore bolo",n:5,v:d=>d.speak||0},
-  {id:"st1",ic:"🎧",t:"Ekta story shono ba poro",n:1,v:d=>d.story||0},
-  {id:"xp",ic:"⚡",t:"Ajker XP goal puron koro",n:()=>S.goal,v:d=>d.xp},
-  {id:"wu",ic:"👄",t:"Mouth warm-up koro",n:1,v:d=>d.warm?1:0}],
+  {id:"l2",ic:"📘",t:"২টা লেসন বা প্র্যাকটিস শেষ করো",n:2,v:d=>d.lessons+d.practice},
+  {id:"c15",ic:"🎯",t:"১৫টা উত্তর ঠিক দাও",n:15,v:d=>d.c},
+  {id:"sp5",ic:"🎤",t:"৫টা বাক্য জোরে জোরে বলো",n:5,v:d=>d.speak||0},
+  {id:"st1",ic:"🎧",t:"একটা গল্প শোনো বা পড়ো",n:1,v:d=>d.story||0},
+  {id:"xp",ic:"⚡",t:"আজকের XP লক্ষ্য পূরণ করো",n:()=>S.goal,v:d=>d.xp},
+  {id:"wu",ic:"👄",t:"মুখের warm-up করো",n:1,v:d=>d.warm?1:0}],
  kid:[
-  {id:"kl1",ic:"⭐",t:"1 ta lesson khelo",n:1,v:d=>d.lessons+d.practice},
-  {id:"kc10",ic:"🖼️",t:"10 ta chobi khuje bar koro",n:10,v:d=>d.c},
-  {id:"ks3",ic:"🎤",t:"3 ta word jore bolo",n:3,v:d=>d.speak||0},
-  {id:"kst",ic:"📖",t:"Ekta golpo shono",n:1,v:d=>d.story||0},
-  {id:"kcard",ic:"🃏",t:"Picture card dekho",n:1,v:d=>d.cards||0}]
+  {id:"kl1",ic:"⭐",t:"১টা লেসন খেলো",n:1,v:d=>d.lessons+d.practice},
+  {id:"kc10",ic:"🖼️",t:"১০টা ছবি খুঁজে বের করো",n:10,v:d=>d.c},
+  {id:"ks3",ic:"🎤",t:"৩টা শব্দ জোরে বলো",n:3,v:d=>d.speak||0},
+  {id:"kst",ic:"📖",t:"একটা গল্প শোনো",n:1,v:d=>d.story||0},
+  {id:"kcard",ic:"🃏",t:"ছবির কার্ড দেখো",n:1,v:d=>d.cards||0}]
 };
 function questsToday(){
   const pool=isKid()?QUESTS.kid:QUESTS.adult.filter(q=>q.id!=="wu"||warmAllowed());
@@ -36,24 +36,24 @@ function questsToday(){
 }
 function questCard(){
   const qs=questsToday(), all=qs.every(q=>q.done), d=day();
-  return `<div class="card quests"><div class="row between"><h3>Ajker quest</h3><span class="chip">${qs.filter(q=>q.done).length}/3</span></div>
+  return `<div class="card quests"><div class="row between"><h3>আজকের quest</h3><span class="chip">${qs.filter(q=>q.done).length}/3</span></div>
    ${qs.map(q=>`<div class="quest ${q.done?"done":""}"><span class="qic">${q.ic}</span><div class="grow"><span class="small">${esc(q.t)}</span><span class="qbar"><i style="width:${Math.round(q.v/q.n*100)}%"></i></span></div><span class="tiny muted num">${q.v}/${q.n}</span></div>`).join("")}
-   ${all&&!d.chest?`<button class="btn wide gold" data-act="openChest">🎁 Reward kholo (+10 XP)</button>`:d.chest?`<p class="tiny muted">Ajker reward neya hoyeche. Kal notun quest!</p>`:""}</div>`;
+   ${all&&!d.chest?`<button class="btn wide gold" data-act="openChest">🎁 পুরস্কার খোলো (+১০ XP)</button>`:d.chest?`<p class="tiny muted">আজকের পুরস্কার নেওয়া হয়েছে। কাল নতুন quest!</p>`:""}</div>`;
 }
 
 /* ================= badges ================= */
 const BADGES=[
- {id:"first",ic:"🌱",t:"First step",d:"Prothom lesson",ok:()=>Object.keys(S.done).length>=1},
- {id:"s3",ic:"🔥",t:"On fire",d:"3 din streak",ok:()=>(S.best||0)>=3||streak()>=3},
- {id:"s7",ic:"🏆",t:"One week",d:"7 din streak",ok:()=>(S.best||0)>=7||streak()>=7},
- {id:"x100",ic:"⚡",t:"100 XP",d:"Total 100 XP",ok:()=>S.xp>=100},
- {id:"x500",ic:"💎",t:"500 XP",d:"Total 500 XP",ok:()=>S.xp>=500},
- {id:"story",ic:"📖",t:"Storyteller",d:"Prothom story shesh",ok:()=>Object.values(S.storyDone).some(x=>x.read)},
- {id:"speak",ic:"🎤",t:"Speaker",d:"20 ta sentence bolecho",ok:()=>(S.speakTotal||0)>=20},
- {id:"perfect",ic:"✨",t:"Perfect",d:"Kono bhul chara lesson",ok:()=>(S.perfect||0)>=1},
- {id:"unit",ic:"🎓",t:"Unit master",d:"Ekta unit puro shesh",ok:()=>allUnits().some(u=>u.lessons.length&&u.lessons.every((l,i)=>S.done[u.id+":"+i])&&S.storyDone[u.id]?.read)},
- {id:"warm7",ic:"👄",t:"Warm voice",d:"7 din warm-up",ok:()=>(S.warmCount||0)>=7},
- {id:"quest",ic:"🎁",t:"Quest hero",d:"Shob quest ek dine",ok:()=>Object.values(S.days).some(x=>x.chest)}
+ {id:"first",ic:"🌱",t:"First step",d:"প্রথম লেসন",ok:()=>Object.keys(S.done).length>=1},
+ {id:"s3",ic:"🔥",t:"On fire",d:"৩ দিনের streak",ok:()=>(S.best||0)>=3||streak()>=3},
+ {id:"s7",ic:"🏆",t:"One week",d:"৭ দিনের streak",ok:()=>(S.best||0)>=7||streak()>=7},
+ {id:"x100",ic:"⚡",t:"100 XP",d:"মোট ১০০ XP",ok:()=>S.xp>=100},
+ {id:"x500",ic:"💎",t:"500 XP",d:"মোট ৫০০ XP",ok:()=>S.xp>=500},
+ {id:"story",ic:"📖",t:"Storyteller",d:"প্রথম গল্প শেষ",ok:()=>Object.values(S.storyDone).some(x=>x.read)},
+ {id:"speak",ic:"🎤",t:"Speaker",d:"২০টা বাক্য বলেছ",ok:()=>(S.speakTotal||0)>=20},
+ {id:"perfect",ic:"✨",t:"Perfect",d:"কোনো ভুল ছাড়া লেসন",ok:()=>(S.perfect||0)>=1},
+ {id:"unit",ic:"🎓",t:"Unit master",d:"একটা ইউনিট পুরো শেষ",ok:()=>allUnits().some(u=>u.lessons.length&&u.lessons.every((l,i)=>S.done[u.id+":"+i])&&S.storyDone[u.id]?.read)},
+ {id:"warm7",ic:"👄",t:"Warm voice",d:"৭ দিন warm-up",ok:()=>(S.warmCount||0)>=7},
+ {id:"quest",ic:"🎁",t:"Quest hero",d:"এক দিনে সব quest",ok:()=>Object.values(S.days).some(x=>x.chest)}
 ];
 function checkBadges(){
   S.badges=S.badges||[];const fresh=BADGES.filter(b=>!S.badges.includes(b.id)&&b.ok());
@@ -67,15 +67,15 @@ function badgeGrid(){
 
 /* ================= family league (profiles on this device) ================= */
 function leagueCard(){
-  if(PROFILES.length<2)return `<div class="card"><h3>Family league</h3><p class="small muted">Poribarer onno kauke profile banate dao (wife, bachchara). Prottek shoptaho ke beshi XP pay, ekhane dekhabe.</p><button class="btn sm ghost" data-act="addProfile">+ Profile jog koro</button></div>`;
+  if(PROFILES.length<2)return `<div class="card"><h3>পরিবারের লিগ</h3><p class="small muted">পরিবারের অন্যদের প্রোফাইল বানাতে দাও (স্ত্রী, বাচ্চারা)। প্রতি সপ্তাহে কে বেশি XP পায়, এখানে দেখাবে।</p><button class="btn sm ghost" data-act="addProfile">+ প্রোফাইল যোগ করো</button></div>`;
   const wk=weekKey();const rows=PROFILES.map(p=>({p,x:p.id===PID?weekXP(S):(p.wk&&p.wk[wk])||0})).sort((a,b)=>b.x-a.x);
-  return `<div class="card"><div class="row between"><h3>Family league</h3><span class="tiny muted">ei shoptaho</span></div><div class="league">${rows.map((r,i)=>`<div class="lrow ${r.p.id===PID?"me":""}"><span class="lpos">${["🥇","🥈","🥉"][i]||i+1}</span><span class="av sm">${esc(r.p.avatar)}</span><b class="grow">${esc(r.p.name)}</b><span class="num">${r.x} XP</span></div>`).join("")}</div></div>`;
+  return `<div class="card"><div class="row between"><h3>পরিবারের লিগ</h3><span class="tiny muted">এই সপ্তাহে</span></div><div class="league">${rows.map((r,i)=>`<div class="lrow ${r.p.id===PID?"me":""}"><span class="lpos">${["🥇","🥈","🥉"][i]||i+1}</span><span class="av sm">${esc(r.p.avatar)}</span><b class="grow">${esc(r.p.name)}</b><span class="num">${r.x} XP</span></div>`).join("")}</div></div>`;
 }
 
 /* ================= kid stickers ================= */
 function stickerBook(){
   const st=S.stickers||[];
-  return `<div class="card"><div class="row between"><h3>Sticker book</h3><span class="chip">${st.length}</span></div>${st.length?`<div class="stickers">${st.map(x=>`<span>${x}</span>`).join("")}</div>`:`<p class="small muted">Lesson shesh korle notun sticker pabe!</p>`}</div>`;
+  return `<div class="card"><div class="row between"><h3>স্টিকারের বই</h3><span class="chip">${st.length}</span></div>${st.length?`<div class="stickers">${st.map(x=>`<span>${x}</span>`).join("")}</div>`:`<p class="small muted">লেসন শেষ করলে নতুন স্টিকার পাবে!</p>`}</div>`;
 }
 
 /* ================= confetti ================= */
@@ -95,30 +95,30 @@ function viewWelcome(){
    <div class="wl-mark">${IC.learn}</div><span class="eyebrow">English Coach</span><h1>English বলো আত্মবিশ্বাসে, প্রতিদিন</h1>
    <p class="muted bn">ছোট-বড় সবার জন্য: বাচ্চারা ছবি আর খেলায়, বড়রা কাজ, পরিবার আর দৈনন্দিন কথায়। প্রতিদিন ১০–২০ মিনিট।</p></div>
    <div class="method">${[["👄","Warm-up","মুখ আর জিভ রেডি"],["🧩","Learn","ছোট ছোট লেসন, গেমের মতো"],["🎤","Speak","বলো, অ্যাপ শুনে মিলিয়ে দেখে"],["📖","Story","গল্প শুনে নিজে বলো"]].map(([i,t,b],k)=>`<div class="mstep"><span class="mic">${i}</span><b>${k+1}. ${t}</b><span class="tiny bn muted">${b}</span></div>`).join("")}</div>
-   <button class="btn wide xl" data-act="onbStart">Shuru kori</button>
-   <p class="tiny muted center">Account lagbe na. Progress ei device e thake, backup neya jay.</p></main>`;
+   <button class="btn wide xl" data-act="onbStart">শুরু করি</button>
+   <p class="tiny muted center">অ্যাকাউন্ট লাগবে না। অগ্রগতি এই ডিভাইসে থাকে, backup নেওয়া যায়।</p></main>`;
 }
 function viewOnb(){
   const O=APP.onb,d=O.draft,steps=d.age==="kid"?["name","avatar","age","goal","done"]:["name","avatar","age","goals","goal","warm","done"];
   const st=steps[O.step];const pct=Math.round(O.step/(steps.length-1)*100);
   let body="",can=true,nextLbl="Continue";
-  if(st==="name"){body=`<span class="onb-ic">👋</span><h1>Tomar naam ki?</h1><p class="muted">Bachchar jonno banale tar naam likho.</p><input type="text" id="onb-name" maxlength="20" value="${esc(d.name||"")}" placeholder="Naam" autocomplete="off">`;}
-  if(st==="avatar"){body=`<span class="onb-ic">${esc(d.avatar||"🙂")}</span><h1>Ekta avatar baco</h1><div class="avgrid">${AVATARS.map(a=>`<button class="avpick" data-act="onbSet" data-k="avatar" data-v="${a}" aria-pressed="${d.avatar===a}">${a}</button>`).join("")}</div>`;can=!!d.avatar;}
-  if(st==="age"){body=`<span class="onb-ic">🎂</span><h1>${esc(d.name)} er boyosh?</h1><div class="opts">${AGES.map(([v,l,bn,ic,sub])=>`<button class="opt big" data-act="onbSet" data-k="age" data-v="${v}" aria-pressed="${d.age===v}"><span class="oic">${ic}</span><span class="grow"><b>${l} <span class="bn muted">· ${bn}</span></b><span class="small muted">${sub}</span></span></button>`).join("")}</div>`;can=!!d.age;}
-  if(st==="goals"){body=`<span class="onb-ic">🎯</span><h1>Ki jonno English shikhbe?</h1><p class="muted">Ek ba ekadhik baco.</p><div class="opts">${GOALS.map(([v,l,bn,ic])=>`<button class="opt big" data-act="onbGoal" data-v="${v}" aria-pressed="${(d.goals||[]).includes(v)}"><span class="oic">${ic}</span><span class="grow"><b>${l}</b><span class="small bn muted">${bn}</span></span></button>`).join("")}</div>`;can=(d.goals||[]).length>0;}
-  if(st==="goal"){const opts=d.age==="kid"?[[10,"5 min","Ektu ektu"],[20,"10 min","Protidin"],[30,"15 min","Beshi"]]:[[20,"10 min","Casual"],[30,"15 min","Regular"],[50,"20 min","Serious"],[80,"30 min","Intense"]];
-    body=`<span class="onb-ic">⏱️</span><h1>Protidin koto shomoy?</h1><div class="opts">${opts.map(([v,l,s])=>`<button class="opt big" data-act="onbSet" data-k="goal" data-v="${v}" aria-pressed="${+d.goal===v}"><span class="oic">⚡</span><span class="grow"><b>${l}</b><span class="small muted">${s} · ${v} XP/din</span></span></button>`).join("")}</div>`;can=!!d.goal;}
-  if(st==="warm"){body=`<span class="onb-ic">👄</span><h1>Lesson er age mouth warm-up?</h1><p class="muted">Jibh ar thot er exercise, tongue twister ar pen-reading. Uccharon e boro parthokko ane.</p><div class="opts">${[["full","Full warm-up (10–15 min)","Recommended for clear speaking"],["quick","Quick warm-up (5 min)","Busy dine er jonno"],["off","Ekhon na","Pore Settings theke chalu kora jabe"]].map(([v,l,s])=>`<button class="opt big" data-act="onbSet" data-k="warm" data-v="${v}" aria-pressed="${d.warm===v}"><span class="grow"><b>${l}</b><span class="small muted">${s}</span></span></button>`).join("")}</div>`;can=!!d.warm;}
-  if(st==="done"){const tr=d.age==="kid"?["kids"]:d.goals;body=`<span class="onb-ic big">${esc(d.avatar)}</span><h1>${esc(d.name)} er plan ready!</h1>
+  if(st==="name"){body=`<span class="onb-ic">👋</span><h1>তোমার নাম কী?</h1><p class="muted">বাচ্চার জন্য বানালে তার নাম লেখো।</p><input type="text" id="onb-name" maxlength="20" value="${esc(d.name||"")}" placeholder="Naam" autocomplete="off">`;}
+  if(st==="avatar"){body=`<span class="onb-ic">${esc(d.avatar||"🙂")}</span><h1>একটা অবতার বাছো</h1><div class="avgrid">${AVATARS.map(a=>`<button class="avpick" data-act="onbSet" data-k="avatar" data-v="${a}" aria-pressed="${d.avatar===a}">${a}</button>`).join("")}</div>`;can=!!d.avatar;}
+  if(st==="age"){body=`<span class="onb-ic">🎂</span><h1>${esc(d.name)}-এর বয়স?</h1><div class="opts">${AGES.map(([v,l,bn,ic,sub])=>`<button class="opt big" data-act="onbSet" data-k="age" data-v="${v}" aria-pressed="${d.age===v}"><span class="oic">${ic}</span><span class="grow"><b>${l} <span class="bn muted">· ${bn}</span></b><span class="small muted">${sub}</span></span></button>`).join("")}</div>`;can=!!d.age;}
+  if(st==="goals"){body=`<span class="onb-ic">🎯</span><h1>কী জন্য ইংরেজি শিখবে?</h1><p class="muted">এক বা একাধিক বাছো।</p><div class="opts">${GOALS.map(([v,l,bn,ic])=>`<button class="opt big" data-act="onbGoal" data-v="${v}" aria-pressed="${(d.goals||[]).includes(v)}"><span class="oic">${ic}</span><span class="grow"><b>${l}</b><span class="small bn muted">${bn}</span></span></button>`).join("")}</div>`;can=(d.goals||[]).length>0;}
+  if(st==="goal"){const opts=d.age==="kid"?[[10,"৫ মিনিট","একটু একটু"],[20,"১০ মিনিট","প্রতিদিন"],[30,"১৫ মিনিট","বেশি"]]:[[20,"১০ মিনিট","হালকা"],[30,"১৫ মিনিট","নিয়মিত"],[50,"২০ মিনিট","সিরিয়াস"],[80,"৩০ মিনিট","খুব সিরিয়াস"]];
+    body=`<span class="onb-ic">⏱️</span><h1>প্রতিদিন কত সময়?</h1><div class="opts">${opts.map(([v,l,s])=>`<button class="opt big" data-act="onbSet" data-k="goal" data-v="${v}" aria-pressed="${+d.goal===v}"><span class="oic">⚡</span><span class="grow"><b>${l}</b><span class="small muted">${s} · দিনে ${v} XP</span></span></button>`).join("")}</div>`;can=!!d.goal;}
+  if(st==="warm"){body=`<span class="onb-ic">👄</span><h1>লেসনের আগে মুখের warm-up?</h1><p class="muted">জিভ আর ঠোঁটের ব্যায়াম, tongue twister আর কলম-মুখে পড়া। উচ্চারণে বড় পার্থক্য আনে।</p><div class="opts">${[["full","পুরো warm-up (১০–১৫ মিনিট)","স্পষ্ট উচ্চারণের জন্য সবচেয়ে ভালো"],["quick","ছোট warm-up (৫ মিনিট)","ব্যস্ত দিনের জন্য"],["off","এখন না","পরে Settings থেকে চালু করা যাবে"]].map(([v,l,s])=>`<button class="opt big" data-act="onbSet" data-k="warm" data-v="${v}" aria-pressed="${d.warm===v}"><span class="grow"><b>${l}</b><span class="small muted">${s}</span></span></button>`).join("")}</div>`;can=!!d.warm;}
+  if(st==="done"){const tr=d.age==="kid"?["kids"]:d.goals;body=`<span class="onb-ic big">${esc(d.avatar)}</span><h1>${esc(d.name)}-এর প্ল্যান তৈরি!</h1>
     <div class="card plan">${tr.map(t=>{const T=TRACKS.find(x=>x[0]===t);return `<div class="row"><span class="chip trk ${t}">${T[1]}</span><span class="small bn muted">${T[2]}</span></div>`;}).join("")}
-     <p class="small">${d.age==="kid"?"Chobi dekhe, awaj shune, khela kore word shikhbe. Protita lesson e notun sticker!":`Protidin: ${d.warm!=="off"?"warm-up → ":""}lesson → bolar practice → golpo. Bhul gula app nije mone rakhe ar shomoy moto abar ane.`}</p>
-     <p class="tiny muted">Daily goal: ${d.goal} XP · ${d.age==="kid"?"Kids mode":"Adult/teen mode"}</p></div>`;nextLbl="Shuru!";}
+     <p class="small">${d.age==="kid"?"ছবি দেখে, আওয়াজ শুনে, খেলতে খেলতে শব্দ শিখবে। প্রতিটা লেসনে নতুন স্টিকার!":`প্রতিদিন: ${d.warm!=="off"?"warm-up → ":""}লেসন → বলার অনুশীলন → গল্প। ভুলগুলো অ্যাপ মনে রাখে আর সময়মতো আবার আনে।`}</p>
+     <p class="tiny muted">দৈনিক লক্ষ্য: ${d.goal} XP · ${d.age==="kid"?"Kids mode":"Adult/teen mode"}</p></div>`;nextLbl="Shuru!";}
   return `<main class="onb"><div class="onb-head">${O.step>0||PROFILES.length?`<button class="icon-btn" data-act="onbBack" aria-label="Back">${IC.back}</button>`:"<span></span>"}<div class="pbar"><i style="width:${pct}%"></i></div></div>
    <div class="onb-body">${body}</div>
    <div class="onb-foot"><button class="btn wide xl" data-act="onbNext" ${can?"":"disabled"}>${nextLbl}</button></div></main>`;
 }
 function viewPicker(){
-  return `<main class="picker"><span class="eyebrow">English Coach</span><h1>Ke shikhbe?</h1>
+  return `<main class="picker"><span class="eyebrow">English Coach</span><h1>কে শিখবে?</h1>
    <div class="pgrid">${PROFILES.map(p=>`<button class="pcard" data-act="pickProfile" data-id="${esc(p.id)}"><span class="av xl">${esc(p.avatar)}</span><b>${esc(p.name)}</b><span class="tiny muted">${p.age==="kid"?"Kids":p.age==="teen"?"Teen":"Adult"}</span></button>`).join("")}
-    <button class="pcard add" data-act="addProfile"><span class="av xl">＋</span><b>Profile jog koro</b><span class="tiny muted">wife, bachcha…</span></button></div></main>`;
+    <button class="pcard add" data-act="addProfile"><span class="av xl">＋</span><b>প্রোফাইল যোগ করো</b><span class="tiny muted">স্ত্রী, বাচ্চা…</span></button></div></main>`;
 }

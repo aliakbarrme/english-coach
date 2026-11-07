@@ -82,7 +82,7 @@ function enterView(root,first){
     if(first)rise(main.querySelectorAll(".topbar>*"),{y:-12,dur:600,stagger:50,scale:1});
     revealHead(main.querySelector("h1"),first?120:40);
     const blocks=[...main.children].flatMap(el=>el.classList.contains("maincol")||el.classList.contains("sidecol")?[...el.children]:[el]).filter(el=>!el.classList.contains("topbar")&&el.offsetParent!==null);
-    rise(blocks,{delay:first?160:30,dur:first?900:650,stagger:first?70:45});
+    rise(blocks,{delay:first?100:30,dur:first?750:600,stagger:first?55:40});
     popIn(main.querySelectorAll(".node"),{delay:260,stagger:40});
     rise(main.querySelectorAll(".list .item,.warmstep"),{y:12,dur:550,stagger:45,delay:220,scale:1});
   }

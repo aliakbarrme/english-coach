@@ -32,9 +32,9 @@ const audioDir = path.join(root, "docs", "a");
 const clips = fs.existsSync(audioDir) ? fs.readdirSync(audioDir).filter(f => f.endsWith(".mp3")).map(f => f.slice(0, -4)) : [];
 
 const pageWith = (audio) => src("app.html")
-  .replace("/*__STYLE__*/", () => src("style.css") + "\n" + src("style-v6.css"))
+  .replace("/*__STYLE__*/", () => [src("style.css"), src("style-v6.css"), src("style-v7.css")].join("\n"))
   .replace("/*__VOICE__*/", () => src("voice.js").replace("/*__AUDIO__*/[]", JSON.stringify(audio)))
-  .replace("/*__EXTRAS__*/", () => src("extras.js"))
+  .replace("/*__EXTRAS__*/", () => [src("extras.js"), src("progress.js"), src("warmart.js")].join("\n"))
   .replace("/*__MOTION__*/", () => src("motion.js"))
   .replace("/*__CONTENT__*/", () => content)
   .replace("/*__WEB_URL__*/", () => WEB_URL);

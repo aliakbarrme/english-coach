@@ -68,4 +68,4 @@ const HEAR={
  },
  stop(){if(this.rec){try{this.rec.abort();}catch(e){}this.rec=null;}this.on=false;}
 };
-function hearErr(e){return e==="not-allowed"||e==="service-not-allowed"?"Microphone er permission dao (address bar er lock icon → Microphone → Allow).":e==="no-speech"?"Kichu shona jay ni. Mic er kache jore bolo.":e==="network"?"Speech recognition er jonno internet lagbe.":e==="audio-capture"?"Microphone pawa jay ni.":"Shunte parlam na, abar try koro.";}
+function hearErr(e){return e==="not-allowed"||e==="service-not-allowed"?"মাইক্রোফোনের অনুমতি দাও (অ্যাড্রেস বারের লক আইকন → Microphone → Allow)।":e==="no-speech"?"কিছু শোনা যায়নি। মাইকের কাছে জোরে বলো।":e==="network"?"Speech recognition-এর জন্য ইন্টারনেট লাগবে।":e==="audio-capture"?"Microphone pawa jay ni.":"শুনতে পারলাম না, আবার চেষ্টা করো।";}
