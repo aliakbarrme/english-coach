@@ -25,7 +25,7 @@ function readPhoto(file){return new Promise((res,rej)=>{const fr=new FileReader(
   c.getContext("2d").drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,256,256);res(c.toDataURL("image/jpeg",.84));};im.src=fr.result;};fr.readAsDataURL(file);});}
 function navFoot(){
   const P=prof();if(!P)return "";const d=day(),g=S.goal||30,pct=Math.min(100,Math.round(d.xp/g*100));
-  return `<div class="nf-links"><button class="nf-link" data-act="goSettings">${IC.settings}<span>Settings</span></button><button class="nf-link" data-act="openHelp">${IC.help}<span>Help</span></button>
+  return `<div class="nf-links"><button class="nf-link" data-act="goSettings">${IC.settings}<span>Settings</span></button><button class="nf-link" data-act="openHelp">${IC.help}<span>Help</span></button>${CLOUD.user?`<button class="nf-link" data-act="googleSignOut">${IC.close}<span>Log out</span></button>`:""}
     <button class="nf-link" data-act="toggleTheme" aria-label="Dark mode">${isDark()?IC.sun:IC.moon}<span>${isDark()?"Light mode":"Dark mode"}</span><i class="nf-sw ${isDark()?"on":""}"></i></button></div>
    <div class="nf-goal" title="আজকের লক্ষ্য"><div class="row between"><span class="small">🌱 আজ <b>${d.xp}</b> of ${g} XP</span><span class="tiny">${streak()}🔥</span></div><span class="nf-bar"><i style="width:${pct}%"></i></span></div>
    <button class="nf-me" data-act="switchProfile" title="প্রোফাইল বদলাও">${avatarHTML(P)}<span class="grow"><b>${esc(P.name)}</b><span class="tiny">${P.age==="kid"?"Kids":P.age==="teen"?"Teen":"Adult"} · ${myTracks().map(t=>t[1]).join(", ")}</span></span>${IC.updown}</button>`;
@@ -139,7 +139,7 @@ function viewWelcome(){
    <p class="muted bn">ছোট-বড় সবার জন্য: বাচ্চারা ছবি আর খেলায়, বড়রা কাজ, পরিবার আর দৈনন্দিন কথায়। প্রতিদিন ১০–২০ মিনিট।</p></div>
    <div class="method">${[["👄","Warm-up","মুখ আর জিভ রেডি","m-warm"],["🧩","Learn","ছোট ছোট লেসন, গেমের মতো","m-learn"],["🎤","Speak","বলো, অ্যাপ শুনে মিলিয়ে দেখে","m-speak"],["📖","Story","গল্প শুনে নিজে বলো","m-story"]].map(([i,t,b,a],k)=>`<div class="mstep">${ART_OK?art(a,"mart"):`<span class="mic">${i}</span>`}<b>${k+1}. ${t}</b><span class="tiny bn muted">${b}</span></div>`).join("")}</div>
    <button class="btn wide xl" data-act="onbStart">শুরু করি</button>
-   ${CLOUD.avail()?`<div class="orline"><span>অথবা</span></div>${gBtn("Continue with Google","wide")}${CLOUD.err?`<p class="warnbox small">${esc(CLOUD.err)}</p>`:""}`:""}
+   ${CLOUD.avail()&&!CLOUD.user?`<div class="orline"><span>অথবা</span></div>${gBtn("Continue with Google","wide")}${CLOUD.err?`<p class="warnbox small">${esc(CLOUD.err)}</p>`:""}`:""}
    <p class="tiny muted center">লগইন ছাড়াও চলে। Google দিয়ে লগইন করলে সব ডিভাইসে একই অগ্রগতি থাকবে।</p></main>`;
 }
 function viewOnb(){
@@ -173,5 +173,5 @@ function viewPicker(){
       <span class="pk-ring">${avatarHTML(p,"xl")}</span>
       <b class="pk-name">${esc(p.name)}</b><span class="pk-role">${role(p)}</span>
       <span class="pk-stats"><span><em>${p.streak||0}</em>Streak</span><span><em>${p.xp||0}</em>XP</span></span></button>`).join("")}</div>
-   <button class="pk-add" data-act="addProfile"><span class="pk-plus">＋</span><span class="grow"><b>Add a profile</b><small>Partner, kids, anyone</small></span><span class="pk-arrow">→</span></button><p class="pk-copy">© 2026 Ali Akbar · BD Webhut</p></main>`;
+   <button class="pk-add" data-act="addProfile"><span class="pk-plus">＋</span><span class="grow"><b>Add a profile</b><small>Partner, kids, anyone</small></span><span class="pk-arrow">→</span></button>${CLOUD.user?`<button class="pk-logout" data-act="googleSignOut">Log out · ${esc(CLOUD.user.email||"")}</button>`:""}<p class="pk-copy">© 2026 Ali Akbar · BD Webhut</p></main>`;
 }

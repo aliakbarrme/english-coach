@@ -356,7 +356,7 @@ function TABS_FOR(){return isKid()?[["learn","Learn",IC.learn],["practice","Play
   :[["learn","Learn",IC.learn],...(warmAllowed()?[["warm","Warm-up",IC.warm]]:[]),["practice","Practice",IC.practice],["stories","Stories",IC.story],["me","Me",IC.me]];}
 
 let LASTKEY=null,LASTSUB=null;
-function viewKey(){if(APP.welcome)return "welcome";if(APP.onb)return "onb:"+(APP.onb.edit||"new");if(APP.picker)return "picker";if(L)return L.done?"L:done":"L";if(APP.busy)return "busy";if(APP.warm)return "warm:"+APP.warm.step;if(APP.story)return "story:"+APP.story;if(APP.cards)return "cards";if(APP.chat)return "chat";return "tab:"+APP.tab;}
+function viewKey(){if(CLOUD.avail()&&!CLOUD.user)return "login:"+LG.tab;if(APP.welcome)return "welcome";if(APP.onb)return "onb:"+(APP.onb.edit||"new");if(APP.picker)return "picker";if(L)return L.done?"L:done":"L";if(APP.busy)return "busy";if(APP.warm)return "warm:"+APP.warm.step;if(APP.story)return "story:"+APP.story;if(APP.cards)return "cards";if(APP.chat)return "chat";return "tab:"+APP.tab;}
 function subKey(){if(APP.onb)return "o"+APP.onb.step;if(L&&!L.done)return "ex"+L.i;if(APP.warm)return "w"+APP.warm.ex+":"+APP.warm.tw+":"+(APP.warm.noPen?1:0);if(APP.cards)return "c"+APP.cards.i;if(!L&&!APP.busy&&!APP.story&&!APP.chat&&APP.tab==="learn")return "t:"+APP.track;return "";}
 function renderNav(instant){
   const t=$("#tabs"),tabs=TABS_FOR(),sig=tabs.map(x=>x[0]).join();
@@ -373,7 +373,9 @@ function render(){
   document.body.classList.toggle("kid",isKid());
   document.documentElement.classList.toggle("pk-on",!!APP.picker);
   document.querySelectorAll('meta[name="theme-color"]').forEach(m=>m.content=APP.picker?"#0c3a35":isDark()?"#0b1312":"#eef2ef");
-  if(APP.welcome) html=viewWelcome();
+  const gate=CLOUD.avail()&&!CLOUD.user;
+  if(gate) html=viewLogin();
+  else if(APP.welcome) html=viewWelcome();
   else if(APP.onb) html=viewOnb();
   else if(APP.picker) html=viewPicker();
   else if(L) html=viewLesson();
@@ -387,7 +389,7 @@ function render(){
   html=emojify(html);
   const root=$("#root"),key=viewKey(),sub=subKey(),first=LASTKEY===null;
   const nav=document.querySelector("nav.tabs"),navWasHidden=nav.hidden;
-  nav.hidden=!!(L||APP.warm||APP.welcome||APP.onb||APP.picker);
+  nav.hidden=!!(L||APP.warm||APP.welcome||APP.onb||APP.picker||gate);
   if(key!==LASTKEY){root.innerHTML=html;placeSeg(true);enterView(root,first);}
   else{const subChanged=sub!==LASTSUB;morph(root,html,subChanged);placeSeg(subChanged&&!sub.startsWith("t:"));if(subChanged)enterSub(root);}
   if(!nav.hidden)renderNav(first||navWasHidden);
@@ -814,7 +816,7 @@ const ACT={
  noSpeak(){HEAR.stop();L.ex=L.ex.slice(0,L.i+1).concat(L.ex.slice(L.i+1).filter(x=>!isSpeakEx(x)));L.fb=null;L.i++;if(L.i>=L.ex.length){finishSession();return;}toast("এই লেসনে আর বলার অনুশীলন আসবে না।");render();playIfAuto();},
  kchoose(el){kidChoose(el.dataset.id);},
  openChest(){const d=day();if(d.chest)return;d.chest=true;addXP(10);Store.save();SND.play("done");confetti(90);toast("🎁 +১০ XP! সব quest শেষ!");render();checkBadges();},
- onbStart(){APP.welcome=false;APP.onb={step:0,draft:{goals:[]}};render();},
+ onbStart(){APP.welcome=false;APP.onb={step:0,draft:{goals:[],name:(CLOUD.user&&CLOUD.user.name&&!PROFILES.length)?CLOUD.user.name.split(" ")[0]:""}};render();},
  onbSet(el){const O=APP.onb;O.draft[el.dataset.k]=el.dataset.k==="goal"?+el.dataset.v:el.dataset.v;if(el.dataset.k==="age"&&el.dataset.v==="kid")O.draft.goals=["kids"];render();},
  onbGoal(el){const g=APP.onb.draft.goals=APP.onb.draft.goals||[];const i=g.indexOf(el.dataset.v);if(i>=0)g.splice(i,1);else g.push(el.dataset.v);render();},
  onbBack(){const O=APP.onb;if(O.step>0){O.step--;render();}else{APP.onb=null;if(!PID)APP.picker=PROFILES.length>0,APP.welcome=!PROFILES.length;render();}},
@@ -848,7 +850,10 @@ const ACT={
  cardMenu(){APP.cardMenu=!APP.cardMenu;render();},
  pickCardUnit(el){APP.cardMenu=false;openCards(el.dataset.u);},
  googleSignIn(){CLOUD.signIn();},
- googleSignOut(){CLOUD.signOut();},
+ googleSignOut(){logoutAll();},
+ lgTab(el){LG.tab=el.dataset.v;LG.err=null;LG.ok=null;render();},
+ lgSubmit(){lgSubmit();},
+ lgGoogle(){lgGoogle();},
  syncNow(){CLOUD.busy=true;render();CLOUD.syncNow().then(()=>{CLOUD.busy=false;render();});},
  toggleTheme(){setTheme(isDark()?"light":"dark");SND.play("toggle");render();},
  toggleRail(){const on=document.documentElement.classList.toggle("rail-mini");UI.set("rail",on?"1":"0");SND.play("toggle");setTimeout(()=>{renderNav(true);placeSeg(true);},360);},
@@ -930,7 +935,7 @@ document.addEventListener("change",e=>{
   if(sw){S[sw]=e.target.checked;Store.save();SND.play("toggle");}
   if(e.target.id==="importFile"){const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const d=JSON.parse(rd.result);if(d.app!=="ali-english-coach-duo")throw 0;APP.confirm={type:"import",data:d};render();}catch(x){toast("এটা এই অ্যাপের backup না।");}};rd.readAsText(f);}
 });
-document.addEventListener("keydown",e=>{if(!L||L.done)return;if(e.key==="Enter"&&!e.shiftKey){if(L.fb){e.preventDefault();next();}else if(cur().t!=="match"){e.preventDefault();if(cur().t==="intro"||cur().t==="speak")ACT.skipEx();else grade();}}});
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target&&e.target.closest&&e.target.closest(".lg-card")){e.preventDefault();lgSubmit();return;}if(!L||L.done)return;if(e.key==="Enter"&&!e.shiftKey){if(L.fb){e.preventDefault();next();}else if(cur().t!=="match"){e.preventDefault();if(cur().t==="intro"||cur().t==="speak")ACT.skipEx();else grade();}}});
 document.addEventListener("visibilitychange",()=>{if(document.hidden)Store.flush();});
 
 /* ================= boot ================= */
@@ -943,7 +948,7 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)Store.flush
     if(here&&here.pid===PID){APP.tab=here.tab||"learn";if(here.track&&myTracks().some(t=>t[0]===here.track))APP.track=here.track;if(here.story&&storyOf(here.story))APP.story=here.story;}
     else if(PROFILES.length>1)APP.picker=true;}
   else if(PROFILES.length)APP.picker=true;else APP.welcome=true;
-  if(CLOUD.avail()&&UI.get("acct"))CLOUD.load().catch(()=>{});
+  if(CLOUD.avail()){try{await CLOUD.load();await Promise.race([CLOUD.ready,new Promise(r=>setTimeout(r,8000))]);}catch(e){LG.err="প্রথমবার লগইনের জন্য ইন্টারনেট লাগবে।";}}
   const sp=document.getElementById("splash"),left=Math.max(0,1700-(Date.now()-(window.__t0||Date.now())));
   await new Promise(r=>setTimeout(r,left));
   if(sp){sp.classList.add("out");setTimeout(()=>sp.remove(),650);}

@@ -15,7 +15,7 @@ const CLOUD={
   const b=`https://www.gstatic.com/firebasejs/${FBV}/`;
   const [app,auth,fs]=await Promise.all([import(b+"firebase-app.js"),import(b+"firebase-auth.js"),import(b+"firebase-firestore-lite.js")]);
   const a=app.initializeApp(FB_CONF),au=auth.getAuth(a),db=fs.getFirestore(a);
-  this.api={auth,fs,au,db};
+  this.api={auth,fs,au,db};this.ready=new Promise(res=>this._ready=res);
   auth.getRedirectResult(au).catch(e=>{this.err=authErr(e);render();});
   auth.onAuthStateChanged(au,u=>this.onUser(u));
   return this.api;
@@ -34,7 +34,8 @@ const CLOUD={
   const was=this.user&&this.user.uid;
   this.user=u?{uid:u.uid,email:u.email,name:u.displayName,photo:u.photoURL}:null;
   UI.set("acct",u?"1":"");
-  if(u&&u.uid!==was){await this.pull();toast("☁️ "+(u.email||"Google")+" দিয়ে লগইন হয়েছে");}
+  if(u&&u.uid!==was){await this.pull();if(LG.fresh){LG.fresh=false;LG.ok=null;await afterLogin();toast("☁️ "+(u.email||"")+" দিয়ে লগইন হয়েছে");}}
+  if(this._ready){this._ready();this._ready=null;}
   render();
  },
  ref(...p){const {fs,db}=this.api;return fs.doc(db,"users",this.user.uid,...p);},

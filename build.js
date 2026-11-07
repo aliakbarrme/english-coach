@@ -34,9 +34,9 @@ const clips = fs.existsSync(audioDir) ? fs.readdirSync(audioDir).filter(f => f.e
 const emoDir = path.join(root, "docs", "e");
 const emojis = fs.existsSync(emoDir) ? fs.readdirSync(emoDir).filter(f => f.endsWith(".webp")).map(f => f.slice(0, -5)) : [];
 const pageWith = (audio, emo = []) => src("app.html")
-  .replace("/*__STYLE__*/", () => [src("style.css"), src("style-v6.css"), src("style-v7.css"), src("style-v8.css"), src("style-v9.css"), src("style-v10.css"), src("style-v11.css"), src("style-v12.css"), src("style-v13.css"), src("style-v14.css"), src("style-v15.css")].join("\n"))
+  .replace("/*__STYLE__*/", () => [src("style.css"), src("style-v6.css"), src("style-v7.css"), src("style-v8.css"), src("style-v9.css"), src("style-v10.css"), src("style-v11.css"), src("style-v12.css"), src("style-v13.css"), src("style-v14.css"), src("style-v15.css"), src("style-v16.css")].join("\n"))
   .replace("/*__VOICE__*/", () => src("voice.js").replace("/*__AUDIO__*/[]", JSON.stringify(audio)))
-  .replace("/*__EXTRAS__*/", () => [src("extras.js").replace("/*__EMOJI__*/[]", JSON.stringify(emo)).replace("/*__ART__*/false", emo.length ? "true" : "false"), src("progress.js"), src("warmart.js"), src("cloud.js")].join("\n"))
+  .replace("/*__EXTRAS__*/", () => [src("extras.js").replace("/*__EMOJI__*/[]", JSON.stringify(emo)).replace("/*__ART__*/false", emo.length ? "true" : "false"), src("progress.js"), src("warmart.js"), src("cloud.js"), src("login.js")].join("\n"))
   .replace("/*__MOTION__*/", () => src("motion.js"))
   .replace("/*__CONTENT__*/", () => content)
   .replace("/*__WEB_URL__*/", () => WEB_URL);
@@ -91,7 +91,7 @@ const C="coach-${ver}",A="coach-audio-v1";
 self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(["./","./index.html","./manifest.webmanifest","./icon-192.png"])).then(()=>self.skipWaiting()));});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C&&k!==A).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
 self.addEventListener("fetch",e=>{const r=e.request;if(r.method!=="GET")return;const u=new URL(r.url);
-  if(u.origin===location.origin&&(u.pathname.includes("/a/")||u.pathname.includes("/e/")||u.pathname.includes("/i/"))){e.respondWith(caches.open(A).then(c=>c.match(r).then(m=>m||fetch(r).then(res=>{if(res.ok)c.put(r,res.clone());return res;}))));return;}
+  if(u.origin===location.origin&&((u.pathname.includes("/a/")||u.pathname.includes("/e/")||u.pathname.includes("/i/"))||r.url.includes("gstatic.com/firebasejs"))){e.respondWith(caches.open(A).then(c=>c.match(r).then(m=>m||fetch(r).then(res=>{if(res.ok)c.put(r,res.clone());return res;}))));return;}
   e.respondWith(caches.match(r,{ignoreSearch:r.mode==="navigate"}).then(m=>{
     const net=fetch(r).then(res=>{if(res.ok&&(u.origin===location.origin||r.url.includes("fonts.g"))){const cp=res.clone();caches.open(C).then(c=>c.put(r,cp));}return res;})
       .catch(()=>m||(r.mode==="navigate"?caches.match("./index.html"):Response.error()));

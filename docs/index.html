@@ -968,6 +968,38 @@ html.pk-on,html.pk-on body{background:#081f1d}
 .pk-acct i{font-style:normal}
 .pk-acct.signin{padding:6px 12px 6px 8px;background:#fff;color:#1f2a28;border-color:transparent;cursor:pointer}
 .pk-acct.signin svg{width:16px;height:16px}
+
+/* ===================== v16: login page ===================== */
+.login{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:calc(28px + env(safe-area-inset-top,0px)) 18px calc(24px + env(safe-area-inset-bottom,0px));background:var(--raised)}
+:root[data-theme="dark"] .login{background:var(--bg)}
+.lg-brand{display:flex;align-items:center;gap:12px}
+.lg-logo{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(145deg,#137a70,#0d5c55);box-shadow:0 14px 26px -14px #0d5c55}
+.lg-logo svg{width:62%;height:62%}
+.lg-name{font:700 2rem var(--font);letter-spacing:-.035em;color:var(--ink)}
+.lg-tag{font:600 1.05rem var(--font);color:var(--muted);margin-bottom:18px}
+.lg-card{width:100%;max-width:420px;border:1px solid var(--line-2);border-radius:20px;padding:26px 22px 22px;background:var(--surface);display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 50px -34px #10231f66}
+.lg-card h1{text-align:center;font:700 1.6rem var(--font);color:var(--ink)}
+.lg-seg{position:relative;display:grid;grid-template-columns:1fr 1fr;padding:5px;border-radius:16px;background:var(--well);border:1px solid var(--line)}
+.lg-seg button{position:relative;z-index:1;border:0;background:none;min-height:44px;border-radius:12px;font:600 .98rem var(--font);color:var(--faint);transition:color .3s}
+.lg-seg button[aria-pressed="true"]{color:var(--ink)}
+.lg-pill{position:absolute;top:5px;left:5px;width:calc(50% - 5px);height:calc(100% - 10px);border-radius:12px;background:var(--raised);box-shadow:0 2px 8px #10231f1a;transition:transform .45s var(--ease)}
+.lg-pill.r{transform:translateX(100%)}
+.lg-field{display:flex;flex-direction:column;gap:7px}
+.lg-field span{font:700 1rem var(--font);color:var(--ink)}
+.lg-field input{min-height:54px;border:1.5px solid var(--line-2);border-radius:12px;padding:0 16px;font:500 1rem var(--font);background:var(--raised)}
+.lg-field input:focus{border-color:var(--primary);box-shadow:0 0 0 4px color-mix(in srgb,var(--primary) 14%,transparent);outline:none}
+.lg-go{min-height:54px;border:0;border-radius:12px;background:#f8c934;color:#1a1500;font:700 1rem var(--font);letter-spacing:.04em;display:flex;align-items:center;justify-content:center;gap:12px;box-shadow:0 12px 22px -14px #c99a00;transition:transform .3s var(--spring),filter .2s}
+.lg-go span{font-size:1.5rem;line-height:1;margin-top:-3px}
+.lg-go:active{transform:scale(.97)}
+@media (hover:hover){.lg-go:hover{filter:brightness(1.04)}}
+.lg-go:disabled{opacity:.7}
+.lg-links{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.lg-links i{color:var(--faint);font-style:normal}
+.lg-link{border:0;background:none;color:var(--muted);font:500 .98rem var(--font);text-decoration:underline;text-underline-offset:3px;padding:4px}
+.lg-err{padding:10px 12px;border-radius:12px;background:var(--bad-s);color:var(--bad);font-size:.9rem}
+.lg-ok{padding:10px 12px;border-radius:12px;background:var(--good-s);color:var(--good);font-size:.9rem}
+.lg-foot{margin-top:14px;color:var(--faint);font-size:.82rem}
+.pk-logout{position:relative;border:0;background:none;color:#9cc4b9;font:500 .78rem var(--font);text-decoration:underline;text-underline-offset:3px}
 </style>
 
 <div id="splash" aria-label="Bolo English loading"><img class="sp-native" src="icon-512.png" alt="" onerror="this.remove()"><div class="sp-in">
@@ -2072,7 +2104,7 @@ function readPhoto(file){return new Promise((res,rej)=>{const fr=new FileReader(
   c.getContext("2d").drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,256,256);res(c.toDataURL("image/jpeg",.84));};im.src=fr.result;};fr.readAsDataURL(file);});}
 function navFoot(){
   const P=prof();if(!P)return "";const d=day(),g=S.goal||30,pct=Math.min(100,Math.round(d.xp/g*100));
-  return `<div class="nf-links"><button class="nf-link" data-act="goSettings">${IC.settings}<span>Settings</span></button><button class="nf-link" data-act="openHelp">${IC.help}<span>Help</span></button>
+  return `<div class="nf-links"><button class="nf-link" data-act="goSettings">${IC.settings}<span>Settings</span></button><button class="nf-link" data-act="openHelp">${IC.help}<span>Help</span></button>${CLOUD.user?`<button class="nf-link" data-act="googleSignOut">${IC.close}<span>Log out</span></button>`:""}
     <button class="nf-link" data-act="toggleTheme" aria-label="Dark mode">${isDark()?IC.sun:IC.moon}<span>${isDark()?"Light mode":"Dark mode"}</span><i class="nf-sw ${isDark()?"on":""}"></i></button></div>
    <div class="nf-goal" title="আজকের লক্ষ্য"><div class="row between"><span class="small">🌱 আজ <b>${d.xp}</b> of ${g} XP</span><span class="tiny">${streak()}🔥</span></div><span class="nf-bar"><i style="width:${pct}%"></i></span></div>
    <button class="nf-me" data-act="switchProfile" title="প্রোফাইল বদলাও">${avatarHTML(P)}<span class="grow"><b>${esc(P.name)}</b><span class="tiny">${P.age==="kid"?"Kids":P.age==="teen"?"Teen":"Adult"} · ${myTracks().map(t=>t[1]).join(", ")}</span></span>${IC.updown}</button>`;
@@ -2186,7 +2218,7 @@ function viewWelcome(){
    <p class="muted bn">ছোট-বড় সবার জন্য: বাচ্চারা ছবি আর খেলায়, বড়রা কাজ, পরিবার আর দৈনন্দিন কথায়। প্রতিদিন ১০–২০ মিনিট।</p></div>
    <div class="method">${[["👄","Warm-up","মুখ আর জিভ রেডি","m-warm"],["🧩","Learn","ছোট ছোট লেসন, গেমের মতো","m-learn"],["🎤","Speak","বলো, অ্যাপ শুনে মিলিয়ে দেখে","m-speak"],["📖","Story","গল্প শুনে নিজে বলো","m-story"]].map(([i,t,b,a],k)=>`<div class="mstep">${ART_OK?art(a,"mart"):`<span class="mic">${i}</span>`}<b>${k+1}. ${t}</b><span class="tiny bn muted">${b}</span></div>`).join("")}</div>
    <button class="btn wide xl" data-act="onbStart">শুরু করি</button>
-   ${CLOUD.avail()?`<div class="orline"><span>অথবা</span></div>${gBtn("Continue with Google","wide")}${CLOUD.err?`<p class="warnbox small">${esc(CLOUD.err)}</p>`:""}`:""}
+   ${CLOUD.avail()&&!CLOUD.user?`<div class="orline"><span>অথবা</span></div>${gBtn("Continue with Google","wide")}${CLOUD.err?`<p class="warnbox small">${esc(CLOUD.err)}</p>`:""}`:""}
    <p class="tiny muted center">লগইন ছাড়াও চলে। Google দিয়ে লগইন করলে সব ডিভাইসে একই অগ্রগতি থাকবে।</p></main>`;
 }
 function viewOnb(){
@@ -2220,7 +2252,7 @@ function viewPicker(){
       <span class="pk-ring">${avatarHTML(p,"xl")}</span>
       <b class="pk-name">${esc(p.name)}</b><span class="pk-role">${role(p)}</span>
       <span class="pk-stats"><span><em>${p.streak||0}</em>Streak</span><span><em>${p.xp||0}</em>XP</span></span></button>`).join("")}</div>
-   <button class="pk-add" data-act="addProfile"><span class="pk-plus">＋</span><span class="grow"><b>Add a profile</b><small>Partner, kids, anyone</small></span><span class="pk-arrow">→</span></button><p class="pk-copy">© 2026 Ali Akbar · BD Webhut</p></main>`;
+   <button class="pk-add" data-act="addProfile"><span class="pk-plus">＋</span><span class="grow"><b>Add a profile</b><small>Partner, kids, anyone</small></span><span class="pk-arrow">→</span></button>${CLOUD.user?`<button class="pk-logout" data-act="googleSignOut">Log out · ${esc(CLOUD.user.email||"")}</button>`:""}<p class="pk-copy">© 2026 Ali Akbar · BD Webhut</p></main>`;
 }
 
 /* ================= progress report: course level, skills, weekly report ================= */
@@ -2344,7 +2376,7 @@ const CLOUD={
   const b=`https://www.gstatic.com/firebasejs/${FBV}/`;
   const [app,auth,fs]=await Promise.all([import(b+"firebase-app.js"),import(b+"firebase-auth.js"),import(b+"firebase-firestore-lite.js")]);
   const a=app.initializeApp(FB_CONF),au=auth.getAuth(a),db=fs.getFirestore(a);
-  this.api={auth,fs,au,db};
+  this.api={auth,fs,au,db};this.ready=new Promise(res=>this._ready=res);
   auth.getRedirectResult(au).catch(e=>{this.err=authErr(e);render();});
   auth.onAuthStateChanged(au,u=>this.onUser(u));
   return this.api;
@@ -2363,7 +2395,8 @@ const CLOUD={
   const was=this.user&&this.user.uid;
   this.user=u?{uid:u.uid,email:u.email,name:u.displayName,photo:u.photoURL}:null;
   UI.set("acct",u?"1":"");
-  if(u&&u.uid!==was){await this.pull();toast("☁️ "+(u.email||"Google")+" দিয়ে লগইন হয়েছে");}
+  if(u&&u.uid!==was){await this.pull();if(LG.fresh){LG.fresh=false;LG.ok=null;await afterLogin();toast("☁️ "+(u.email||"")+" দিয়ে লগইন হয়েছে");}}
+  if(this._ready){this._ready();this._ready=null;}
   render();
  },
  ref(...p){const {fs,db}=this.api;return fs.doc(db,"users",this.user.uid,...p);},
@@ -2414,6 +2447,67 @@ function acctCard(){
     <div class="row"><button class="btn sm" data-act="syncNow" ${CLOUD.busy?"disabled":""}>${CLOUD.busy?"Sync হচ্ছে…":"এখনই sync"}</button><button class="btn sm ghost" data-act="googleSignOut">লগআউট</button></div></div>`;
   return `<div class="card acct"><h3>অ্যাকাউন্ট</h3><p class="small muted">Gmail দিয়ে লগইন করো: ফোন, ল্যাপটপ, যেকোনো ডিভাইসে একই অগ্রগতি থাকবে। লগইন ছাড়াও অ্যাপ চলে।</p>
     ${CLOUD.err?`<p class="warnbox small">${esc(CLOUD.err)}</p>`:""}${gBtn("Continue with Google","wide")}</div>`;
+}
+
+/* ================= login gate (web app): email/password + Google; logout returns here ================= */
+const LG={tab:"login",err:null,ok:null,busy:false};
+function authMsg(e){const c=(e&&e.code)||"";
+  const m={"auth/invalid-email":"Email ঠিক নেই।","auth/missing-password":"Password লেখো।","auth/invalid-credential":"Email বা password ভুল।","auth/wrong-password":"Password ভুল।",
+   "auth/user-not-found":"এই email-এ কোনো account নেই। Create Account করো।","auth/email-already-in-use":"এই email-এ আগেই account আছে। Login করো।",
+   "auth/weak-password":"Password কমপক্ষে ৬ অক্ষরের হতে হবে।","auth/too-many-requests":"অনেকবার চেষ্টা হয়েছে, একটু পরে আবার করো।","auth/network-request-failed":"ইন্টারনেট নেই।",
+   "auth/popup-closed-by-user":"লগইন বাতিল হয়েছে।","auth/cancelled-popup-request":"লগইন বাতিল হয়েছে।"};
+  return m[c]||("লগইন হয়নি ("+(c||"error")+")।");}
+function viewLogin(){
+  const t=LG.tab, logo=document.querySelector(".bmark")?.innerHTML||"";
+  const field=(id,label,type,ph,ac)=>`<label class="lg-field"><span>${label}</span><input id="${id}" type="${type}" placeholder="${ph}" autocomplete="${ac}" ${LG.busy?"disabled":""}></label>`;
+  let form="";
+  if(t==="login")form=`${field("lg-email","Email","email","you@example.com","email")}${field("lg-pass","Password","password","Your password","current-password")}
+    <button class="lg-go" data-act="lgSubmit" ${LG.busy?"disabled":""}>${LG.busy?"Please wait…":"CONTINUE"} <span>›</span></button>
+    <div class="lg-links"><button class="lg-link" data-act="lgTab" data-v="signup">Create Account</button><i>•</i><button class="lg-link" data-act="lgTab" data-v="reset">Forgot Password?</button></div>`;
+  if(t==="signup")form=`${field("lg-name","Your name","text","e.g. Ali Akbar","name")}${field("lg-email","Email","email","you@example.com","email")}${field("lg-pass","Password","password","At least 6 characters","new-password")}
+    <button class="lg-go" data-act="lgSubmit" ${LG.busy?"disabled":""}>${LG.busy?"Please wait…":"CREATE ACCOUNT"} <span>›</span></button>
+    <div class="lg-links"><span class="muted small">Already have an account?</span><button class="lg-link" data-act="lgTab" data-v="login">Login</button></div>`;
+  if(t==="reset")form=`<p class="small muted">Enter your email. We'll send a link to set a new password.</p>${field("lg-email","Email","email","you@example.com","email")}
+    <button class="lg-go" data-act="lgSubmit" ${LG.busy?"disabled":""}>${LG.busy?"Please wait…":"SEND RESET LINK"} <span>›</span></button>
+    <div class="lg-links"><button class="lg-link" data-act="lgTab" data-v="login">Back to Login</button></div>`;
+  return `<main class="login"><div class="lg-brand"><span class="lg-logo">${logo}</span><span class="lg-name">Bolo English</span></div><p class="lg-tag">Speak English, every day</p>
+   <div class="lg-card"><h1>${t==="signup"?"Create Account":t==="reset"?"Reset Password":"Account Login"}</h1>
+    ${t!=="reset"?`<div class="lg-seg"><span class="lg-pill ${t==="signup"?"r":""}"></span><button data-act="lgTab" data-v="login" aria-pressed="${t==="login"}">Login</button><button data-act="lgTab" data-v="signup" aria-pressed="${t==="signup"}">Create Account</button></div>`:""}
+    ${LG.err?`<p class="lg-err">${esc(LG.err)}</p>`:""}${LG.ok?`<p class="lg-ok">${esc(LG.ok)}</p>`:""}
+    ${form}
+    <div class="orline"><span>or</span></div>
+    <button class="gbtn wide" data-act="lgGoogle" ${LG.busy?"disabled":""}>${GLOGO}<span>Continue with Google</span></button></div>
+   <p class="lg-foot">© 2026 Ali Akbar · BD Webhut</p></main>`;
+}
+async function lgSubmit(){
+  const v=id=>($("#"+id)?.value||"").trim(),email=v("lg-email"),pass=$("#lg-pass")?.value||"",name=v("lg-name");
+  LG.err=LG.ok=null;
+  if(!email){LG.err="Email লেখো।";render();return;}
+  if(LG.tab!=="reset"&&!pass){LG.err="Password লেখো।";render();return;}
+  if(LG.tab==="signup"&&!name){LG.err="তোমার নাম লেখো।";render();return;}
+  LG.busy=true;LG.fresh=true;render();
+  try{const {auth,au}=await CLOUD.load();
+    if(LG.tab==="login")await auth.signInWithEmailAndPassword(au,email,pass);
+    else if(LG.tab==="signup"){const c=await auth.createUserWithEmailAndPassword(au,email,pass);try{await auth.updateProfile(c.user,{displayName:name});CLOUD.user&&(CLOUD.user.name=name);}catch(e){}}
+    else{await auth.sendPasswordResetEmail(au,email);LG.ok="Reset link পাঠানো হয়েছে। Email চেক করো (Spam ফোল্ডারও)।";LG.tab="login";}
+  }catch(e){LG.err=authMsg(e);}
+  LG.busy=false;render();
+}
+async function lgGoogle(){LG.err=null;LG.busy=true;LG.fresh=true;render();try{await CLOUD.signIn();if(CLOUD.err){LG.err=CLOUD.err;}}catch(e){LG.err=authMsg(e);}LG.busy=false;render();}
+/* after sign-in: open the user's profile straight away (or onboarding if the account is new) */
+async function afterLogin(){
+  if(PID&&prof()){APP.picker=false;APP.welcome=false;return;}
+  if(PROFILES.length===1){await switchProfile(PROFILES[0].id);return;}
+  if(PROFILES.length>1){APP.picker=true;APP.welcome=false;return;}
+  APP.welcome=true;
+}
+async function logoutAll(){
+  try{await CLOUD.syncNow(true);}catch(e){}
+  try{const {auth,au}=await CLOUD.load();await auth.signOut(au);}catch(e){}
+  try{Object.keys(localStorage).filter(k=>k.startsWith("aec4:")&&!/^aec4:(theme|rail|qopen)$/.test(k)).forEach(k=>localStorage.removeItem(k));sessionStorage.removeItem("aec4:here");}catch(e){}
+  CLOUD.user=null;PROFILES=[];PID=null;S=defaultState();CUSTOM={};MARKS={};L=null;
+  Object.assign(APP,{tab:"learn",picker:false,welcome:false,onb:null,story:null,cards:null,chat:null,warm:null,modal:null});
+  LG.tab="login";LG.err=null;LG.ok="তুমি লগআউট হয়েছ।";LASTKEY=null;render();window.scrollTo(0,0);
 }
 
 function allUnits(){return [...COURSE.units,...Object.values(CUSTOM).sort((a,b)=>(a.created||"").localeCompare(b.created||""))];}
@@ -2745,7 +2839,7 @@ function TABS_FOR(){return isKid()?[["learn","Learn",IC.learn],["practice","Play
   :[["learn","Learn",IC.learn],...(warmAllowed()?[["warm","Warm-up",IC.warm]]:[]),["practice","Practice",IC.practice],["stories","Stories",IC.story],["me","Me",IC.me]];}
 
 let LASTKEY=null,LASTSUB=null;
-function viewKey(){if(APP.welcome)return "welcome";if(APP.onb)return "onb:"+(APP.onb.edit||"new");if(APP.picker)return "picker";if(L)return L.done?"L:done":"L";if(APP.busy)return "busy";if(APP.warm)return "warm:"+APP.warm.step;if(APP.story)return "story:"+APP.story;if(APP.cards)return "cards";if(APP.chat)return "chat";return "tab:"+APP.tab;}
+function viewKey(){if(CLOUD.avail()&&!CLOUD.user)return "login:"+LG.tab;if(APP.welcome)return "welcome";if(APP.onb)return "onb:"+(APP.onb.edit||"new");if(APP.picker)return "picker";if(L)return L.done?"L:done":"L";if(APP.busy)return "busy";if(APP.warm)return "warm:"+APP.warm.step;if(APP.story)return "story:"+APP.story;if(APP.cards)return "cards";if(APP.chat)return "chat";return "tab:"+APP.tab;}
 function subKey(){if(APP.onb)return "o"+APP.onb.step;if(L&&!L.done)return "ex"+L.i;if(APP.warm)return "w"+APP.warm.ex+":"+APP.warm.tw+":"+(APP.warm.noPen?1:0);if(APP.cards)return "c"+APP.cards.i;if(!L&&!APP.busy&&!APP.story&&!APP.chat&&APP.tab==="learn")return "t:"+APP.track;return "";}
 function renderNav(instant){
   const t=$("#tabs"),tabs=TABS_FOR(),sig=tabs.map(x=>x[0]).join();
@@ -2762,7 +2856,9 @@ function render(){
   document.body.classList.toggle("kid",isKid());
   document.documentElement.classList.toggle("pk-on",!!APP.picker);
   document.querySelectorAll('meta[name="theme-color"]').forEach(m=>m.content=APP.picker?"#0c3a35":isDark()?"#0b1312":"#eef2ef");
-  if(APP.welcome) html=viewWelcome();
+  const gate=CLOUD.avail()&&!CLOUD.user;
+  if(gate) html=viewLogin();
+  else if(APP.welcome) html=viewWelcome();
   else if(APP.onb) html=viewOnb();
   else if(APP.picker) html=viewPicker();
   else if(L) html=viewLesson();
@@ -2776,7 +2872,7 @@ function render(){
   html=emojify(html);
   const root=$("#root"),key=viewKey(),sub=subKey(),first=LASTKEY===null;
   const nav=document.querySelector("nav.tabs"),navWasHidden=nav.hidden;
-  nav.hidden=!!(L||APP.warm||APP.welcome||APP.onb||APP.picker);
+  nav.hidden=!!(L||APP.warm||APP.welcome||APP.onb||APP.picker||gate);
   if(key!==LASTKEY){root.innerHTML=html;placeSeg(true);enterView(root,first);}
   else{const subChanged=sub!==LASTSUB;morph(root,html,subChanged);placeSeg(subChanged&&!sub.startsWith("t:"));if(subChanged)enterSub(root);}
   if(!nav.hidden)renderNav(first||navWasHidden);
@@ -3203,7 +3299,7 @@ const ACT={
  noSpeak(){HEAR.stop();L.ex=L.ex.slice(0,L.i+1).concat(L.ex.slice(L.i+1).filter(x=>!isSpeakEx(x)));L.fb=null;L.i++;if(L.i>=L.ex.length){finishSession();return;}toast("এই লেসনে আর বলার অনুশীলন আসবে না।");render();playIfAuto();},
  kchoose(el){kidChoose(el.dataset.id);},
  openChest(){const d=day();if(d.chest)return;d.chest=true;addXP(10);Store.save();SND.play("done");confetti(90);toast("🎁 +১০ XP! সব quest শেষ!");render();checkBadges();},
- onbStart(){APP.welcome=false;APP.onb={step:0,draft:{goals:[]}};render();},
+ onbStart(){APP.welcome=false;APP.onb={step:0,draft:{goals:[],name:(CLOUD.user&&CLOUD.user.name&&!PROFILES.length)?CLOUD.user.name.split(" ")[0]:""}};render();},
  onbSet(el){const O=APP.onb;O.draft[el.dataset.k]=el.dataset.k==="goal"?+el.dataset.v:el.dataset.v;if(el.dataset.k==="age"&&el.dataset.v==="kid")O.draft.goals=["kids"];render();},
  onbGoal(el){const g=APP.onb.draft.goals=APP.onb.draft.goals||[];const i=g.indexOf(el.dataset.v);if(i>=0)g.splice(i,1);else g.push(el.dataset.v);render();},
  onbBack(){const O=APP.onb;if(O.step>0){O.step--;render();}else{APP.onb=null;if(!PID)APP.picker=PROFILES.length>0,APP.welcome=!PROFILES.length;render();}},
@@ -3237,7 +3333,10 @@ const ACT={
  cardMenu(){APP.cardMenu=!APP.cardMenu;render();},
  pickCardUnit(el){APP.cardMenu=false;openCards(el.dataset.u);},
  googleSignIn(){CLOUD.signIn();},
- googleSignOut(){CLOUD.signOut();},
+ googleSignOut(){logoutAll();},
+ lgTab(el){LG.tab=el.dataset.v;LG.err=null;LG.ok=null;render();},
+ lgSubmit(){lgSubmit();},
+ lgGoogle(){lgGoogle();},
  syncNow(){CLOUD.busy=true;render();CLOUD.syncNow().then(()=>{CLOUD.busy=false;render();});},
  toggleTheme(){setTheme(isDark()?"light":"dark");SND.play("toggle");render();},
  toggleRail(){const on=document.documentElement.classList.toggle("rail-mini");UI.set("rail",on?"1":"0");SND.play("toggle");setTimeout(()=>{renderNav(true);placeSeg(true);},360);},
@@ -3319,7 +3418,7 @@ document.addEventListener("change",e=>{
   if(sw){S[sw]=e.target.checked;Store.save();SND.play("toggle");}
   if(e.target.id==="importFile"){const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const d=JSON.parse(rd.result);if(d.app!=="ali-english-coach-duo")throw 0;APP.confirm={type:"import",data:d};render();}catch(x){toast("এটা এই অ্যাপের backup না।");}};rd.readAsText(f);}
 });
-document.addEventListener("keydown",e=>{if(!L||L.done)return;if(e.key==="Enter"&&!e.shiftKey){if(L.fb){e.preventDefault();next();}else if(cur().t!=="match"){e.preventDefault();if(cur().t==="intro"||cur().t==="speak")ACT.skipEx();else grade();}}});
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target&&e.target.closest&&e.target.closest(".lg-card")){e.preventDefault();lgSubmit();return;}if(!L||L.done)return;if(e.key==="Enter"&&!e.shiftKey){if(L.fb){e.preventDefault();next();}else if(cur().t!=="match"){e.preventDefault();if(cur().t==="intro"||cur().t==="speak")ACT.skipEx();else grade();}}});
 document.addEventListener("visibilitychange",()=>{if(document.hidden)Store.flush();});
 
 /* ================= boot ================= */
@@ -3332,7 +3431,7 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)Store.flush
     if(here&&here.pid===PID){APP.tab=here.tab||"learn";if(here.track&&myTracks().some(t=>t[0]===here.track))APP.track=here.track;if(here.story&&storyOf(here.story))APP.story=here.story;}
     else if(PROFILES.length>1)APP.picker=true;}
   else if(PROFILES.length)APP.picker=true;else APP.welcome=true;
-  if(CLOUD.avail()&&UI.get("acct"))CLOUD.load().catch(()=>{});
+  if(CLOUD.avail()){try{await CLOUD.load();await Promise.race([CLOUD.ready,new Promise(r=>setTimeout(r,8000))]);}catch(e){LG.err="প্রথমবার লগইনের জন্য ইন্টারনেট লাগবে।";}}
   const sp=document.getElementById("splash"),left=Math.max(0,1700-(Date.now()-(window.__t0||Date.now())));
   await new Promise(r=>setTimeout(r,left));
   if(sp){sp.classList.add("out");setTimeout(()=>sp.remove(),650);}
