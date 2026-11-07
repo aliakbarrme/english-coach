@@ -68,4 +68,4 @@ const HEAR={
  },
  stop(){if(this.rec){try{this.rec.abort();}catch(e){}this.rec=null;}this.on=false;}
 };
-function hearErr(e){return e==="not-allowed"||e==="service-not-allowed"?"মাইক্রোফোনের অনুমতি দাও (অ্যাড্রেস বারের লক আইকন → Microphone → Allow)।":e==="no-speech"?"কিছু শোনা যায়নি। মাইকের কাছে জোরে বলো।":e==="network"?"Speech recognition-এর জন্য ইন্টারনেট লাগবে।":e==="audio-capture"?"Microphone pawa jay ni.":"শুনতে পারলাম না, আবার চেষ্টা করো।";}
+function hearErr(e){return e==="not-allowed"||e==="service-not-allowed"?"মাইক্রোফোন বন্ধ আছে। Claude অ্যাপের ভেতরের ব্রাউজারে মাইক চলে না, তাই Chrome/Edge বা ফোনে লিংকটা খোলো। আগে Block করে থাকলে অ্যাড্রেস বারের লক আইকন → Microphone → Allow। এখনকার মতো Skip চাপতে পারো।":e==="no-speech"?"কিছু শোনা যায়নি। মাইকের কাছে জোরে বলো।":e==="network"?"Speech recognition-এর জন্য ইন্টারনেট লাগবে।":e==="audio-capture"?"Microphone pawa jay ni.":"শুনতে পারলাম না, আবার চেষ্টা করো।";}

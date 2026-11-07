@@ -31,10 +31,12 @@ fs.writeFileSync(path.join(root, "tts_texts.json"), JSON.stringify(textMap, null
 const audioDir = path.join(root, "docs", "a");
 const clips = fs.existsSync(audioDir) ? fs.readdirSync(audioDir).filter(f => f.endsWith(".mp3")).map(f => f.slice(0, -4)) : [];
 
-const pageWith = (audio) => src("app.html")
-  .replace("/*__STYLE__*/", () => [src("style.css"), src("style-v6.css"), src("style-v7.css")].join("\n"))
+const emoDir = path.join(root, "docs", "e");
+const emojis = fs.existsSync(emoDir) ? fs.readdirSync(emoDir).filter(f => f.endsWith(".webp")).map(f => f.slice(0, -5)) : [];
+const pageWith = (audio, emo = []) => src("app.html")
+  .replace("/*__STYLE__*/", () => [src("style.css"), src("style-v6.css"), src("style-v7.css"), src("style-v8.css")].join("\n"))
   .replace("/*__VOICE__*/", () => src("voice.js").replace("/*__AUDIO__*/[]", JSON.stringify(audio)))
-  .replace("/*__EXTRAS__*/", () => [src("extras.js"), src("progress.js"), src("warmart.js")].join("\n"))
+  .replace("/*__EXTRAS__*/", () => [src("extras.js").replace("/*__EMOJI__*/[]", JSON.stringify(emo)), src("progress.js"), src("warmart.js")].join("\n"))
   .replace("/*__MOTION__*/", () => src("motion.js"))
   .replace("/*__CONTENT__*/", () => content)
   .replace("/*__WEB_URL__*/", () => WEB_URL);
@@ -68,7 +70,7 @@ fs.writeFileSync(path.join(root, "dist", "Ali-English-Coach.html"), standalone);
 // GitHub Pages / PWA build
 const docs = path.join(root, "docs");
 fs.mkdirSync(docs, { recursive: true });
-const pwa = head(pageWith(clips), `<link rel="manifest" href="manifest.webmanifest">
+const pwa = head(pageWith(clips, emojis), `<link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>`);
@@ -85,7 +87,7 @@ const C="coach-${ver}",A="coach-audio-v1";
 self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(["./","./index.html","./manifest.webmanifest","./icon-192.png"])).then(()=>self.skipWaiting()));});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C&&k!==A).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
 self.addEventListener("fetch",e=>{const r=e.request;if(r.method!=="GET")return;const u=new URL(r.url);
-  if(u.origin===location.origin&&u.pathname.includes("/a/")){e.respondWith(caches.open(A).then(c=>c.match(r).then(m=>m||fetch(r).then(res=>{if(res.ok)c.put(r,res.clone());return res;}))));return;}
+  if(u.origin===location.origin&&(u.pathname.includes("/a/")||u.pathname.includes("/e/"))){e.respondWith(caches.open(A).then(c=>c.match(r).then(m=>m||fetch(r).then(res=>{if(res.ok)c.put(r,res.clone());return res;}))));return;}
   e.respondWith(fetch(r).then(res=>{if(res.ok&&(u.origin===location.origin||r.url.includes("fonts.g"))){const cp=res.clone();caches.open(C).then(c=>c.put(r,cp));}return res;})
    .catch(()=>caches.match(r).then(m=>m||(r.mode==="navigate"?caches.match("./index.html"):Response.error()))));});
 `);
@@ -94,4 +96,4 @@ fs.writeFileSync(path.join(docs, ".nojekyll"), "");
 // Syntax-check every inline script.
 const scripts = [...page.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]).join("\n;\n");
 new Function(scripts);
-console.log("built", (Buffer.byteLength(pwa) / 1024).toFixed(0) + " KB", "units:", COURSE.units.length, "texts:", texts.size, "clips:", clips.length, "web:", WEB_URL || "(none)");
+console.log("built", (Buffer.byteLength(pwa) / 1024).toFixed(0) + " KB", "units:", COURSE.units.length, "texts:", texts.size, "clips:", clips.length, "emoji:", emojis.length, "web:", WEB_URL || "(none)");

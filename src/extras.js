@@ -1,3 +1,17 @@
+/* ================= 3D emoji images (Fluent, bundled in e/) ================= */
+const EMOJI_SET=new Set(/*__EMOJI__*/[]);
+const EMO_RE=/\p{Extended_Pictographic}(?:\uFE0F|\u20E3|\p{Emoji_Modifier}|\u200D\p{Extended_Pictographic}\uFE0F?\p{Emoji_Modifier}?)*|[0-9]\uFE0F\u20E3/gu;
+const ekey=e=>[...e].map(c=>c.codePointAt(0).toString(16)).filter(h=>h!=="fe0f").join("-");
+function emojify(html){
+  if(!EMOJI_SET.size)return html;
+  const parts=html.split(/(<[^>]*>)/);let skip=0;
+  for(let i=0;i<parts.length;i++){const p=parts[i];if(!p)continue;
+    if(p[0]==="<"){if(/^<(option|textarea|title|text)\b/i.test(p))skip++;else if(/^<\/(option|textarea|title|text)\b/i.test(p))skip=Math.max(0,skip-1);continue;}
+    if(skip)continue;
+    parts[i]=p.replace(EMO_RE,e=>{const k=ekey(e);return EMOJI_SET.has(k)?`<img class="emo" src="e/${k}.webp" alt="${e}" draggable="false">`:e;});}
+  return parts.join("");
+}
+
 /* ================= profiles ================= */
 const AVATARS=["🧑🏽‍💻","👨🏽","👩🏽","🧔🏽","👩🏽‍🦱","👧🏽","👦🏽","👶🏽","🧒🏽","👵🏽","👴🏽","🦁","🐯","🐼","🦊","🐰","🐱","🐶","🦄","🐸","🐧","🦋","🚀","⭐"];
 const AGES=[["kid","Kid","3–7 বছর","🧸","ছবি আর আওয়াজে খেলা, পড়তে হবে না"],["teen","Teen","8–15 বছর","🎒","স্কুল, বন্ধু, প্রতিদিনের কথা"],["adult","Adult","16+","💼","কাজ, পরিবার, প্রতিদিনের কথা"]];

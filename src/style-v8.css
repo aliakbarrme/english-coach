@@ -1,0 +1,47 @@
+/* ===================== v8: 3D emoji images, realistic warm-up faces, roomier lesson player ===================== */
+.emo{width:1.2em;height:1.2em;display:inline-block;vertical-align:-.24em;object-fit:contain;user-select:none;-webkit-user-drag:none;pointer-events:none}
+.ktile .emo,.kemoji .emo,.cardem .emo,.sticker-win .emo,.pem .emo{width:1.05em;height:1.05em;vertical-align:middle;filter:drop-shadow(0 10px 14px #10231f2e)}
+.nem .emo{width:34px;height:34px;vertical-align:middle}
+.nem.dim .emo{filter:grayscale(1)}
+.av .emo{width:72%;height:72%;vertical-align:middle}
+.qic .emo,.skic .emo,.oic .emo{width:22px;height:22px;vertical-align:middle}
+.onb-ic .emo{width:56px;height:56px}
+.onb-ic.big .emo{width:88px;height:88px}
+.badge span .emo{width:34px;height:34px}
+.stickers span .emo{width:36px;height:36px}
+.lvhero.kid .lvbig .emo{width:44px;height:44px}
+.floaters .emo{width:32px;height:32px}
+.mstep .mic .emo{width:30px;height:30px}
+/* realistic warm-up faces */
+.wface{position:relative;width:min(220px,62vw);aspect-ratio:1;margin:0 auto;display:grid;place-items:center;font-size:clamp(120px,36vw,160px);line-height:1}
+.wface>span{grid-area:1/1;display:grid;place-items:center}
+.wface .emo{width:1em;height:1em;filter:drop-shadow(0 16px 22px #10231f33)}
+.wface .wov{position:absolute;inset:-4%;width:108%;height:108%;overflow:visible;pointer-events:none}
+.wface.slow .wa{animation:fa 3s var(--ease) infinite}.wface.slow .wb{animation:fb 3s var(--ease) infinite}
+.wface.swap .wa{animation:fa 2.4s var(--ease) infinite}.wface.swap .wb{animation:fb 2.4s var(--ease) infinite}
+.wface.snap .wa{animation:fa 1.2s steps(1,end) infinite}.wface.snap .wb{animation:fb 1.2s steps(1,end) infinite}
+.wface.mirror .wb .emo{transform:scaleX(-1)}
+.wface.shake .wa{animation:shake .14s linear infinite}
+.wface.bob .wa{animation:bobv 2.4s var(--ease) infinite}
+@keyframes fa{0%,40%{opacity:1;scale:1}50%,90%{opacity:0;scale:.95}100%{opacity:1;scale:1}}
+@keyframes fb{0%,40%{opacity:0;scale:.95}50%,90%{opacity:1;scale:1.04}100%{opacity:0;scale:.95}}
+@keyframes shake{25%{translate:2px -1px}75%{translate:-2px 1px}}
+@keyframes bobv{25%{translate:0 -10px}75%{translate:0 10px}}
+.wov .spin{transform-origin:100px 100px;transform-box:view-box;animation:spin 3s linear infinite}
+@keyframes spin{to{rotate:360deg}}
+.wov .blink{animation:blink2 .8s infinite}
+@keyframes blink2{50%{opacity:.15}}
+.wov .w-air path{stroke-dasharray:6 6;animation:dash .8s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-24}}
+.wov .w-lbl{font:700 18px var(--font)}
+.wthumb .wface{width:80px;font-size:56px;border-radius:22px;background:var(--surface);border:1px solid var(--line)}
+.wthumb .wface .emo{filter:none}
+.wthumb .wov .w-lbl{font-size:22px}
+/* roomier lesson player */
+.player .head{padding-top:18px;padding-bottom:12px}
+.player .body{padding-top:22px}
+.player .foot{padding-top:16px;padding-bottom:calc(22px + env(safe-area-inset-bottom,0px))}
+@media (min-width:700px){.player .head{padding-top:30px;padding-bottom:16px}.player .body{padding-top:30px}.player .foot{padding-top:20px;padding-bottom:calc(32px + env(safe-area-inset-bottom,0px))}}
+.kidstage{gap:14px}
+.ktile .emo{width:64%;height:64%}
+.kgrid.six .ktile .emo{width:60%;height:60%}

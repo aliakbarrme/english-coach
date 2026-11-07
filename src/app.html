@@ -334,6 +334,7 @@ function render(){
   else if(APP.chat) html=viewChat();
   else html=`<main class="view ${({learn:"dash",me:"wide",practice:"mid",stories:"mid"})[APP.tab]||""}">${topbar()}${saveWarn()}${({learn:viewLearn,warm:viewWarm,practice:viewPractice,stories:viewStories,me:viewMe})[APP.tab]()}</main>`;
   if(APP.modal) html+=APP.modal;
+  html=emojify(html);
   const root=$("#root"),key=viewKey(),sub=subKey(),first=LASTKEY===null;
   const nav=document.querySelector("nav.tabs"),navWasHidden=nav.hidden;
   nav.hidden=!!(L||APP.warm||APP.welcome||APP.onb||APP.picker);

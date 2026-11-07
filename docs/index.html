@@ -578,6 +578,54 @@ nav.tabs .in{grid-template-columns:repeat(var(--n,5),1fr)}
 
 :root{--font:"Geist","Anek Bangla",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
 .lvhero.sm{padding:10px;gap:12px}.lvhero.sm .lvbig{min-width:52px;height:52px;border-radius:16px;font-size:1.1rem}.lvhero.kid.sm .lvbig{font-size:1.8rem}
+
+/* ===================== v8: 3D emoji images, realistic warm-up faces, roomier lesson player ===================== */
+.emo{width:1.2em;height:1.2em;display:inline-block;vertical-align:-.24em;object-fit:contain;user-select:none;-webkit-user-drag:none;pointer-events:none}
+.ktile .emo,.kemoji .emo,.cardem .emo,.sticker-win .emo,.pem .emo{width:1.05em;height:1.05em;vertical-align:middle;filter:drop-shadow(0 10px 14px #10231f2e)}
+.nem .emo{width:34px;height:34px;vertical-align:middle}
+.nem.dim .emo{filter:grayscale(1)}
+.av .emo{width:72%;height:72%;vertical-align:middle}
+.qic .emo,.skic .emo,.oic .emo{width:22px;height:22px;vertical-align:middle}
+.onb-ic .emo{width:56px;height:56px}
+.onb-ic.big .emo{width:88px;height:88px}
+.badge span .emo{width:34px;height:34px}
+.stickers span .emo{width:36px;height:36px}
+.lvhero.kid .lvbig .emo{width:44px;height:44px}
+.floaters .emo{width:32px;height:32px}
+.mstep .mic .emo{width:30px;height:30px}
+/* realistic warm-up faces */
+.wface{position:relative;width:min(220px,62vw);aspect-ratio:1;margin:0 auto;display:grid;place-items:center;font-size:clamp(120px,36vw,160px);line-height:1}
+.wface>span{grid-area:1/1;display:grid;place-items:center}
+.wface .emo{width:1em;height:1em;filter:drop-shadow(0 16px 22px #10231f33)}
+.wface .wov{position:absolute;inset:-4%;width:108%;height:108%;overflow:visible;pointer-events:none}
+.wface.slow .wa{animation:fa 3s var(--ease) infinite}.wface.slow .wb{animation:fb 3s var(--ease) infinite}
+.wface.swap .wa{animation:fa 2.4s var(--ease) infinite}.wface.swap .wb{animation:fb 2.4s var(--ease) infinite}
+.wface.snap .wa{animation:fa 1.2s steps(1,end) infinite}.wface.snap .wb{animation:fb 1.2s steps(1,end) infinite}
+.wface.mirror .wb .emo{transform:scaleX(-1)}
+.wface.shake .wa{animation:shake .14s linear infinite}
+.wface.bob .wa{animation:bobv 2.4s var(--ease) infinite}
+@keyframes fa{0%,40%{opacity:1;scale:1}50%,90%{opacity:0;scale:.95}100%{opacity:1;scale:1}}
+@keyframes fb{0%,40%{opacity:0;scale:.95}50%,90%{opacity:1;scale:1.04}100%{opacity:0;scale:.95}}
+@keyframes shake{25%{translate:2px -1px}75%{translate:-2px 1px}}
+@keyframes bobv{25%{translate:0 -10px}75%{translate:0 10px}}
+.wov .spin{transform-origin:100px 100px;transform-box:view-box;animation:spin 3s linear infinite}
+@keyframes spin{to{rotate:360deg}}
+.wov .blink{animation:blink2 .8s infinite}
+@keyframes blink2{50%{opacity:.15}}
+.wov .w-air path{stroke-dasharray:6 6;animation:dash .8s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-24}}
+.wov .w-lbl{font:700 18px var(--font)}
+.wthumb .wface{width:80px;font-size:56px;border-radius:22px;background:var(--surface);border:1px solid var(--line)}
+.wthumb .wface .emo{filter:none}
+.wthumb .wov .w-lbl{font-size:22px}
+/* roomier lesson player */
+.player .head{padding-top:18px;padding-bottom:12px}
+.player .body{padding-top:22px}
+.player .foot{padding-top:16px;padding-bottom:calc(22px + env(safe-area-inset-bottom,0px))}
+@media (min-width:700px){.player .head{padding-top:30px;padding-bottom:16px}.player .body{padding-top:30px}.player .foot{padding-top:20px;padding-bottom:calc(32px + env(safe-area-inset-bottom,0px))}}
+.kidstage{gap:14px}
+.ktile .emo{width:64%;height:64%}
+.kgrid.six .ktile .emo{width:60%;height:60%}
 </style>
 
 <div id="root"><main class="view"><h1>Loading…</h1></main></div>
@@ -1559,7 +1607,7 @@ const HEAR={
  },
  stop(){if(this.rec){try{this.rec.abort();}catch(e){}this.rec=null;}this.on=false;}
 };
-function hearErr(e){return e==="not-allowed"||e==="service-not-allowed"?"মাইক্রোফোনের অনুমতি দাও (অ্যাড্রেস বারের লক আইকন → Microphone → Allow)।":e==="no-speech"?"কিছু শোনা যায়নি। মাইকের কাছে জোরে বলো।":e==="network"?"Speech recognition-এর জন্য ইন্টারনেট লাগবে।":e==="audio-capture"?"Microphone pawa jay ni.":"শুনতে পারলাম না, আবার চেষ্টা করো।";}
+function hearErr(e){return e==="not-allowed"||e==="service-not-allowed"?"মাইক্রোফোন বন্ধ আছে। Claude অ্যাপের ভেতরের ব্রাউজারে মাইক চলে না, তাই Chrome/Edge বা ফোনে লিংকটা খোলো। আগে Block করে থাকলে অ্যাড্রেস বারের লক আইকন → Microphone → Allow। এখনকার মতো Skip চাপতে পারো।":e==="no-speech"?"কিছু শোনা যায়নি। মাইকের কাছে জোরে বলো।":e==="network"?"Speech recognition-এর জন্য ইন্টারনেট লাগবে।":e==="audio-capture"?"Microphone pawa jay ni.":"শুনতে পারলাম না, আবার চেষ্টা করো।";}
 
 const fill=s=>String(s).replace(/\{d1\}/g,S.names.d1||"sweetie").replace(/\{d2\}/g,S.names.d2||"baby");
 const fillBn=s=>String(s).replace(/\{d1\}/g,S.names.d1||"সোনা").replace(/\{d2\}/g,S.names.d2||"বাবু");
@@ -1644,6 +1692,20 @@ function warmToday(){return !!S.days[today()]?.warm;}
 
 /* ================= course helpers ================= */
 const TRACKS=[["kids","Kids","ছোটদের জগৎ"],["family","Family","পরিবার"],["client","Work","কাজ ও ক্লায়েন্ট"],["everyday","Everyday","সবার সাথে"]];
+/* ================= 3D emoji images (Fluent, bundled in e/) ================= */
+const EMOJI_SET=new Set(["1f0cf","1f308","1f319","1f31f","1f324","1f331","1f333","1f338","1f33f","1f343","1f347","1f349","1f34a","1f34c","1f34e","1f35a","1f35e","1f370","1f37d","1f380","1f381","1f382","1f388","1f389","1f392","1f393","1f3a4","1f3a7","1f3af","1f3c3","1f3c6","1f3ca","1f3e1","1f410","1f414","1f418","1f41f","1f427","1f42e","1f42f","1f430","1f431","1f435","1f436","1f438","1f43c","1f441","1f442","1f443","1f444","1f445","1f44b","1f44f","1f45f","1f466-1f3fd","1f466","1f467-1f3fd","1f467","1f468-1f3fd","1f468","1f469-1f3fd-200d-1f9b1","1f469-1f3fd","1f469","1f474-1f3fd","1f475-1f3fd","1f475","1f476-1f3fd","1f476","1f483","1f487","1f48e","1f4a7","1f4aa","1f4ac","1f4bc","1f4c5","1f4c8","1f4d6","1f4d8","1f4da","1f501","1f50a","1f51f","1f525","1f534","1f535","1f590","1f5bc","1f600","1f601","1f60b","1f60c","1f60f","1f610","1f617","1f619","1f61b","1f620","1f622","1f628","1f62c","1f62e","1f634","1f642","1f64c","1f64f","1f680","1f697","1f6aa","1f6cf","1f7e0","1f7e1","1f7e2","1f7e3","1f7e4","1f91d","1f92a","1f947","1f948","1f949","1f95a","1f95b","1f964","1f96d","1f97a","1f981","1f984","1f986","1f98a","1f98b","1f998","1f9b5","1f9b6","1f9b7","1f9d1-1f3fd-200d-1f4bb","1f9d2-1f3fd","1f9d4-1f3fd","1f9d7","1f9e9","1f9ee","1f9f1","1f9f8","1f9fc","1fa77","1fa81","1fa91","1faa5","23f1","2615","261d","26a1","26aa","26ab","26bd","270b","270d","2728","2764","2b50","30-20e3","31-20e3","32-20e3","33-20e3","34-20e3","35-20e3","36-20e3","37-20e3","38-20e3","39-20e3"]);
+const EMO_RE=/\p{Extended_Pictographic}(?:\uFE0F|\u20E3|\p{Emoji_Modifier}|\u200D\p{Extended_Pictographic}\uFE0F?\p{Emoji_Modifier}?)*|[0-9]\uFE0F\u20E3/gu;
+const ekey=e=>[...e].map(c=>c.codePointAt(0).toString(16)).filter(h=>h!=="fe0f").join("-");
+function emojify(html){
+  if(!EMOJI_SET.size)return html;
+  const parts=html.split(/(<[^>]*>)/);let skip=0;
+  for(let i=0;i<parts.length;i++){const p=parts[i];if(!p)continue;
+    if(p[0]==="<"){if(/^<(option|textarea|title|text)\b/i.test(p))skip++;else if(/^<\/(option|textarea|title|text)\b/i.test(p))skip=Math.max(0,skip-1);continue;}
+    if(skip)continue;
+    parts[i]=p.replace(EMO_RE,e=>{const k=ekey(e);return EMOJI_SET.has(k)?`<img class="emo" src="e/${k}.webp" alt="${e}" draggable="false">`:e;});}
+  return parts.join("");
+}
+
 /* ================= profiles ================= */
 const AVATARS=["🧑🏽‍💻","👨🏽","👩🏽","🧔🏽","👩🏽‍🦱","👧🏽","👦🏽","👶🏽","🧒🏽","👵🏽","👴🏽","🦁","🐯","🐼","🦊","🐰","🐱","🐶","🦄","🐸","🐧","🦋","🚀","⭐"];
 const AGES=[["kid","Kid","3–7 বছর","🧸","ছবি আর আওয়াজে খেলা, পড়তে হবে না"],["teen","Teen","8–15 বছর","🎒","স্কুল, বন্ধু, প্রতিদিনের কথা"],["adult","Adult","16+","💼","কাজ, পরিবার, প্রতিদিনের কথা"]];
@@ -1833,45 +1895,23 @@ function progressMini(){
   return `<div class="card"><div class="row between"><h3>আমার লেভেল</h3><button class="linkbtn" data-act="tab" data-v="me">পুরো রিপোর্ট →</button></div>${head}${isKid()?"":`<div class="skills">${skillRows()}</div>`}</div>`;
 }
 
-/* ================= warm-up illustrations: animated SVG faces, one per mouth exercise ================= */
+/* ================= warm-up illustrations: realistic 3D faces (Fluent emoji) + animated guides ================= */
 function warmArt(i){
-  const A=(attr,values,dur,extra="")=>`<animate attributeName="${attr}" values="${values}" dur="${dur}" repeatCount="indefinite" ${extra}/>`;
-  const T=(type,values,dur,extra="")=>`<animateTransform attributeName="transform" type="${type}" values="${values}" dur="${dur}" repeatCount="indefinite" ${extra}/>`;
-  const face=(inner,cheeks=true)=>`<svg class="wart" viewBox="0 0 200 200" role="img" aria-hidden="true">
-   <circle cx="100" cy="104" r="78" class="w-skin"/>
-   <path d="M30 92 Q34 30 100 26 Q166 30 170 92 Q160 58 100 52 Q40 58 30 92Z" class="w-hair"/>
-   <circle cx="72" cy="96" r="6.5" class="w-eye"/><circle cx="128" cy="96" r="6.5" class="w-eye"/>
-   <path d="M62 82 Q72 76 82 81" class="w-brow"/><path d="M118 81 Q128 76 138 82" class="w-brow"/>
-   ${cheeks?`<ellipse cx="58" cy="122" rx="11" ry="6" class="w-blush"/><ellipse cx="142" cy="122" rx="11" ry="6" class="w-blush"/>`:""}
-   ${inner}</svg>`;
+  const svg=inner=>`<svg class="wov" viewBox="0 0 200 200" aria-hidden="true">${inner}</svg>`;
   const lbl=(x,y,t,cls="")=>`<text x="${x}" y="${y}" class="w-lbl ${cls}">${t}</text>`;
+  const two=(a,b,cls,ov="")=>`<div class="wface ${cls}" role="img" aria-hidden="true"><span class="wa">${a}</span><span class="wb">${b}</span>${ov}</div>`;
+  const one=(a,cls,ov="")=>`<div class="wface ${cls}" role="img" aria-hidden="true"><span class="wa solo">${a}</span>${ov}</div>`;
   switch(i){
-   case 0: return face(`<ellipse cx="100" cy="140" rx="17" ry="5" class="w-mouth">${A("ry","4;24;24;4;4","3s","keyTimes=\"0;.35;.6;.9;1\"")}</ellipse>
-     <ellipse cx="100" cy="150" rx="10" ry="4" class="w-tongue">${A("cy","142;156;156;142;142","3s","keyTimes=\"0;.35;.6;.9;1\"")}</ellipse>
-     <path d="M168 120 v40 M160 150 l8 10 8-10" class="w-arrow"/>`);
-   case 1: return face(`<g>${T("translate","0 0;1.6 -1;-1.6 1;1 1;0 0",".16s")}<ellipse cx="100" cy="140" rx="20" ry="7" class="w-lip"/><path d="M82 140 Q100 136 118 140" class="w-line"/></g>
-     <g class="w-waves"><path d="M128 132 q6 8 0 16"/><path d="M138 126 q10 14 0 28"/>${A("opacity","0;1;0","0.8s")}</g>${lbl(150,118,"brrr")}`);
-   case 2: return face(`<path class="w-mouth" d="M76 134 Q100 158 124 134 Q100 144 76 134 Z">${A("d","M76 134 Q100 158 124 134 Q100 144 76 134 Z;M76 134 Q100 158 124 134 Q100 144 76 134 Z;M91 138 Q100 150 109 138 Q100 126 91 138 Z;M91 138 Q100 150 109 138 Q100 126 91 138 Z;M76 134 Q100 158 124 134 Q100 144 76 134 Z","2.4s","keyTimes=\"0;.35;.5;.85;1\"")}</path>
-     ${lbl(148,124,"eee","w-a")}${lbl(148,124,"ooo","w-alt")}`);
-   case 3: return face(`<path d="M80 140 Q100 146 120 140" class="w-line w-thick"/>
-     <circle r="7" class="w-bulge"><animateMotion dur="2.4s" repeatCount="indefinite" path="M100 124 A20 14 0 1 1 99.9 124"/></circle>
-     <path d="M140 116 a26 26 0 1 1 -10 -16" class="w-arrow"/><path d="M127 96 l4 6 6 -3" class="w-arrow"/>`);
-   case 4: return face(`<path d="M84 140 Q100 144 116 140" class="w-line w-thick"/>
-     <circle cx="62" cy="134" r="12" class="w-bulge">${A("r","2;13;13;2;2;2","3s","keyTimes=\"0;.15;.4;.5;.9;1\"")}</circle>
-     <circle cx="138" cy="134" r="12" class="w-bulge">${A("r","2;2;2;13;13;2","3s","keyTimes=\"0;.5;.55;.65;.9;1\"")}</circle>
-     ${lbl(26,176,"left")}${lbl(150,176,"right")}`,false);
-   case 5: return face(`<ellipse cx="100" cy="138" rx="18" ry="13" class="w-mouth"/>
-     <rect x="89" y="132" width="22" height="34" rx="11" class="w-tongue">${A("y","134;150;118;150;134","3.6s")}${A("height","20;40;30;40;20","3.6s")}</rect>
-     <path d="M170 118 v-16 M164 108 l6 -7 6 7 M170 150 v16 M164 160 l6 7 6 -7" class="w-arrow"/>`);
-   case 6: return face(`<ellipse cx="100" cy="140" rx="20" ry="12" class="w-mouth"/><rect x="84" y="128" width="32" height="7" rx="2" class="w-teeth"/>
-     <ellipse cx="100" cy="138" rx="12" ry="5" class="w-tongue"/>
-     <g class="w-air"><path d="M124 136 h18 M124 142 h26 M124 148 h16">${A("stroke-dashoffset","40;0","0.9s")}</path></g>${lbl(150,124,"th")}`);
-   case 7: return face(`<g>${A("opacity","1;1;0;0;1","3s","keyTimes=\"0;.45;.5;.95;1\"")}<path d="M80 138 Q100 150 120 138" class="w-lip w-lipline"/><rect x="86" y="130" width="28" height="8" rx="2" class="w-teeth"/>${lbl(150,124,"v")}</g>
-     <g opacity="0">${A("opacity","0;0;1;1;0","3s","keyTimes=\"0;.45;.5;.95;1\"")}<circle cx="100" cy="140" r="9" class="w-lip"/><circle cx="100" cy="140" r="4" class="w-mouth"/>${lbl(150,124,"w")}</g>`);
-   case 8: return face(`<ellipse cx="100" cy="140" rx="16" ry="8" class="w-mouth">${A("ry","9;9;0.5;0.5;9","1.2s","keyTimes=\"0;.5;.6;.95;1\"")}</ellipse>
-     ${lbl(140,118,"t!")}${lbl(150,140,"d!","w-alt")}${lbl(140,162,"k!")}`);
-   case 9: return face(`<ellipse cx="100" cy="140" rx="16" ry="11" class="w-mouth"/><ellipse cx="100" cy="134" rx="11" ry="5" class="w-tongue">${A("cy","146;134;134;146","0.9s","keyTimes=\"0;.3;.6;1\"")}</ellipse>
-     <g class="w-burst">${A("opacity","0;0;1;0","0.9s","keyTimes=\"0;.3;.4;1\"")}<path d="M134 120 l10 -8 M138 132 h14 M134 144 l10 8"/>${lbl(150,110,"click")}</g>`);
+   case 0: return two("😐","😮","slow",svg(`<path d="M182 70 v60 M174 80 l8 -10 8 10 M174 120 l8 10 8 -10" class="w-arrow"/>`));
+   case 1: return one("😗","shake",svg(`<g class="w-waves blink"><path d="M150 96 q8 12 0 24"/><path d="M164 88 q14 20 0 40"/></g>${lbl(150,72,"brrr")}`));
+   case 2: return two("😁","😗","swap",svg(`${lbl(156,40,"eee","w-a")}${lbl(156,40,"ooo","w-alt")}`));
+   case 3: return one("😋","",svg(`<g class="spin"><path d="M100 18 a82 82 0 1 1 -58 24" class="w-arrow"/><path d="M36 34 l6 10 10 -4" class="w-arrow"/></g>`));
+   case 4: return two("😏","😏","swap mirror",svg(`${lbl(8,190,"left","w-a")}${lbl(150,190,"right","w-alt")}`));
+   case 5: return one("😛","bob",svg(`<path d="M186 60 v-24 M178 46 l8 -10 8 10 M186 140 v24 M178 154 l8 10 8 -10" class="w-arrow"/>`));
+   case 6: return one("😛","",svg(`<g class="w-air"><path d="M150 120 h30 M150 130 h42 M150 140 h26"/></g>${lbl(160,96,"th")}`));
+   case 7: return two("😬","😗","swap",svg(`${lbl(166,44,"v","w-a")}${lbl(166,44,"w","w-alt")}`));
+   case 8: return two("😀","😐","snap",svg(`${lbl(160,50,"t!")}${lbl(170,104,"d!")}${lbl(160,158,"k!")}`));
+   case 9: return two("😙","😮","snap",svg(`<g class="w-burst blink"><path d="M150 62 l14 -12 M156 84 h20 M150 106 l14 12"/></g>${lbl(140,44,"click")}`));
   }
   return "";
 }
@@ -2229,6 +2269,7 @@ function render(){
   else if(APP.chat) html=viewChat();
   else html=`<main class="view ${({learn:"dash",me:"wide",practice:"mid",stories:"mid"})[APP.tab]||""}">${topbar()}${saveWarn()}${({learn:viewLearn,warm:viewWarm,practice:viewPractice,stories:viewStories,me:viewMe})[APP.tab]()}</main>`;
   if(APP.modal) html+=APP.modal;
+  html=emojify(html);
   const root=$("#root"),key=viewKey(),sub=subKey(),first=LASTKEY===null;
   const nav=document.querySelector("nav.tabs"),navWasHidden=nav.hidden;
   nav.hidden=!!(L||APP.warm||APP.welcome||APP.onb||APP.picker);
