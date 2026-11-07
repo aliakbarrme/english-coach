@@ -2395,9 +2395,18 @@ const CLOUD={
   const was=this.user&&this.user.uid;
   this.user=u?{uid:u.uid,email:u.email,name:u.displayName,photo:u.photoURL}:null;
   UI.set("acct",u?"1":"");
-  if(u&&u.uid!==was){await this.pull();if(LG.fresh){LG.fresh=false;LG.ok=null;await afterLogin();toast("☁️ "+(u.email||"")+" দিয়ে লগইন হয়েছে");}}
+  if(u&&u.uid!==was){await this.claimDevice(u.uid);await this.pull();if(LG.fresh){LG.fresh=false;LG.ok=null;await afterLogin();toast("☁️ "+(u.email||"")+" দিয়ে লগইন হয়েছে");}}
   if(this._ready){this._ready();this._ready=null;}
   render();
+ },
+ /* data on this device belongs to one account: if a different account signs in, wipe it first so nothing leaks across accounts */
+ async claimDevice(uid){
+  const owner=UI.get("owner");
+  if(owner&&owner!==uid){
+   try{Object.keys(localStorage).filter(k=>k.startsWith("aec4:")&&!/^aec4:(theme|rail|qopen|owner|acct)$/.test(k)).forEach(k=>localStorage.removeItem(k));sessionStorage.removeItem("aec4:here");}catch(e){}
+   PROFILES=[];PID=null;S=defaultState();CUSTOM={};MARKS={};L=null;APP.picker=false;APP.story=APP.cards=APP.chat=APP.warm=null;
+  }
+  UI.set("owner",uid);
  },
  ref(...p){const {fs,db}=this.api;return fs.doc(db,"users",this.user.uid,...p);},
  localPack(pid){
