@@ -1,5 +1,7 @@
 /* ================= 3D emoji images (Fluent, bundled in e/) ================= */
 const EMOJI_SET=new Set(/*__EMOJI__*/[]);
+const ART_OK=/*__ART__*/false;
+const art=(n,cls="")=>ART_OK?`<img class="art ${cls}" src="i/${n}.webp" alt="" loading="lazy" draggable="false">`:"";
 const EMO_RE=/\p{Extended_Pictographic}(?:\uFE0F|\u20E3|\p{Emoji_Modifier}|\u200D\p{Extended_Pictographic}\uFE0F?\p{Emoji_Modifier}?)*|[0-9]\uFE0F\u20E3/gu;
 const ekey=e=>[...e].map(c=>c.codePointAt(0).toString(16)).filter(h=>h!=="fe0f").join("-");
 function emojify(html){
@@ -105,10 +107,10 @@ function confetti(n=60){
 
 /* ================= welcome, onboarding, profile picker ================= */
 function viewWelcome(){
-  return `<main class="welcome"><div class="wl-hero"><div class="floaters" aria-hidden="true"><span>💬</span><span>🎧</span><span>🎤</span><span>📖</span><span>⭐</span><span>🧸</span></div>
-   <div class="wl-mark">${IC.learn}</div><span class="eyebrow">English Coach</span><h1>English বলো আত্মবিশ্বাসে, প্রতিদিন</h1>
+  return `<main class="welcome"><div class="wl-hero">${ART_OK?"":`<div class="floaters" aria-hidden="true"><span>💬</span><span>🎧</span><span>🎤</span><span>📖</span><span>⭐</span><span>🧸</span></div>`}
+   ${ART_OK?art("hero-family","wl-hero-img"):`<div class="wl-mark">${IC.learn}</div>`}<span class="eyebrow">English Coach</span><h1>English বলো আত্মবিশ্বাসে, প্রতিদিন</h1>
    <p class="muted bn">ছোট-বড় সবার জন্য: বাচ্চারা ছবি আর খেলায়, বড়রা কাজ, পরিবার আর দৈনন্দিন কথায়। প্রতিদিন ১০–২০ মিনিট।</p></div>
-   <div class="method">${[["👄","Warm-up","মুখ আর জিভ রেডি"],["🧩","Learn","ছোট ছোট লেসন, গেমের মতো"],["🎤","Speak","বলো, অ্যাপ শুনে মিলিয়ে দেখে"],["📖","Story","গল্প শুনে নিজে বলো"]].map(([i,t,b],k)=>`<div class="mstep"><span class="mic">${i}</span><b>${k+1}. ${t}</b><span class="tiny bn muted">${b}</span></div>`).join("")}</div>
+   <div class="method">${[["👄","Warm-up","মুখ আর জিভ রেডি","m-warm"],["🧩","Learn","ছোট ছোট লেসন, গেমের মতো","m-learn"],["🎤","Speak","বলো, অ্যাপ শুনে মিলিয়ে দেখে","m-speak"],["📖","Story","গল্প শুনে নিজে বলো","m-story"]].map(([i,t,b,a],k)=>`<div class="mstep">${ART_OK?art(a,"mart"):`<span class="mic">${i}</span>`}<b>${k+1}. ${t}</b><span class="tiny bn muted">${b}</span></div>`).join("")}</div>
    <button class="btn wide xl" data-act="onbStart">শুরু করি</button>
    <p class="tiny muted center">অ্যাকাউন্ট লাগবে না। অগ্রগতি এই ডিভাইসে থাকে, backup নেওয়া যায়।</p></main>`;
 }

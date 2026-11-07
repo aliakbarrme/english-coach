@@ -626,6 +626,30 @@ nav.tabs .in{grid-template-columns:repeat(var(--n,5),1fr)}
 .kidstage{gap:14px}
 .ktile .emo{width:64%;height:64%}
 .kgrid.six .ktile .emo{width:60%;height:60%}
+/* 3D character illustrations */
+.art{display:block;max-width:100%;height:auto;mix-blend-mode:multiply;user-select:none;-webkit-user-drag:none}
+:root[data-theme="dark"] .art{mix-blend-mode:normal}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .art{mix-blend-mode:normal;border-radius:24px}}
+.wl-hero-img{width:min(340px,82vw);margin:0 auto -6px}
+.wl-hero{text-align:center;align-items:center}
+.mstep .mart{width:96px;margin:-6px auto 2px}
+.mstep{align-items:center;text-align:center}
+.pagehero{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pagehero>div{display:flex;flex-direction:column;gap:6px;min-width:0}
+.pagehero .phimg{width:110px;flex:none}
+@media (min-width:700px){.pagehero .phimg{width:160px}}
+.wart-card.photo{padding:0;overflow:hidden;background:#ebf0ec}
+.wart-card .wimg{width:100%;mix-blend-mode:normal}
+.wthumb .wtimg{width:80px;height:80px;object-fit:cover;border-radius:20px;mix-blend-mode:normal;border:1px solid var(--line)}
+/* lesson window: floating card with breathing room on wide screens */
+@media (min-width:760px){
+  .player{inset:28px auto 28px 50%;translate:-50% 0;width:min(780px,calc(100vw - 64px));border-radius:30px;border:1px solid var(--line);box-shadow:var(--shadow-pop);overflow:hidden;padding-top:0}
+  .player .foot{position:absolute;border-radius:0 0 30px 30px}
+  .player .head{padding:26px 28px 14px}
+  .player .body{padding:26px 32px 200px}
+  .player .foot{padding:18px 28px 26px}
+  body:has(.player){background:radial-gradient(60vmax 50vmax at 12% -10%,var(--glow-a),transparent 70%),color-mix(in srgb,var(--bg) 88%,#10231f)}
+}
 </style>
 
 <div id="root"><main class="view"><h1>Loading…</h1></main></div>
@@ -1694,6 +1718,8 @@ function warmToday(){return !!S.days[today()]?.warm;}
 const TRACKS=[["kids","Kids","ছোটদের জগৎ"],["family","Family","পরিবার"],["client","Work","কাজ ও ক্লায়েন্ট"],["everyday","Everyday","সবার সাথে"]];
 /* ================= 3D emoji images (Fluent, bundled in e/) ================= */
 const EMOJI_SET=new Set(["1f0cf","1f308","1f319","1f31f","1f324","1f331","1f333","1f338","1f33f","1f343","1f347","1f349","1f34a","1f34c","1f34e","1f35a","1f35e","1f370","1f37d","1f380","1f381","1f382","1f388","1f389","1f392","1f393","1f3a4","1f3a7","1f3af","1f3c3","1f3c6","1f3ca","1f3e1","1f410","1f414","1f418","1f41f","1f427","1f42e","1f42f","1f430","1f431","1f435","1f436","1f438","1f43c","1f441","1f442","1f443","1f444","1f445","1f44b","1f44f","1f45f","1f466-1f3fd","1f466","1f467-1f3fd","1f467","1f468-1f3fd","1f468","1f469-1f3fd-200d-1f9b1","1f469-1f3fd","1f469","1f474-1f3fd","1f475-1f3fd","1f475","1f476-1f3fd","1f476","1f483","1f487","1f48e","1f4a7","1f4aa","1f4ac","1f4bc","1f4c5","1f4c8","1f4d6","1f4d8","1f4da","1f501","1f50a","1f51f","1f525","1f534","1f535","1f590","1f5bc","1f600","1f601","1f60b","1f60c","1f60f","1f610","1f617","1f619","1f61b","1f620","1f622","1f628","1f62c","1f62e","1f634","1f642","1f64c","1f64f","1f680","1f697","1f6aa","1f6cf","1f7e0","1f7e1","1f7e2","1f7e3","1f7e4","1f91d","1f92a","1f947","1f948","1f949","1f95a","1f95b","1f964","1f96d","1f97a","1f981","1f984","1f986","1f98a","1f98b","1f998","1f9b5","1f9b6","1f9b7","1f9d1-1f3fd-200d-1f4bb","1f9d2-1f3fd","1f9d4-1f3fd","1f9d7","1f9e9","1f9ee","1f9f1","1f9f8","1f9fc","1fa77","1fa81","1fa91","1faa5","23f1","2615","261d","26a1","26aa","26ab","26bd","270b","270d","2728","2764","2b50","30-20e3","31-20e3","32-20e3","33-20e3","34-20e3","35-20e3","36-20e3","37-20e3","38-20e3","39-20e3"]);
+const ART_OK=true;
+const art=(n,cls="")=>ART_OK?`<img class="art ${cls}" src="i/${n}.webp" alt="" loading="lazy" draggable="false">`:"";
 const EMO_RE=/\p{Extended_Pictographic}(?:\uFE0F|\u20E3|\p{Emoji_Modifier}|\u200D\p{Extended_Pictographic}\uFE0F?\p{Emoji_Modifier}?)*|[0-9]\uFE0F\u20E3/gu;
 const ekey=e=>[...e].map(c=>c.codePointAt(0).toString(16)).filter(h=>h!=="fe0f").join("-");
 function emojify(html){
@@ -1799,10 +1825,10 @@ function confetti(n=60){
 
 /* ================= welcome, onboarding, profile picker ================= */
 function viewWelcome(){
-  return `<main class="welcome"><div class="wl-hero"><div class="floaters" aria-hidden="true"><span>💬</span><span>🎧</span><span>🎤</span><span>📖</span><span>⭐</span><span>🧸</span></div>
-   <div class="wl-mark">${IC.learn}</div><span class="eyebrow">English Coach</span><h1>English বলো আত্মবিশ্বাসে, প্রতিদিন</h1>
+  return `<main class="welcome"><div class="wl-hero">${ART_OK?"":`<div class="floaters" aria-hidden="true"><span>💬</span><span>🎧</span><span>🎤</span><span>📖</span><span>⭐</span><span>🧸</span></div>`}
+   ${ART_OK?art("hero-family","wl-hero-img"):`<div class="wl-mark">${IC.learn}</div>`}<span class="eyebrow">English Coach</span><h1>English বলো আত্মবিশ্বাসে, প্রতিদিন</h1>
    <p class="muted bn">ছোট-বড় সবার জন্য: বাচ্চারা ছবি আর খেলায়, বড়রা কাজ, পরিবার আর দৈনন্দিন কথায়। প্রতিদিন ১০–২০ মিনিট।</p></div>
-   <div class="method">${[["👄","Warm-up","মুখ আর জিভ রেডি"],["🧩","Learn","ছোট ছোট লেসন, গেমের মতো"],["🎤","Speak","বলো, অ্যাপ শুনে মিলিয়ে দেখে"],["📖","Story","গল্প শুনে নিজে বলো"]].map(([i,t,b],k)=>`<div class="mstep"><span class="mic">${i}</span><b>${k+1}. ${t}</b><span class="tiny bn muted">${b}</span></div>`).join("")}</div>
+   <div class="method">${[["👄","Warm-up","মুখ আর জিভ রেডি","m-warm"],["🧩","Learn","ছোট ছোট লেসন, গেমের মতো","m-learn"],["🎤","Speak","বলো, অ্যাপ শুনে মিলিয়ে দেখে","m-speak"],["📖","Story","গল্প শুনে নিজে বলো","m-story"]].map(([i,t,b,a],k)=>`<div class="mstep">${ART_OK?art(a,"mart"):`<span class="mic">${i}</span>`}<b>${k+1}. ${t}</b><span class="tiny bn muted">${b}</span></div>`).join("")}</div>
    <button class="btn wide xl" data-act="onbStart">শুরু করি</button>
    <p class="tiny muted center">অ্যাকাউন্ট লাগবে না। অগ্রগতি এই ডিভাইসে থাকে, backup নেওয়া যায়।</p></main>`;
 }
@@ -2397,14 +2423,14 @@ function todaysWarm(){
 function viewWarm(){
   const w=todaysWarm(), done=warmToday(), dd=S.days[today()]||{};
   const exSecs=warmEx().reduce((a,x)=>a+x.secs,0);
-  return `<div class="stack"><h1>প্রতিদিনের মুখের warm-up</h1><p class="muted">প্রতিদিন লেসনের আগে। মুখের জড়তা কাটে, জিভ আর ঠোঁট ইংরেজি উচ্চারণের জন্য তৈরি হয়।</p></div>
+  return `<div class="stack"><div class="pagehero"><div><h1>প্রতিদিনের মুখের warm-up</h1><p class="muted">প্রতিদিন লেসনের আগে। মুখের জড়তা কাটে, জিভ আর ঠোঁট ইংরেজি উচ্চারণের জন্য তৈরি হয়।</p></div>${art("m-warm","phimg")}</div></div>
    ${done?`<p class="okbox">আজকের warm-up শেষ (${dd.warmMin||0} min)। এখন লেসন খোলা!</p>`:""}
    <div class="stack">
     <div class="warmstep ${dd.w1?"done":""}"><span class="num">${dd.w1?IC.check.replace("<svg",'<svg width="18" height="18"'):"1"}</span><div><h3>মুখ আর জিভের ব্যায়াম</h3><p class="small muted">${warmEx().length}টা ব্যায়াম · ${Math.round(exSecs/60)} মিনিট · ছবি ও টাইমার দিয়ে</p></div><button class="btn sm warm" data-act="warmGo" data-s="1">${dd.w1?"আবার":"শুরু"}</button></div>
     <div class="warmstep ${dd.w2?"done":""}"><span class="num">${dd.w2?IC.check.replace("<svg",'<svg width="18" height="18"'):"2"}</span><div><h3>Tongue twisters</h3><p class="small muted">আজকের ${twN()}টা (লেভেল ${w.lv}) · ধীরে ৩ বার, দ্রুত ৩ বার</p></div><button class="btn sm warm" data-act="warmGo" data-s="2">${dd.w2?"আবার":"শুরু"}</button></div>
     <div class="warmstep ${dd.w3?"done":""}"><span class="num">${dd.w3?IC.check.replace("<svg",'<svg width="18" height="18"'):"3"}</span><div><h3>কলম মুখে পড়া</h3><p class="small muted">${penSecs()/60} মিনিট · “${esc(w.passage.title)}”</p></div><button class="btn sm warm" data-act="warmGo" data-s="3">${dd.w3?"আবার":"শুরু"}</button></div>
    </div>
-   <div class="card"><span class="eyebrow">আজকের ব্যায়ামগুলো (ছবি দেখে বোঝো)</span><div class="wthumbs">${warmEx().map(x=>`<div class="wthumb">${warmArt(COURSE.warmup.exercises.indexOf(x))}<span>${esc(x.name)}</span></div>`).join("")}</div></div>
+   <div class="card"><span class="eyebrow">আজকের ব্যায়ামগুলো (ছবি দেখে বোঝো)</span><div class="wthumbs">${warmEx().map(x=>`<div class="wthumb">${ART_OK?art("w"+COURSE.warmup.exercises.indexOf(x),"wtimg"):warmArt(COURSE.warmup.exercises.indexOf(x))}<span>${esc(x.name)}</span></div>`).join("")}</div></div>
    <button class="btn warm wide" data-act="warmGo" data-s="1">${done?"আবার পুরো warm-up":"পুরো warm-up শুরু (১ → ২ → ৩)"}</button>
    <details class="card"><summary><b>কলম মুখে পড়া কীভাবে করবে</b></summary><div class="stack small bn"><p>• একটা পরিষ্কার কলম আড়াআড়ি করে সামনের দাঁত দিয়ে হালকা কামড়ে ধরো, গভীরে ঢোকাবে না।</p><p>• কলম মুখে রেখেই জোরে জোরে, ধীরে, প্রতিটা শব্দ স্পষ্ট করার চেষ্টা করে পড়ো। জিভ আর ঠোঁটকে বেশি কাজ করতে হবে।</p><p>• শেষে কলম ছাড়া এক মিনিট পড়ো — শব্দ অনেক হালকা আর পরিষ্কার লাগবে।</p><p>• চোয়ালে ব্যথা লাগলে থামো। ছোট বাচ্চাদের দিয়ে এটা করাবে না।</p></div></details>
    ${S.warmReq?`<p class="tiny muted">Settings-এ "লেসনের আগে warm-up লাগবে" চালু আছে।</p>`:""}`;
@@ -2435,7 +2461,7 @@ function viewWarmRun(){
     if(W.left==null)warmTimerFor(0);
     const ai=COURSE.warmup.exercises.indexOf(x), nx=xs[W.ex+1];
     body=`<div class="pbar" style="height:10px"><i style="width:${W.ex/xs.length*100}%;background:var(--warm)"></i></div>
-     <div class="wrun"><div class="wart-card" data-key="art${ai}">${warmArt(ai)}<span class="wstep">${W.ex+1}/${xs.length}</span></div>
+     <div class="wrun"><div class="wart-card ${ART_OK?"photo":""}" data-key="art${ai}">${ART_OK?art("w"+ai,"wimg"):warmArt(ai)}<span class="wstep">${W.ex+1}/${xs.length}</span></div>
       <div class="wtext"><span class="eyebrow">ব্যায়াম ${W.ex+1} / ${xs.length}</span><h1>${esc(x.name)}</h1><p class="bn wbn">${esc(x.bn)}</p><p class="wcue">${IC.speak.replace("<svg",'<svg width="16" height="16"')} <i>${esc(x.cue)}</i></p>
        <div class="wtimer"><div class="ringtimer"><svg viewBox="0 0 180 180"><circle class="bgc" cx="90" cy="90" r="82"/><circle class="fgc" id="wring" data-total="${x.secs}" cx="90" cy="90" r="82" stroke-dasharray="515.2" style="stroke-dashoffset:${(515.2*(1-W.left/x.secs)).toFixed(1)}"/></svg><div class="timer" id="wt">${fmt(W.left)}</div></div>
        <div class="stack"><button class="btn warm" data-act="warmToggle">${W.run?"Pause":"শুরু"}</button><button class="btn ghost" data-act="warmSkip">পরেরটা</button></div></div>
@@ -2469,7 +2495,7 @@ function viewPractice(){
    <div class="card"><div class="row between"><div><span class="eyebrow">রিভিশন</span><h3>${due.length}টা শব্দ আবার দেখো</h3></div><button class="btn" data-act="practiceDue" ${learned?"":"disabled"}>Khelo</button></div></div>`;
   const cardTrack=myTracks().some(t=>t[0]==="family")?"family":myTracks().some(t=>t[0]==="kids")?"kids":null;
   const scen=SCEN.filter(x=>myTracks().some(t=>t[0]===x.track)&&(PID==="ali"||!["daughter","wife"].includes(x.id)));
-  return `<h1>Practice</h1><div class="pgrid2">
+  return `<div class="pagehero"><div><h1>Practice</h1><p class="muted">রিভিশন, ছবির কার্ড আর কথোপকথন।</p></div>${art("m-speak","phimg")}</div><div class="pgrid2">
    <div class="card"><div class="row between"><div><span class="eyebrow">রিভিশন বাকি</span><h2 class="num">${due.length}টা বাক্য</h2></div><button class="btn" data-act="practiceDue" ${learned?"":"disabled"}>Start</button></div>
     <p class="small muted">ভুল করা আর পুরনো বাক্যগুলো সময়মতো আবার আসে: ১ → ২ → ৪ → ৭ → ১৫ → ৩০ দিন পরে।${!due.length&&learned?" আজ কিছু বাকি নেই, তবু প্র্যাকটিস করলে দুর্বল বাক্যগুলো আসবে।":""}${!learned?" আগে একটা লেসন করো।":""}</p></div>
    ${cardTrack?`<div class="card"><h3>${cardTrack==="kids"?"ছবির কার্ড (বাচ্চাদের সাথে)":"Family time cards"}</h3><p class="small muted">বড় বড় কার্ড: একসাথে বসে বলো। চাপলে আওয়াজ।</p><button class="btn fam" data-act="openCards" data-u="">কার্ড খোলো</button></div>`:""}
@@ -2533,7 +2559,7 @@ async function chatEnd(){const C=APP.chat;C.busy=true;render();
 function viewStories(){
   const units=allUnits();
   const recs=S.recs.slice(-5).reverse();
-  return `<h1>Stories</h1><p class="muted">${isKid()?"ছোট ছোট গল্প। শোনো আর একসাথে বলো!":"প্রতিটা ইউনিটের শেষে একটা গল্প (~৫ মিনিট)। শোনো (বাক্য হাইলাইট হবে), জোরে পড়ো, রেকর্ড করো।"}</p>
+  return `<div class="pagehero"><div><h1>Stories</h1><p class="muted">${isKid()?"ছোট ছোট গল্প। শোনো আর একসাথে বলো!":"প্রতিটা ইউনিটের শেষে একটা গল্প (~৫ মিনিট)। শোনো (বাক্য হাইলাইট হবে), জোরে পড়ো, রেকর্ড করো।"}</p></div>${art("m-story","phimg")}</div>
    ${ENV.claude&&!isKid()?`<div class="card"><h3>আজকের শেখা দিয়ে নতুন গল্প</h3><p class="small muted">আজ যা যা শিখেছ, তা দিয়ে Claude একটা ৫ মিনিটের গল্প বানাবে।</p><button class="btn story" data-act="genToday" ${ENV.aiState==="ready"&&Object.values(S.done).some(d=>d.at===today())?"":"disabled"}>গল্প বানাও</button>${Object.values(S.done).some(d=>d.at===today())?"":`<p class="tiny muted">আগে আজ অন্তত ১টা লেসন করো।</p>`}</div>`:""}
    <div class="storycols">${myTracks().map(([tr,l])=>`<div><span class="eyebrow">${l}</span><div class="list">${units.filter(u=>u.track===tr).map(u=>{const ok=nodeStates(tr).find(n=>n.key===u.id+":story");const sd=S.storyDone[u.id];const mk=Object.values(MARKS).filter(m=>m.story===u.id).sort((a,b)=>(b.date||"").localeCompare(a.date||""))[0];
      return `<div class="item"><div class="grow"><b>${esc(u.story.title)}</b><span class="tiny muted">${esc(u.title)} · ${Math.round(u.story.text.split(/\s+/).length)} words${sd?.read?" · read ✓":""}${mk?` · marked ${mk.total}/100`:""}</span></div>${ok&&ok.st==="lock"?`<button class="btn sm ghost" data-act="lockedInfo" data-t="${esc(u.title)}">${IC.lock.replace("<svg",'<svg width="14" height="14"')} Locked</button>`:`<button class="btn sm story" data-act="openStory" data-id="${esc(u.id)}">Open</button>`}</div>`;}).join("")}</div></div>`).join("")}</div>
@@ -2628,6 +2654,7 @@ function viewMe(){
     ${APP.confirm?.type==="import"?`<div class="warnbox small">Restore করলে ${esc(P.name)}-এর এখনকার অগ্রগতির উপর লেখা হবে। <button class="btn sm bad" data-act="doImport">Restore</button> <button class="btn sm ghost" data-act="cancel">বাতিল</button></div>`:""}</div>`;
   const help=`<details class="card"><summary><b>ডেস্কটপ আর মোবাইলে কীভাবে ব্যবহার করবে</b></summary><div class="stack small">
     <p><b>Web app${WEB_URL?` (<a href="${WEB_URL}" target="_blank" rel="noopener">${esc(WEB_URL.replace(/^https?:\/\//,""))}</a>)`:""}:</b> ফোনে লিংক খুলে ব্রাউজার মেনু → "Add to Home screen" / "Install app"। আইকন থেকে অ্যাপের মতো খুলবে, অফলাইনেও চলে। Natural voice, বলার যাচাই আর রেকর্ডিং এখানে কাজ করে।</p>
+    <p><b>Android অ্যাপ:</b> <a href="https://github.com/aliakbarrme/english-coach/releases/latest/download/English-Coach-Android.apk" target="_blank" rel="noopener">APK ডাউনলোড করো</a>, তারপর ফাইলে চেপে Install।</p>
     <p><b>Claude ভার্সন:</b> AI কোচ, নতুন ইউনিট আর cloud sync। এখানে মাইক্রোফোন নেই।</p>
     <p><b>নতুন কেউ:</b> বদলাও → "প্রোফাইল যোগ করো"। প্রত্যেক প্রোফাইলের অগ্রগতি আলাদা।</p></div></details>`;
   const del=`<div class="card"><h3>প্রোফাইল মুছে দাও</h3><p class="small muted">${esc(P.name)}-এর সব অগ্রগতি এই ডিভাইস থেকে মুছে যাবে।</p>

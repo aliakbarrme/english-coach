@@ -45,3 +45,27 @@
 .kidstage{gap:14px}
 .ktile .emo{width:64%;height:64%}
 .kgrid.six .ktile .emo{width:60%;height:60%}
+/* 3D character illustrations */
+.art{display:block;max-width:100%;height:auto;mix-blend-mode:multiply;user-select:none;-webkit-user-drag:none}
+:root[data-theme="dark"] .art{mix-blend-mode:normal}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .art{mix-blend-mode:normal;border-radius:24px}}
+.wl-hero-img{width:min(340px,82vw);margin:0 auto -6px}
+.wl-hero{text-align:center;align-items:center}
+.mstep .mart{width:96px;margin:-6px auto 2px}
+.mstep{align-items:center;text-align:center}
+.pagehero{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pagehero>div{display:flex;flex-direction:column;gap:6px;min-width:0}
+.pagehero .phimg{width:110px;flex:none}
+@media (min-width:700px){.pagehero .phimg{width:160px}}
+.wart-card.photo{padding:0;overflow:hidden;background:#ebf0ec}
+.wart-card .wimg{width:100%;mix-blend-mode:normal}
+.wthumb .wtimg{width:80px;height:80px;object-fit:cover;border-radius:20px;mix-blend-mode:normal;border:1px solid var(--line)}
+/* lesson window: floating card with breathing room on wide screens */
+@media (min-width:760px){
+  .player{inset:28px auto 28px 50%;translate:-50% 0;width:min(780px,calc(100vw - 64px));border-radius:30px;border:1px solid var(--line);box-shadow:var(--shadow-pop);overflow:hidden;padding-top:0}
+  .player .foot{position:absolute;border-radius:0 0 30px 30px}
+  .player .head{padding:26px 28px 14px}
+  .player .body{padding:26px 32px 200px}
+  .player .foot{padding:18px 28px 26px}
+  body:has(.player){background:radial-gradient(60vmax 50vmax at 12% -10%,var(--glow-a),transparent 70%),color-mix(in srgb,var(--bg) 88%,#10231f)}
+}

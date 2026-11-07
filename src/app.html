@@ -462,14 +462,14 @@ function todaysWarm(){
 function viewWarm(){
   const w=todaysWarm(), done=warmToday(), dd=S.days[today()]||{};
   const exSecs=warmEx().reduce((a,x)=>a+x.secs,0);
-  return `<div class="stack"><h1>প্রতিদিনের মুখের warm-up</h1><p class="muted">প্রতিদিন লেসনের আগে। মুখের জড়তা কাটে, জিভ আর ঠোঁট ইংরেজি উচ্চারণের জন্য তৈরি হয়।</p></div>
+  return `<div class="stack"><div class="pagehero"><div><h1>প্রতিদিনের মুখের warm-up</h1><p class="muted">প্রতিদিন লেসনের আগে। মুখের জড়তা কাটে, জিভ আর ঠোঁট ইংরেজি উচ্চারণের জন্য তৈরি হয়।</p></div>${art("m-warm","phimg")}</div></div>
    ${done?`<p class="okbox">আজকের warm-up শেষ (${dd.warmMin||0} min)। এখন লেসন খোলা!</p>`:""}
    <div class="stack">
     <div class="warmstep ${dd.w1?"done":""}"><span class="num">${dd.w1?IC.check.replace("<svg",'<svg width="18" height="18"'):"1"}</span><div><h3>মুখ আর জিভের ব্যায়াম</h3><p class="small muted">${warmEx().length}টা ব্যায়াম · ${Math.round(exSecs/60)} মিনিট · ছবি ও টাইমার দিয়ে</p></div><button class="btn sm warm" data-act="warmGo" data-s="1">${dd.w1?"আবার":"শুরু"}</button></div>
     <div class="warmstep ${dd.w2?"done":""}"><span class="num">${dd.w2?IC.check.replace("<svg",'<svg width="18" height="18"'):"2"}</span><div><h3>Tongue twisters</h3><p class="small muted">আজকের ${twN()}টা (লেভেল ${w.lv}) · ধীরে ৩ বার, দ্রুত ৩ বার</p></div><button class="btn sm warm" data-act="warmGo" data-s="2">${dd.w2?"আবার":"শুরু"}</button></div>
     <div class="warmstep ${dd.w3?"done":""}"><span class="num">${dd.w3?IC.check.replace("<svg",'<svg width="18" height="18"'):"3"}</span><div><h3>কলম মুখে পড়া</h3><p class="small muted">${penSecs()/60} মিনিট · “${esc(w.passage.title)}”</p></div><button class="btn sm warm" data-act="warmGo" data-s="3">${dd.w3?"আবার":"শুরু"}</button></div>
    </div>
-   <div class="card"><span class="eyebrow">আজকের ব্যায়ামগুলো (ছবি দেখে বোঝো)</span><div class="wthumbs">${warmEx().map(x=>`<div class="wthumb">${warmArt(COURSE.warmup.exercises.indexOf(x))}<span>${esc(x.name)}</span></div>`).join("")}</div></div>
+   <div class="card"><span class="eyebrow">আজকের ব্যায়ামগুলো (ছবি দেখে বোঝো)</span><div class="wthumbs">${warmEx().map(x=>`<div class="wthumb">${ART_OK?art("w"+COURSE.warmup.exercises.indexOf(x),"wtimg"):warmArt(COURSE.warmup.exercises.indexOf(x))}<span>${esc(x.name)}</span></div>`).join("")}</div></div>
    <button class="btn warm wide" data-act="warmGo" data-s="1">${done?"আবার পুরো warm-up":"পুরো warm-up শুরু (১ → ২ → ৩)"}</button>
    <details class="card"><summary><b>কলম মুখে পড়া কীভাবে করবে</b></summary><div class="stack small bn"><p>• একটা পরিষ্কার কলম আড়াআড়ি করে সামনের দাঁত দিয়ে হালকা কামড়ে ধরো, গভীরে ঢোকাবে না।</p><p>• কলম মুখে রেখেই জোরে জোরে, ধীরে, প্রতিটা শব্দ স্পষ্ট করার চেষ্টা করে পড়ো। জিভ আর ঠোঁটকে বেশি কাজ করতে হবে।</p><p>• শেষে কলম ছাড়া এক মিনিট পড়ো — শব্দ অনেক হালকা আর পরিষ্কার লাগবে।</p><p>• চোয়ালে ব্যথা লাগলে থামো। ছোট বাচ্চাদের দিয়ে এটা করাবে না।</p></div></details>
    ${S.warmReq?`<p class="tiny muted">Settings-এ "লেসনের আগে warm-up লাগবে" চালু আছে।</p>`:""}`;
@@ -500,7 +500,7 @@ function viewWarmRun(){
     if(W.left==null)warmTimerFor(0);
     const ai=COURSE.warmup.exercises.indexOf(x), nx=xs[W.ex+1];
     body=`<div class="pbar" style="height:10px"><i style="width:${W.ex/xs.length*100}%;background:var(--warm)"></i></div>
-     <div class="wrun"><div class="wart-card" data-key="art${ai}">${warmArt(ai)}<span class="wstep">${W.ex+1}/${xs.length}</span></div>
+     <div class="wrun"><div class="wart-card ${ART_OK?"photo":""}" data-key="art${ai}">${ART_OK?art("w"+ai,"wimg"):warmArt(ai)}<span class="wstep">${W.ex+1}/${xs.length}</span></div>
       <div class="wtext"><span class="eyebrow">ব্যায়াম ${W.ex+1} / ${xs.length}</span><h1>${esc(x.name)}</h1><p class="bn wbn">${esc(x.bn)}</p><p class="wcue">${IC.speak.replace("<svg",'<svg width="16" height="16"')} <i>${esc(x.cue)}</i></p>
        <div class="wtimer"><div class="ringtimer"><svg viewBox="0 0 180 180"><circle class="bgc" cx="90" cy="90" r="82"/><circle class="fgc" id="wring" data-total="${x.secs}" cx="90" cy="90" r="82" stroke-dasharray="515.2" style="stroke-dashoffset:${(515.2*(1-W.left/x.secs)).toFixed(1)}"/></svg><div class="timer" id="wt">${fmt(W.left)}</div></div>
        <div class="stack"><button class="btn warm" data-act="warmToggle">${W.run?"Pause":"শুরু"}</button><button class="btn ghost" data-act="warmSkip">পরেরটা</button></div></div>
@@ -534,7 +534,7 @@ function viewPractice(){
    <div class="card"><div class="row between"><div><span class="eyebrow">রিভিশন</span><h3>${due.length}টা শব্দ আবার দেখো</h3></div><button class="btn" data-act="practiceDue" ${learned?"":"disabled"}>Khelo</button></div></div>`;
   const cardTrack=myTracks().some(t=>t[0]==="family")?"family":myTracks().some(t=>t[0]==="kids")?"kids":null;
   const scen=SCEN.filter(x=>myTracks().some(t=>t[0]===x.track)&&(PID==="ali"||!["daughter","wife"].includes(x.id)));
-  return `<h1>Practice</h1><div class="pgrid2">
+  return `<div class="pagehero"><div><h1>Practice</h1><p class="muted">রিভিশন, ছবির কার্ড আর কথোপকথন।</p></div>${art("m-speak","phimg")}</div><div class="pgrid2">
    <div class="card"><div class="row between"><div><span class="eyebrow">রিভিশন বাকি</span><h2 class="num">${due.length}টা বাক্য</h2></div><button class="btn" data-act="practiceDue" ${learned?"":"disabled"}>Start</button></div>
     <p class="small muted">ভুল করা আর পুরনো বাক্যগুলো সময়মতো আবার আসে: ১ → ২ → ৪ → ৭ → ১৫ → ৩০ দিন পরে।${!due.length&&learned?" আজ কিছু বাকি নেই, তবু প্র্যাকটিস করলে দুর্বল বাক্যগুলো আসবে।":""}${!learned?" আগে একটা লেসন করো।":""}</p></div>
    ${cardTrack?`<div class="card"><h3>${cardTrack==="kids"?"ছবির কার্ড (বাচ্চাদের সাথে)":"Family time cards"}</h3><p class="small muted">বড় বড় কার্ড: একসাথে বসে বলো। চাপলে আওয়াজ।</p><button class="btn fam" data-act="openCards" data-u="">কার্ড খোলো</button></div>`:""}
@@ -598,7 +598,7 @@ async function chatEnd(){const C=APP.chat;C.busy=true;render();
 function viewStories(){
   const units=allUnits();
   const recs=S.recs.slice(-5).reverse();
-  return `<h1>Stories</h1><p class="muted">${isKid()?"ছোট ছোট গল্প। শোনো আর একসাথে বলো!":"প্রতিটা ইউনিটের শেষে একটা গল্প (~৫ মিনিট)। শোনো (বাক্য হাইলাইট হবে), জোরে পড়ো, রেকর্ড করো।"}</p>
+  return `<div class="pagehero"><div><h1>Stories</h1><p class="muted">${isKid()?"ছোট ছোট গল্প। শোনো আর একসাথে বলো!":"প্রতিটা ইউনিটের শেষে একটা গল্প (~৫ মিনিট)। শোনো (বাক্য হাইলাইট হবে), জোরে পড়ো, রেকর্ড করো।"}</p></div>${art("m-story","phimg")}</div>
    ${ENV.claude&&!isKid()?`<div class="card"><h3>আজকের শেখা দিয়ে নতুন গল্প</h3><p class="small muted">আজ যা যা শিখেছ, তা দিয়ে Claude একটা ৫ মিনিটের গল্প বানাবে।</p><button class="btn story" data-act="genToday" ${ENV.aiState==="ready"&&Object.values(S.done).some(d=>d.at===today())?"":"disabled"}>গল্প বানাও</button>${Object.values(S.done).some(d=>d.at===today())?"":`<p class="tiny muted">আগে আজ অন্তত ১টা লেসন করো।</p>`}</div>`:""}
    <div class="storycols">${myTracks().map(([tr,l])=>`<div><span class="eyebrow">${l}</span><div class="list">${units.filter(u=>u.track===tr).map(u=>{const ok=nodeStates(tr).find(n=>n.key===u.id+":story");const sd=S.storyDone[u.id];const mk=Object.values(MARKS).filter(m=>m.story===u.id).sort((a,b)=>(b.date||"").localeCompare(a.date||""))[0];
      return `<div class="item"><div class="grow"><b>${esc(u.story.title)}</b><span class="tiny muted">${esc(u.title)} · ${Math.round(u.story.text.split(/\s+/).length)} words${sd?.read?" · read ✓":""}${mk?` · marked ${mk.total}/100`:""}</span></div>${ok&&ok.st==="lock"?`<button class="btn sm ghost" data-act="lockedInfo" data-t="${esc(u.title)}">${IC.lock.replace("<svg",'<svg width="14" height="14"')} Locked</button>`:`<button class="btn sm story" data-act="openStory" data-id="${esc(u.id)}">Open</button>`}</div>`;}).join("")}</div></div>`).join("")}</div>
@@ -693,6 +693,7 @@ function viewMe(){
     ${APP.confirm?.type==="import"?`<div class="warnbox small">Restore করলে ${esc(P.name)}-এর এখনকার অগ্রগতির উপর লেখা হবে। <button class="btn sm bad" data-act="doImport">Restore</button> <button class="btn sm ghost" data-act="cancel">বাতিল</button></div>`:""}</div>`;
   const help=`<details class="card"><summary><b>ডেস্কটপ আর মোবাইলে কীভাবে ব্যবহার করবে</b></summary><div class="stack small">
     <p><b>Web app${WEB_URL?` (<a href="${WEB_URL}" target="_blank" rel="noopener">${esc(WEB_URL.replace(/^https?:\/\//,""))}</a>)`:""}:</b> ফোনে লিংক খুলে ব্রাউজার মেনু → "Add to Home screen" / "Install app"। আইকন থেকে অ্যাপের মতো খুলবে, অফলাইনেও চলে। Natural voice, বলার যাচাই আর রেকর্ডিং এখানে কাজ করে।</p>
+    <p><b>Android অ্যাপ:</b> <a href="https://github.com/aliakbarrme/english-coach/releases/latest/download/English-Coach-Android.apk" target="_blank" rel="noopener">APK ডাউনলোড করো</a>, তারপর ফাইলে চেপে Install।</p>
     <p><b>Claude ভার্সন:</b> AI কোচ, নতুন ইউনিট আর cloud sync। এখানে মাইক্রোফোন নেই।</p>
     <p><b>নতুন কেউ:</b> বদলাও → "প্রোফাইল যোগ করো"। প্রত্যেক প্রোফাইলের অগ্রগতি আলাদা।</p></div></details>`;
   const del=`<div class="card"><h3>প্রোফাইল মুছে দাও</h3><p class="small muted">${esc(P.name)}-এর সব অগ্রগতি এই ডিভাইস থেকে মুছে যাবে।</p>
