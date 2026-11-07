@@ -282,16 +282,16 @@ nav.tabs button svg{width:21px;height:21px}
 nav.tabs button[aria-current="page"]{color:var(--on-side-pill)}
 nav.tabs .navbrand{display:none}
 @media (min-width:900px){
-  nav.tabs{left:0;top:0;bottom:0;right:auto;width:236px;max-width:none;margin:0;border-radius:0;padding:calc(22px + env(safe-area-inset-top,0px)) 14px 20px;box-shadow:none}
+  nav.tabs{left:0;top:0;bottom:0;right:auto;width:var(--rail);max-width:none;margin:0;border-radius:0;padding:calc(22px + env(safe-area-inset-top,0px)) 14px 20px;box-shadow:none}
   nav.tabs .navbrand{display:flex;color:var(--on-side);padding:0 8px 22px}
   nav.tabs .navbrand i{background:var(--side-pill);color:var(--on-side-pill)}
   nav.tabs .in{grid-template-columns:1fr;gap:4px}
   nav.tabs button{flex-direction:row;justify-content:flex-start;gap:12px;padding:0 14px;height:46px;font-size:.92rem;border-radius:14px}
   nav.tabs .pill{border-radius:14px}
-  .view{padding-left:calc(236px + 32px);padding-right:32px;max-width:none;width:min(100%,236px + 32px + 680px);margin:0}
+  .view{padding-left:calc(var(--rail) + 32px);padding-right:32px;max-width:none;width:min(100%,var(--rail) + 32px + 680px);margin:0}
   .view>*{max-width:680px;width:100%}
   .topbar{margin-inline:0;padding-inline:0}
-  .toast{left:calc(50% + 118px)}
+  .toast{left:calc(50% + var(--rail) / 2)}
 }
 .toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:999px;font-weight:600;font-size:.92rem;z-index:50;max-width:calc(100% - 32px);text-align:center;
   translate:-50% 0;box-shadow:var(--shadow-pop)}

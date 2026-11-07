@@ -3,10 +3,43 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..800&family=Geist+Mono:wght@400..600&family=Anek+Bangla:wght@400..700&family=Baloo+Da+2:wght@500..800&display=swap">
+<style>
+#splash{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:radial-gradient(70vmax 60vmax at 20% 0%,#d7efe4,transparent 70%),radial-gradient(60vmax 50vmax at 100% 100%,#e6eef6,transparent 70%),#eef2ef;font-family:"Geist",ui-sans-serif,system-ui,sans-serif;color:#10231f;transition:opacity .55s cubic-bezier(.2,.8,.2,1),visibility .55s}
+:root[data-theme="dark"] #splash{background:radial-gradient(70vmax 60vmax at 20% 0%,#138a7e33,transparent 70%),#0b1312;color:#e5efec}
+#splash.out{opacity:0;visibility:hidden}#splash.out .sp-in{transform:scale(1.08);transition:transform .55s cubic-bezier(.2,.8,.2,1)}
+.sp-in{display:flex;flex-direction:column;align-items:center;gap:14px}
+.sp-logo{position:relative;width:104px;height:104px;border-radius:32px;background:linear-gradient(145deg,#137a70,#0d5c55 60%,#0a4a44);display:grid;place-items:center;box-shadow:0 26px 50px -22px #0d5c55,inset 0 2px 0 #ffffff30;animation:spPop .9s cubic-bezier(.34,1.56,.64,1) both}
+.sp-logo svg{width:64%;height:64%;overflow:visible}
+.sp-bub{transform-origin:12px 12px;animation:spBub .7s .25s cubic-bezier(.34,1.56,.64,1) both}
+.sp-b{transform-box:fill-box;transform-origin:50% 50%;animation:spIn .45s cubic-bezier(.34,1.56,.64,1) both,spEq 1s ease-in-out infinite}
+.sp-b.b1{animation-delay:.55s,1s}.sp-b.b2{animation-delay:.65s,1.12s}.sp-b.b3{animation-delay:.75s,1.24s}
+.sp-ring{position:absolute;inset:-10px;border-radius:40px;border:2px solid #4fbf9366;animation:spRing 1.8s .6s ease-out infinite}
+.sp-leaf{position:absolute;top:-8px;right:-6px;width:26px;height:18px;border-radius:0 18px 0 18px;background:linear-gradient(135deg,#7bd36b,#3fa64a);transform:rotate(-20deg) scale(0);animation:spLeaf .6s .9s cubic-bezier(.34,1.56,.64,1) forwards}
+.sp-name{font-weight:700;font-size:1.7rem;letter-spacing:-.03em;display:flex;overflow:hidden}
+.sp-name span{display:inline-block;transform:translateY(110%);animation:spUp .7s calc(.75s + var(--i)*.035s) cubic-bezier(.165,.84,.44,1) forwards}
+.sp-tag{font-size:.9rem;color:#586a65;opacity:0;animation:spFade .6s 1.25s forwards}
+:root[data-theme="dark"] .sp-tag{color:#9db0aa}
+.sp-bar{width:120px;height:4px;border-radius:9px;background:#10231f14;overflow:hidden;opacity:0;animation:spFade .4s 1.1s forwards}
+.sp-bar i{display:block;height:100%;width:40%;border-radius:9px;background:linear-gradient(90deg,#4fbf93,#0d5c55);animation:spLoad 1.1s ease-in-out infinite}
+@keyframes spPop{from{transform:scale(.3) rotate(-12deg);opacity:0}}
+@keyframes spBub{from{transform:scale(0)}}
+@keyframes spIn{from{transform:scaleY(0)}}
+@keyframes spEq{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.45)}}
+@keyframes spRing{0%{transform:scale(.85);opacity:1}100%{transform:scale(1.35);opacity:0}}
+@keyframes spLeaf{to{transform:rotate(-20deg) scale(1)}}
+@keyframes spUp{to{transform:none}}
+@keyframes spFade{to{opacity:1}}
+@keyframes spLoad{0%{transform:translateX(-100%)}100%{transform:translateX(250%)}}
+@media (prefers-reduced-motion:reduce){#splash *{animation-duration:.01s!important;animation-iteration-count:1!important}}
+</style>
+<script>try{var t=localStorage.getItem("aec4:theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;if(localStorage.getItem("aec4:rail")==="1")document.documentElement.classList.add("rail-mini");}catch(e){}window.__t0=Date.now();</script>
 <style>/*__STYLE__*/</style>
 
-<div id="root"><main class="view"><h1>Loading…</h1></main></div>
-<nav class="tabs" aria-label="Main"><div class="navbrand brand" aria-hidden="true"><i class="bmark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3h-8l-4.5 3.2c-.5.4-1.2 0-1.2-.6V17.5H5a3 3 0 0 1-3-3v-7a3 3 0 0 1 3-3z" fill="#fff"/><rect x="7.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/><rect x="10.8" y="7.4" width="2.4" height="8.2" rx="1.2" fill="#f2b632"/><rect x="14.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/></svg></i>Bolo English</div><div class="in" id="tabs"><span class="pill"></span></div></nav>
+<div id="splash" aria-label="Bolo English loading"><div class="sp-in">
+ <div class="sp-logo"><span class="sp-ring"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path class="sp-bub" d="M5 4.5h14a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3h-8l-4.5 3.2c-.5.4-1.2 0-1.2-.6V17.5H5a3 3 0 0 1-3-3v-7a3 3 0 0 1 3-3z" fill="#fff"/><rect class="sp-b b1" x="7.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/><rect class="sp-b b2" x="10.8" y="7.4" width="2.4" height="8.2" rx="1.2" fill="#f2b632"/><rect class="sp-b b3" x="14.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/></svg><span class="sp-leaf"></span></div>
+ <div class="sp-name"><span style="--i:0">B</span><span style="--i:1">o</span><span style="--i:2">l</span><span style="--i:3">o</span><span style="--i:4">&nbsp;</span><span style="--i:5">E</span><span style="--i:6">n</span><span style="--i:7">g</span><span style="--i:8">l</span><span style="--i:9">i</span><span style="--i:10">s</span><span style="--i:11">h</span></div>
+ <div class="sp-tag">Speak English, every day</div><div class="sp-bar"><i></i></div></div></div><div id="root"></div>
+<nav class="tabs" aria-label="Main"><div class="navbrand brand"><i class="bmark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3h-8l-4.5 3.2c-.5.4-1.2 0-1.2-.6V17.5H5a3 3 0 0 1-3-3v-7a3 3 0 0 1 3-3z" fill="#fff"/><rect x="7.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/><rect x="10.8" y="7.4" width="2.4" height="8.2" rx="1.2" fill="#f2b632"/><rect x="14.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/></svg></i><span class="bname">Bolo English<small>Speak every day</small></span><button class="railbtn" data-act="toggleRail" aria-label="Collapse sidebar" title="Sidebar ছোট/বড় করো"></button></div><div class="in" id="tabs"><span class="pill"></span></div><div class="navfoot" id="navfoot"></div></nav>
 <div class="toast" id="toast" hidden></div>
 
 <script>
@@ -42,6 +75,13 @@ const IC={
  close:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
  flame:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2s5 4.5 5 10a5 5 0 0 1-10 0c0-2.2 1.2-3.8 2-4.6 0 1.6.8 2.6 2 2.6 0-3.2-1-5.5 1-8z"/></svg>',
  mic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
+ settings:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+ help:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M9.2 9a3 3 0 0 1 5.8 1c0 2-3 2.5-3 4.5M12 17.5h.01"/></svg>',
+ moon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg>',
+ sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+ rail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16M15 10l-2 2 2 2"/></svg>',
+ cam:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+ updown:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9l4-4 4 4M16 15l-4 4-4-4"/></svg>',
  cards:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="13" height="15" rx="2.5"/><path d="M8 3h10.5A2.5 2.5 0 0 1 21 5.5V17"/></svg>',
  swap:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4L3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7"/></svg>',
  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>'
@@ -318,6 +358,8 @@ function renderNav(instant){
   if(!tabs.some(x=>x[0]===APP.tab))APP.tab="learn";
   t.querySelectorAll("button").forEach(b=>{if(b.dataset.v===APP.tab)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current");});
   placePill(t.querySelector(".pill"),t.querySelector("[aria-current]"),instant);
+  const nf=$("#navfoot");if(nf){const h=emojify(navFoot());if(nf._h!==h){nf.innerHTML=h;nf._h=h;}}
+  const rb=document.querySelector(".railbtn");if(rb&&!rb.firstChild)rb.innerHTML=IC.rail;
 }
 function placeSeg(instant){const tr=$(".tracks");if(tr)placePill(tr.querySelector(".seg-pill"),tr.querySelector('[aria-pressed="true"]'),instant);}
 function render(){
@@ -349,8 +391,8 @@ function topbar(){
   const st=streak(), dx=day().xp, g=S.goal, p=Math.min(1,dx/g), P=prof();
   const C=2*Math.PI*9;
   const warmChip=warmAllowed()&&S.warmReq?(warmToday()?`<span class="chip warmchip ok" title="Warm-up done">${IC.check.replace("<svg",'<svg width="13" height="13"')} warm-up</span>`:`<button class="chip warmchip todo" data-act="tab" data-v="warm">Warm-up</button>`):"";
-  return `<div class="topbar"><button class="avbtn" data-act="switchProfile" title="প্রোফাইল বদলাও"><span class="av">${esc(P?.avatar||"🙂")}</span><span class="avname">${esc(myName())}</span></button>
-   <div class="stats">${warmChip}
+  return `<div class="topbar"><button class="avbtn" data-act="switchProfile" title="প্রোফাইল বদলাও">${avatarHTML(P)}<span class="avname">${esc(myName())}</span></button>
+   <div class="stats"><button class="icon-btn themebtn" data-act="toggleTheme" aria-label="Dark mode">${isDark()?IC.sun:IC.moon}</button>${warmChip}
    <span class="stat" title="Streak: ${st} দিন"><span class="flame ${(day().lessons+day().practice)>0?"":"off"}">${IC.flame}</span><span class="num">${st}</span></span>
    <span class="stat" id="xpstat" title="আজকের XP"><svg class="ring" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="var(--well)" stroke-width="3.5"/><circle cx="12" cy="12" r="9" fill="none" stroke="var(--warm)" stroke-width="3.5" stroke-dasharray="${(C*p).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 12 12)" stroke-linecap="round"/></svg><span class="num">${dx}<span class="muted dim">/${g}</span></span></span></div></div>`;
 }
@@ -552,7 +594,7 @@ function viewCards(){
   const C=APP.cards;const it=C.items[C.i];const u=unitById(C.unit);const kid=u?.track==="kids";
   const units=allUnits().filter(x=>x.track===u.track);
   const menu=APP.cardMenu?`<div class="ddscrim" data-act="cardMenu"></div><div class="ddmenu" role="listbox">${units.map((x,k)=>`<button class="dditem ${x.id===C.unit?"on":""}" role="option" aria-selected="${x.id===C.unit}" data-act="pickCardUnit" data-u="${x.id}"><span class="ddic">${x.track==="kids"?x.lessons[0].items[0][2]:k+1}</span><span class="grow"><b>${esc(x.title)}</b><span class="tiny bn muted">${esc(x.bn||"")}</span></span>${x.id===C.unit?IC.check.replace("<svg",'<svg width="16" height="16"'):""}</button>`).join("")}</div>`:"";
-  return `<main class="view cardsview" style="padding-bottom:40px"><div class="cardbar"><button class="icon-btn" data-act="closeCards" aria-label="Close">${IC.close}</button><span class="cardcount num">${C.i+1}<span class="muted">/${C.items.length}</span></span>
+  return `<main class="view cardsview"><div class="cardbar"><button class="icon-btn" data-act="closeCards" aria-label="Close">${IC.close}</button><span class="cardcount num">${C.i+1}<span class="muted">/${C.items.length}</span></span>
     <div class="dd"><button class="ddbtn" data-act="cardMenu" aria-haspopup="listbox" aria-expanded="${!!APP.cardMenu}"><span class="tiny muted">ইউনিট</span><b>${esc(u.title)}</b><svg class="ddchev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>${menu}</div></div>
    <div class="deck" data-key="c${C.unit}-${C.i}"><div class="deckback b2"></div><div class="deckback b1"></div>
     <div class="flip ${C.flip?"is-flipped":""} ${kid?"pic":""}" data-act="flipCard">
@@ -580,7 +622,7 @@ const SCEN=[
 function startChat(id){const s=SCEN.find(x=>x.id===id);APP.chat={s,turns:[{r:"ai",t:s.first}],busy:false,fb:null,err:null};day().practice++;Store.save();render();if(S.autoplay)TTS.say(s.first);}
 function viewChat(){
   const C=APP.chat;const mine=C.turns.filter(t=>t.r==="me").length;
-  return `<main class="view" style="padding-bottom:40px"><div class="row between"><button class="icon-btn" data-act="closeChat" aria-label="Close">${IC.back}</button><span class="eyebrow">AI coach</span><span></span></div>
+  return `<main class="view"><div class="row between"><button class="icon-btn" data-act="closeChat" aria-label="Close">${IC.back}</button><span class="eyebrow">AI coach</span><span></span></div>
    <h2>${esc(C.s.title)}</h2><p class="small muted">${esc(C.s.brief)}</p>
    <div class="chat">${C.turns.map(t=>t.r==="ai"?`<div class="msg ai">${esc(t.t)} <button class="icon-btn" style="width:30px;height:30px;vertical-align:middle" data-act="say" data-t="${esc(t.t)}" aria-label="Listen">${IC.speak}</button></div>${t.fix?`<div class="msg meta"><b>Quick fix:</b> <s>${esc(t.fix.original)}</s> → <b>${esc(t.fix.better)}</b><br><span class="bn small">${esc(t.fix.why_bn)}</span></div>`:""}`:t.r==="me"?`<div class="msg me">${esc(t.t)}</div>`:`<div class="msg meta bn">${esc(t.t)}</div>`).join("")}${C.busy?`<div class="msg meta">Thinking…</div>`:""}</div>
    ${C.fb?`<div class="card"><span class="eyebrow">Feedback · text only</span><p class="bn">${esc(C.fb.summary_bn||"")}</p>${(C.fb.corrections||[]).map(c=>`<div class="fix"><span class="o">${esc(c.original)}</span><span class="n">${esc(c.natural)}</span><span class="small bn muted">${esc(c.why_bn)}</span></div>`).join("")}${C.fb.try_again?`<p class="okbox"><b>আবার বলো:</b> ${esc(C.fb.try_again)}</p>`:""}</div>`
@@ -624,12 +666,12 @@ function viewStory(){
   const mk=Object.values(MARKS).filter(m=>m.story===id).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
   let si=0;const paras=text.split(/\n+/).map(p=>`<p>${splitSentences(p).map(x=>`<span class="sent" data-act="saySent" data-i="${si++}">${esc(x)}</span>`).join(" ")}</p>`).join("");
   const listen=`<div class="listenbar"><button class="btn story" data-act="sayLong" data-id="${esc(id)}">${IC.speak} ${kid?"গল্প শোনো":"পুরো গল্প শোনো"}</button><button class="btn ghost" data-act="stopSay">Stop</button><span class="tiny muted">যেকোনো বাক্যে চাপলে সেখান থেকে শুরু হবে</span></div>`;
-  if(kid)return `<main class="view" style="padding-bottom:40px"><div class="row between"><button class="icon-btn" data-act="closeStory" aria-label="Back">${IC.back}</button><span class="eyebrow">Story time</span><span></span></div>
+  if(kid)return `<main class="view"><div class="row between"><button class="icon-btn" data-act="closeStory" aria-label="Back">${IC.back}</button><span class="eyebrow">Story time</span><span></span></div>
    <h1>${esc(st.title)}</h1><p class="bn muted">${esc(st.bn)}</p>${listen}
    <div class="card storytext kidstory">${paras}</div>
    ${sd.read?`<p class="okbox small">শোনা হয়েছে! ⭐</p>`:`<button class="btn story wide xl" data-act="storyRead" data-id="${esc(id)}">শোনা শেষ! (+১০ XP)</button>`}</main>`;
   const part2=retellPrompts(st);
-  return `<main class="view" style="padding-bottom:40px"><div class="row between"><button class="icon-btn" data-act="closeStory" aria-label="Back">${IC.back}</button><span class="eyebrow">Story · ${wc} words · ~${mins} min with retell</span><span></span></div>
+  return `<main class="view"><div class="row between"><button class="icon-btn" data-act="closeStory" aria-label="Back">${IC.back}</button><span class="eyebrow">Story · ${wc} words · ~${mins} min with retell</span><span></span></div>
    <h1>${esc(st.title)}</h1><p class="bn muted">${esc(st.bn)}</p>
    <div class="row">${(st.phrases||[]).map(p=>`<span class="chip">${esc(p)}</span>`).join("")}</div>
    ${listen}
@@ -669,7 +711,7 @@ function viewMe(){
   const ms=Object.values(MARKS), mavg=ms.length?Math.round(ms.reduce((a,m)=>a+(+m.total||0),0)/ms.length):null;
   const metric=(tag,cls,val,label,sub)=>`<div class="metric"><span class="tag ${cls}">${tag}</span><b>${typeof val==="number"?`<span data-count="${val}">${val}</span>`:val}</b><span class="small muted">${label}</span>${sub?`<span class="tiny muted">${sub}</span>`:""}</div>`;
   const kid=isKid();
-  const head=`<div class="card profhead"><span class="av xl">${esc(P.avatar)}</span><div class="grow"><h2>${esc(P.name)}</h2><div class="row">${P.age==="kid"?`<span class="chip">শিশু ৩–৭</span>`:P.age==="teen"?`<span class="chip">কিশোর</span>`:`<span class="chip">প্রাপ্তবয়স্ক</span>`}${myTracks().map(t=>`<span class="chip trk ${t[0]}">${t[1]}</span>`).join("")}</div></div>
+  const head=`<div class="card profhead"><label class="avedit" title="নিজের ছবি দাও">${avatarHTML(P,"xl")}<span class="camb">${IC.cam}</span><input type="file" id="photoFile" accept="image/*" hidden></label><div class="grow"><h2>${esc(P.name)}</h2><div class="row">${P.age==="kid"?`<span class="chip">শিশু ৩–৭</span>`:P.age==="teen"?`<span class="chip">কিশোর</span>`:`<span class="chip">প্রাপ্তবয়স্ক</span>`}${myTracks().map(t=>`<span class="chip trk ${t[0]}">${t[1]}</span>`).join("")}</div></div>
     <div class="profbtns"><button class="btn sm ghost" data-act="editProfile">এডিট</button><button class="btn sm ghost" data-act="switchProfile">${IC.swap} বদলাও</button></div></div>`;
   const stats=`<div class="metrics">
     ${metric("streak","m",st,"দিন টানা",`সেরা ${Math.max(S.best||0,st)} দিন`)}
@@ -681,9 +723,11 @@ function viewMe(){
     ${!kid&&warmAllowed()?metric("দিন","m",S.warmCount||0,"warm-up করেছ",""):""}
     ${PID==="ali"?metric("Claude","c",mavg==null?"—":mavg+"/100","গল্পের নম্বর",`${ms.length}টা রেকর্ডিং`):""}
    </div>`;
-  const settings=`<div class="card"><h3>Settings</h3>
+  const settings=`<div class="card" id="settings"><h3>Settings</h3>
     ${myTracks().some(t=>t[0]==="family")?`<label class="lbl">বড় বাচ্চার নাম (ঐচ্ছিক)<input type="text" id="s-d1" value="${esc(S.names.d1)}" placeholder="sweetie"></label>
     <label class="lbl">ছোট বাচ্চার নাম (ঐচ্ছিক)<input type="text" id="s-d2" value="${esc(S.names.d2)}" placeholder="baby"></label>`:""}
+    <label class="lbl">থিম<select id="s-theme">${[["system","ডিভাইস অনুযায়ী"],["light","Light"],["dark","Dark"]].map(([v,l])=>`<option value="${v}" ${themeMode()===v?"selected":""}>${l}</option>`).join("")}</select></label>
+    ${P.photo?`<button class="btn sm ghost" data-act="removePhoto">প্রোফাইল ছবি সরাও</button>`:""}
     <label class="lbl">দৈনিক লক্ষ্য<select id="s-goal">${[10,20,30,50,80].map(g=>`<option value="${g}" ${S.goal===g?"selected":""}>${g} XP</option>`).join("")}</select></label>
     <label class="lbl">আওয়াজের গতি<select id="s-rate">${[[.7,"ধীরে"],[.9,"একটু ধীরে"],[1,"স্বাভাবিক"]].map(([v,l])=>`<option value="${v}" ${+S.rate===v?"selected":""}>${l}</option>`).join("")}</select></label>
     ${warmAllowed()?`<label class="sw-row">লেসনের আগে warm-up লাগবে<input type="checkbox" class="switch" id="s-warm" ${S.warmReq?"checked":""}></label>
@@ -766,7 +810,7 @@ const ACT={
  pickProfile(el){switchProfile(el.dataset.id);},
  addProfile(){APP.picker=false;APP.onb={step:0,draft:{goals:[]}};render();},
  switchProfile(){Store.flush();APP.picker=true;render();},
- editProfile(){const p=prof();APP.onb={step:0,edit:p.id,draft:{name:p.name,avatar:p.avatar,age:p.age,goals:[...(p.goals||[])],goal:S.goal,warm:!S.warmReq?"off":S.warmMode||"full"}};render();},
+ editProfile(){const p=prof();APP.onb={step:0,edit:p.id,draft:{name:p.name,avatar:p.avatar,photo:p.photo,age:p.age,goals:[...(p.goals||[])],goal:S.goal,warm:!S.warmReq?"off":S.warmMode||"full"}};render();},
  delProfile(){APP.confirm={type:"delprof"};render();},
  async doDelProfile(){const id=PID;await Store.delProfile(id);PROFILES=PROFILES.filter(p=>p.id!==id);PID=null;APP.confirm=null;await Store.saveProfiles();APP.picker=PROFILES.length>0;APP.welcome=!PROFILES.length;render();},
  saySent(el){const i=+el.dataset.i;const sents=[...document.querySelectorAll(".sent")];TTS.play(sents.slice(i).map(x=>x.textContent),null,k=>markSent(k<0?-1:i+k));},
@@ -791,6 +835,11 @@ const ACT={
  flipCard(el,e){if(e&&e.target.closest(".cardspk"))return;APP.cards.flip=!APP.cards.flip;render();if(!APP.cards.flip)TTS.say(APP.cards.items[APP.cards.i].en);},
  cardMenu(){APP.cardMenu=!APP.cardMenu;render();},
  pickCardUnit(el){APP.cardMenu=false;openCards(el.dataset.u);},
+ toggleTheme(){setTheme(isDark()?"light":"dark");SND.play("toggle");render();},
+ toggleRail(){const on=document.documentElement.classList.toggle("rail-mini");UI.set("rail",on?"1":"0");SND.play("toggle");setTimeout(()=>{renderNav(true);placeSeg(true);},360);},
+ goSettings(){APP.tab="me";APP.story=APP.cards=APP.chat=null;render();setTimeout(()=>document.getElementById("settings")?.scrollIntoView({behavior:"smooth",block:"start"}),200);},
+ openHelp(){APP.modal=helpModal();render();},
+ removePhoto(){const p=prof();delete p.photo;Store.saveProfiles();render();},
  toggleQuests(){APP.qOpen=!qOpen();try{localStorage.setItem("aec4:qopen",APP.qOpen?"1":"0");}catch(e){}render();},
  cardPrev(){APP.cards.flip=false;APP.cards.i=Math.max(0,APP.cards.i-1);render();},
  startChat(el){startChat(el.dataset.id);},
@@ -831,10 +880,10 @@ async function onbNext(){
   if(steps[O.step]==="age"&&!d.goal)d.goal=d.age==="kid"?20:30;
   if(O.step<steps.length-1){O.step++;render();return;}
   const goals=d.age==="kid"?["kids"]:(d.goals.length?d.goals:["everyday"]);
-  if(O.edit){const p=PROFILES.find(x=>x.id===O.edit);Object.assign(p,{name:d.name,avatar:d.avatar,age:d.age,goals});
+  if(O.edit){const p=PROFILES.find(x=>x.id===O.edit);Object.assign(p,{name:d.name,avatar:d.avatar,age:d.age,goals});if(d.photo)p.photo=d.photo;
     S.goal=+d.goal||S.goal;S.warmReq=d.age!=="kid"&&d.warm!=="off";S.warmMode=d.warm==="quick"?"quick":"full";APP.onb=null;await Store.flush();APP.track=myTracks()[0][0];toast("প্রোফাইল আপডেট হয়েছে");render();return;}
   if(PID)await Store.flush();
-  const p={id:"p"+rid(),name:d.name,avatar:d.avatar,age:d.age,goals,created:new Date().toISOString()};
+  const p={id:"p"+rid(),name:d.name,avatar:d.avatar,age:d.age,goals,created:new Date().toISOString()};if(d.photo)p.photo=d.photo;
   PROFILES.push(p);PID=p.id;S=defaultState();CUSTOM={};MARKS={};
   S.goal=+d.goal||30;S.warmReq=d.age!=="kid"&&d.warm!=="off";S.warmMode=d.warm==="quick"?"quick":"full";
   APP.onb=null;APP.tab="learn";APP.track=myTracks()[0][0];await Store.flush();LASTKEY=null;render();confetti();SND.play("done");
@@ -859,6 +908,9 @@ addEventListener("resize",()=>{renderNav(true);placeSeg(true);});
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{renderNav(true);placeSeg(true);});
 document.addEventListener("change",e=>{
   if(e.target.id==="cardunit"){openCards(e.target.value);}
+  if(e.target.id==="s-theme"){setTheme(e.target.value);render();}
+  if(e.target.id==="photoFile"||e.target.id==="onbPhoto"){const f=e.target.files&&e.target.files[0];if(!f)return;
+    readPhoto(f).then(data=>{if(e.target.id==="onbPhoto"){APP.onb.draft.photo=data;APP.onb.draft.avatar=APP.onb.draft.avatar||"🙂";}else{prof().photo=data;Store.saveProfiles();toast("প্রোফাইল ছবি সেট হয়েছে");}render();}).catch(()=>toast("এই ছবিটা পড়া গেল না"));}
   const sw={"s-warm":"warmReq","s-auto":"autoplay","s-sound":"sound"}[e.target.id];
   if(sw){S[sw]=e.target.checked;Store.save();SND.play("toggle");}
   if(e.target.id==="importFile"){const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const d=JSON.parse(rd.result);if(d.app!=="ali-english-coach-duo")throw 0;APP.confirm={type:"import",data:d};render();}catch(x){toast("এটা এই অ্যাপের backup না।");}};rd.readAsText(f);}
@@ -873,6 +925,9 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)Store.flush
   catch(e){toast("Cloud লোড হয়নি, এই ডিভাইসে চলছে।");Store.mode="local";try{await Store.loadProfiles();if(PID)await Store.load();}catch(x){}}
   if(PID){APP.track=myTracks()[0]?.[0]||"everyday";if(PROFILES.length>1)APP.picker=true;}
   else if(PROFILES.length)APP.picker=true;else APP.welcome=true;
+  const sp=document.getElementById("splash"),left=Math.max(0,1700-(Date.now()-(window.__t0||Date.now())));
+  await new Promise(r=>setTimeout(r,left));
+  if(sp){sp.classList.add("out");setTimeout(()=>sp.remove(),650);}
   render();
   if(TTS.dev)try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{};}catch(e){}
 })();

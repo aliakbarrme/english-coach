@@ -1,13 +1,13 @@
 /* ===================== v7: centered desktop canvas, two-column pages, progress report, warm-up art ===================== */
 @media (min-width:900px){
   .view{--cw:760px;max-width:none;width:auto;margin:0;
-    padding-left:calc(236px + max(32px,(100vw - 236px - var(--cw)) / 2));
-    padding-right:max(32px,(100vw - 236px - var(--cw)) / 2)}
+    padding-left:calc(var(--rail) + max(32px,(100vw - var(--rail) - var(--cw)) / 2));
+    padding-right:max(32px,(100vw - var(--rail) - var(--cw)) / 2)}
   .view>*{max-width:100%;width:auto}
   .view.dash{width:auto}
   .view.wide{--cw:1120px}
   .view.mid{--cw:900px}
-  .toast{left:calc(50% + 118px)}
+  .toast{left:calc(50% + var(--rail) / 2)}
 }
 @media (min-width:900px) and (max-width:1179px){.view.wide,.view.dash{--cw:760px}}
 @media (min-width:1180px){.view.dash{--cw:1120px}}

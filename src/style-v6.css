@@ -7,7 +7,7 @@ body.kid h1,body.kid h2,body.kid .kword,body.kid .unitban h2,body.kid .hello h1{
 .sidecol{display:none}
 .maincol{display:flex;flex-direction:column;gap:16px;min-width:0}
 @media (min-width:1180px){
-  .view.dash{display:grid;grid-template-columns:minmax(0,1fr) 330px;column-gap:28px;align-items:start;width:min(100%,236px + 32px + 1060px)}
+  .view.dash{display:grid;grid-template-columns:minmax(0,1fr) 330px;column-gap:28px;align-items:start;width:min(100%,var(--rail) + 32px + 1060px)}
   .view.dash>.topbar,.view.dash>.warnbox{grid-column:1/-1}
   .view.dash>*{max-width:none}
   .mob-only{display:none}

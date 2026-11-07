@@ -14,6 +14,29 @@ function emojify(html){
   return parts.join("");
 }
 
+/* ================= theme, sidebar, avatar photo ================= */
+const UI={get(k){try{return localStorage.getItem("aec4:"+k);}catch(e){return null;}},set(k,v){try{localStorage.setItem("aec4:"+k,v);}catch(e){}}};
+function isDark(){const t=document.documentElement.dataset.theme;return t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches;}
+function setTheme(t){if(t==="system"){delete document.documentElement.dataset.theme;UI.set("theme","system");}else{document.documentElement.dataset.theme=t;UI.set("theme",t);}
+  document.querySelectorAll('meta[name="theme-color"]').forEach(m=>m.content=isDark()?"#0b1312":"#eef2ef");}
+function themeMode(){return UI.get("theme")||"system";}
+function avatarHTML(p,cls=""){if(!p)return `<span class="av ${cls}">🙂</span>`;return p.photo?`<span class="av photo ${cls}"><img src="${p.photo}" alt=""></span>`:`<span class="av ${cls}">${esc(p.avatar||"🙂")}</span>`;}
+function readPhoto(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.onerror=rej;fr.onload=()=>{const im=new Image();im.onerror=rej;im.onload=()=>{const s=Math.min(im.width,im.height),c=document.createElement("canvas");c.width=c.height=256;
+  c.getContext("2d").drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,256,256);res(c.toDataURL("image/jpeg",.84));};im.src=fr.result;};fr.readAsDataURL(file);});}
+function navFoot(){
+  const P=prof();if(!P)return "";const d=day(),g=S.goal||30,pct=Math.min(100,Math.round(d.xp/g*100));
+  return `<div class="nf-links"><button class="nf-link" data-act="goSettings">${IC.settings}<span>Settings</span></button><button class="nf-link" data-act="openHelp">${IC.help}<span>Help</span></button>
+    <button class="nf-link" data-act="toggleTheme" aria-label="Dark mode">${isDark()?IC.sun:IC.moon}<span>${isDark()?"Light mode":"Dark mode"}</span><i class="nf-sw ${isDark()?"on":""}"></i></button></div>
+   <div class="nf-goal" title="আজকের লক্ষ্য"><div class="row between"><span class="small">🌱 আজ <b>${d.xp}</b> of ${g} XP</span><span class="tiny">${streak()}🔥</span></div><span class="nf-bar"><i style="width:${pct}%"></i></span></div>
+   <button class="nf-me" data-act="switchProfile" title="প্রোফাইল বদলাও">${avatarHTML(P)}<span class="grow"><b>${esc(P.name)}</b><span class="tiny">${P.age==="kid"?"Kids":P.age==="teen"?"Teen":"Adult"} · ${myTracks().map(t=>t[1]).join(", ")}</span></span>${IC.updown}</button>`;
+}
+function helpModal(){
+  return `<div class="modal" data-act="closeModal"><div class="card helpcard"><h2>কীভাবে শিখবে</h2>
+   <ol class="helpsteps"><li><b>Warm-up</b> — মুখ আর জিভের ব্যায়াম (ছবি দেখে)।</li><li><b>Learn</b> — ছোট লেসন: শোনো, মেলাও, সাজাও, লেখো।</li><li><b>Speak</b> — মাইকে বলো, অ্যাপ শব্দ মিলিয়ে দেখে।</li><li><b>Story</b> — গল্প শোনো, জোরে পড়ো, রেকর্ড করো।</li><li><b>Practice</b> — ভুলগুলো সময়মতো আবার আসে।</li></ol>
+   <p class="small muted">মাইক কাজ না করলে Chrome/Edge বা ফোনে খোলো, তারপর মাইকের অনুমতি দাও। অগ্রগতি অন্য ডিভাইসে নিতে Me → Backup।</p>
+   <button class="btn wide" data-act="closeModal">বুঝেছি</button></div></div>`;
+}
+
 /* ================= profiles ================= */
 const AVATARS=["🧑🏽‍💻","👨🏽","👩🏽","🧔🏽","👩🏽‍🦱","👧🏽","👦🏽","👶🏽","🧒🏽","👵🏽","👴🏽","🦁","🐯","🐼","🦊","🐰","🐱","🐶","🦄","🐸","🐧","🦋","🚀","⭐"];
 const AGES=[["kid","Kid","3–7 বছর","🧸","ছবি আর আওয়াজে খেলা, পড়তে হবে না"],["teen","Teen","8–15 বছর","🎒","স্কুল, বন্ধু, প্রতিদিনের কথা"],["adult","Adult","16+","💼","কাজ, পরিবার, প্রতিদিনের কথা"]];
@@ -89,7 +112,7 @@ function badgeGrid(){
 function leagueCard(){
   if(PROFILES.length<2)return `<div class="card"><h3>পরিবারের লিগ</h3><p class="small muted">পরিবারের অন্যদের প্রোফাইল বানাতে দাও (স্ত্রী, বাচ্চারা)। প্রতি সপ্তাহে কে বেশি XP পায়, এখানে দেখাবে।</p><button class="btn sm ghost" data-act="addProfile">+ প্রোফাইল যোগ করো</button></div>`;
   const wk=weekKey();const rows=PROFILES.map(p=>({p,x:p.id===PID?weekXP(S):(p.wk&&p.wk[wk])||0})).sort((a,b)=>b.x-a.x);
-  return `<div class="card"><div class="row between"><h3>পরিবারের লিগ</h3><span class="tiny muted">এই সপ্তাহে</span></div><div class="league">${rows.map((r,i)=>`<div class="lrow ${r.p.id===PID?"me":""}"><span class="lpos">${["🥇","🥈","🥉"][i]||i+1}</span><span class="av sm">${esc(r.p.avatar)}</span><b class="grow">${esc(r.p.name)}</b><span class="num">${r.x} XP</span></div>`).join("")}</div></div>`;
+  return `<div class="card"><div class="row between"><h3>পরিবারের লিগ</h3><span class="tiny muted">এই সপ্তাহে</span></div><div class="league">${rows.map((r,i)=>`<div class="lrow ${r.p.id===PID?"me":""}"><span class="lpos">${["🥇","🥈","🥉"][i]||i+1}</span>${avatarHTML(r.p,"sm")}<b class="grow">${esc(r.p.name)}</b><span class="num">${r.x} XP</span></div>`).join("")}</div></div>`;
 }
 
 /* ================= kid stickers ================= */
@@ -123,13 +146,13 @@ function viewOnb(){
   const st=steps[O.step];const pct=Math.round(O.step/(steps.length-1)*100);
   let body="",can=true,nextLbl="Continue";
   if(st==="name"){body=`<span class="onb-ic">👋</span><h1>তোমার নাম কী?</h1><p class="muted">বাচ্চার জন্য বানালে তার নাম লেখো।</p><input type="text" id="onb-name" maxlength="20" value="${esc(d.name||"")}" placeholder="Naam" autocomplete="off">`;}
-  if(st==="avatar"){body=`<span class="onb-ic">${esc(d.avatar||"🙂")}</span><h1>একটা অবতার বাছো</h1><div class="avgrid">${AVATARS.map(a=>`<button class="avpick" data-act="onbSet" data-k="avatar" data-v="${a}" aria-pressed="${d.avatar===a}">${a}</button>`).join("")}</div>`;can=!!d.avatar;}
+  if(st==="avatar"){body=`<span class="onb-ic">${d.photo?`<span class="av xl photo"><img src="${d.photo}" alt=""></span>`:esc(d.avatar||"🙂")}</span><h1>একটা অবতার বাছো</h1><label class="btn ghost photobtn">${IC.cam} নিজের ছবি দাও<input type="file" id="onbPhoto" accept="image/*" hidden></label>${d.photo?`<p class="small okbox">ছবি যোগ হয়েছে ✓</p>`:""}<div class="avgrid">${AVATARS.map(a=>`<button class="avpick" data-act="onbSet" data-k="avatar" data-v="${a}" aria-pressed="${d.avatar===a}">${a}</button>`).join("")}</div>`;can=!!(d.avatar||d.photo);}
   if(st==="age"){body=`<span class="onb-ic">🎂</span><h1>${esc(d.name)}-এর বয়স?</h1><div class="opts">${AGES.map(([v,l,bn,ic,sub])=>`<button class="opt big" data-act="onbSet" data-k="age" data-v="${v}" aria-pressed="${d.age===v}"><span class="oic">${ic}</span><span class="grow"><b>${l} <span class="bn muted">· ${bn}</span></b><span class="small muted">${sub}</span></span></button>`).join("")}</div>`;can=!!d.age;}
   if(st==="goals"){body=`<span class="onb-ic">🎯</span><h1>কী জন্য ইংরেজি শিখবে?</h1><p class="muted">এক বা একাধিক বাছো।</p><div class="opts">${GOALS.map(([v,l,bn,ic])=>`<button class="opt big" data-act="onbGoal" data-v="${v}" aria-pressed="${(d.goals||[]).includes(v)}"><span class="oic">${ic}</span><span class="grow"><b>${l}</b><span class="small bn muted">${bn}</span></span></button>`).join("")}</div>`;can=(d.goals||[]).length>0;}
   if(st==="goal"){const opts=d.age==="kid"?[[10,"৫ মিনিট","একটু একটু"],[20,"১০ মিনিট","প্রতিদিন"],[30,"১৫ মিনিট","বেশি"]]:[[20,"১০ মিনিট","হালকা"],[30,"১৫ মিনিট","নিয়মিত"],[50,"২০ মিনিট","সিরিয়াস"],[80,"৩০ মিনিট","খুব সিরিয়াস"]];
     body=`<span class="onb-ic">⏱️</span><h1>প্রতিদিন কত সময়?</h1><div class="opts">${opts.map(([v,l,s])=>`<button class="opt big" data-act="onbSet" data-k="goal" data-v="${v}" aria-pressed="${+d.goal===v}"><span class="oic">⚡</span><span class="grow"><b>${l}</b><span class="small muted">${s} · দিনে ${v} XP</span></span></button>`).join("")}</div>`;can=!!d.goal;}
   if(st==="warm"){body=`<span class="onb-ic">👄</span><h1>লেসনের আগে মুখের warm-up?</h1><p class="muted">জিভ আর ঠোঁটের ব্যায়াম, tongue twister আর কলম-মুখে পড়া। উচ্চারণে বড় পার্থক্য আনে।</p><div class="opts">${[["full","পুরো warm-up (১০–১৫ মিনিট)","স্পষ্ট উচ্চারণের জন্য সবচেয়ে ভালো"],["quick","ছোট warm-up (৫ মিনিট)","ব্যস্ত দিনের জন্য"],["off","এখন না","পরে Settings থেকে চালু করা যাবে"]].map(([v,l,s])=>`<button class="opt big" data-act="onbSet" data-k="warm" data-v="${v}" aria-pressed="${d.warm===v}"><span class="grow"><b>${l}</b><span class="small muted">${s}</span></span></button>`).join("")}</div>`;can=!!d.warm;}
-  if(st==="done"){const tr=d.age==="kid"?["kids"]:d.goals;body=`<span class="onb-ic big">${esc(d.avatar)}</span><h1>${esc(d.name)}-এর প্ল্যান তৈরি!</h1>
+  if(st==="done"){const tr=d.age==="kid"?["kids"]:d.goals;body=`<span class="onb-ic big">${d.photo?`<span class="av xl photo"><img src="${d.photo}" alt=""></span>`:esc(d.avatar)}</span><h1>${esc(d.name)}-এর প্ল্যান তৈরি!</h1>
     <div class="card plan">${tr.map(t=>{const T=TRACKS.find(x=>x[0]===t);return `<div class="row"><span class="chip trk ${t}">${T[1]}</span><span class="small bn muted">${T[2]}</span></div>`;}).join("")}
      <p class="small">${d.age==="kid"?"ছবি দেখে, আওয়াজ শুনে, খেলতে খেলতে শব্দ শিখবে। প্রতিটা লেসনে নতুন স্টিকার!":`প্রতিদিন: ${d.warm!=="off"?"warm-up → ":""}লেসন → বলার অনুশীলন → গল্প। ভুলগুলো অ্যাপ মনে রাখে আর সময়মতো আবার আনে।`}</p>
      <p class="tiny muted">দৈনিক লক্ষ্য: ${d.goal} XP · ${d.age==="kid"?"Kids mode":"Adult/teen mode"}</p></div>`;nextLbl="Shuru!";}
@@ -139,6 +162,6 @@ function viewOnb(){
 }
 function viewPicker(){
   return `<main class="picker"><span class="eyebrow">Bolo English</span><h1>কে শিখবে?</h1>
-   <div class="pgrid">${PROFILES.map(p=>`<button class="pcard" data-act="pickProfile" data-id="${esc(p.id)}"><span class="av xl">${esc(p.avatar)}</span><b>${esc(p.name)}</b><span class="tiny muted">${p.age==="kid"?"Kids":p.age==="teen"?"Teen":"Adult"}</span></button>`).join("")}
+   <div class="pgrid">${PROFILES.map(p=>`<button class="pcard" data-act="pickProfile" data-id="${esc(p.id)}">${avatarHTML(p,"xl")}<b>${esc(p.name)}</b><span class="tiny muted">${p.age==="kid"?"Kids":p.age==="teen"?"Teen":"Adult"}</span></button>`).join("")}
     <button class="pcard add" data-act="addProfile"><span class="av xl">＋</span><b>প্রোফাইল যোগ করো</b><span class="tiny muted">স্ত্রী, বাচ্চা…</span></button></div></main>`;
 }
