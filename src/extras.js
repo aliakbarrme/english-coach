@@ -50,10 +50,14 @@ function questsToday(){
   while(picks.length<3&&picks.length<pool.length){k=(k*9301+49297)%233280;const q=pool[k%pool.length];if(!picks.includes(q))picks.push(q);}
   const d=day();return picks.map(q=>{const n=typeof q.n==="function"?q.n():q.n;const v=Math.min(n,q.v(d));return {...q,n,v,done:v>=n};});
 }
+function qOpen(){if(APP.qOpen!=null)return APP.qOpen;try{const v=localStorage.getItem("aec4:qopen");if(v!=null)return v==="1";}catch(e){}return innerWidth>=1180;}
 function questCard(){
-  const qs=questsToday(), all=qs.every(q=>q.done), d=day();
-  return `<div class="card quests"><div class="row between"><h3>আজকের quest</h3><span class="chip">${qs.filter(q=>q.done).length}/3</span></div>
-   ${qs.map(q=>`<div class="quest ${q.done?"done":""}"><span class="qic">${q.ic}</span><div class="grow"><span class="small">${esc(q.t)}</span><span class="qbar"><i style="width:${Math.round(q.v/q.n*100)}%"></i></span></div><span class="tiny muted num">${q.v}/${q.n}</span></div>`).join("")}
+  const qs=questsToday(), all=qs.every(q=>q.done), d=day(), n=qs.filter(q=>q.done).length, open=qOpen();
+  const C=2*Math.PI*15;
+  return `<div class="card quests ${open?"open":""}"><button class="qhead" data-act="toggleQuests" aria-expanded="${open}"><span class="qring"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" class="qr0"/><circle cx="18" cy="18" r="15" class="qr1" stroke-dasharray="${(C*n/3).toFixed(1)} ${C.toFixed(1)}"/></svg><span>${qs.map(q=>q.done?"":q.ic)[qs.findIndex(q=>!q.done)]||"🎁"}</span></span>
+    <span class="grow"><b>আজকের quest</b><span class="tiny muted">${all?(d.chest?"সব শেষ! কাল নতুন quest":"সব শেষ! পুরস্কার নাও"):`${n}/3 শেষ · ${esc(qs.find(q=>!q.done)?.t||"")}`}</span></span>
+    <svg class="ddchev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+   ${open?`<div class="qlist">${qs.map(q=>`<div class="quest ${q.done?"done":""}"><span class="qic">${q.ic}</span><div class="grow"><span class="small">${esc(q.t)}</span><span class="qbar"><i style="width:${Math.round(q.v/q.n*100)}%"></i></span></div><span class="tiny muted num">${q.v}/${q.n}</span></div>`).join("")}</div>`:""}
    ${all&&!d.chest?`<button class="btn wide gold" data-act="openChest">🎁 পুরস্কার খোলো (+১০ XP)</button>`:d.chest?`<p class="tiny muted">আজকের পুরস্কার নেওয়া হয়েছে। কাল নতুন quest!</p>`:""}</div>`;
 }
 
@@ -108,7 +112,7 @@ function confetti(n=60){
 /* ================= welcome, onboarding, profile picker ================= */
 function viewWelcome(){
   return `<main class="welcome"><div class="wl-hero">${ART_OK?"":`<div class="floaters" aria-hidden="true"><span>💬</span><span>🎧</span><span>🎤</span><span>📖</span><span>⭐</span><span>🧸</span></div>`}
-   ${ART_OK?art("hero-family","wl-hero-img"):`<div class="wl-mark">${IC.learn}</div>`}<span class="eyebrow">English Coach</span><h1>English বলো আত্মবিশ্বাসে, প্রতিদিন</h1>
+   ${ART_OK?art("hero-family","wl-hero-img"):`<div class="wl-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3h-8l-4.5 3.2c-.5.4-1.2 0-1.2-.6V17.5H5a3 3 0 0 1-3-3v-7a3 3 0 0 1 3-3z" fill="#fff"/><rect x="7.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/><rect x="10.8" y="7.4" width="2.4" height="8.2" rx="1.2" fill="#f2b632"/><rect x="14.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/></svg></div>`}<span class="eyebrow">Bolo English · Speak English, every day</span><h1>English বলো আত্মবিশ্বাসে, প্রতিদিন</h1>
    <p class="muted bn">ছোট-বড় সবার জন্য: বাচ্চারা ছবি আর খেলায়, বড়রা কাজ, পরিবার আর দৈনন্দিন কথায়। প্রতিদিন ১০–২০ মিনিট।</p></div>
    <div class="method">${[["👄","Warm-up","মুখ আর জিভ রেডি","m-warm"],["🧩","Learn","ছোট ছোট লেসন, গেমের মতো","m-learn"],["🎤","Speak","বলো, অ্যাপ শুনে মিলিয়ে দেখে","m-speak"],["📖","Story","গল্প শুনে নিজে বলো","m-story"]].map(([i,t,b,a],k)=>`<div class="mstep">${ART_OK?art(a,"mart"):`<span class="mic">${i}</span>`}<b>${k+1}. ${t}</b><span class="tiny bn muted">${b}</span></div>`).join("")}</div>
    <button class="btn wide xl" data-act="onbStart">শুরু করি</button>
@@ -134,7 +138,7 @@ function viewOnb(){
    <div class="onb-foot"><button class="btn wide xl" data-act="onbNext" ${can?"":"disabled"}>${nextLbl}</button></div></main>`;
 }
 function viewPicker(){
-  return `<main class="picker"><span class="eyebrow">English Coach</span><h1>কে শিখবে?</h1>
+  return `<main class="picker"><span class="eyebrow">Bolo English</span><h1>কে শিখবে?</h1>
    <div class="pgrid">${PROFILES.map(p=>`<button class="pcard" data-act="pickProfile" data-id="${esc(p.id)}"><span class="av xl">${esc(p.avatar)}</span><b>${esc(p.name)}</b><span class="tiny muted">${p.age==="kid"?"Kids":p.age==="teen"?"Teen":"Adult"}</span></button>`).join("")}
     <button class="pcard add" data-act="addProfile"><span class="av xl">＋</span><b>প্রোফাইল যোগ করো</b><span class="tiny muted">স্ত্রী, বাচ্চা…</span></button></div></main>`;
 }

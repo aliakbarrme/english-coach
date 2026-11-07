@@ -34,7 +34,7 @@ const clips = fs.existsSync(audioDir) ? fs.readdirSync(audioDir).filter(f => f.e
 const emoDir = path.join(root, "docs", "e");
 const emojis = fs.existsSync(emoDir) ? fs.readdirSync(emoDir).filter(f => f.endsWith(".webp")).map(f => f.slice(0, -5)) : [];
 const pageWith = (audio, emo = []) => src("app.html")
-  .replace("/*__STYLE__*/", () => [src("style.css"), src("style-v6.css"), src("style-v7.css"), src("style-v8.css")].join("\n"))
+  .replace("/*__STYLE__*/", () => [src("style.css"), src("style-v6.css"), src("style-v7.css"), src("style-v8.css"), src("style-v9.css")].join("\n"))
   .replace("/*__VOICE__*/", () => src("voice.js").replace("/*__AUDIO__*/[]", JSON.stringify(audio)))
   .replace("/*__EXTRAS__*/", () => [src("extras.js").replace("/*__EMOJI__*/[]", JSON.stringify(emo)).replace("/*__ART__*/false", emo.length ? "true" : "false"), src("progress.js"), src("warmart.js")].join("\n"))
   .replace("/*__MOTION__*/", () => src("motion.js"))
@@ -48,13 +48,14 @@ const head = (body, extra) => `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="English Coach: daily English for the whole family. Kids learn with pictures and sound, adults practise work, family and everyday English.">
+<meta name="description" content="Bolo English: speak English every day, for the whole family. Kids learn with pictures and sound, adults practise work, family and everyday English.">
 <meta name="theme-color" content="#eef2ef" media="(prefers-color-scheme: light)">
+<title>Bolo English</title>
 <meta name="theme-color" content="#0b1312" media="(prefers-color-scheme: dark)">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="English Coach">
+<meta name="apple-mobile-web-app-title" content="Bolo English">
 ${extra}
 </head>
 <body>
@@ -62,7 +63,7 @@ ${body}
 </body>
 </html>
 `;
-const dataManifest = encodeURIComponent(JSON.stringify({ name: "English Coach", short_name: "English Coach", display: "standalone", background_color: "#eef2ef", theme_color: "#0d5c55", start_url: "." }));
+const dataManifest = encodeURIComponent(JSON.stringify({ name: "Bolo English", short_name: "Bolo English", display: "standalone", background_color: "#eef2ef", theme_color: "#0d5c55", start_url: "." }));
 fs.mkdirSync(path.join(root, "dist"), { recursive: true });
 const standalone = head(page, `<link rel="manifest" href="data:application/manifest+json,${dataManifest}">`);
 fs.writeFileSync(path.join(root, "dist", "Ali-English-Coach.html"), standalone);
@@ -76,7 +77,7 @@ const pwa = head(pageWith(clips, emojis), `<link rel="manifest" href="manifest.w
 <script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>`);
 fs.writeFileSync(path.join(docs, "index.html"), pwa);
 fs.writeFileSync(path.join(docs, "manifest.webmanifest"), JSON.stringify({
-  name: "English Coach", short_name: "English Coach", description: "Daily English for the whole family", id: "./", start_url: "./", scope: "./", display: "standalone",
+  name: "Bolo English", short_name: "Bolo English", description: "Speak English every day - for the whole family", id: "./", start_url: "./", scope: "./", display: "standalone",
   background_color: "#eef2ef", theme_color: "#0d5c55",
   icons: [{ src: "icon-192.png", sizes: "192x192", type: "image/png" }, { src: "icon-512.png", sizes: "512x512", type: "image/png" },
           { src: "icon-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" }]

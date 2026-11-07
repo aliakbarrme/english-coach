@@ -1,5 +1,5 @@
 // Offline cache: network-first for the page (fresh when online), cache-first for voice clips.
-const C="coach-4345ae614a",A="coach-audio-v1";
+const C="coach-fd8a19e537",A="coach-audio-v1";
 self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(["./","./index.html","./manifest.webmanifest","./icon-192.png"])).then(()=>self.skipWaiting()));});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C&&k!==A).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
 self.addEventListener("fetch",e=>{const r=e.request;if(r.method!=="GET")return;const u=new URL(r.url);

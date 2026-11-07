@@ -3,20 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="English Coach: daily English for the whole family. Kids learn with pictures and sound, adults practise work, family and everyday English.">
+<meta name="description" content="Bolo English: speak English every day, for the whole family. Kids learn with pictures and sound, adults practise work, family and everyday English.">
 <meta name="theme-color" content="#eef2ef" media="(prefers-color-scheme: light)">
+<title>Bolo English</title>
 <meta name="theme-color" content="#0b1312" media="(prefers-color-scheme: dark)">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="English Coach">
+<meta name="apple-mobile-web-app-title" content="Bolo English">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
 </head>
 <body>
-<title>English Coach</title>
+<title>Bolo English</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -650,10 +651,82 @@ nav.tabs .in{grid-template-columns:repeat(var(--n,5),1fr)}
   .player .foot{padding:18px 28px 26px}
   body:has(.player){background:radial-gradient(60vmax 50vmax at 12% -10%,var(--glow-a),transparent 70%),color-mix(in srgb,var(--bg) 88%,#10231f)}
 }
+
+/* ===================== v9: animated warm-up frames, flip-card deck, modern dropdown, collapsible quests ===================== */
+/* warm-up frame animation */
+.wfr{position:relative;aspect-ratio:1;width:100%;overflow:hidden;background:#ebf0ec;border-radius:inherit}
+.wfr img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .22s ease-out;user-select:none;-webkit-user-drag:none}
+.wfr img.on{opacity:1}
+.wfr.sm{width:80px;height:80px;border-radius:20px;border:1px solid var(--line)}
+.wfr .dotw{position:absolute;left:39%;top:42%;width:22%;height:22%;animation:spin 2.4s linear infinite}
+.wfr .dotw i{position:absolute;left:50%;top:0;width:22%;aspect-ratio:1;border-radius:50%;background:var(--warm);translate:-50% -50%;box-shadow:0 0 0 5px color-mix(in srgb,var(--warm) 35%,transparent),0 0 14px var(--warm)}
+.wart-card.photo{border-radius:28px}
+/* card bar + modern dropdown */
+.cardbar{display:flex;align-items:center;gap:10px}
+.cardcount{font:650 1rem var(--mono);min-width:54px}
+.dd{position:relative;flex:1;min-width:0;display:flex;justify-content:flex-end}
+.ddbtn{display:flex;align-items:center;gap:8px;max-width:100%;border:1px solid var(--line-2);background:var(--raised);border-radius:16px;padding:6px 10px 6px 14px;text-align:left;box-shadow:0 1px 2px #10231f0a;transition:border-color .2s,box-shadow .3s var(--ease),transform .3s var(--ease)}
+.ddbtn:active{transform:scale(.97)}
+.ddbtn[aria-expanded="true"]{border-color:var(--primary);box-shadow:0 0 0 4px color-mix(in srgb,var(--primary) 14%,transparent)}
+.ddbtn .tiny{display:none}
+.ddbtn b{font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ddchev{width:18px;height:18px;flex:none;color:var(--muted);transition:transform .35s var(--ease)}
+[aria-expanded="true"] .ddchev{transform:rotate(180deg)}
+.ddscrim{position:fixed;inset:0;z-index:44}
+.ddmenu{position:absolute;right:0;top:calc(100% + 8px);z-index:45;width:min(320px,calc(100vw - 32px));max-height:min(60vh,420px);overflow:auto;padding:6px;border-radius:20px;background:var(--raised);border:1px solid var(--line);box-shadow:var(--shadow-pop);transform-origin:top right;animation:ddin .32s var(--spring)}
+@keyframes ddin{from{opacity:0;transform:translateY(-6px) scale(.96)}}
+.dditem{display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;border-radius:14px;padding:10px;text-align:left;transition:background-color .2s}
+@media (hover:hover){.dditem:hover{background:var(--well)}}
+.dditem.on{background:color-mix(in srgb,var(--primary) 9%,transparent);color:var(--primary)}
+.dditem .grow{flex:1;min-width:0;display:flex;flex-direction:column}
+.ddic{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:var(--well);font:650 .9rem var(--mono);flex:none}
+.ddic .emo{width:22px;height:22px}
+/* flip-card deck */
+.deck{position:relative;perspective:1400px;margin:8px 0 6px}
+.deckback{position:absolute;left:6%;right:6%;top:14px;bottom:-14px;border-radius:28px;background:var(--fam-s);border:1px solid color-mix(in srgb,var(--fam) 22%,transparent);box-shadow:var(--shadow)}
+.deckback.b1{left:3%;right:3%;top:7px;bottom:-7px;opacity:.85}
+.deckback.b2{opacity:.55}
+.flip{position:relative;min-height:min(52vh,460px);transform-style:preserve-3d;transition:transform .7s cubic-bezier(.3,1.25,.4,1);cursor:pointer}
+.flip.is-flipped{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:28px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:14px;text-align:center;padding:28px;box-shadow:var(--shadow-pop)}
+.face.front{background:linear-gradient(160deg,var(--raised),var(--fam-s));border:1px solid color-mix(in srgb,var(--fam) 25%,transparent)}
+.face.back{transform:rotateY(180deg);background:linear-gradient(160deg,color-mix(in srgb,var(--fam) 85%,#fff),var(--fam));color:#fff}
+.face .en{font:700 clamp(1.7rem,7vw,2.6rem)/1.18 var(--font);letter-spacing:-.03em}
+.face .en.sm{font-size:1rem;font-weight:600;opacity:.85}
+.face.back .cbn{font-size:clamp(1.5rem,6vw,2.2rem);font-weight:600;color:#fff}
+.face.back .tiny{color:#ffffffcc}
+.fliphint{position:absolute;bottom:16px;display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;color:var(--muted);background:var(--well);padding:5px 10px;border-radius:999px}
+.face.back .fliphint{color:#fff;background:#ffffff2e}
+.cardspk{position:absolute;top:14px;right:14px;width:46px;height:46px;border-radius:50%;border:0;background:var(--cli);color:#fff;display:grid;place-items:center;box-shadow:0 10px 20px -10px var(--cli);transition:transform .35s var(--spring)}
+.cardspk:active{transform:scale(.9)}
+.cardspk svg{width:22px;height:22px}
+.flip.pic .cardem .emo{width:1.05em;height:1.05em}
+.dots{display:flex;justify-content:center;gap:5px;flex-wrap:wrap;margin-top:14px}
+.dots i{width:7px;height:7px;border-radius:9px;background:var(--line-2);transition:width .35s var(--ease),background-color .3s}
+.dots i.done{background:color-mix(in srgb,var(--fam) 45%,var(--line-2))}
+.dots i.on{width:22px;background:var(--fam)}
+/* collapsible quests */
+.quests{padding:0;gap:0;overflow:hidden}
+.qhead{display:flex;align-items:center;gap:12px;width:100%;border:0;background:transparent;padding:14px 16px;text-align:left;transition:background-color .2s}
+@media (hover:hover){.qhead:hover{background:var(--well)}}
+.qhead .grow{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.qhead .grow .tiny{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qring{position:relative;width:42px;height:42px;flex:none;display:grid;place-items:center}
+.qring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.qring circle{fill:none;stroke-width:4}
+.qring .qr0{stroke:var(--well)}.qring .qr1{stroke:var(--warm);stroke-linecap:round;transition:stroke-dasharray .9s var(--ease)}
+.qring .emo{width:20px;height:20px}
+.qlist{display:flex;flex-direction:column;gap:12px;padding:2px 16px 16px;animation:qopen .45s var(--ease)}
+@keyframes qopen{from{opacity:0;transform:translateY(-6px)}}
+.quests .btn.gold{margin:0 16px 16px;width:calc(100% - 32px)}
+.trackbtn{padding:12px 6px}
+.trackbtn b{font-size:.95rem}
+.bmark{background:var(--primary)!important}.bmark svg{width:70%;height:70%}.wl-mark svg{width:60%;height:60%}
+nav.tabs .navbrand i.bmark{background:#0d5c55!important}
 </style>
 
 <div id="root"><main class="view"><h1>Loading…</h1></main></div>
-<nav class="tabs" aria-label="Main"><div class="navbrand brand" aria-hidden="true"><i>AE</i>English Coach</div><div class="in" id="tabs"><span class="pill"></span></div></nav>
+<nav class="tabs" aria-label="Main"><div class="navbrand brand" aria-hidden="true"><i class="bmark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3h-8l-4.5 3.2c-.5.4-1.2 0-1.2-.6V17.5H5a3 3 0 0 1-3-3v-7a3 3 0 0 1 3-3z" fill="#fff"/><rect x="7.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/><rect x="10.8" y="7.4" width="2.4" height="8.2" rx="1.2" fill="#f2b632"/><rect x="14.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/></svg></i>Bolo English</div><div class="in" id="tabs"><span class="pill"></span></div></nav>
 <div class="toast" id="toast" hidden></div>
 
 <script>
@@ -1768,10 +1841,14 @@ function questsToday(){
   while(picks.length<3&&picks.length<pool.length){k=(k*9301+49297)%233280;const q=pool[k%pool.length];if(!picks.includes(q))picks.push(q);}
   const d=day();return picks.map(q=>{const n=typeof q.n==="function"?q.n():q.n;const v=Math.min(n,q.v(d));return {...q,n,v,done:v>=n};});
 }
+function qOpen(){if(APP.qOpen!=null)return APP.qOpen;try{const v=localStorage.getItem("aec4:qopen");if(v!=null)return v==="1";}catch(e){}return innerWidth>=1180;}
 function questCard(){
-  const qs=questsToday(), all=qs.every(q=>q.done), d=day();
-  return `<div class="card quests"><div class="row between"><h3>আজকের quest</h3><span class="chip">${qs.filter(q=>q.done).length}/3</span></div>
-   ${qs.map(q=>`<div class="quest ${q.done?"done":""}"><span class="qic">${q.ic}</span><div class="grow"><span class="small">${esc(q.t)}</span><span class="qbar"><i style="width:${Math.round(q.v/q.n*100)}%"></i></span></div><span class="tiny muted num">${q.v}/${q.n}</span></div>`).join("")}
+  const qs=questsToday(), all=qs.every(q=>q.done), d=day(), n=qs.filter(q=>q.done).length, open=qOpen();
+  const C=2*Math.PI*15;
+  return `<div class="card quests ${open?"open":""}"><button class="qhead" data-act="toggleQuests" aria-expanded="${open}"><span class="qring"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" class="qr0"/><circle cx="18" cy="18" r="15" class="qr1" stroke-dasharray="${(C*n/3).toFixed(1)} ${C.toFixed(1)}"/></svg><span>${qs.map(q=>q.done?"":q.ic)[qs.findIndex(q=>!q.done)]||"🎁"}</span></span>
+    <span class="grow"><b>আজকের quest</b><span class="tiny muted">${all?(d.chest?"সব শেষ! কাল নতুন quest":"সব শেষ! পুরস্কার নাও"):`${n}/3 শেষ · ${esc(qs.find(q=>!q.done)?.t||"")}`}</span></span>
+    <svg class="ddchev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+   ${open?`<div class="qlist">${qs.map(q=>`<div class="quest ${q.done?"done":""}"><span class="qic">${q.ic}</span><div class="grow"><span class="small">${esc(q.t)}</span><span class="qbar"><i style="width:${Math.round(q.v/q.n*100)}%"></i></span></div><span class="tiny muted num">${q.v}/${q.n}</span></div>`).join("")}</div>`:""}
    ${all&&!d.chest?`<button class="btn wide gold" data-act="openChest">🎁 পুরস্কার খোলো (+১০ XP)</button>`:d.chest?`<p class="tiny muted">আজকের পুরস্কার নেওয়া হয়েছে। কাল নতুন quest!</p>`:""}</div>`;
 }
 
@@ -1826,7 +1903,7 @@ function confetti(n=60){
 /* ================= welcome, onboarding, profile picker ================= */
 function viewWelcome(){
   return `<main class="welcome"><div class="wl-hero">${ART_OK?"":`<div class="floaters" aria-hidden="true"><span>💬</span><span>🎧</span><span>🎤</span><span>📖</span><span>⭐</span><span>🧸</span></div>`}
-   ${ART_OK?art("hero-family","wl-hero-img"):`<div class="wl-mark">${IC.learn}</div>`}<span class="eyebrow">English Coach</span><h1>English বলো আত্মবিশ্বাসে, প্রতিদিন</h1>
+   ${ART_OK?art("hero-family","wl-hero-img"):`<div class="wl-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3h-8l-4.5 3.2c-.5.4-1.2 0-1.2-.6V17.5H5a3 3 0 0 1-3-3v-7a3 3 0 0 1 3-3z" fill="#fff"/><rect x="7.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/><rect x="10.8" y="7.4" width="2.4" height="8.2" rx="1.2" fill="#f2b632"/><rect x="14.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/></svg></div>`}<span class="eyebrow">Bolo English · Speak English, every day</span><h1>English বলো আত্মবিশ্বাসে, প্রতিদিন</h1>
    <p class="muted bn">ছোট-বড় সবার জন্য: বাচ্চারা ছবি আর খেলায়, বড়রা কাজ, পরিবার আর দৈনন্দিন কথায়। প্রতিদিন ১০–২০ মিনিট।</p></div>
    <div class="method">${[["👄","Warm-up","মুখ আর জিভ রেডি","m-warm"],["🧩","Learn","ছোট ছোট লেসন, গেমের মতো","m-learn"],["🎤","Speak","বলো, অ্যাপ শুনে মিলিয়ে দেখে","m-speak"],["📖","Story","গল্প শুনে নিজে বলো","m-story"]].map(([i,t,b,a],k)=>`<div class="mstep">${ART_OK?art(a,"mart"):`<span class="mic">${i}</span>`}<b>${k+1}. ${t}</b><span class="tiny bn muted">${b}</span></div>`).join("")}</div>
    <button class="btn wide xl" data-act="onbStart">শুরু করি</button>
@@ -1852,7 +1929,7 @@ function viewOnb(){
    <div class="onb-foot"><button class="btn wide xl" data-act="onbNext" ${can?"":"disabled"}>${nextLbl}</button></div></main>`;
 }
 function viewPicker(){
-  return `<main class="picker"><span class="eyebrow">English Coach</span><h1>কে শিখবে?</h1>
+  return `<main class="picker"><span class="eyebrow">Bolo English</span><h1>কে শিখবে?</h1>
    <div class="pgrid">${PROFILES.map(p=>`<button class="pcard" data-act="pickProfile" data-id="${esc(p.id)}"><span class="av xl">${esc(p.avatar)}</span><b>${esc(p.name)}</b><span class="tiny muted">${p.age==="kid"?"Kids":p.age==="teen"?"Teen":"Adult"}</span></button>`).join("")}
     <button class="pcard add" data-act="addProfile"><span class="av xl">＋</span><b>প্রোফাইল যোগ করো</b><span class="tiny muted">স্ত্রী, বাচ্চা…</span></button></div></main>`;
 }
@@ -1941,6 +2018,25 @@ function warmArt(i){
   }
   return "";
 }
+
+/* frame-by-frame animation built from AI-generated frames of the same character (web app only) */
+const WFR={0:[["w0-0","w0-1"],[0,1],1500],1:[["w1-0","w1-1"],[0,1],900],2:[["w2-0","w2-1"],[0,1],1300],4:[["w4-0","w4-1"],[0,1],1200],
+  5:[["w5-0","w5-1","w5-2","w5-3"],[0,1,3,1,2,1],850],6:[["w6-0","w6-1"],[0,1],1100],7:[["w7-0","w7-1"],[0,1],1300],8:[["w8-0","w8-1"],[0,1,0,1,0,0],450],9:[["w9-0","w9-1"],[0,1],520]};
+function warmPic(ai,thumb){
+  if(!ART_OK)return warmArt(ai);
+  if(ai===3)return `<div class="wfr orbit ${thumb?"sm":""}"><img class="on" src="i/w3.webp" alt="" draggable="false"><span class="dotw"><i></i></span></div>`;
+  const f=WFR[ai];if(!f)return art("w"+ai,"wimg");
+  return `<div class="wfr ${thumb?"sm":""}" data-seq="${f[1].join(",")}" data-ms="${f[2]}">${f[0].map((n,k)=>`<img class="${k===f[1][0]?"on":""}" src="i/${n}.webp" alt="" draggable="false">`).join("")}</div>`;
+}
+(function wfrTicker(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  setInterval(()=>{const now=performance.now();
+    document.querySelectorAll(".wfr[data-seq]").forEach(el=>{
+      const ms=+el.dataset.ms||1000,last=+(el.dataset.t||0);if(now-last<ms)return;
+      const seq=el.dataset.seq.split(",").map(Number),step=((+el.dataset.k||0)+1)%seq.length;
+      el.dataset.k=step;el.dataset.t=now;const imgs=el.querySelectorAll("img");imgs.forEach((im,i)=>im.classList.toggle("on",i===seq[step]));});
+  },100);
+})();
 
 function allUnits(){return [...COURSE.units,...Object.values(CUSTOM).sort((a,b)=>(a.created||"").localeCompare(b.created||""))];}
 function unitById(id){return allUnits().find(u=>u.id===id);}
@@ -2191,7 +2287,7 @@ function enterView(root,first){
     if(first)rise(main.querySelectorAll(".topbar>*"),{y:-12,dur:600,stagger:50,scale:1});
     revealHead(main.querySelector("h1"),first?120:40);
     const blocks=[...main.children].flatMap(el=>el.classList.contains("maincol")||el.classList.contains("sidecol")?[...el.children]:[el]).filter(el=>!el.classList.contains("topbar")&&el.offsetParent!==null);
-    rise(blocks,{delay:first?100:30,dur:first?750:600,stagger:first?55:40});
+    rise(blocks,{delay:first?100:30,dur:first?750:600,stagger:first?55:40,max:7});
     popIn(main.querySelectorAll(".node"),{delay:260,stagger:40});
     rise(main.querySelectorAll(".list .item,.warmstep"),{y:12,dur:550,stagger:45,delay:220,scale:1});
   }
@@ -2323,7 +2419,7 @@ function viewLearn(){
   const tr=APP.track, ns=nodeStates(tr);
   const offs=[0,44,70,44,0,-44,-70,-44];
   const mt=myTracks();if(!mt.some(t=>t[0]===APP.track)){APP.track=mt[0][0];return viewLearn();}
-  let html=`${hello()}<div class="mob-only">${questCard()}</div>${mt.length>1?`<div class="tracks" style="grid-template-columns:repeat(${mt.length},1fr)"><span class="seg-pill"></span>${mt.map(([id,l,bn])=>`<button class="trackbtn ${id}" data-act="track" data-v="${id}" aria-pressed="${tr===id}"><b>${l}</b><span>${bn}</span></button>`).join("")}</div>`:""}`;
+  let html=`${hello()}<div class="mob-only">${questCard()}</div>${mt.length>1?`<div class="tracks" style="grid-template-columns:repeat(${mt.length},1fr)"><span class="seg-pill"></span>${mt.map(([id,l,bn])=>`<button class="trackbtn ${id}" data-act="track" data-v="${id}" aria-pressed="${tr===id}"><b>${l}</b></button>`).join("")}</div>`:""}`;
   let k=0;
   allUnits().filter(u=>u.track===tr).forEach((u,ui)=>{
     const un=ns.filter(n=>n.u.id===u.id);const doneN=un.filter(n=>n.st==="done").length;
@@ -2430,7 +2526,7 @@ function viewWarm(){
     <div class="warmstep ${dd.w2?"done":""}"><span class="num">${dd.w2?IC.check.replace("<svg",'<svg width="18" height="18"'):"2"}</span><div><h3>Tongue twisters</h3><p class="small muted">আজকের ${twN()}টা (লেভেল ${w.lv}) · ধীরে ৩ বার, দ্রুত ৩ বার</p></div><button class="btn sm warm" data-act="warmGo" data-s="2">${dd.w2?"আবার":"শুরু"}</button></div>
     <div class="warmstep ${dd.w3?"done":""}"><span class="num">${dd.w3?IC.check.replace("<svg",'<svg width="18" height="18"'):"3"}</span><div><h3>কলম মুখে পড়া</h3><p class="small muted">${penSecs()/60} মিনিট · “${esc(w.passage.title)}”</p></div><button class="btn sm warm" data-act="warmGo" data-s="3">${dd.w3?"আবার":"শুরু"}</button></div>
    </div>
-   <div class="card"><span class="eyebrow">আজকের ব্যায়ামগুলো (ছবি দেখে বোঝো)</span><div class="wthumbs">${warmEx().map(x=>`<div class="wthumb">${ART_OK?art("w"+COURSE.warmup.exercises.indexOf(x),"wtimg"):warmArt(COURSE.warmup.exercises.indexOf(x))}<span>${esc(x.name)}</span></div>`).join("")}</div></div>
+   <div class="card"><span class="eyebrow">আজকের ব্যায়ামগুলো (ছবি দেখে বোঝো)</span><div class="wthumbs">${warmEx().map(x=>`<div class="wthumb">${warmPic(COURSE.warmup.exercises.indexOf(x),true)}<span>${esc(x.name)}</span></div>`).join("")}</div></div>
    <button class="btn warm wide" data-act="warmGo" data-s="1">${done?"আবার পুরো warm-up":"পুরো warm-up শুরু (১ → ২ → ৩)"}</button>
    <details class="card"><summary><b>কলম মুখে পড়া কীভাবে করবে</b></summary><div class="stack small bn"><p>• একটা পরিষ্কার কলম আড়াআড়ি করে সামনের দাঁত দিয়ে হালকা কামড়ে ধরো, গভীরে ঢোকাবে না।</p><p>• কলম মুখে রেখেই জোরে জোরে, ধীরে, প্রতিটা শব্দ স্পষ্ট করার চেষ্টা করে পড়ো। জিভ আর ঠোঁটকে বেশি কাজ করতে হবে।</p><p>• শেষে কলম ছাড়া এক মিনিট পড়ো — শব্দ অনেক হালকা আর পরিষ্কার লাগবে।</p><p>• চোয়ালে ব্যথা লাগলে থামো। ছোট বাচ্চাদের দিয়ে এটা করাবে না।</p></div></details>
    ${S.warmReq?`<p class="tiny muted">Settings-এ "লেসনের আগে warm-up লাগবে" চালু আছে।</p>`:""}`;
@@ -2454,14 +2550,14 @@ function warmStepDone(s){const d=day();d["w"+s]=true;const W=APP.warm;d.warmMin=
   render();}
 function viewWarmRun(){
   const W=APP.warm, w=todaysWarm();
-  const head=`<div class="row between"><button class="icon-btn" data-act="warmExit" aria-label="Close">${IC.close}</button><span class="eyebrow">${quickW()?"ছোট ":""}Warm-up · ধাপ ${W.step}/৩</span><span></span></div>`;
+  const head=`<div class="row between"><button class="icon-btn" data-act="warmExit" aria-label="Close">${IC.close}</button><span class="eyebrow">${quickW()?"ছোট ":""}Warm-up · ধাপ ${W.step}/3</span><span></span></div>`;
   let body="";
   if(W.step===1){
     const xs=warmEx(), x=xs[W.ex];
     if(W.left==null)warmTimerFor(0);
     const ai=COURSE.warmup.exercises.indexOf(x), nx=xs[W.ex+1];
     body=`<div class="pbar" style="height:10px"><i style="width:${W.ex/xs.length*100}%;background:var(--warm)"></i></div>
-     <div class="wrun"><div class="wart-card ${ART_OK?"photo":""}" data-key="art${ai}">${ART_OK?art("w"+ai,"wimg"):warmArt(ai)}<span class="wstep">${W.ex+1}/${xs.length}</span></div>
+     <div class="wrun"><div class="wart-card ${ART_OK?"photo":""}" data-key="art${ai}">${warmPic(ai)}<span class="wstep">${W.ex+1}/${xs.length}</span></div>
       <div class="wtext"><span class="eyebrow">ব্যায়াম ${W.ex+1} / ${xs.length}</span><h1>${esc(x.name)}</h1><p class="bn wbn">${esc(x.bn)}</p><p class="wcue">${IC.speak.replace("<svg",'<svg width="16" height="16"')} <i>${esc(x.cue)}</i></p>
        <div class="wtimer"><div class="ringtimer"><svg viewBox="0 0 180 180"><circle class="bgc" cx="90" cy="90" r="82"/><circle class="fgc" id="wring" data-total="${x.secs}" cx="90" cy="90" r="82" stroke-dasharray="515.2" style="stroke-dashoffset:${(515.2*(1-W.left/x.secs)).toFixed(1)}"/></svg><div class="timer" id="wt">${fmt(W.left)}</div></div>
        <div class="stack"><button class="btn warm" data-act="warmToggle">${W.run?"Pause":"শুরু"}</button><button class="btn ghost" data-act="warmSkip">পরেরটা</button></div></div>
@@ -2511,9 +2607,17 @@ function startPractice(){
 }
 function viewCards(){
   const C=APP.cards;const it=C.items[C.i];const u=unitById(C.unit);const kid=u?.track==="kids";
-  return `<main class="view" style="padding-bottom:40px"><div class="row between"><button class="icon-btn" data-act="closeCards" aria-label="Close">${IC.close}</button><span class="eyebrow">${C.i+1} / ${C.items.length}</span><select id="cardunit" style="width:auto" aria-label="Unit">${allUnits().filter(x=>x.track===u.track).map(x=>`<option value="${x.id}" ${C.unit===x.id?"selected":""}>${esc(x.title)}</option>`).join("")}</select></div>
-   <button class="kidcard ${kid?"pic":""}" data-act="say" data-t="${esc(it.en)}">${it.em?`<span class="cardem">${it.em}</span>`:""}<span class="en">${esc(it.en)}</span><span class="bn muted cbn">${esc(it.bn)}</span><span class="chip">${IC.speak.replace("<svg",'<svg width="16" height="16"')} tap to hear</span></button>
-   <div class="row center"><button class="btn ghost" data-act="cardPrev" ${C.i?"":"disabled"}>Back</button><button class="btn fam" data-act="cardNext">${C.i<C.items.length-1?"Next":"শুরু থেকে"}</button></div>
+  const units=allUnits().filter(x=>x.track===u.track);
+  const menu=APP.cardMenu?`<div class="ddscrim" data-act="cardMenu"></div><div class="ddmenu" role="listbox">${units.map((x,k)=>`<button class="dditem ${x.id===C.unit?"on":""}" role="option" aria-selected="${x.id===C.unit}" data-act="pickCardUnit" data-u="${x.id}"><span class="ddic">${x.track==="kids"?x.lessons[0].items[0][2]:k+1}</span><span class="grow"><b>${esc(x.title)}</b><span class="tiny bn muted">${esc(x.bn||"")}</span></span>${x.id===C.unit?IC.check.replace("<svg",'<svg width="16" height="16"'):""}</button>`).join("")}</div>`:"";
+  return `<main class="view cardsview" style="padding-bottom:40px"><div class="cardbar"><button class="icon-btn" data-act="closeCards" aria-label="Close">${IC.close}</button><span class="cardcount num">${C.i+1}<span class="muted">/${C.items.length}</span></span>
+    <div class="dd"><button class="ddbtn" data-act="cardMenu" aria-haspopup="listbox" aria-expanded="${!!APP.cardMenu}"><span class="tiny muted">ইউনিট</span><b>${esc(u.title)}</b><svg class="ddchev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>${menu}</div></div>
+   <div class="deck" data-key="c${C.unit}-${C.i}"><div class="deckback b2"></div><div class="deckback b1"></div>
+    <div class="flip ${C.flip?"is-flipped":""} ${kid?"pic":""}" data-act="flipCard">
+     <div class="face front"><button class="cardspk" data-act="say" data-t="${esc(it.en)}" aria-label="Listen">${IC.speak}</button>${it.em?`<span class="cardem">${it.em}</span>`:""}<span class="en">${esc(it.en)}</span><span class="fliphint">${IC.swap.replace("<svg",'<svg width="15" height="15"')} চাপলে বাংলা</span></div>
+     <div class="face back"><span class="tiny muted">বাংলা অর্থ</span><span class="cbn bn">${esc(it.bn)}</span><span class="en sm">${esc(it.en)}</span><span class="fliphint">${IC.swap.replace("<svg",'<svg width="15" height="15"')} আবার চাপো</span></div>
+    </div></div>
+   <div class="dots">${C.items.map((_,k)=>`<i class="${k===C.i?"on":k<C.i?"done":""}"></i>`).join("")}</div>
+   <div class="row center"><button class="btn ghost" data-act="cardPrev" ${C.i?"":"disabled"}>${IC.back} আগের</button><button class="btn fam" data-act="cardNext">${C.i<C.items.length-1?"পরের":"শুরু থেকে"}</button></div>
    <p class="small muted center">${kid?"তুমি বলো, তারপর বাচ্চা বলবে। প্রতিবার হাততালি!":"টিপ: তুমি বলো, তারপর বাচ্চাকে বলতে বলো। প্রতিবার হাততালি দিয়ে উৎসাহ দাও!"}</p></main>`;
 }
 function openCards(uid){const tr=uid?unitById(uid)?.track:(myTracks().some(t=>t[0]==="family")?"family":"kids");const units=allUnits().filter(u=>u.track===tr);if(!units.length)return;
@@ -2696,7 +2800,7 @@ Reply with only JSON {"title":"","bn":"one-sentence Bangla summary","text":"","p
 /* ================= actions ================= */
 function nodeByKey(k){for(const [tr] of TRACKS){const n=nodeStates(tr).find(x=>x.key===k);if(n)return n;}return null;}
 const ACT={
- tab(el){const same=APP.tab===el.dataset.v&&!APP.story&&!APP.cards&&!APP.chat;APP.tab=el.dataset.v;APP.pop=null;APP.modal=null;APP.story=null;APP.cards=null;if(APP.chat){APP.chat=null;}TTS.stop();render();window.scrollTo({top:0,behavior:same?"smooth":"auto"});},
+ tab(el){const same=APP.tab===el.dataset.v&&!APP.story&&!APP.cards&&!APP.chat;APP.tab=el.dataset.v;APP.pop=null;APP.modal=null;APP.story=null;APP.cards=null;APP.cardMenu=false;if(APP.chat){APP.chat=null;}TTS.stop();render();window.scrollTo({top:0,behavior:same?"smooth":"auto"});},
  track(el){APP.track=el.dataset.v;APP.pop=null;render();},
  node(el){APP.pop=APP.pop===el.dataset.key?null:el.dataset.key;render();},
  startLesson(el){const n=nodeByKey(el.dataset.key);if(!n)return;if(S.warmReq&&!warmToday()){APP.tab="warm";render();return;}APP.pop=null;startSession("lesson",lessonItems(n.u,n.li),{key:n.key});},
@@ -2739,9 +2843,13 @@ const ACT={
  rep(){const W=APP.warm;if(W.reps<6){W.reps++;render();return;}if(W.tw<twN()-1){W.tw++;W.reps=0;render();}else warmStepDone(2);},
  practiceDue(){startPractice();},
  openCards(el){openCards(el.dataset.u||"");},
- closeCards(){APP.cards=null;render();},
- cardNext(){const C=APP.cards;C.i=C.i<C.items.length-1?C.i+1:0;render();if(S.autoplay)TTS.say(C.items[C.i].en);},
- cardPrev(){APP.cards.i=Math.max(0,APP.cards.i-1);render();},
+ closeCards(){APP.cards=null;APP.cardMenu=false;render();},
+ cardNext(){const C=APP.cards;C.flip=false;C.i=C.i<C.items.length-1?C.i+1:0;render();if(S.autoplay)TTS.say(C.items[C.i].en);},
+ flipCard(el,e){if(e&&e.target.closest(".cardspk"))return;APP.cards.flip=!APP.cards.flip;render();if(!APP.cards.flip)TTS.say(APP.cards.items[APP.cards.i].en);},
+ cardMenu(){APP.cardMenu=!APP.cardMenu;render();},
+ pickCardUnit(el){APP.cardMenu=false;openCards(el.dataset.u);},
+ toggleQuests(){APP.qOpen=!qOpen();try{localStorage.setItem("aec4:qopen",APP.qOpen?"1":"0");}catch(e){}render();},
+ cardPrev(){APP.cards.flip=false;APP.cards.i=Math.max(0,APP.cards.i-1);render();},
  startChat(el){startChat(el.dataset.id);},
  closeChat(){APP.chat=null;TTS.stop();render();},
  chatSend(){const i=$("#chatin");const t=i.value.trim();if(t){i.value="";chatTurn(t,null);}},
