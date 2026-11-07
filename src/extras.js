@@ -81,7 +81,7 @@ function questCard(){
     <span class="grow"><b>আজকের quest</b><span class="tiny muted">${all?(d.chest?"সব শেষ! কাল নতুন quest":"সব শেষ! পুরস্কার নাও"):`${n}/3 শেষ · ${esc(qs.find(q=>!q.done)?.t||"")}`}</span></span>
     <svg class="ddchev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
    ${open?`<div class="qlist">${qs.map(q=>`<div class="quest ${q.done?"done":""}"><span class="qic">${q.ic}</span><div class="grow"><span class="small">${esc(q.t)}</span><span class="qbar"><i style="width:${Math.round(q.v/q.n*100)}%"></i></span></div><span class="tiny muted num">${q.v}/${q.n}</span></div>`).join("")}</div>`:""}
-   ${all&&!d.chest?`<button class="btn wide gold" data-act="openChest">🎁 পুরস্কার খোলো (+১০ XP)</button>`:d.chest?`<p class="tiny muted">আজকের পুরস্কার নেওয়া হয়েছে। কাল নতুন quest!</p>`:""}</div>`;
+   ${all&&!d.chest?`<button class="btn wide gold" data-act="openChest">🎁 পুরস্কার খোলো (+১০ XP)</button>`:""}</div>`;
 }
 
 /* ================= badges ================= */
