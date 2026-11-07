@@ -1,0 +1,720 @@
+<title>Ali's English Coach</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..800&family=Geist+Mono:wght@400..600&family=Hind+Siliguri:wght@400;500;600&display=swap">
+<style>/*__STYLE__*/</style>
+
+<div id="root"><main class="view"><h1>Loading…</h1><p class="muted">Tomar progress load hocche.</p></main></div>
+<nav class="tabs" aria-label="Main"><div class="navbrand brand" aria-hidden="true"><i>AE</i>English Coach</div><div class="in" id="tabs"><span class="pill"></span></div></nav>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const COURSE={units:[],warmup:{}};
+/*__CONTENT__*/
+</script>
+<script>
+/* ================= utilities ================= */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const clone=o=>o==null?o:JSON.parse(JSON.stringify(o));
+const rid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const pad=n=>String(n).padStart(2,"0");
+const dstr=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const today=()=>dstr(new Date());
+const addDays=n=>{const d=new Date();d.setDate(d.getDate()+n);return dstr(d);};
+const shuffle=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+const pick=(a,n)=>shuffle(a).slice(0,n);
+const fmt=s=>Math.floor(s/60)+":"+pad(Math.floor(s%60));
+function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);if(el.animate&&!matchMedia("(prefers-reduced-motion: reduce)").matches)el.animate([{opacity:0,transform:"translateY(18px) scale(.96)"},{opacity:1,transform:"none"}],{duration:450,easing:"cubic-bezier(.34,1.56,.64,1)"});toast._t=setTimeout(()=>{if(el.animate&&!matchMedia("(prefers-reduced-motion: reduce)").matches){const a=el.animate([{opacity:1},{opacity:0,transform:"translateY(10px)"}],{duration:300,easing:"ease-in"});a.onfinish=()=>el.hidden=true;}else el.hidden=true;},2800);}
+const IC={
+ learn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
+ warm:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a4 4 0 0 0-4 4v4a4 4 0 0 0 8 0V7a4 4 0 0 0-4-4z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
+ practice:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M4 4v4h4"/></svg>',
+ story:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 8h6"/></svg>',
+ me:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
+ star:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 6.6 7 .7-5.3 4.8 1.6 7L12 17.3 5.7 21l1.6-7L2 9.3l7-.7z"/></svg>',
+ check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>',
+ lock:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 10V7a5 5 0 0 1 10 0v3h1a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1zm2 0h6V7a3 3 0 0 0-6 0z"/></svg>',
+ book:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v16H6.5a1 1 0 0 0 0 2H20v2H6.5A2.5 2.5 0 0 1 4 19.5z"/></svg>',
+ speak:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>',
+ slow:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M3 15c0-4 3-7 8-7s8 3 8 7H3z"/><path d="M19 15l2-2M6 15v3M16 15v3"/></svg>',
+ close:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+ flame:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2s5 4.5 5 10a5 5 0 0 1-10 0c0-2.2 1.2-3.8 2-4.6 0 1.6.8 2.6 2 2.6 0-3.2-1-5.5 1-8z"/></svg>',
+ mic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
+ back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>'
+};
+
+/* ================= environment ================= */
+const WEB_URL="/*__WEB_URL__*/";
+const ENV={claude:!!window.claude, ai:null, aiState:"off", micOk:!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&window.MediaRecorder&&window.isSecureContext)};
+if(ENV.claude) ENV.micOk=false; // artifact pages cannot use the microphone
+
+/* ================= speech (device text-to-speech) ================= */
+const TTS={
+ ok:"speechSynthesis" in window, q:[],
+ voice(){try{const vs=speechSynthesis.getVoices()||[];return vs.find(v=>/en[-_](US|GB)/i.test(v.lang)&&/natural|google|aria|jenny|samantha|daniel/i.test(v.name))||vs.find(v=>/^en/i.test(v.lang))||null;}catch(e){return null;}},
+ utter(t,rate){const u=new SpeechSynthesisUtterance(t);const v=this.voice();if(v)u.voice=v;u.lang=v?.lang||"en-US";u.rate=rate||S?.rate||.9;return u;},
+ say(t,rate){if(!this.ok){toast("Ei device e awaj (text-to-speech) nei.");return;}try{speechSynthesis.cancel();speechSynthesis.speak(this.utter(t,rate));}catch(e){}},
+ sayLong(t,rate,onEnd){if(!this.ok)return;try{speechSynthesis.cancel();const parts=t.replace(/\n+/g," ").split(/(?<=[.!?])\s+/).filter(Boolean);parts.forEach((p,i)=>{const u=this.utter(p,rate);if(i===parts.length-1&&onEnd)u.onend=onEnd;speechSynthesis.speak(u);});}catch(e){}},
+ stop(){try{speechSynthesis.cancel();}catch(e){}}
+};
+const fill=s=>String(s).replace(/\{d1\}/g,S.names.d1||"sweetie").replace(/\{d2\}/g,S.names.d2||"baby");
+const fillBn=s=>String(s).replace(/\{d1\}/g,S.names.d1||"সোনা").replace(/\{d2\}/g,S.names.d2||"বাবু");
+
+/* ================= state & storage ================= */
+function defaultState(){return {v:3,names:{d1:"",d2:""},goal:30,warmReq:true,rate:.9,autoplay:true,sound:true,onboarded:false,
+  xp:0,days:{},done:{},storyDone:{},srs:{},recs:[],stats:{c:0,t:0},warmCount:0,created:new Date().toISOString()};}
+let S=defaultState(), CUSTOM={}, MARKS={}, ASSESS=null;
+const Store={
+ mode:"local", db:null, uid:null, chain:Promise.resolve(), timer:null, failed:false,
+ base(){return this.db.doc(`data/users/${this.uid}/duo`);},
+ lsGet(k){try{return JSON.parse(localStorage.getItem("aec3:"+k)||"null");}catch(e){return null;}},
+ lsSet(k,v){try{localStorage.setItem("aec3:"+k,JSON.stringify(v));return true;}catch(e){return false;}},
+ async init(){
+   if(ENV.claude){
+     claude.use("sample").then(s=>{ENV.ai=s;ENV.aiState=s?"ready":"off";render();});
+     const [db,user]=await Promise.all([claude.use("db"),claude.use("user")]);
+     const id=user?await user.id():null;
+     if(db&&id){this.mode="cloud";this.db=db;this.uid=id;}
+   }
+ },
+ async load(){
+   if(this.mode==="cloud"){
+     const [st,units,marks,as]=await Promise.all([this.base().get(),this.base().collection("units").get(),this.base().collection("marks").get(),this.db.doc(`data/users/${this.uid}/assessment`).get()]);
+     if(st.exists)S=Object.assign(defaultState(),clone(st.data()));
+     units.docs.forEach(d=>CUSTOM[d.id]=clone(d.data()));
+     marks.docs.forEach(d=>MARKS[d.id]=clone(d.data()));
+     if(as.exists&&as.data().status==="done")ASSESS=clone(as.data().result);
+   }else{
+     const st=this.lsGet("state");if(st)S=Object.assign(defaultState(),st);
+     CUSTOM=this.lsGet("units")||{};MARKS=this.lsGet("marks")||{};
+   }
+ },
+ save(){clearTimeout(this.timer);this.timer=setTimeout(()=>this.flush(),500);},
+ flush(){
+   const body=clone(S);
+   this.chain=this.chain.then(async()=>{
+     if(this.mode==="cloud")await this.base().set(body);
+     else if(!this.lsSet("state",body))throw {code:"local_full"};
+     if(this.failed){this.failed=false;render();}
+   }).catch(()=>{this.failed=true;render();});
+   return this.chain;
+ },
+ async saveUnit(u){CUSTOM[u.id]=u;if(this.mode==="cloud")await this.base().collection("units").doc(u.id).set(clone(u));else this.lsSet("units",CUSTOM);},
+ async delUnit(id){delete CUSTOM[id];if(this.mode==="cloud")await this.base().collection("units").doc(id).delete();else this.lsSet("units",CUSTOM);}
+};
+function day(d){d=d||today();return S.days[d]||(S.days[d]={xp:0,warm:false,warmMin:0,lessons:0,practice:0,c:0,t:0});}
+function addXP(n){S.xp+=n;day().xp+=n;}
+function streak(){let n=0;let d=new Date();const ok=k=>{const r=S.days[k];return r&&r.warm&&(r.lessons+r.practice)>0;};if(!ok(dstr(d)))d.setDate(d.getDate()-1);while(ok(dstr(d))){n++;d.setDate(d.getDate()-1);}return n;}
+function warmToday(){return !!S.days[today()]?.warm;}
+
+/* ================= course helpers ================= */
+const TRACKS=[["family","Family","পরিবার"],["client","Client","ক্লায়েন্ট"],["everyday","Everyday","সবার সাথে"]];
+function allUnits(){return [...COURSE.units,...Object.values(CUSTOM).sort((a,b)=>(a.created||"").localeCompare(b.created||""))];}
+function unitById(id){return allUnits().find(u=>u.id===id);}
+function nodesOf(track){const out=[];allUnits().filter(u=>u.track===track).forEach(u=>{u.lessons.forEach((l,i)=>out.push({type:"lesson",u,li:i,key:u.id+":"+i}));out.push({type:"story",u,key:u.id+":story"});});return out;}
+function nodeDone(n){return n.type==="lesson"?!!S.done[n.key]:!!S.storyDone[n.u.id]?.read;}
+function nodeStates(track){const ns=nodesOf(track);let prevDone=true;let curFound=false;return ns.map(n=>{const done=nodeDone(n);const unlocked=prevDone||n.u.custom;let st=done?"done":unlocked?(curFound?"open":"cur"):"lock";if(st==="cur")curFound=true;prevDone=done;return Object.assign(n,{st});});}
+function lessonItems(u,li){return u.lessons[li].items.map((it,i)=>({id:u.id+":"+li+":"+i,en:fill(it[0]),bn:fillBn(it[1]),track:u.track}));}
+function allItems(){const out=[];allUnits().forEach(u=>u.lessons.forEach((l,li)=>out.push(...lessonItems(u,li))));return out;}
+function itemById(id){const [uid,li,i]=id.split(":");const u=unitById(uid);if(!u||!u.lessons[li])return null;return lessonItems(u,+li)[+i]||null;}
+
+/* ================= SRS ================= */
+const IV=[1,2,4,7,15,30];
+function srsUpdate(id,ok){const r=S.srs[id]||(S.srs[id]={box:0,r:0,w:0});r.last=today();if(ok){r.box=Math.min(r.box+1,IV.length-1);r.r++;}else{r.box=0;r.w++;}r.due=addDays(IV[r.box]);}
+function dueItems(){return Object.entries(S.srs).filter(([id,r])=>!r.due||r.due<=today()).sort((a,b)=>(b[1].w-a[1].w)).map(([id])=>itemById(id)).filter(Boolean);}
+
+/* ================= text matching ================= */
+const CONTR={"i'm":"i am","it's":"it is","don't":"do not","can't":"cannot","won't":"will not","i'll":"i will","you're":"you are","let's":"let us","that's":"that is","there's":"there is","i've":"i have","i'd":"i would","we're":"we are","isn't":"is not","doesn't":"does not","didn't":"did not","what's":"what is","here's":"here is","they're":"they are","you'd":"you would","how's":"how is","we'll":"we will","she's":"she is","he's":"he is","aren't":"are not","wasn't":"was not","weren't":"were not","couldn't":"could not","shouldn't":"should not","wouldn't":"would not","haven't":"have not","hasn't":"has not","you've":"you have","we've":"we have","they've":"they have","you'll":"you will","it'll":"it will","she'll":"she will","they'll":"they will","i'd":"i would","we'd":"we would","who's":"who is","where's":"where is"};
+function norm(s,expand){let t=String(s).toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9'\s-]/g," ").replace(/-/g," ").replace(/\s+/g," ").trim();if(expand)t=t.split(" ").map(w=>CONTR[w]||w).join(" ");return t;}
+function words(s){return String(s).replace(/[“”"]/g,"").split(/\s+/).map(w=>w.replace(/^[^\w']+|[^\w']+$/g,"")).filter(Boolean);}
+function lev(a,b){const m=a.length,n=b.length;if(!m)return n;if(!n)return m;let p=Array.from({length:n+1},(_,j)=>j);for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c;}return p[n];}
+const STOP=new Set(["the","a","an","to","and","or","of","in","on","is","are","it","i","you","me","my","your","we","for","at","be","do","with","this","that","so","but","please","now","can","will"]);
+
+/* ================= exercise builder ================= */
+function makeExercises(items,pool,isNew){
+  const ex=[];
+  items.forEach((it,i)=>{if(isNew&&!S.srs[it.id])ex.push({t:"intro",it});ex.push({t:i%2?"build":"meaning",it});});
+  if(items.length>=3)ex.push({t:"match",items:pick(items,Math.min(5,items.length))});
+  const second=["listen","fill","type","build","speak","listen"];
+  shuffle(items).forEach((it,i)=>{let t=second[i%second.length];if(t==="listen"&&!TTS.ok)t="build";if(t==="fill"&&!fillWord(it))t="type";ex.push({t,it});});
+  return ex.map(e=>prepare(e,pool));
+}
+function fillWord(it){const ws=words(it.en);const cand=ws.filter(w=>w.length>=3&&!STOP.has(w.toLowerCase()));return cand.sort((a,b)=>b.length-a.length)[0]||null;}
+function prepare(e,pool){
+  const others=pool.filter(p=>e.it?p.id!==e.it.id:true);
+  if(e.t==="meaning"){const ds=pick(others.filter(o=>o.bn!==e.it.bn),2).map(o=>o.bn);e.opts=shuffle([e.it.bn,...ds]);}
+  if(e.t==="build"||e.t==="listen"){const target=words(e.it.en);const tl=new Set(target.map(w=>w.toLowerCase()));const extra=pick([...new Set(others.flatMap(o=>words(o.en)))].filter(w=>!tl.has(w.toLowerCase())),Math.min(3,Math.max(2,Math.round(target.length/3))));e.tiles=shuffle([...target,...extra]);e.sel=[];}
+  if(e.t==="fill"){const w=fillWord(e.it);e.word=w;const re=new RegExp("\\b"+w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\b");e.blanked=e.it.en.replace(re,"_____");const ds=pick([...new Set(others.flatMap(o=>words(o.en)))].filter(x=>x.length>=3&&x.toLowerCase()!==w.toLowerCase()&&!STOP.has(x.toLowerCase())),2);e.opts=shuffle([w,...ds]);}
+  if(e.t==="match"){e.left=shuffle(e.items.map(x=>({id:x.id,txt:x.en})));e.right=shuffle(e.items.map(x=>({id:x.id,txt:x.bn})));e.gone=[];e.errs=0;}
+  return e;
+}
+
+/* ================= lesson session ================= */
+let L=null; // active session
+function startSession(kind,items,meta){
+  const pool=allItems();
+  const ex=makeExercises(items,pool.length>=6?pool:items,kind==="lesson");
+  L=Object.assign({kind,items,ex,i:0,total:ex.length,answer:null,fb:null,mistakes:{},c:0,t:0,started:Date.now(),done:false},meta||{});
+  render();playIfAuto();
+}
+function cur(){return L.ex[L.i];}
+function playIfAuto(){const e=L&&cur();if(!e)return;if(S.autoplay&&(e.t==="intro"||e.t==="listen"||e.t==="meaning"||e.t==="speak"))setTimeout(()=>TTS.say(e.it.en),250);}
+function grade(){
+  const e=cur();let ok=false,show="";
+  if(e.t==="meaning"||e.t==="fill"){if(L.answer==null)return;ok=e.t==="meaning"?L.answer===e.it.bn:L.answer.toLowerCase()===e.word.toLowerCase();show=e.t==="meaning"?e.it.bn:e.it.en;}
+  if(e.t==="build"||e.t==="listen"){if(!e.sel.length)return;const got=norm(e.sel.map(i=>e.tiles[i]).join(" "),true);ok=got===norm(e.it.en,true);show=e.it.en;}
+  if(e.t==="type"){const v=($("#typein")?.value||"").trim();if(!v)return;L.typed=v;const a=norm(v,true),b=norm(e.it.en,true);const d=lev(a,b);ok=d===0||d<=Math.max(1,Math.floor(b.length*.08));show=e.it.en;if(ok&&d>0)L.typo=true;}
+  L.t++;day().t++;S.stats.t++;
+  if(ok){L.c++;day().c++;S.stats.c++;}else{L.mistakes[e.it.id]=1;if((e.retry||0)<2)L.ex.push(Object.assign(prepare({t:e.t==="listen"&&!TTS.ok?"build":e.t,it:e.it},allItems()),{retry:(e.retry||0)+1}));}
+  L.fb={ok,show,bn:e.it.bn};render();
+  SND.play(ok?"ok":"no");
+}
+function next(){
+  L.fb=null;L.answer=null;L.typo=false;L.typed=null;L.i++;
+  if(L.i>=L.ex.length){finishSession();return;}
+  render();playIfAuto();
+}
+function finishSession(){
+  L.items.forEach(it=>srsUpdate(it.id,!L.mistakes[it.id]));
+  const perfect=Object.keys(L.mistakes).length===0;
+  let xp=L.kind==="lesson"?10+(perfect?5:0):8;
+  addXP(xp);
+  if(L.kind==="lesson"){S.done[L.key]={at:today(),acc:L.t?Math.round(L.c/L.t*100):null};day().lessons++;}else day().practice++;
+  L.done=true;L.xp=xp;L.secs=Math.round((Date.now()-L.started)/1000);Store.save();render();SND.play("done");
+}
+
+/* ================= recording (standalone only) ================= */
+const REC={mr:null,stream:null,chunks:[],start:0,blob:null,url:null,mime:"",timer:null,state:"idle",forId:null,err:null,an:null,raf:0};
+function micErr(e){const n=e&&e.name;
+  if(n==="NotAllowedError"||n==="SecurityError")return "Microphone er permission deya hoy ni. Address bar er bam pashe lock/mic icon e tap kore Microphone → Allow koro, tarpor abar Record chapo.";
+  if(n==="NotFoundError"||n==="OverconstrainedError")return "Kono microphone pawa jay ni. Headset/mic lagano ache kina dekho.";
+  if(n==="NotReadableError"||n==="AbortError")return "Microphone onno app (Zoom, WhatsApp call) use korche. Oita bondho kore abar try koro.";
+  return "Microphone chalu kora gelo na ("+(n||"error")+").";}
+function recMeter(){
+  cancelAnimationFrame(REC.raf);if(!REC.an)return;const buf=new Uint8Array(REC.an.fftSize);
+  const loop=()=>{REC.an.getByteTimeDomainData(buf);let pk=0;for(let i=0;i<buf.length;i++)pk=Math.max(pk,Math.abs(buf[i]-128));
+    const lv=Math.min(1,pk/70);const bars=document.querySelectorAll(".recbar i");bars.forEach((b,i)=>{const w=.35+.65*Math.abs(Math.sin(performance.now()/180+i*1.3));b.style.height=Math.max(12,Math.round(lv*w*100))+"%";});
+    if(REC.state==="rec")REC.raf=requestAnimationFrame(loop);};
+  REC.raf=requestAnimationFrame(loop);}
+async function recStart(forId){
+  REC.err=null;REC.forId=forId;
+  try{
+    if(!window.MediaRecorder)throw {name:"NoRecorder"};
+    REC.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});
+    REC.mime=["audio/webm;codecs=opus","audio/webm","audio/mp4","audio/ogg"].find(m=>MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(m))||"";
+    REC.mr=new MediaRecorder(REC.stream,REC.mime?{mimeType:REC.mime}:{});REC.chunks=[];
+    REC.mr.ondataavailable=e=>{if(e.data&&e.data.size)REC.chunks.push(e.data);};
+    REC.mr.onstop=()=>{REC.blob=new Blob(REC.chunks,{type:REC.mr.mimeType||REC.mime||"audio/webm"});if(REC.url)URL.revokeObjectURL(REC.url);REC.url=URL.createObjectURL(REC.blob);REC.stream.getTracks().forEach(t=>t.stop());REC.an=null;REC.state="done";REC.secs=Math.round((Date.now()-REC.start)/1000);render();};
+    try{const c=SND.ac();if(c){const src=c.createMediaStreamSource(REC.stream);REC.an=c.createAnalyser();REC.an.fftSize=512;src.connect(REC.an);}}catch(e){REC.an=null;}
+    REC.mr.start(1000);REC.start=Date.now();REC.state="rec";REC.blob=null;wake(true);
+    clearInterval(REC.timer);REC.timer=setInterval(()=>{const el=$("#rectime");if(el)el.textContent=fmt((Date.now()-REC.start)/1000);if(Date.now()-REC.start>9*60*1000)recStop();},250);
+  }catch(e){REC.state="idle";REC.err=e&&e.name==="NoRecorder"?"Ei browser e recording support nei. Chrome ba Safari (iOS 14.3+) use koro.":micErr(e);SND.play("no");}
+  render();recMeter();
+}
+function recStop(){clearInterval(REC.timer);wake(false);if(REC.mr&&REC.mr.state!=="inactive")REC.mr.stop();}
+function recExt(){const t=REC.blob?.type||"";return t.includes("mp4")?"m4a":t.includes("ogg")?"ogg":"webm";}
+function recFilename(base){return `Ali_${base}_${today()}.${recExt()}`;}
+function downloadBlob(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},2000);}
+let wakeLock=null;
+async function wake(on){try{if(on&&navigator.wakeLock)wakeLock=await navigator.wakeLock.request("screen");else if(wakeLock){wakeLock.release();wakeLock=null;}}catch(e){}}
+function noMicHTML(base){
+  if(ENV.claude)return `<div class="note small stack"><b>Claude version e microphone nei</b><span>Claude er vitore kono app microphone use korte pare na. Record korar 2 ta upay:</span>
+    ${WEB_URL?`<a class="btn wide" href="${WEB_URL}" target="_blank" rel="noopener">${IC.mic.replace("<svg",'<svg width="18" height="18"')} Web app e record koro</a><span class="tiny muted">Web app (GitHub) e app er vitorei record hoy. Oikhane progress alada thake.</span>`:""}
+    <span>Ba phone er <b>Voice Recorder</b> app diye record koro, file er naam <b>${esc("Ali_"+base+"_"+today())}</b>.</span></div>`;
+  const why=!window.isSecureContext?"Ei address e (http) browser microphone dey na. https link ba desktop file hisebe kholo.":!window.MediaRecorder?"Ei browser e recording support nei. Chrome ba Safari use koro.":"Ei browser e microphone pawa jacche na.";
+  return `<div class="note small">${why} Na hole phone er <b>Voice Recorder</b> diye record koro, file er naam <b>${esc("Ali_"+base+"_"+today())}</b>.</div>`;}
+function recorderHTML(forId,base,label){
+  if(!ENV.micOk) return noMicHTML(base);
+  const mine=REC.forId===forId, rec=mine&&REC.state==="rec";
+  const bars=`<span class="recbar" aria-hidden="true">${"<i></i>".repeat(14)}</span>`;
+  return `<div class="card"><div class="row between"><h3>${esc(label||"Record")}</h3>${rec?`<span class="row"><span class="recdot"></span><b id="rectime" class="num">${fmt((Date.now()-REC.start)/1000)}</b></span>`:""}</div>
+   ${REC.err&&mine?`<p class="warnbox small">${esc(REC.err)}</p>`:""}
+   ${rec?`<div class="row center">${bars}</div><button class="recbig on" data-act="recStop" aria-label="Stop recording"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2.5"/></svg></button><p class="tiny muted center">Recording… shesh hole Stop chapo (max 9 min)</p>`
+   :mine&&REC.state==="done"?`<audio controls src="${REC.url}"></audio><p class="small muted">${fmt(REC.secs||0)} recorded · shune dekho</p><div class="row"><button class="btn good" data-act="recSave" data-base="${esc(base)}" data-for="${esc(forId)}">Download file</button><button class="btn ghost" data-act="recStart" data-for="${esc(forId)}" data-base="${esc(base)}">Abar record</button></div>`
+   :`<button class="recbig" data-act="recStart" data-for="${esc(forId)}" data-base="${esc(base)}" aria-label="Start recording">${IC.mic}</button><p class="tiny muted center">Tap kore record shuru · recording shudhu tomar device e thake</p>`}</div>`;
+}
+
+/* ================= AI (Claude mode only) ================= */
+function levelLine(){return ASSESS?`Provisional level ${ASSESS.level} (${ASSESS.range}). Priorities: ${(ASSESS.priorities||[]).join("; ")}.`:"Level about A2+ to B1.";}
+const CTX=()=>`You are a friendly English coach for Ali, a Bangladeshi web developer (founder of BD Webhut) whose native language is Bangla. ${levelLine()} He has a wife and two daughters under 5 and wants to speak English with them at home. Use modern, natural English. Bangla must be in Bangla script, simple and natural. Never shame mistakes.`;
+function aiErr(e){const c=e&&e.code;if(["not_granted","sampling_disabled","not_declared","capability_disabled"].includes(c)){ENV.aiState="off";return "AI ei view e chalu nei (Claude permission deya hoy ni).";}if(c==="rate_limited")return "Claude usage limit. Kichukkhon pore try koro.";if(c==="invalid_json")return "AI er uttor thik format e ashe ni, abar try koro.";return "AI theke uttor ana gelo na. Abar try koro.";}
+async function aiJSON(p,tier){if(!ENV.ai)throw {code:"not_granted"};return ENV.ai.json(p,{modelTier:tier||"default",cache:false});}
+
+/*__MOTION__*/
+
+/* ================= app state ================= */
+const APP={tab:"learn",track:"family",pop:null,modal:null,busy:null,warm:null,story:null,cards:null,chat:null,confirm:null,check:{}};
+const TABS=[["learn","Learn",IC.learn],["warm","Warm-up",IC.warm],["practice","Practice",IC.practice],["stories","Stories",IC.story],["me","Me",IC.me]];
+
+let LASTKEY=null,LASTSUB=null;
+function viewKey(){if(L)return L.done?"L:done":"L";if(APP.busy)return "busy";if(APP.warm)return "warm:"+APP.warm.step;if(APP.story)return "story:"+APP.story;if(APP.cards)return "cards";if(APP.chat)return "chat";return "tab:"+APP.tab;}
+function subKey(){if(L&&!L.done)return "ex"+L.i;if(APP.warm)return "w"+APP.warm.ex+":"+APP.warm.tw+":"+(APP.warm.noPen?1:0);if(APP.cards)return "c"+APP.cards.i;if(!L&&!APP.busy&&!APP.story&&!APP.chat&&APP.tab==="learn")return "t:"+APP.track;return "";}
+function renderNav(instant){
+  const t=$("#tabs");
+  if(!t.querySelector("button"))t.insertAdjacentHTML("beforeend",TABS.map(([id,l,i])=>`<button data-act="tab" data-v="${id}">${i}<span>${l}</span></button>`).join(""));
+  t.querySelectorAll("button").forEach(b=>{if(b.dataset.v===APP.tab)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current");});
+  placePill(t.querySelector(".pill"),t.querySelector("[aria-current]"),instant);
+}
+function placeSeg(instant){const tr=$(".tracks");if(tr)placePill(tr.querySelector(".seg-pill"),tr.querySelector('[aria-pressed="true"]'),instant);}
+function render(){
+  let html;
+  if(L) html=viewLesson();
+  else if(APP.busy) html=`<main class="view"><div class="stack-lg" style="padding-top:20vh;text-align:center"><h2>${esc(APP.busy)}</h2><p class="muted">Claude kaj korche, 20 second theke 2 minute lagte pare.</p></div></main>`;
+  else if(APP.warm) html=viewWarmRun();
+  else if(APP.story) html=viewStory();
+  else if(APP.cards) html=viewCards();
+  else if(APP.chat) html=viewChat();
+  else html=`<main class="view">${topbar()}${saveWarn()}${({learn:viewLearn,warm:viewWarm,practice:viewPractice,stories:viewStories,me:viewMe})[APP.tab]()}</main>`;
+  if(APP.modal) html+=APP.modal;
+  const root=$("#root"),key=viewKey(),sub=subKey(),first=LASTKEY===null;
+  const nav=document.querySelector("nav.tabs"),navWasHidden=nav.hidden;
+  nav.hidden=!!(L||APP.warm);
+  if(key!==LASTKEY){root.innerHTML=html;placeSeg(true);enterView(root,first);}
+  else{const subChanged=sub!==LASTSUB;morph(root,html,subChanged);placeSeg(subChanged&&!sub.startsWith("t:"));if(subChanged)enterSub(root);}
+  renderNav(first||navWasHidden);
+  if(navWasHidden&&!nav.hidden)rise([nav],{y:30,dur:600,scale:1,ease:EZ.out3});
+  LASTKEY=key;LASTSUB=sub;
+}
+function saveWarn(){return Store.failed?`<p class="warnbox small">Progress save hoy ni (internet ba storage). <button class="btn sm" data-act="retrySave">Abar save</button></p>`:"";}
+function topbar(){
+  const st=streak(), dx=day().xp, g=S.goal, p=Math.min(1,dx/g);
+  const C=2*Math.PI*9;
+  return `<div class="topbar"><div class="brand"><i>${IC.learn}</i><span>Coach</span></div>
+   <div class="stats">${warmToday()?`<span class="chip warmchip ok" title="Warm-up done">${IC.check.replace("<svg",'<svg width="13" height="13"')} warm-up</span>`:`<button class="chip warmchip todo" data-act="tab" data-v="warm">Warm-up</button>`}
+   <span class="stat" title="Streak"><span class="flame ${warmToday()&&(day().lessons+day().practice)>0?"":"off"}">${IC.flame}</span><span class="num">${st}</span></span>
+   <span class="stat" id="xpstat" title="Aj er XP"><svg class="ring" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="var(--well)" stroke-width="3.5"/><circle cx="12" cy="12" r="9" fill="none" stroke="var(--warm)" stroke-width="3.5" stroke-dasharray="${(C*p).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 12 12)" stroke-linecap="round"/></svg><span class="num">${dx}<span class="muted" style="font-weight:500">/${g}</span></span></span></div></div>`;
+}
+function hello(){const h=new Date().getHours();const g=h<5?"Good night":h<12?"Good morning":h<17?"Good afternoon":"Good evening";
+  const d=new Date().toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});
+  return `<div class="hello"><span class="eyebrow">${esc(d)} · ${warmToday()?"warm-up done":"warm-up first"}</span><h1>${g}, Ali</h1></div>`;}
+
+/* ================= LEARN (path) ================= */
+function viewLearn(){
+  const tr=APP.track, ns=nodeStates(tr);
+  const offs=[0,44,70,44,0,-44,-70,-44];
+  let html=`${hello()}<div class="tracks"><span class="seg-pill"></span>${TRACKS.map(([id,l,bn])=>`<button class="trackbtn ${id}" data-act="track" data-v="${id}" aria-pressed="${tr===id}"><b>${l}</b><span>${bn}</span></button>`).join("")}</div>`;
+  let k=0;
+  allUnits().filter(u=>u.track===tr).forEach((u,ui)=>{
+    const un=ns.filter(n=>n.u.id===u.id);const doneN=un.filter(n=>n.st==="done").length;
+    html+=`<div class="unitban ${tr}"><div><div class="kick">${u.custom?"MY UNIT":"UNIT "+(ui+1)} · ${doneN}/${un.length}</div><h2>${esc(u.title)}</h2><div class="bn">${esc(u.bn||"")}</div></div>${ENV.claude?"":""}</div><div class="path">`;
+    un.forEach(n=>{
+      const off=offs[k++%offs.length];
+      const isStory=n.type==="story";
+      const icon=n.st==="lock"?IC.lock:n.st==="done"?IC.check:isStory?IC.book:IC.star;
+      const label=isStory?"Story":n.u.lessons[n.li].title;
+      html+=`<div class="nodewrap" style="transform:translateX(${off}px)"><button class="node ${tr} ${isStory?"storyn":""} ${n.st}" data-act="node" data-key="${esc(n.key)}" aria-label="${esc(label)} (${n.st})">${icon}<span class="lbl">${esc(label)}</span></button></div>`;
+      if(APP.pop===n.key) html+=`<div class="startpop" style="margin-top:24px">${popHTML(n)}</div>`;
+      html+=`<div style="height:6px"></div>`;
+    });
+    html+=`</div>`;
+  });
+  if(ENV.claude) html+=`<div class="card"><h3>Notun unit chao?</h3><p class="small muted">Je kono topic likho, Claude tomar level er moto 3 ta lesson ar ekta story baniye path e jog korbe.</p>${newUnitForm()}</div>`;
+  return html;
+}
+function popHTML(n){
+  if(n.st==="lock") return `<b>${IC.lock.replace("<svg",'<svg width="14" height="14" style="vertical-align:-1px"')} Locked</b><p class="small muted">Ager lesson gulo shesh korle eta khulbe.</p>`;
+  if(n.type==="story") return `<b>${esc(n.u.story.title)}</b><p class="small muted">Unit er shob kichu niye ekta golpo. Pore shono, jore pore record koro, Claude ke mark korte pathao.</p><button class="btn story wide" data-act="openStory" data-id="${esc(n.u.id)}">Story kholo</button>`;
+  const l=n.u.lessons[n.li], d=S.done[n.key];
+  const gate=S.warmReq&&!warmToday();
+  return `<b>${esc(l.title)}</b><p class="small muted">${l.items.length} ta sentence · ~4–6 min${d?` · last: ${d.acc??"–"}% first-try`:""}</p>
+   ${gate?`<p class="small" style="color:var(--warm-d)">Lesson er age aj er warm-up (10–15 min) koro.</p><button class="btn warm wide" data-act="tab" data-v="warm">Warm-up e jao</button>`
+   :`<button class="btn ${APP.track==="family"?"fam":APP.track==="everyday"?"eve":""} wide" data-act="startLesson" data-key="${esc(n.key)}">${d?"Abar practice (+XP)":"Start +10 XP"}</button>`}`;
+}
+function newUnitForm(){
+  return `<label class="lbl">Topic<input type="text" id="nu-topic" placeholder="e.g. Taking the girls to the park / Asking a client for a testimonial"></label>
+   <label class="lbl">Track<select id="nu-track">${TRACKS.map(([id,l])=>`<option value="${id}" ${APP.track===id?"selected":""}>${l}</option>`).join("")}</select></label>
+   <button class="btn story" data-act="genUnit" ${ENV.aiState==="ready"?"":"disabled"}>Unit banao</button>${ENV.aiState!=="ready"?`<p class="tiny muted">AI ei view e ready na.</p>`:""}`;
+}
+
+/* ================= LESSON PLAYER ================= */
+function viewLesson(){
+  if(L.done){
+    const acc=L.t?Math.round(L.c/L.t*100):100;
+    return `<div class="player"><div class="body" style="justify-content:center;text-align:center;padding-bottom:40px">
+      <div class="done-hero">${IC.check}</div><h1>${L.kind==="lesson"?"Lesson complete!":"Practice complete!"}</h1>
+      <div class="row center" style="gap:12px"><div class="metric" style="min-width:110px"><span class="tag n">XP</span><b>+<span data-count="${L.xp}">${L.xp}</span></b></div><div class="metric" style="min-width:110px"><span class="tag m">first-try</span><b><span data-count="${acc}">${acc}</span>%</b></div><div class="metric" style="min-width:110px"><span class="tag n">time</span><b>${fmt(L.secs)}</b></div></div>
+      ${Object.keys(L.mistakes).length?`<div class="card" style="text-align:left"><h3>Revise korar sentence</h3>${Object.keys(L.mistakes).map(id=>{const it=itemById(id);return it?`<div class="row between" style="flex-wrap:nowrap"><span>${esc(it.en)}<br><span class="small bn muted">${esc(it.bn)}</span></span><button class="icon-btn" data-act="say" data-t="${esc(it.en)}" aria-label="Listen">${IC.speak}</button></div>`:"";}).join("")}<p class="tiny muted">Egulo kal Practice e abar ashbe.</p></div>`:`<p class="okbox">Kono bhul nei! +5 bonus XP.</p>`}
+      <button class="btn good wide" data-act="closeLesson">Continue</button></div></div>`;
+  }
+  const e=cur(), done=L.i, total=L.ex.length;
+  let body="", canCheck=true, checkLabel="Check";
+  const sp=(t,big)=>`<button class="${big?"bigspeak":"icon-btn"}" data-act="say" data-t="${esc(t)}" aria-label="Listen">${IC.speak}</button>`;
+  if(e.t==="intro"){body=`<span class="newtag">New sentence</span><div class="intro"><div class="speaker">${sp(e.it.en,true)}<button class="icon-btn" data-act="saySlow" data-t="${esc(e.it.en)}" aria-label="Slow">${IC.slow}</button></div><div class="en">${esc(e.it.en)}</div><div class="bn muted">${esc(e.it.bn)}</div></div><p class="small muted">Shono, tarpor jore jore 2 bar bolo.</p>`;checkLabel="Continue";}
+  if(e.t==="meaning"){body=`<p class="eyebrow">Ki mane?</p><div class="speaker">${sp(e.it.en)}<div class="prompt">${esc(e.it.en)}</div></div><div class="opts">${e.opts.map(o=>`<button class="opt bn" data-act="choose" data-v="${esc(o)}" aria-pressed="${L.answer===o}" ${L.fb?"disabled":""}>${esc(o)}</button>`).join("")}</div>`;canCheck=L.answer!=null;}
+  if(e.t==="build"||e.t==="listen"){
+    body=e.t==="build"?`<p class="eyebrow">English e lekho</p><div class="prompt bn">${esc(e.it.bn)}</div>`:`<p class="eyebrow">Shono ar sajao</p><div class="speaker">${sp(e.it.en,true)}<button class="icon-btn" data-act="saySlow" data-t="${esc(e.it.en)}" aria-label="Slow">${IC.slow}</button></div>`;
+    body+=`<div class="answer-line">${e.sel.map((ti,k)=>`<button class="tile" data-act="untile" data-k="${k}" ${L.fb?"disabled":""}>${esc(e.tiles[ti])}</button>`).join("")}</div><div class="bank">${e.tiles.map((w,ti)=>`<button class="tile ${e.sel.includes(ti)?"used":""}" data-act="tile" data-i="${ti}" ${L.fb?"disabled":""}>${esc(w)}</button>`).join("")}</div>`;canCheck=e.sel.length>0;}
+  if(e.t==="fill"){body=`<p class="eyebrow">Khali jayga puron koro</p><div class="prompt">${esc(e.blanked)}</div><p class="small bn muted">${esc(e.it.bn)}</p><div class="opts">${e.opts.map(o=>`<button class="opt" data-act="choose" data-v="${esc(o)}" aria-pressed="${L.answer===o}" ${L.fb?"disabled":""}>${esc(o)}</button>`).join("")}</div>`;canCheck=L.answer!=null;}
+  if(e.t==="type"){body=`<p class="eyebrow">English e type koro</p><div class="prompt bn">${esc(e.it.bn)}</div><textarea id="typein" data-key="t${L.i}" placeholder="Type in English…" ${L.fb?"disabled":""} autocapitalize="sentences">${esc(L.typed||"")}</textarea><p class="tiny muted">Phone keyboard er mic diye bolleo cholbe.</p>`;canCheck=!!(L.typed||"").trim();}
+  if(e.t==="match"){body=`<p class="eyebrow">Jora milao</p><div class="match"><div class="stack">${e.left.map(x=>`<button class="opt ${e.gone.includes(x.id)?"gone":""} ${e.flash===x.id?"err":""}" data-act="mL" data-id="${esc(x.id)}" aria-pressed="${e.selL===x.id}">${esc(x.txt)}</button>`).join("")}</div><div class="stack">${e.right.map(x=>`<button class="opt bn ${e.gone.includes(x.id)?"gone":""} ${e.flashR===x.id?"err":""}" data-act="mR" data-id="${esc(x.id)}" aria-pressed="${e.selR===x.id}">${esc(x.txt)}</button>`).join("")}</div></div>`;canCheck=false;}
+  if(e.t==="speak"){body=`<p class="eyebrow">Jore jore bolo</p><div class="speaker">${sp(e.it.en,true)}<div class="prompt">${esc(e.it.en)}</div></div><p class="small bn muted">${esc(e.it.bn)}</p>
+    ${ENV.micOk?recorderMini(e.it.id):`<p class="note small">Shono, tarpor 3 bar jore jore bolo. (Ei app tomar uccharon shune score dite pare na.)</p>`}`;checkLabel="Ami bolechi";}
+  let foot;
+  if(L.fb){const f=L.fb;foot=`<div class="foot ${f.ok?"ok":"no"}"><div class="in"><div class="fbtitle"><i>${f.ok?IC.check:IC.close}</i>${f.ok?(L.typo?"Thik! (choto typo)":["Darun!","Excellent!","Perfect!","Thik!"][L.i%4]):"Thik uttor:"}</div>${!f.ok||L.typo?`<div><b class="${f.show===f.bn?"bn":""}">${esc(f.show)}</b>${f.show!==f.bn&&f.bn?`<br><span class="small bn">${esc(f.bn)}</span>`:""}</div>`:""}<button class="btn ${f.ok?"good":"bad"} wide" data-act="next">Continue</button></div></div>`;}
+  else foot=`<div class="foot"><div class="in">${e.t==="match"?`<p class="small muted center">Bam ar dan theke mil kore tap koro.</p>`:`<button class="btn good wide" data-act="${e.t==="intro"||e.t==="speak"?"skipEx":"check"}" ${canCheck?"":"disabled"}>${checkLabel}</button>`}</div></div>`;
+  return `<div class="player"><div class="head"><button class="icon-btn" data-act="quitLesson" aria-label="Close lesson">${IC.close}</button><div class="pbar"><i style="width:${Math.round(done/total*100)}%"></i></div></div><div class="body">${body}</div>${foot}</div>`;
+}
+function recorderMini(id){
+  const mine=REC.forId===id;
+  if(mine&&REC.state==="rec")return `<div class="rec"><span class="recdot"></span><b id="rectime" class="num">${fmt((Date.now()-REC.start)/1000)}</b><span class="recbar" aria-hidden="true">${"<i></i>".repeat(10)}</span><button class="btn sm bad" data-act="recStop">Stop</button></div>`;
+  if(mine&&REC.state==="done")return `<p class="small">Nijer awaj shono, tarpor model er sathe milao:</p><audio controls src="${REC.url}"></audio><button class="btn sm ghost" data-act="recStart" data-for="${esc(id)}">Abar record</button>`;
+  return `<button class="btn sm bad" data-act="recStart" data-for="${esc(id)}">${IC.mic} Record & compare</button>${REC.err&&mine?`<p class="warnbox small">${esc(REC.err)}</p>`:""}<p class="tiny muted">Self-check: app score dey na.</p>`;
+}
+
+/* ================= WARM-UP ================= */
+function todaysWarm(){
+  const lv=Math.min(3,1+Math.floor((S.warmCount||0)/7));
+  const tw=COURSE.warmup.twisters;const idx=(S.warmCount||0)*3;
+  const pool=tw.filter(t=>t.lv<=lv);const tws=[0,1,2].map(k=>pool[(idx+k)%pool.length]);
+  const passage=COURSE.warmup.passages[new Date().getDay()%COURSE.warmup.passages.length];
+  return {lv,tws,passage};
+}
+function viewWarm(){
+  const w=todaysWarm(), done=warmToday(), dd=S.days[today()]||{};
+  const exSecs=COURSE.warmup.exercises.reduce((a,x)=>a+x.secs,0);
+  return `<div class="stack"><h1>Daily mouth warm-up</h1><p class="muted">Lesson er age protidin 10–15 minute. Mukher jorota kate, jibh ar thot English er sound er jonno ready hoy.</p></div>
+   ${done?`<p class="okbox">Ajker warm-up shesh (${dd.warmMin||0} min). Ekhon lesson khola ache!</p>`:""}
+   <div class="stack">
+    <div class="warmstep ${dd.w1?"done":""}"><span class="num">${dd.w1?IC.check.replace("<svg",'<svg width="18" height="18"'):"1"}</span><div><h3>Mouth & tongue exercises</h3><p class="small muted">${COURSE.warmup.exercises.length} ta exercise · ${Math.round(exSecs/60)} min · timer diye guide</p></div><button class="btn sm warm" data-act="warmGo" data-s="1">${dd.w1?"Again":"Start"}</button></div>
+    <div class="warmstep ${dd.w2?"done":""}"><span class="num">${dd.w2?IC.check.replace("<svg",'<svg width="18" height="18"'):"2"}</span><div><h3>Tongue twisters</h3><p class="small muted">Ajker 3 ta (level ${w.lv}) · ~4 min · dhire 3 bar, druto 3 bar</p></div><button class="btn sm warm" data-act="warmGo" data-s="2">${dd.w2?"Again":"Start"}</button></div>
+    <div class="warmstep ${dd.w3?"done":""}"><span class="num">${dd.w3?IC.check.replace("<svg",'<svg width="18" height="18"'):"3"}</span><div><h3>Pen-in-mouth reading</h3><p class="small muted">5 min · “${esc(w.passage.title)}”</p></div><button class="btn sm warm" data-act="warmGo" data-s="3">${dd.w3?"Again":"Start"}</button></div>
+   </div>
+   <button class="btn warm wide" data-act="warmGo" data-s="1">${done?"Abar puro warm-up":"Puro warm-up shuru (1 → 2 → 3)"}</button>
+   <details class="card"><summary><b>Pen diye reading kivabe korbe</b></summary><div class="stack small bn"><p>• একটা পরিষ্কার কলম আড়াআড়ি করে সামনের দাঁত দিয়ে হালকা কামড়ে ধরো, গভীরে ঢোকাবে না।</p><p>• কলম মুখে রেখেই জোরে জোরে, ধীরে, প্রতিটা শব্দ স্পষ্ট করার চেষ্টা করে পড়ো। জিভ আর ঠোঁটকে বেশি কাজ করতে হবে।</p><p>• শেষে কলম ছাড়া এক মিনিট পড়ো — শব্দ অনেক হালকা আর পরিষ্কার লাগবে।</p><p>• চোয়ালে ব্যথা লাগলে থামো। ছোট বাচ্চাদের দিয়ে এটা করাবে না।</p></div></details>
+   ${S.warmReq?`<p class="tiny muted">Settings e "Lesson er age warm-up lagbe" chalu ache.</p>`:""}`;
+}
+function startWarm(step){APP.warm={step,ex:0,left:null,run:false,tw:0,reps:0,end:null};wake(true);if(step===1)warmTimerFor(0);render();}
+function warmTimerFor(i){const x=COURSE.warmup.exercises[i];APP.warm.ex=i;APP.warm.left=x.secs;APP.warm.run=false;}
+let warmInt=null;
+function warmTick(){
+  const W=APP.warm;if(!W||!W.run)return;
+  W.left-=1;const el=$("#wt");if(el)el.textContent=fmt(Math.max(0,W.left));const rg=$("#wring");if(rg)rg.style.strokeDashoffset=(515.2*(1-Math.max(0,W.left)/+rg.dataset.total)).toFixed(1);if(W.left>0&&W.left<=3)SND.play("tick");
+  if(W.left<=0){
+    SND.play("ok");
+    if(W.step===1){if(W.ex<COURSE.warmup.exercises.length-1){warmTimerFor(W.ex+1);W.run=true;if(TTS.ok)TTS.say("Next: "+COURSE.warmup.exercises[W.ex].name,1);render();}else{W.run=false;warmStepDone(1);}}
+    else if(W.step===3){W.run=false;if(!W.noPen){W.noPen=true;W.left=60;render();toast("Pen ber koro. Ebar 1 minute pen chara poro.");W.run=true;}else{warmStepDone(3);}}
+  }
+}
+function warmStepDone(s){const d=day();d["w"+s]=true;const W=APP.warm;d.warmMin=(d.warmMin||0)+(s===1?5:s===2?4:6);
+  if(d.w1&&d.w2&&d.w3&&!d.warm){d.warm=true;S.warmCount=(S.warmCount||0)+1;addXP(15);toast("Warm-up shesh! +15 XP. Lesson khule geche.");SND.play("done");}
+  Store.save();
+  if(s<3){APP.warm={step:s+1,ex:0,left:null,run:false,tw:0,reps:0};if(s+1===3){APP.warm.left=300;}}else{APP.warm=null;wake(false);}
+  render();}
+function viewWarmRun(){
+  const W=APP.warm, w=todaysWarm();
+  const head=`<div class="row between"><button class="icon-btn" data-act="warmExit" aria-label="Close">${IC.close}</button><span class="eyebrow">Warm-up · step ${W.step} of 3</span><span></span></div>`;
+  let body="";
+  if(W.step===1){
+    const xs=COURSE.warmup.exercises, x=xs[W.ex];
+    if(W.left==null)warmTimerFor(0);
+    body=`<div class="pbar" style="height:10px"><i style="width:${W.ex/xs.length*100}%;background:var(--warm)"></i></div>
+     <p class="eyebrow">${W.ex+1} / ${xs.length}</p><h1>${esc(x.name)}</h1><p class="bn" style="font-size:1.05rem">${esc(x.bn)}</p><p class="muted"><i>${esc(x.cue)}</i></p>
+     <div class="ringtimer"><svg viewBox="0 0 180 180"><circle class="bgc" cx="90" cy="90" r="82"/><circle class="fgc" id="wring" data-total="${x.secs}" cx="90" cy="90" r="82" stroke-dasharray="515.2" style="stroke-dashoffset:${(515.2*(1-W.left/x.secs)).toFixed(1)}"/></svg><div class="timer" id="wt">${fmt(W.left)}</div></div>
+     <div class="row center"><button class="btn warm" data-act="warmToggle">${W.run?"Pause":"Start"}</button><button class="btn ghost" data-act="warmSkip">Next</button></div>`;
+  }
+  if(W.step===2){
+    const t=w.tws[W.tw];
+    body=`<p class="eyebrow">Twister ${W.tw+1} of 3 · focus: ${esc(t.focus)}</p><div class="card"><div class="twister">${esc(t.t)}</div><p class="small bn muted center">${esc(t.bn)}</p></div>
+     <div class="row center"><button class="btn ghost" data-act="saySlow" data-t="${esc(t.t)}">${IC.slow.replace("<svg",'<svg width="18" height="18" style="vertical-align:-3px"')} Slow</button><button class="btn ghost" data-act="say" data-t="${esc(t.t)}">${IC.speak.replace("<svg",'<svg width="18" height="18" style="vertical-align:-3px"')} Normal</button></div>
+     <p class="center small">${W.reps<3?"Dhire dhire bolo, protita sound spashto":"Ebar druto bolo, kintu sound thik rekhe"} — protibar bolar por tap koro</p>
+     <div class="reps">${[0,1,2,3,4,5].map(k=>`<i class="${k<W.reps?"on":""}"></i>`).join("")}</div>
+     <button class="btn warm wide" data-act="rep">${W.reps<6?`Bolechi (${W.reps+1}/6)`:"Next twister"}</button>
+     ${ENV.micOk?recorderMini("tw-"+W.tw):""}`;
+  }
+  if(W.step===3){
+    if(W.left==null)W.left=300;
+    const p=w.passage;
+    body=`<div class="row between"><h2>${esc(p.title)}</h2><div class="timer" id="wt" style="font-size:2rem">${fmt(W.left)}</div></div>
+     <p class="note small bn">${W.noPen?"এবার কলম ছাড়া পড়ো — পার্থক্য খেয়াল করো।":"কলম আড়াআড়ি দাঁতে ধরে জোরে জোরে, ধীরে পড়ো। শেষ হলে আবার শুরু থেকে পড়ো।"}</p>
+     <div class="row center"><button class="btn warm" data-act="warmToggle">${W.run?"Pause":W.left===300?"Start 5:00":"Resume"}</button>${W.left<300?`<button class="btn ghost" data-act="warmFinish3">Shesh</button>`:""}</div>
+     <div class="card"><div class="passage">${esc(p.text)}</div></div>`;
+  }
+  return `<main class="view" style="padding-bottom:40px">${head}${body}</main>`;
+}
+
+/* ================= PRACTICE ================= */
+function viewPractice(){
+  const due=dueItems(), learned=Object.keys(S.srs).length;
+  return `<h1>Practice</h1>
+   <div class="card"><div class="row between"><div><span class="eyebrow">Revision due</span><h2 class="num">${due.length} sentence</h2></div><button class="btn" data-act="practiceDue" ${learned?"":"disabled"}>Start</button></div>
+    <p class="small muted">Bhul kora ar purono sentence gulo shomoy moto abar ashe: 1 → 2 → 4 → 7 → 15 → 30 din.${!due.length&&learned?" Aj kichu due nei, tobu practice korle weak sentence gulo ashbe.":""}</p></div>
+   <div class="card"><h3>Family time cards</h3><p class="small muted">Boro boro card, meyeder shathe bose eksathe bolo. Tap korle awaj.</p><button class="btn fam" data-act="openCards">Card kholo</button></div>
+   ${ENV.claude?`<div class="card"><h3>AI conversation coach</h3><p class="small muted">Claude ekjon client, dokandar ba tomar 4 bochor er meye hoye kotha bolbe. Shesh e feedback dibe.</p>
+     <div class="list">${SCEN.map(s=>`<div class="item"><div class="grow"><b>${esc(s.title)}</b><span class="tiny muted">${esc(s.brief)}</span></div><button class="btn sm ${s.track==="family"?"fam":s.track==="everyday"?"eve":""}" data-act="startChat" data-id="${s.id}" ${ENV.aiState==="ready"?"":"disabled"}>Start</button></div>`).join("")}</div></div>`
+   :`<p class="note small">AI conversation coach ar notun unit banano shudhu Claude version e (claude.ai link) kaj kore.</p>`}`;
+}
+function startPractice(){
+  let items=dueItems();
+  if(items.length<6){const weak=Object.entries(S.srs).sort((a,b)=>(a[1].box-b[1].box)||(b[1].w-a[1].w)).map(([id])=>itemById(id)).filter(Boolean);items=[...new Set([...items,...weak])];}
+  items=items.slice(0,8);if(!items.length){toast("Age kichu lesson koro.");return;}
+  startSession("practice",items);
+}
+function viewCards(){
+  const C=APP.cards;const it=C.items[C.i];
+  return `<main class="view" style="padding-bottom:40px"><div class="row between"><button class="icon-btn" data-act="closeCards" aria-label="Close">${IC.close}</button><span class="eyebrow">${C.i+1} / ${C.items.length}</span><select id="cardunit" style="width:auto" aria-label="Unit">${COURSE.units.concat(Object.values(CUSTOM)).filter(u=>u.track==="family").map(u=>`<option value="${u.id}" ${C.unit===u.id?"selected":""}>${esc(u.title)}</option>`).join("")}</select></div>
+   <button class="kidcard" data-act="say" data-t="${esc(it.en)}" style="font:inherit;color:inherit"><span class="en">${esc(it.en)}</span><span class="bn muted" style="font-size:1.1rem">${esc(it.bn)}</span><span class="chip">${IC.speak.replace("<svg",'<svg width="16" height="16"')} tap to hear</span></button>
+   <div class="row center"><button class="btn ghost" data-act="cardPrev" ${C.i?"":"disabled"}>Back</button><button class="btn fam" data-act="cardNext">${C.i<C.items.length-1?"Next":"Shuru theke"}</button></div>
+   <p class="small muted center">Tip: tumi bolo, tarpor meye ke repeat korte bolo. Haat-taali diye protibar celebrate koro!</p></main>`;
+}
+function openCards(uid){const units=allUnits().filter(u=>u.track==="family");const u=uid?unitById(uid):units.find(x=>!nodeStates("family").filter(n=>n.u.id===x.id).every(n=>n.st==="done"))||units[0];APP.cards={unit:u.id,items:u.lessons.flatMap((l,li)=>lessonItems(u,li)),i:0};render();}
+
+/* ================= AI coach ================= */
+const SCEN=[
+ {id:"daughter",track:"family",title:"Morning with your 4-year-old",brief:"Claude acts as your little daughter waking up. Keep sentences very short.",first:"Abbu… I'm sleepy…",role:"Ali's 4-year-old daughter who is just waking up. Speak like a real 4-year-old: 2-5 word sentences, simple words, sometimes playful or stubborn."},
+ {id:"wife",track:"family",title:"Evening chat with your wife",brief:"Talk about the day, the kids and plans for tomorrow.",first:"Hey, you look tired. How was your day?",role:"Ali's wife, warm and practical, chatting in simple everyday English at home in the evening."},
+ {id:"client",track:"client",title:"New client call",brief:"A bakery owner wants a website. Ask questions, explain your ideas.",first:"Hi Ali, thanks for taking the call. We need a new website for our bakery. Where do we start?",role:"a friendly small-business client from the UK who needs a website"},
+ {id:"price",track:"client",title:"Price negotiation",brief:"The client says your price is too high.",first:"I looked at your quote. Honestly, it's more than we expected. Is there any flexibility?",role:"a polite but budget-conscious client negotiating price"},
+ {id:"delay",track:"client",title:"Explaining a delay",brief:"Tell the client the launch will be late, politely.",first:"Hey Ali, just checking in. Are we still on track for Friday?",role:"a client who expects the site on Friday"},
+ {id:"shop",track:"everyday",title:"Returning headphones",brief:"Your headphones don't work. Ask for a refund or exchange.",first:"Hi there! How can I help you today?",role:"a shop assistant at an electronics store"},
+ {id:"stranger",track:"everyday",title:"Meeting someone new",brief:"Small talk at a wedding party.",first:"Hi! I don't think we've met. I'm Emma. How do you know the couple?",role:"a friendly guest at a wedding party"}
+];
+function startChat(id){const s=SCEN.find(x=>x.id===id);APP.chat={s,turns:[{r:"ai",t:s.first}],busy:false,fb:null,err:null};day().practice++;Store.save();render();if(S.autoplay)TTS.say(s.first);}
+function viewChat(){
+  const C=APP.chat;const mine=C.turns.filter(t=>t.r==="me").length;
+  return `<main class="view" style="padding-bottom:40px"><div class="row between"><button class="icon-btn" data-act="closeChat" aria-label="Close">${IC.back}</button><span class="eyebrow">AI coach</span><span></span></div>
+   <h2>${esc(C.s.title)}</h2><p class="small muted">${esc(C.s.brief)}</p>
+   <div class="chat">${C.turns.map(t=>t.r==="ai"?`<div class="msg ai">${esc(t.t)} <button class="icon-btn" style="width:30px;height:30px;vertical-align:middle" data-act="say" data-t="${esc(t.t)}" aria-label="Listen">${IC.speak}</button></div>${t.fix?`<div class="msg meta"><b>Quick fix:</b> <s>${esc(t.fix.original)}</s> → <b>${esc(t.fix.better)}</b><br><span class="bn small">${esc(t.fix.why_bn)}</span></div>`:""}`:t.r==="me"?`<div class="msg me">${esc(t.t)}</div>`:`<div class="msg meta bn">${esc(t.t)}</div>`).join("")}${C.busy?`<div class="msg meta">Thinking…</div>`:""}</div>
+   ${C.fb?`<div class="card"><span class="eyebrow">Feedback · text only</span><p class="bn">${esc(C.fb.summary_bn||"")}</p>${(C.fb.corrections||[]).map(c=>`<div class="fix"><span class="o">${esc(c.original)}</span><span class="n">${esc(c.natural)}</span><span class="small bn muted">${esc(c.why_bn)}</span></div>`).join("")}${C.fb.try_again?`<p class="okbox"><b>Abar bolo:</b> ${esc(C.fb.try_again)}</p>`:""}</div>`
+   :`<div class="row"><button class="btn sm ghost" data-act="chatMeta" data-m="hint" ${C.busy?"disabled":""}>Hint</button><button class="btn sm ghost" data-act="chatMeta" data-m="bangla" ${C.busy?"disabled":""}>বাংলায় বলো</button></div>
+   <textarea id="chatin" placeholder="Type or use phone dictation…"></textarea>
+   <div class="row between"><button class="btn" data-act="chatSend" ${C.busy?"disabled":""}>Send</button><button class="btn ghost" data-act="chatEnd" ${C.busy||mine<2?"disabled":""}>End & feedback</button></div>`}
+   ${C.err?`<p class="warnbox small">${esc(C.err)}</p>`:""}</main>`;
+}
+async function chatTurn(text,meta){
+  const C=APP.chat;if(text)C.turns.push({r:"me",t:text});C.busy=true;C.err=null;render();
+  const tr=C.turns.filter(t=>t.r!=="meta").map(t=>(t.r==="ai"?"PARTNER: ":"ALI: ")+t.t).join("\n");
+  const req=meta==="hint"?"Ali is stuck: give a one-line hint in Bangla with a short English sentence starter. Do not continue the role-play.":meta==="bangla"?"Explain your last message in simple Bangla, then repeat it in easy English.":"";
+  try{const r=await aiJSON(`${CTX()}\nRole-play. You are ${C.s.role}. Respond naturally to what Ali actually said, one short message (1-2 sentences), ask one thing at a time. Do not correct small errors; only if an error blocks meaning, add a quick fix.\n${tr}\n${req?"SPECIAL: "+req:""}\nReply with only JSON {"reply":"...","fix":null or {"original":"","better":"","why_bn":""}}`,"quick");
+    if(req)C.turns.push({r:"meta",t:r.reply});else{C.turns.push({r:"ai",t:r.reply,fix:r.fix&&r.fix.original?r.fix:null});if(S.autoplay)TTS.say(r.reply);}
+  }catch(e){if(text){C.turns.pop();setTimeout(()=>{const t=$("#chatin");if(t)t.value=text;},0);}C.err=aiErr(e);}
+  C.busy=false;render();
+}
+async function chatEnd(){const C=APP.chat;C.busy=true;render();
+  try{C.fb=await aiJSON(`${CTX()}\nGive feedback on Ali's English in this conversation.\n${C.turns.filter(t=>t.r!=="meta").map(t=>(t.r==="ai"?"PARTNER: ":"ALI: ")+t.t).join("\n")}\nReply with only JSON {"summary_bn":"2-3 encouraging sentences in Bangla","corrections":[{"original":"his words","natural":"natural version","why_bn":""}] (max 4),"try_again":"one improved sentence"}. No pronunciation comments.`,"default");addXP(10);Store.save();}
+  catch(e){C.err=aiErr(e);}C.busy=false;render();}
+
+/* ================= STORIES ================= */
+function viewStories(){
+  const units=allUnits();
+  const recs=S.recs.slice(-5).reverse();
+  return `<h1>Stories</h1><p class="muted">Protita unit shesh e ekta golpo (~5 minute jore pora). Shono, practice koro, record kore Claude ke mark korte pathao.</p>
+   ${ENV.claude?`<div class="card"><h3>Ajker shekha diye notun story</h3><p class="small muted">Aj ja ja lesson korecho, segulo diye Claude ekta 5-minute communication story banabe.</p><button class="btn story" data-act="genToday" ${ENV.aiState==="ready"&&Object.values(S.done).some(d=>d.at===today())?"":"disabled"}>Story banao</button>${Object.values(S.done).some(d=>d.at===today())?"":`<p class="tiny muted">Age aj kompokkhe 1 ta lesson koro.</p>`}</div>`:""}
+   ${TRACKS.map(([tr,l])=>`<span class="eyebrow">${l}</span><div class="list">${units.filter(u=>u.track===tr).map(u=>{const ok=nodeStates(tr).find(n=>n.key===u.id+":story");const sd=S.storyDone[u.id];const mk=Object.values(MARKS).filter(m=>m.story===u.id).sort((a,b)=>(b.date||"").localeCompare(a.date||""))[0];
+     return `<div class="item"><div class="grow"><b>${esc(u.story.title)}</b><span class="tiny muted">${esc(u.title)} · ${Math.round(u.story.text.split(/\s+/).length)} words${sd?.read?" · read ✓":""}${mk?` · marked ${mk.total}/100`:""}</span></div>${ok&&ok.st==="lock"?`<button class="btn sm ghost" data-act="lockedInfo" data-t="${esc(u.title)}">${IC.lock.replace("<svg",'<svg width="14" height="14"')} Locked</button>`:`<button class="btn sm story" data-act="openStory" data-id="${esc(u.id)}">Open</button>`}</div>`;}).join("")}</div>`).join("")}
+   ${Object.values(CUSTOM).filter(u=>u.track==="story").length?`<span class="eyebrow">Daily stories</span><div class="list">${Object.values(CUSTOM).filter(u=>u.track==="story").sort((a,b)=>(b.created||"").localeCompare(a.created||"")).map(u=>`<div class="item"><div class="grow"><b>${esc(u.story.title)}</b><span class="tiny muted">${esc((u.created||"").slice(0,10))}${S.storyDone[u.id]?.read?" · read ✓":""}</span></div><button class="btn sm story" data-act="openStory" data-id="${esc(u.id)}">Open</button></div>`).join("")}</div>`:""}
+   ${Object.values(MARKS).length?`<span class="eyebrow">Claude er marks</span><div class="list">${Object.values(MARKS).sort((a,b)=>(b.date||"").localeCompare(a.date||"")).map(m=>`<button class="item" style="width:100%;text-align:left;background:transparent;border-left:0;border-right:0;border-top:0" data-act="openMark" data-id="${esc(m.id)}"><div class="grow"><b>${esc(m.title||m.story)}</b><span class="tiny muted">${esc(m.date||"")}</span></div><b class="num">${esc(m.total)}/100</b></button>`).join("")}</div>`:""}
+   ${recs.length?`<span class="eyebrow">Tomar recording log</span><div class="list">${recs.map(r=>`<div class="item"><div class="grow"><b>${esc(r.title)}</b><span class="tiny muted">${esc(r.date)} · ${fmt(r.secs||0)} · ${esc(r.file)}</span></div></div>`).join("")}</div>`:""}`;
+}
+function storyOf(id){if(id.startsWith("today-")){return CUSTOM[id]?.story?Object.assign({unit:CUSTOM[id]},CUSTOM[id].story):null;}const u=unitById(id);return u?Object.assign({unit:u},u.story):null;}
+function viewStory(){
+  const id=APP.story, st=storyOf(id);if(!st)return `<main class="view"><p>Story pawa jay ni.</p></main>`;
+  const text=fill(st.text), wc=text.split(/\s+/).length, mins=Math.round((wc/100+1.5)*10)/10;
+  const part2=retellPrompts(st);
+  const sd=S.storyDone[id]||{};
+  const base="story_"+id;
+  const mk=Object.values(MARKS).filter(m=>m.story===id).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+  return `<main class="view" style="padding-bottom:40px"><div class="row between"><button class="icon-btn" data-act="closeStory" aria-label="Back">${IC.back}</button><span class="eyebrow">Story · ${wc} words · ~${mins} min with retell</span><span></span></div>
+   <h1>${esc(st.title)}</h1><p class="bn muted">${esc(st.bn)}</p>
+   <div class="row">${(st.phrases||[]).map(p=>`<span class="chip">${esc(p)}</span>`).join("")}</div>
+   <div class="row">${TTS.ok?`<button class="btn ghost" data-act="sayLong" data-id="${esc(id)}">${IC.speak.replace("<svg",'<svg width="18" height="18" style="vertical-align:-3px"')} Puro golpo shono</button><button class="btn ghost" data-act="stopSay">Stop</button>`:""}</div>
+   <div class="card"><div class="storytext">${esc(text)}</div></div>
+   <div class="card"><h3>Part 2 · Nijer golpo (60–90 sec)</h3><p class="small muted">Pora shesh hole, book na dekhe ei proshno gulor uttor dao. Recording e eta-o rakho.</p><ol style="margin:0;padding-left:1.2em">${part2.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></div>
+   <div class="panel small bn"><b>কীভাবে করবে:</b> ১) একবার শোনো। ২) নিজে দুবার জোরে জোরে পড়ো। ৩) রেকর্ড করো: প্রথমে গল্পটা পড়ো (Part 1), তারপর না দেখে Part 2-এর প্রশ্নের উত্তর দাও — মোট প্রায় ৫ মিনিট। ৪) ফাইলটা Claude-কে পাঠাও।</div>
+   ${sd.read?`<p class="okbox small">Pora hoyeche (${esc(sd.read)}).</p>`:`<button class="btn story wide" data-act="storyRead" data-id="${esc(id)}">Jore jore porechi (+10 XP)</button>`}
+   ${recorderHTML("story-"+id,base,"Story record koro")}
+   <div class="card"><h3>Claude ke mark korte pathao</h3>
+    <p class="small bn">রেকর্ডিং ফাইলটা <b>D:\\Claude\\Artifacts\\recordings</b> ফোল্ডারে রাখো (ফোনের ফাইল হলে কম্পিউটারে নিয়ে এসো), তারপর Claude Code-এ লেখো:</p>
+    <div class="panel"><code id="sendtxt">Mark my story recording: "${esc(st.title)}" (story id ${esc(id)})</code></div>
+    <button class="btn sm ghost" data-act="copySend">Copy</button>
+    <p class="tiny muted">Claude Whisper diye recording ke text e convert kore content, grammar, fluency (words/minute, thama), ar clarity mark korbe. Eta ashol pronunciation lab test na, transcript-bhittik estimate.</p></div>
+   ${mk.length?`<span class="eyebrow">Marks</span>${mk.map(m=>markHTML(m)).join("")}`:""}</main>`;
+}
+function retellPrompts(st){
+  const tr=st.unit?.track, ph=(st.phrases||[]).slice(0,3).join('", "');
+  if(tr==="family") return ["What happens in your home at this time of day? Describe it in 3–4 sentences.","What do you say to your daughters? Use these phrases: \""+ph+"\".","What do your daughters say or do? How do they feel?"];
+  if(tr==="client") return ["Tell a short story about a real client situation like this one.","What did you say to the client? Use: \""+ph+"\".","What did you learn from it?"];
+  return ["Have you been in a situation like this? What happened?","What would you say? Use: \""+ph+"\".","How did you feel, and what would you do differently?"];
+}
+function markHTML(m){
+  return `<div class="card"><div class="row between"><h3>${esc(m.title||"")}</h3><b class="num" style="font-size:1.5rem">${esc(m.total)}/100</b></div><p class="tiny muted">${esc(m.date||"")} · marked by Claude from your recording</p>
+   <div class="list">${(m.parts||[]).map(p=>`<div class="item"><div class="grow"><b>${esc(p.name)}</b><span class="tiny muted">${esc(p.note||"")}</span></div><b class="num">${esc(p.score)}/${esc(p.max)}</b></div>`).join("")}</div>
+   ${m.feedback_bn?`<p class="bn">${esc(m.feedback_bn)}</p>`:""}
+   ${(m.fixes||[]).map(f=>`<div class="fix"><span class="o">${esc(f.said)}</span><span class="n">${esc(f.better)}</span><span class="small bn muted">${esc(f.why_bn||"")}</span></div>`).join("")}
+   ${(m.practice_words||[]).length?`<p class="small"><b>Practice these words:</b> ${m.practice_words.map(esc).join(", ")}</p>`:""}</div>`;
+}
+
+/* ================= ME ================= */
+function viewMe(){
+  const st=streak(), last=[];for(let i=13;i>=0;i--){const k=addDays(-i);const r=S.days[k];last.push({k,c:r?(r.warm?((r.lessons+r.practice)>0?"f":"w"):""):""});}
+  const lessonsBy=t=>Object.keys(S.done).filter(k=>unitById(k.split(":")[0])?.track===t).length;
+  const totalBy=t=>allUnits().filter(u=>u.track===t).reduce((a,u)=>a+u.lessons.length,0);
+  const srs=Object.values(S.srs), strong=srs.filter(r=>r.box>=3).length;
+  const acc=S.stats.t?Math.round(S.stats.c/S.stats.t*100):null;
+  const ms=Object.values(MARKS), mavg=ms.length?Math.round(ms.reduce((a,m)=>a+(+m.total||0),0)/ms.length):null;
+  const metric=(tag,cls,val,label,sub)=>`<div class="metric"><span class="tag ${cls}">${tag}</span><b>${typeof val==="number"?`<span data-count="${val}">${val}</span>`:val}</b><span class="small muted">${label}</span>${sub?`<span class="tiny muted">${sub}</span>`:""}</div>`;
+  return `<h1>Me</h1>
+   ${ASSESS?`<div class="card"><span class="eyebrow">Placement level (provisional)</span><div class="row"><b style="font:800 2rem var(--display)">${esc(ASSESS.level)}</b><span class="muted">${esc(ASSESS.range)}</span></div><p class="small muted">Focus: ${esc((ASSESS.priorities||[]).slice(0,2).join(" · "))}</p></div>`:""}
+   <div class="metrics">
+    ${metric("streak","m",st,"din","warm-up + kompokkhe 1 lesson/practice")}
+    ${metric("xp","n",S.xp,"total XP",`aj ${day().xp}`)}
+    ${metric("count","m",`${lessonsBy("family")}/${totalBy("family")}`,"Family lessons","")}
+    ${metric("count","m",`${lessonsBy("client")}/${totalBy("client")}`,"Client lessons","")}
+    ${metric("count","m",`${lessonsBy("everyday")}/${totalBy("everyday")}`,"Everyday lessons","")}
+    ${metric("count","m",S.warmCount||0,"warm-up din","")}
+    ${metric("measured","m",acc==null?"—":acc+"%","first-try accuracy",S.stats.t?`${S.stats.c}/${S.stats.t} exercise`:"no data yet")}
+    ${metric("measured","m",`${srs.length} / ${strong}`,"sentence seen / strong","strong = 3+ bar thik, spaced")}
+    ${metric("by Claude","c",mavg==null?"—":mavg+"/100","story marks",`${ms.length} recording marked`)}
+    ${metric("not measured","n","—","live pronunciation","app nije awaj score kore na")}
+   </div>
+   <div class="card"><span class="eyebrow">Last 14 days</span><div class="grid14">${last.map(x=>`<i class="${x.c}" title="${x.k}"></i>`).join("")}</div><p class="tiny muted">Halka = shudhu warm-up · gaar = warm-up + lesson</p></div>
+   <div class="card"><h3>Settings</h3>
+    <label class="lbl">Boro meyer naam (optional)<input type="text" id="s-d1" value="${esc(S.names.d1)}" placeholder="sweetie"></label>
+    <label class="lbl">Choto meyer naam (optional)<input type="text" id="s-d2" value="${esc(S.names.d2)}" placeholder="baby"></label>
+    <label class="lbl">Daily goal<select id="s-goal">${[20,30,50,80].map(g=>`<option value="${g}" ${S.goal===g?"selected":""}>${g} XP</option>`).join("")}</select></label>
+    <label class="lbl">Awaj er speed<select id="s-rate">${[[.7,"Slow"],[.9,"Normal-slow"],[1,"Normal"]].map(([v,l])=>`<option value="${v}" ${+S.rate===v?"selected":""}>${l}</option>`).join("")}</select></label>
+    <label class="sw-row">Lesson er age warm-up lagbe<input type="checkbox" class="switch" id="s-warm" ${S.warmReq?"checked":""}></label>
+    <label class="sw-row">Sentence automatic pore shonao<input type="checkbox" class="switch" id="s-auto" ${S.autoplay?"checked":""}></label>
+    <label class="sw-row">Click sound (soft)<input type="checkbox" class="switch" id="s-sound" ${S.sound!==false?"checked":""}></label>
+    <button class="btn" data-act="saveSettings">Save</button></div>
+   <div class="card"><h3>Device check</h3><div class="list">
+    <div class="item"><div class="grow"><b>Saving</b><span class="tiny muted">${esc(APP.check.db||(Store.mode==="cloud"?"Cloud (claude.ai private database) — desktop ar phone e same data":"Ei browser e (localStorage) — onno device e jabe na"))}</span></div><button class="btn sm ghost" data-act="checkDb">Test</button></div>
+    <div class="item"><div class="grow"><b>Awaj (read-aloud)</b><span class="tiny muted">${esc(APP.check.tts||(TTS.ok?"Browser e ache, test koro":"Nei"))}</span></div><button class="btn sm ghost" data-act="checkTts" ${TTS.ok?"":"disabled"}>Test</button></div>
+    <div class="item"><div class="grow"><b>Microphone recording</b><span class="tiny muted">${ENV.micOk?"Ache (ei version e app er vitore record hobe)":ENV.claude?"Claude version e nei — phone voice recorder use koro":"Ei browser/address e nei (https ba file hisebe kholo)"}</span></div></div>
+    <div class="item"><div class="grow"><b>AI coach</b><span class="tiny muted">${ENV.claude?(ENV.aiState==="ready"?"Ready (tomar Claude usage khoroch hoy)":"Off"):"Shudhu Claude version e"}</span></div></div></div></div>
+   <div class="card"><h3>Backup</h3><div class="row"><button class="btn sm ghost" data-act="exportData">Backup download</button><label class="btn sm ghost" style="cursor:pointer">Restore<input type="file" id="importFile" accept=".json,application/json" hidden></label></div>
+    ${APP.confirm?.type==="import"?`<div class="warnbox small">Backup restore korle ekhonkar progress er upor likhbe. <button class="btn sm bad" data-act="doImport">Restore</button> <button class="btn sm ghost" data-act="cancel">Cancel</button></div>`:""}</div>
+   <details class="card"><summary><b>Desktop ar mobile e kivabe use korbe</b></summary><div class="stack small">
+    <p><b>1. Claude version (AI shoho):</b> claude.ai artifact link ta desktop browser e ba Claude mobile app e kholo. AI coach, notun unit, cloud sync — duita device e same progress. Ekhane microphone nei.</p>
+    <p><b>2. Offline file version:</b> <code>Ali-English-Coach.html</code> file ta desktop e double-click korlei Chrome/Edge e khulbe. App er vitore recording hobe. AI nei, progress shudhu oi browser e.</p>
+    <p><b>3. Mobile e file version:</b> file ta tomar hosting e upload koro (jemon bdwebhut.com/english/index.html), phone e oi link kholo, browser menu theke "Add to Home screen". https hole recording o kaj korbe.</p></div></details>`;
+}
+
+/* ================= AI generation ================= */
+async function genUnit(topic,track){
+  APP.busy="Notun unit banano hocche: "+topic;render();
+  try{
+    const kid=track==="family";
+    const r=await aiJSON(`${CTX()}
+Create a new learning unit about: "${topic}" for the ${track} track${kid?" (sentences Ali says at home to his daughters under 5, or to his wife: very short 2-6 word sentences, warm and playful)":track==="client"?" (freelance web developer talking to international clients; practice past tense, articles and polite softening)":" (everyday situations)"}.
+Reply with only JSON: {"title":"short unit title","bn":"Bangla title","lessons":[3 lessons {"title":"short","items":[6 pairs ["English sentence","natural Bangla translation"]]}],"story":{"title":"","bn":"one-sentence Bangla summary","text":"a ${kid?"warm family":"realistic"} story of about 420 words (5 minutes read aloud), mostly dialogue, using many of the unit's sentences, about Ali${kid?", his wife and his two little daughters":""}; paragraphs separated by blank lines","phrases":["5 key phrases"]}}`,"default");
+    if(!r?.lessons?.length||!r.story?.text)throw {code:"invalid_json"};
+    const u={id:"x"+rid(),custom:true,track,title:r.title,bn:r.bn,lessons:r.lessons.slice(0,3).map(l=>({title:l.title,items:l.items.filter(x=>Array.isArray(x)&&x[0]&&x[1]).slice(0,8)})),story:r.story,created:new Date().toISOString()};
+    await Store.saveUnit(u);APP.busy=null;APP.track=track;APP.tab="learn";toast("Notun unit path e jog hoyeche!");
+  }catch(e){APP.busy=null;toast(aiErr(e));}
+  render();
+}
+async function genToday(){
+  const keys=Object.entries(S.done).filter(([k,d])=>d.at===today()).map(([k])=>k);
+  const sents=keys.flatMap(k=>{const [uid,li]=k.split(":");const u=unitById(uid);return u?lessonItems(u,+li).map(x=>x.en):[];}).slice(0,30);
+  APP.busy="Ajker story banano hocche…";render();
+  try{const r=await aiJSON(`${CTX()}
+Write today's communication story for Ali to read aloud and record (about 5 minutes: around 420 words). Use as many of these sentences he learned today as naturally possible: ${JSON.stringify(sents)}. Make it a realistic, mostly-dialogue story about Ali's life (family, clients or daily life, matching the sentences). B1 level, short paragraphs separated by blank lines.
+Reply with only JSON {"title":"","bn":"one-sentence Bangla summary","text":"","phrases":["5 key phrases"]}`,"default");
+    const id="today-"+today().replace(/-/g,"")+"-"+rid().slice(-3);
+    await Store.saveUnit({id,custom:true,track:"story",title:"Today "+today(),bn:"",lessons:[],story:r,created:new Date().toISOString()});
+    APP.busy=null;APP.story=id;
+  }catch(e){APP.busy=null;toast(aiErr(e));}
+  render();
+}
+
+/* ================= actions ================= */
+function nodeByKey(k){for(const [tr] of TRACKS){const n=nodeStates(tr).find(x=>x.key===k);if(n)return n;}return null;}
+const ACT={
+ tab(el){const same=APP.tab===el.dataset.v&&!APP.story&&!APP.cards&&!APP.chat;APP.tab=el.dataset.v;APP.pop=null;APP.modal=null;APP.story=null;APP.cards=null;if(APP.chat){APP.chat=null;}TTS.stop();render();window.scrollTo({top:0,behavior:same?"smooth":"auto"});},
+ track(el){APP.track=el.dataset.v;APP.pop=null;render();},
+ node(el){APP.pop=APP.pop===el.dataset.key?null:el.dataset.key;render();},
+ startLesson(el){const n=nodeByKey(el.dataset.key);if(!n)return;if(S.warmReq&&!warmToday()){APP.tab="warm";render();return;}APP.pop=null;startSession("lesson",lessonItems(n.u,n.li),{key:n.key});},
+ say(el){TTS.say(el.dataset.t);},
+ saySlow(el){TTS.say(el.dataset.t,.6);},
+ choose(el){if(L.fb)return;L.answer=el.dataset.v;render();},
+ tile(el){const e=cur();if(L.fb)return;const i=+el.dataset.i;if(!e.sel.includes(i))e.sel.push(i);render();},
+ untile(el){const e=cur();if(L.fb)return;e.sel.splice(+el.dataset.k,1);render();},
+ check(){grade();},
+ skipEx(){L.i++;if(L.i>=L.ex.length){finishSession();return;}render();playIfAuto();},
+ next(){next();},
+ mL(el){matchPick("L",el.dataset.id);},
+ mR(el){matchPick("R",el.dataset.id);},
+ quitLesson(){if(L.done||confirmQuit()){TTS.stop();recStop();L=null;render();}},
+ closeLesson(){const xp=L&&L.xp;L=null;render();if(xp)setTimeout(()=>floatUp($("#xpstat"),"+"+xp+" XP"),350);},
+ recStart(el){recStart(el.dataset.for);},
+ recStop(){recStop();},
+ recSave(el){const name=recFilename(el.dataset.base);downloadBlob(REC.blob,name);const id=el.dataset.for.replace(/^story-/,"");const st=storyOf(id);S.recs.push({id:rid(),story:id,title:st?.title||id,date:today(),secs:REC.secs||0,file:name});addXP(20);Store.save();toast("Download hoyeche: "+name+" (+20 XP)");render();},
+ warmGo(el){startWarm(+el.dataset.s);},
+ warmToggle(){const W=APP.warm;W.run=!W.run;if(W.run&&!warmInt)warmInt=setInterval(warmTick,1000);render();},
+ warmSkip(){const W=APP.warm;if(W.ex<COURSE.warmup.exercises.length-1){warmTimerFor(W.ex+1);APP.warm.run=true;}else warmStepDone(1);render();},
+ warmFinish3(){warmStepDone(3);},
+ warmExit(){APP.warm=null;wake(false);TTS.stop();render();},
+ rep(){const W=APP.warm;if(W.reps<6){W.reps++;render();return;}if(W.tw<2){W.tw++;W.reps=0;render();}else warmStepDone(2);},
+ practiceDue(){startPractice();},
+ openCards(){openCards();},
+ closeCards(){APP.cards=null;render();},
+ cardNext(){const C=APP.cards;C.i=C.i<C.items.length-1?C.i+1:0;render();if(S.autoplay)TTS.say(C.items[C.i].en);},
+ cardPrev(){APP.cards.i=Math.max(0,APP.cards.i-1);render();},
+ startChat(el){startChat(el.dataset.id);},
+ closeChat(){APP.chat=null;TTS.stop();render();},
+ chatSend(){const i=$("#chatin");const t=i.value.trim();if(t){i.value="";chatTurn(t,null);}},
+ chatMeta(el){chatTurn(null,el.dataset.m);},
+ chatEnd(){chatEnd();},
+ openStory(el){APP.story=el.dataset.id;APP.pop=null;render();window.scrollTo(0,0);},
+ closeStory(){APP.story=null;TTS.stop();render();},
+ sayLong(el){const st=storyOf(el.dataset.id);TTS.sayLong(fill(st.text));},
+ stopSay(){TTS.stop();},
+ storyRead(el){const id=el.dataset.id;S.storyDone[id]=Object.assign(S.storyDone[id]||{},{read:today()});addXP(10);day().practice++;Store.save();toast("+10 XP! Porer unit khule geche.");render();SND.play("done");},
+ copySend(){const t=$("#sendtxt").textContent;navigator.clipboard?.writeText(t).then(()=>toast("Copied"),()=>toast("Text ta select kore copy koro"));},
+ openMark(el){const m=MARKS[el.dataset.id];APP.modal=`<div class="modal" data-act="closeModal"><div class="card" style="max-height:85vh;overflow:auto">${markHTML(m)}<button class="btn wide" data-act="closeModal">Close</button></div></div>`;render();},
+ closeModal(){APP.modal=null;render();},
+ lockedInfo(el){SND.play("no");toast(`Age "${el.dataset.t}" unit er lesson gulo shesh koro, tarpor story khulbe.`);},
+ genUnit(){const t=$("#nu-topic").value.trim();if(!t){toast("Topic likho");return;}genUnit(t,$("#nu-track").value);},
+ genToday(){genToday();},
+ retrySave(){Store.flush();},
+ saveSettings(){S.names.d1=$("#s-d1").value.trim();S.names.d2=$("#s-d2").value.trim();S.goal=+$("#s-goal").value;S.rate=+$("#s-rate").value;S.warmReq=$("#s-warm").checked;S.autoplay=$("#s-auto").checked;S.sound=$("#s-sound").checked;Store.save();toast("Saved");render();},
+ async checkDb(){APP.check.db="Testing…";render();try{if(Store.mode==="cloud"){const ref=Store.db.doc(`data/users/${Store.uid}/probe`);const t=Date.now();await ref.set({t});const s=await ref.get();await ref.delete();APP.check.db=s.exists&&s.data().t===t?"Works: cloud e likhe, pore, muchhe test korechi.":"Read-back mile ni.";}else{Store.lsSet("probe",{t:1});APP.check.db=Store.lsGet("probe")?"Works (shudhu ei browser e).":"Browser storage blocked — progress save hobe na.";}}catch(e){APP.check.db="Failed: "+(e.code||e.name||"error");}render();},
+ checkTts(){APP.check.tts="Bolche… “Hello Ali” shunte pele works.";render();try{const u=TTS.utter("Hello Ali. Let's practice English.");let ok=false;u.onstart=()=>{ok=true;APP.check.tts="Works ("+(TTS.voice()?.name||"default voice")+")";render();};u.onerror=e=>{APP.check.tts="Failed: "+e.error;render();};speechSynthesis.cancel();speechSynthesis.speak(u);setTimeout(()=>{if(!ok){APP.check.tts="Ei view e awaj shuru holo na.";render();}},4000);}catch(e){APP.check.tts="Failed";render();}},
+ async exportData(){const data=JSON.stringify({app:"ali-english-coach-duo",v:3,at:new Date().toISOString(),S,CUSTOM},null,1);const name=`english-coach-backup-${today()}.json`;
+   if(ENV.claude){const dl=await claude.use("downloads");if(!dl){toast("Download ei view e nei");return;}try{await dl.save({filename:name,data});}catch(e){if(e.code!=="declined")toast("Download hoy ni");}}else downloadBlob(new Blob([data],{type:"application/json"}),name);},
+ async doImport(){const d=APP.confirm.data;APP.confirm=null;S=Object.assign(defaultState(),d.S||{});for(const u of Object.values(d.CUSTOM||{}))await Store.saveUnit(u);await Store.flush();toast("Restore hoyeche");render();},
+ cancel(){APP.confirm=null;render();},
+ obSave(){S.names.d1=$("#ob-d1").value.trim();S.names.d2=$("#ob-d2").value.trim();S.onboarded=true;APP.modal=null;Store.save();render();}
+};
+function confirmQuit(){return true;}
+function matchPick(side,id){
+  const e=cur();if(e.gone.includes(id))return;
+  if(side==="L")e.selL=id;else e.selR=id;e.flash=e.flashR=null;
+  if(e.selL&&e.selR){
+    if(e.selL===e.selR){e.gone.push(e.selL);SND.play("pair");}
+    else{e.errs++;e.flash=e.selL;e.flashR=e.selR;L.mistakes[e.selL]=1;SND.play("no");}
+    e.selL=e.selR=null;
+    if(e.gone.length===e.left.length){L.t++;day().t++;S.stats.t++;const ok=e.errs<=1;if(ok){L.c++;day().c++;S.stats.c++;}L.fb={ok,show:ok?"":"Kichu jora bhul chilo — revise list e jog holo.",bn:""};}
+  }
+  render();
+}
+document.addEventListener("click",e=>{const el=e.target.closest("[data-act]");if(!el||el.disabled)return;if(el.classList.contains("modal")&&e.target!==el)return;const f=ACT[el.dataset.act];if(!f)return;
+  const snd=el.dataset.act in ACT_SOUND?ACT_SOUND[el.dataset.act]:"tap";if(snd&&!(el.dataset.act==="tab"&&el.dataset.v===APP.tab&&!APP.story&&!APP.cards&&!APP.chat))SND.play(snd);
+  f(el,e);});
+document.addEventListener("touchstart",()=>{},{passive:true}); // enables :active press states on iOS
+document.addEventListener("input",e=>{if(e.target.id==="typein"){const b=document.querySelector('[data-act="check"]');if(b)b.disabled=!e.target.value.trim();}});
+addEventListener("resize",()=>{renderNav(true);placeSeg(true);});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{renderNav(true);placeSeg(true);});
+document.addEventListener("change",e=>{
+  if(e.target.id==="cardunit"){openCards(e.target.value);}
+  const sw={"s-warm":"warmReq","s-auto":"autoplay","s-sound":"sound"}[e.target.id];
+  if(sw){S[sw]=e.target.checked;Store.save();SND.play("toggle");}
+  if(e.target.id==="importFile"){const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const d=JSON.parse(rd.result);if(d.app!=="ali-english-coach-duo")throw 0;APP.confirm={type:"import",data:d};render();}catch(x){toast("Eta ei app er backup na.");}};rd.readAsText(f);}
+});
+document.addEventListener("keydown",e=>{if(!L||L.done)return;if(e.key==="Enter"&&!e.shiftKey){if(L.fb){e.preventDefault();next();}else if(cur().t!=="match"){e.preventDefault();if(cur().t==="intro"||cur().t==="speak")ACT.skipEx();else grade();}}});
+document.addEventListener("visibilitychange",()=>{if(document.hidden)Store.flush();});
+
+/* ================= boot ================= */
+(async()=>{
+  try{await Store.init();await Promise.race([Store.load(),new Promise((_,r)=>setTimeout(()=>r(new Error("timeout")),12000))]);}
+  catch(e){toast("Cloud load hoy ni, local mode e cholche.");Store.mode="local";await Store.load();}
+  if(!S.onboarded){APP.modal=`<div class="modal"><div class="card"><h2>Welcome, Ali!</h2><p class="small bn">প্রতিদিনের নিয়ম: আগে ১০–১৫ মিনিট মুখের warm-up, তারপর lesson। প্রতিটা unit শেষে একটা গল্প জোরে পড়ে রেকর্ড করে Claude-কে পাঠাবে।</p>
+    <p class="small">Meyeder naam dile Family lesson e naam diye sentence ashbe (optional).</p>
+    <label class="lbl">Boro meyer naam<input type="text" id="ob-d1" placeholder="optional"></label><label class="lbl">Choto meyer naam<input type="text" id="ob-d2" placeholder="optional"></label>
+    <button class="btn wide" data-act="obSave">Shuru kori</button></div></div>`;}
+  render();
+  if(TTS.ok)try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{};}catch(e){}
+})();
+</script>
