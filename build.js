@@ -48,6 +48,8 @@ const head = (body, extra) => `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="author" content="Ali Akbar, BD Webhut">
+<meta name="copyright" content="© 2026 Ali Akbar · BD Webhut. All rights reserved.">
 <meta name="description" content="Bolo English: speak English every day, for the whole family. Kids learn with pictures and sound, adults practise work, family and everyday English.">
 <style>html{background:#eef2ef}@media (prefers-color-scheme:dark){html{background:#0b1312}}</style>
 <meta name="theme-color" content="#eef2ef" media="(prefers-color-scheme: light)">

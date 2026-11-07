@@ -8,3 +8,8 @@ html.pk-on,html.pk-on body{background:#081f1d}
 @media (hover:hover){.swbtn:hover{border-color:var(--primary);box-shadow:0 0 0 4px color-mix(in srgb,var(--primary) 14%,transparent)}}
 .swbtn:active{transform:scale(.9)}
 .quests>p{padding:0 16px 16px}
+.pk-copy{position:relative;margin-top:auto;font:500 .72rem var(--font);color:#7faea1;letter-spacing:.04em}
+.about .ab-logo{width:44px;height:44px;border-radius:14px;background:#0d5c55;display:grid;place-items:center;flex:none}
+.about .ab-logo .bmark{display:grid;place-items:center;width:100%;height:100%;font-style:normal}
+.about .ab-logo svg{width:62%;height:62%}
+.about .grow{display:flex;flex-direction:column}
