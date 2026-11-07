@@ -61,7 +61,6 @@ const CLOUD={
     for(const p of PROFILES)if(!remote.profiles.some(r=>r.id===p.id))await this.pushProfile(p.id);
     PROFILES=[...byId.values()];Store.lsSet("profiles",PROFILES);await this.pushRoot();
     if(PID&&prof())await Store.load();
-    else if(PROFILES.length){APP.welcome=false;APP.onb=null;APP.picker=true;}
    }
    this.last=Date.now();
   }catch(e){this.err="Sync হয়নি ("+((e&&e.code)||"error")+")।";}

@@ -45,10 +45,9 @@ async function lgSubmit(){
 async function lgGoogle(){LG.err=null;LG.busy=true;LG.fresh=true;render();try{await CLOUD.signIn();if(CLOUD.err){LG.err=CLOUD.err;}}catch(e){LG.err=authMsg(e);}LG.busy=false;render();}
 /* after sign-in: open the user's profile straight away (or onboarding if the account is new) */
 async function afterLogin(){
-  if(PID&&prof()){APP.picker=false;APP.welcome=false;return;}
-  if(PROFILES.length===1){await switchProfile(PROFILES[0].id);return;}
-  if(PROFILES.length>1){APP.picker=true;APP.welcome=false;return;}
-  APP.welcome=true;
+  APP.welcome=false;APP.onb=null;
+  if(PROFILES.length){const best=(PID&&prof())?PID:[...PROFILES].sort((a,b)=>(b.last||"").localeCompare(a.last||""))[0].id;await switchProfile(best);return;}
+  APP.picker=false;APP.welcome=true;
 }
 async function logoutAll(){
   try{await CLOUD.syncNow(true);}catch(e){}

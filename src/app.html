@@ -946,7 +946,7 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)Store.flush
   let here=null;try{here=JSON.parse(sessionStorage.getItem("aec4:here")||"null");}catch(e){}
   if(PID){APP.track=myTracks()[0]?.[0]||"everyday";
     if(here&&here.pid===PID){APP.tab=here.tab||"learn";if(here.track&&myTracks().some(t=>t[0]===here.track))APP.track=here.track;if(here.story&&storyOf(here.story))APP.story=here.story;}
-    else if(PROFILES.length>1)APP.picker=true;}
+  }
   else if(PROFILES.length)APP.picker=true;else APP.welcome=true;
   if(CLOUD.avail()){try{await CLOUD.load();await Promise.race([CLOUD.ready,new Promise(r=>setTimeout(r,8000))]);}catch(e){LG.err="প্রথমবার লগইনের জন্য ইন্টারনেট লাগবে।";}}
   const sp=document.getElementById("splash"),left=Math.max(0,1700-(Date.now()-(window.__t0||Date.now())));
