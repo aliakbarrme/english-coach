@@ -156,7 +156,7 @@ const Store={
    if(!PID)return this.chain;
    clearTimeout(this.timer);
    S.best=Math.max(S.best||0,streak());
-   const p=prof();if(p){p.wk=p.wk||{};p.wk[weekKey()]=weekXP(S);p.xp=S.xp;}
+   const p=prof();if(p){p.wk=p.wk||{};p.wk[weekKey()]=weekXP(S);p.xp=S.xp;p.streak=streak();p.last=today();}
    const body=clone(S),key=this.pk("state"),base=this.mode==="cloud"?this.base():null;
    this.chain=this.chain.then(async()=>{
      if(base)await base.set(body);
@@ -369,6 +369,7 @@ function placeSeg(instant){const tr=$(".tracks");if(tr)placePill(tr.querySelecto
 function render(){
   let html;
   document.body.classList.toggle("kid",isKid());
+  document.querySelectorAll('meta[name="theme-color"]').forEach(m=>m.content=APP.picker?"#0c3a35":isDark()?"#0b1312":"#eef2ef");
   if(APP.welcome) html=viewWelcome();
   else if(APP.onb) html=viewOnb();
   else if(APP.picker) html=viewPicker();

@@ -161,7 +161,17 @@ function viewOnb(){
    <div class="onb-foot"><button class="btn wide xl" data-act="onbNext" ${can?"":"disabled"}>${nextLbl}</button></div></main>`;
 }
 function viewPicker(){
-  return `<main class="picker"><span class="eyebrow">Bolo English</span><h1>কে শিখবে?</h1>
-   <div class="pgrid">${PROFILES.map(p=>`<button class="pcard" data-act="pickProfile" data-id="${esc(p.id)}">${avatarHTML(p,"xl")}<b>${esc(p.name)}</b><span class="tiny muted">${p.age==="kid"?"Kids":p.age==="teen"?"Teen":"Adult"}</span></button>`).join("")}
-    <button class="pcard add" data-act="addProfile"><span class="av xl">＋</span><b>প্রোফাইল যোগ করো</b><span class="tiny muted">স্ত্রী, বাচ্চা…</span></button></div></main>`;
+  const h=new Date().getHours(),g=h<5?"শুভ রাত্রি":h<12?"শুভ সকাল":h<17?"শুভ দুপুর":"শুভ সন্ধ্যা";
+  const role=p=>p.age==="kid"?"Kids · ৩–৭":p.age==="teen"?"Teen":"Adult";
+  const last=p=>!p.last?"নতুন":p.last===today()?"আজ শিখেছে":p.last===addDays(-1)?"গতকাল":"";
+  return `<main class="picker2"><div class="pk-glow" aria-hidden="true"></div>
+   <div class="pk-top"><span class="pk-logo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3h-8l-4.5 3.2c-.5.4-1.2 0-1.2-.6V17.5H5a3 3 0 0 1-3-3v-7a3 3 0 0 1 3-3z" fill="#fff"/><rect x="7.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/><rect x="10.8" y="7.4" width="2.4" height="8.2" rx="1.2" fill="#f2b632"/><rect x="14.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/></svg></span><span class="pk-brand">Bolo English<small>Speak English, every day</small></span></div>
+   <div class="pk-head"><span class="pk-hi">${g} 👋</span><h1>আজ কে শিখবে?</h1><p>নিজের প্রোফাইল বাছো। প্রত্যেকের অগ্রগতি আলাদা থাকে।</p></div>
+   <div class="pk-grid">${PROFILES.map(p=>`<button class="pk-card ${p.age==="kid"?"kid":""}" data-act="pickProfile" data-id="${esc(p.id)}">
+      <span class="pk-ring">${avatarHTML(p,"xl")}</span>
+      <b class="pk-name">${esc(p.name)}</b><span class="pk-role">${role(p)}</span>
+      <span class="pk-stats"><span>🔥 ${p.streak||0}</span><span>⚡ ${p.xp||0} XP</span></span>
+      ${last(p)?`<span class="pk-last">${last(p)}</span>`:""}</button>`).join("")}
+    <button class="pk-card add" data-act="addProfile"><span class="pk-plus">＋</span><b class="pk-name">প্রোফাইল যোগ করো</b><span class="pk-role">স্ত্রী, বাচ্চা, যে কেউ</span></button></div>
+   <p class="pk-foot">প্রোফাইল বদলাতে যেকোনো সময় উপরের ছবিতে চাপো</p></main>`;
 }
