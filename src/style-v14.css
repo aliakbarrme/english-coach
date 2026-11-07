@@ -1,0 +1,9 @@
+/* ===================== v14: picker background, switch-profile button ===================== */
+html.pk-on,html.pk-on body{background:#081f1d}
+.picker2{min-height:100vh;min-height:100dvh}
+.tb-left{display:flex;align-items:center;gap:6px;min-width:0}
+.swbtn{width:36px;height:36px;flex:none;border-radius:12px;display:grid;place-items:center;padding:0;border:1px solid var(--line-2);color:var(--ink);
+  background:linear-gradient(160deg,var(--raised),var(--surface));box-shadow:0 1px 2px #10231f0f,0 8px 18px -12px #10231f55;transition:transform .35s var(--spring),box-shadow .3s,border-color .2s}
+.swbtn svg{width:18px;height:18px}
+@media (hover:hover){.swbtn:hover{border-color:var(--primary);box-shadow:0 0 0 4px color-mix(in srgb,var(--primary) 14%,transparent)}}
+.swbtn:active{transform:scale(.9)}

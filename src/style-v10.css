@@ -69,5 +69,5 @@
 :root[data-theme="dark"] .ktile{box-shadow:0 4px 0 #ffffff14}
 :root[data-theme="dark"] .btn.gold{--on-c:#2a1a00}
 :root[data-theme="dark"] .advice{background:color-mix(in srgb,var(--warm) 10%,var(--surface))}
-html{transition:background-color .4s}
-body{transition:background-color .4s,color .4s}
+
+

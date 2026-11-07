@@ -369,6 +369,7 @@ function placeSeg(instant){const tr=$(".tracks");if(tr)placePill(tr.querySelecto
 function render(){
   let html;
   document.body.classList.toggle("kid",isKid());
+  document.documentElement.classList.toggle("pk-on",!!APP.picker);
   document.querySelectorAll('meta[name="theme-color"]').forEach(m=>m.content=APP.picker?"#0c3a35":isDark()?"#0b1312":"#eef2ef");
   if(APP.welcome) html=viewWelcome();
   else if(APP.onb) html=viewOnb();
@@ -390,13 +391,14 @@ function render(){
   if(!nav.hidden)renderNav(first||navWasHidden);
   if(navWasHidden&&!nav.hidden)rise([nav],{y:30,dur:600,scale:1,ease:EZ.out3});
   LASTKEY=key;LASTSUB=sub;
+  try{if(PID&&!APP.picker&&!APP.welcome&&!APP.onb)sessionStorage.setItem("aec4:here",JSON.stringify({pid:PID,tab:APP.tab,track:APP.track,story:APP.story||null}));else if(APP.picker)sessionStorage.removeItem("aec4:here");}catch(e){}
 }
 function saveWarn(){return Store.failed?`<p class="warnbox small">অগ্রগতি সেভ হয়নি (ইন্টারনেট বা স্টোরেজ)। <button class="btn sm" data-act="retrySave">আবার সেভ</button></p>`:"";}
 function topbar(){
   const st=streak(), dx=day().xp, g=S.goal, p=Math.min(1,dx/g), P=prof();
   const C=2*Math.PI*9;
   const warmChip=warmAllowed()&&S.warmReq?(warmToday()?`<span class="chip warmchip ok" title="Warm-up done">${IC.check.replace("<svg",'<svg width="13" height="13"')} warm-up</span>`:`<button class="chip warmchip todo" data-act="tab" data-v="warm">Warm-up</button>`):"";
-  return `<div class="topbar"><button class="avbtn" data-act="switchProfile" title="প্রোফাইল বদলাও">${avatarHTML(P)}<span class="avname">${esc(myName())}</span></button>
+  return `<div class="topbar"><span class="tb-left"><button class="swbtn" data-act="switchProfile" title="Switch profile" aria-label="Switch profile">${IC.back}</button><button class="avbtn" data-act="tab" data-v="me" title="My profile">${avatarHTML(P)}<span class="avname">${esc(myName())}</span></button></span>
    <div class="stats"><button class="icon-btn themebtn" data-act="toggleTheme" aria-label="Dark mode">${isDark()?IC.sun:IC.moon}</button>${warmChip}
    <span class="stat" title="Streak: ${st} দিন"><span class="flame ${(day().lessons+day().practice)>0?"":"off"}">${IC.flame}</span><span class="num">${st}</span></span>
    <span class="stat" id="xpstat" title="আজকের XP"><svg class="ring" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="var(--well)" stroke-width="3.5"/><circle cx="12" cy="12" r="9" fill="none" stroke="var(--warm)" stroke-width="3.5" stroke-dasharray="${(C*p).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 12 12)" stroke-linecap="round"/></svg><span class="num">${dx}<span class="muted dim">/${g}</span></span></span></div></div>`;
@@ -928,7 +930,10 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)Store.flush
   const boot=async()=>{await Store.init();await Store.loadProfiles();if(PID)await Store.load();};
   try{await Promise.race([boot(),new Promise((_,r)=>setTimeout(()=>r(new Error("timeout")),12000))]);}
   catch(e){toast("Cloud লোড হয়নি, এই ডিভাইসে চলছে।");Store.mode="local";try{await Store.loadProfiles();if(PID)await Store.load();}catch(x){}}
-  if(PID){APP.track=myTracks()[0]?.[0]||"everyday";if(PROFILES.length>1)APP.picker=true;}
+  let here=null;try{here=JSON.parse(sessionStorage.getItem("aec4:here")||"null");}catch(e){}
+  if(PID){APP.track=myTracks()[0]?.[0]||"everyday";
+    if(here&&here.pid===PID){APP.tab=here.tab||"learn";if(here.track&&myTracks().some(t=>t[0]===here.track))APP.track=here.track;if(here.story&&storyOf(here.story))APP.story=here.story;}
+    else if(PROFILES.length>1)APP.picker=true;}
   else if(PROFILES.length)APP.picker=true;else APP.welcome=true;
   const sp=document.getElementById("splash"),left=Math.max(0,1700-(Date.now()-(window.__t0||Date.now())));
   await new Promise(r=>setTimeout(r,left));

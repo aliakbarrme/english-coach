@@ -830,8 +830,8 @@ nav.tabs .navbrand i.bmark{background:#0d5c55!important}
 :root[data-theme="dark"] .ktile{box-shadow:0 4px 0 #ffffff14}
 :root[data-theme="dark"] .btn.gold{--on-c:#2a1a00}
 :root[data-theme="dark"] .advice{background:color-mix(in srgb,var(--warm) 10%,var(--surface))}
-html{transition:background-color .4s}
-body{transition:background-color .4s,color .4s}
+
+
 
 /* ===================== v11: Bangla shaping, sidebar button, segmented pill, dark switch ===================== */
 /* Any letter-spacing breaks Bangla conjuncts and vowel signs (e.g. "শিখবে", "অগ্রগতি") in Chrome, so headings use normal spacing */
@@ -931,6 +931,16 @@ h1,h2,h3,.eyebrow,.wl-hero h1,.lvbig,.prompt,.fbtitle,.metric b,.cardcount,.trac
 .pk-add:hover .pk-arrow{transform:translateX(4px)}
 @media (prefers-reduced-motion:reduce){.pk-ring,.pk-ring .av.xl,.pk-card::after{animation:none}}
 .pk-stats span+span{border-radius:0}
+
+/* ===================== v14: picker background, switch-profile button ===================== */
+html.pk-on,html.pk-on body{background:#081f1d}
+.picker2{min-height:100vh;min-height:100dvh}
+.tb-left{display:flex;align-items:center;gap:6px;min-width:0}
+.swbtn{width:36px;height:36px;flex:none;border-radius:12px;display:grid;place-items:center;padding:0;border:1px solid var(--line-2);color:var(--ink);
+  background:linear-gradient(160deg,var(--raised),var(--surface));box-shadow:0 1px 2px #10231f0f,0 8px 18px -12px #10231f55;transition:transform .35s var(--spring),box-shadow .3s,border-color .2s}
+.swbtn svg{width:18px;height:18px}
+@media (hover:hover){.swbtn:hover{border-color:var(--primary);box-shadow:0 0 0 4px color-mix(in srgb,var(--primary) 14%,transparent)}}
+.swbtn:active{transform:scale(.9)}
 </style>
 
 <div id="splash" aria-label="Bolo English loading"><img class="sp-native" src="icon-512.png" alt="" onerror="this.remove()"><div class="sp-in">
@@ -2632,6 +2642,7 @@ function placeSeg(instant){const tr=$(".tracks");if(tr)placePill(tr.querySelecto
 function render(){
   let html;
   document.body.classList.toggle("kid",isKid());
+  document.documentElement.classList.toggle("pk-on",!!APP.picker);
   document.querySelectorAll('meta[name="theme-color"]').forEach(m=>m.content=APP.picker?"#0c3a35":isDark()?"#0b1312":"#eef2ef");
   if(APP.welcome) html=viewWelcome();
   else if(APP.onb) html=viewOnb();
@@ -2653,13 +2664,14 @@ function render(){
   if(!nav.hidden)renderNav(first||navWasHidden);
   if(navWasHidden&&!nav.hidden)rise([nav],{y:30,dur:600,scale:1,ease:EZ.out3});
   LASTKEY=key;LASTSUB=sub;
+  try{if(PID&&!APP.picker&&!APP.welcome&&!APP.onb)sessionStorage.setItem("aec4:here",JSON.stringify({pid:PID,tab:APP.tab,track:APP.track,story:APP.story||null}));else if(APP.picker)sessionStorage.removeItem("aec4:here");}catch(e){}
 }
 function saveWarn(){return Store.failed?`<p class="warnbox small">অগ্রগতি সেভ হয়নি (ইন্টারনেট বা স্টোরেজ)। <button class="btn sm" data-act="retrySave">আবার সেভ</button></p>`:"";}
 function topbar(){
   const st=streak(), dx=day().xp, g=S.goal, p=Math.min(1,dx/g), P=prof();
   const C=2*Math.PI*9;
   const warmChip=warmAllowed()&&S.warmReq?(warmToday()?`<span class="chip warmchip ok" title="Warm-up done">${IC.check.replace("<svg",'<svg width="13" height="13"')} warm-up</span>`:`<button class="chip warmchip todo" data-act="tab" data-v="warm">Warm-up</button>`):"";
-  return `<div class="topbar"><button class="avbtn" data-act="switchProfile" title="প্রোফাইল বদলাও">${avatarHTML(P)}<span class="avname">${esc(myName())}</span></button>
+  return `<div class="topbar"><span class="tb-left"><button class="swbtn" data-act="switchProfile" title="Switch profile" aria-label="Switch profile">${IC.back}</button><button class="avbtn" data-act="tab" data-v="me" title="My profile">${avatarHTML(P)}<span class="avname">${esc(myName())}</span></button></span>
    <div class="stats"><button class="icon-btn themebtn" data-act="toggleTheme" aria-label="Dark mode">${isDark()?IC.sun:IC.moon}</button>${warmChip}
    <span class="stat" title="Streak: ${st} দিন"><span class="flame ${(day().lessons+day().practice)>0?"":"off"}">${IC.flame}</span><span class="num">${st}</span></span>
    <span class="stat" id="xpstat" title="আজকের XP"><svg class="ring" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="var(--well)" stroke-width="3.5"/><circle cx="12" cy="12" r="9" fill="none" stroke="var(--warm)" stroke-width="3.5" stroke-dasharray="${(C*p).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 12 12)" stroke-linecap="round"/></svg><span class="num">${dx}<span class="muted dim">/${g}</span></span></span></div></div>`;
@@ -3191,7 +3203,10 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)Store.flush
   const boot=async()=>{await Store.init();await Store.loadProfiles();if(PID)await Store.load();};
   try{await Promise.race([boot(),new Promise((_,r)=>setTimeout(()=>r(new Error("timeout")),12000))]);}
   catch(e){toast("Cloud লোড হয়নি, এই ডিভাইসে চলছে।");Store.mode="local";try{await Store.loadProfiles();if(PID)await Store.load();}catch(x){}}
-  if(PID){APP.track=myTracks()[0]?.[0]||"everyday";if(PROFILES.length>1)APP.picker=true;}
+  let here=null;try{here=JSON.parse(sessionStorage.getItem("aec4:here")||"null");}catch(e){}
+  if(PID){APP.track=myTracks()[0]?.[0]||"everyday";
+    if(here&&here.pid===PID){APP.tab=here.tab||"learn";if(here.track&&myTracks().some(t=>t[0]===here.track))APP.track=here.track;if(here.story&&storyOf(here.story))APP.story=here.story;}
+    else if(PROFILES.length>1)APP.picker=true;}
   else if(PROFILES.length)APP.picker=true;else APP.welcome=true;
   const sp=document.getElementById("splash"),left=Math.max(0,1700-(Date.now()-(window.__t0||Date.now())));
   await new Promise(r=>setTimeout(r,left));
