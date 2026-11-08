@@ -29,3 +29,9 @@
 .lg-ok{padding:10px 12px;border-radius:12px;background:var(--good-s);color:var(--good);font-size:.9rem}
 .lg-foot{margin-top:14px;color:var(--faint);font-size:.82rem}
 .pk-logout{position:relative;border:0;background:none;color:#9cc4b9;font:500 .78rem var(--font);text-decoration:underline;text-underline-offset:3px}
+/* topbar on phones: never overlap */
+.topbar{gap:8px}
+.tb-left{flex:none}
+.topbar .stats{min-width:0;flex-wrap:nowrap;justify-content:flex-end}
+@media (max-width:520px){.topbar .themebtn{display:none}}
+@media (max-width:400px){.warmchip.ok{font-size:0;gap:0;padding:7px}.warmchip.ok svg{width:14px;height:14px}.topbar .stat{padding:4px 9px 4px 6px}}
