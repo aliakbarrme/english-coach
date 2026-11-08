@@ -1006,6 +1006,13 @@ html.pk-on,html.pk-on body{background:#081f1d}
 .topbar .stats{min-width:0;flex-wrap:nowrap;justify-content:flex-end}
 @media (max-width:520px){.topbar .themebtn{display:none}}
 @media (max-width:400px){.warmchip.ok{font-size:0;gap:0;padding:7px}.warmchip.ok svg{width:14px;height:14px}.topbar .stat{padding:4px 9px 4px 6px}}
+/* kids: pictures made of several emoji (e.g. three ducks) stay inside one square tile */
+.kgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.ktile{min-width:0;overflow:hidden;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:2%}
+.ktile:has(.emo+.emo) .emo{width:30%;height:30%}
+.kemoji:has(.emo+.emo),.cardem:has(.emo+.emo){display:flex;flex-wrap:wrap;justify-content:center;max-width:90vw}
+.kemoji:has(.emo+.emo) .emo,.cardem:has(.emo+.emo) .emo{width:.55em;height:.55em}
+.nem:has(.emo+.emo) .emo,.ddic:has(.emo+.emo) .emo,.pem:has(.emo+.emo) .emo{width:40%;height:40%}
 </style>
 
 <div id="splash" aria-label="Bolo English loading"><img class="sp-native" src="icon-512.png" alt="" onerror="this.remove()"><div class="sp-in">
@@ -2592,11 +2599,16 @@ function hearNow(){
   const e=cur();if(!e||L.fb)return;e.hs=e.hs||{tries:0};
   if(HEAR.on){HEAR.stop();e.hs.state=null;render();return;}
   e.hs.state="listen";e.hs.err=null;TTS.stop();render();
-  HEAR.start(e.it.en,{onInterim:b=>{if(cur()!==e)return;const w=wordMatch(e.it.en,b.text);e.hs.words=w.words;render();},
-   onDone:(err,b)=>{if(!L||cur()!==e)return;e.hs.state=null;
+  const need=e.t==="ksay"?.5:.75;let done=false,quiet=null,last={text:"",score:0};
+  const finish=(err,b)=>{if(done)return;done=true;clearTimeout(quiet);HEAR.stop();if(!L||cur()!==e)return;e.hs.state=null;
+    b=b&&b.text?b:last;
     if(!b.text){e.hs.err=hearErr(err||"no-speech");render();return;}
     const w=wordMatch(e.it.en,b.text);e.hs.words=w.words;e.hs.score=w.score;e.hs.heard=b.text;
-    if(w.score>=(e.t==="ksay"?.5:.75))speakPass();else{e.hs.tries++;skillHit(e.t,false);SND.play("no");render();}}});
+    if(w.score>=need)speakPass();else{e.hs.tries++;skillHit(e.t,false);SND.play("no");render();}};
+  HEAR.start(e.it.en,{onInterim:b=>{if(done||cur()!==e)return;const w=wordMatch(e.it.en,b.text);e.hs.words=w.words;last={text:b.text,score:w.score};
+      if(w.score>=need){finish(null,last);return;}           // matched: grade immediately, no waiting for the browser
+      clearTimeout(quiet);quiet=setTimeout(()=>finish(null,last),1400);render();},  // 1.4 s of silence after speech ends the turn
+    onDone:(err,b)=>finish(err,b)});
 }
 function kidChoose(id){
   const e=cur();if(L.fb||e.wrong.includes(id))return;
@@ -2891,7 +2903,7 @@ function render(){
   if(!nav.hidden)renderNav(first||navWasHidden);
   if(navWasHidden&&!nav.hidden)rise([nav],{y:30,dur:600,scale:1,ease:EZ.out3});
   LASTKEY=key;LASTSUB=sub;
-  try{if(PID&&!APP.picker&&!APP.welcome&&!APP.onb)sessionStorage.setItem("aec4:here",JSON.stringify({pid:PID,tab:APP.tab,track:APP.track,story:APP.story||null}));else if(APP.picker)sessionStorage.removeItem("aec4:here");}catch(e){}
+  try{if(APP.picker&&PID)sessionStorage.setItem("aec4:here",JSON.stringify({pid:PID,picker:true}));else if(PID&&!APP.picker&&!APP.welcome&&!APP.onb)sessionStorage.setItem("aec4:here",JSON.stringify({pid:PID,tab:APP.tab,track:APP.track,story:APP.story||null}));else if(APP.picker)sessionStorage.removeItem("aec4:here");}catch(e){}
 }
 function saveWarn(){return Store.failed?`<p class="warnbox small">অগ্রগতি সেভ হয়নি (ইন্টারনেট বা স্টোরেজ)। <button class="btn sm" data-act="retrySave">আবার সেভ</button></p>`:"";}
 function topbar(){
@@ -3441,7 +3453,8 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)Store.flush
   catch(e){toast("Cloud লোড হয়নি, এই ডিভাইসে চলছে।");Store.mode="local";try{await Store.loadProfiles();if(PID)await Store.load();}catch(x){}}
   let here=null;try{here=JSON.parse(sessionStorage.getItem("aec4:here")||"null");}catch(e){}
   if(PID){APP.track=myTracks()[0]?.[0]||"everyday";
-    if(here&&here.pid===PID){APP.tab=here.tab||"learn";if(here.track&&myTracks().some(t=>t[0]===here.track))APP.track=here.track;if(here.story&&storyOf(here.story))APP.story=here.story;}
+    if(here&&here.pid===PID&&here.picker){APP.picker=true;}
+    else if(here&&here.pid===PID){APP.tab=here.tab||"learn";if(here.track&&myTracks().some(t=>t[0]===here.track))APP.track=here.track;if(here.story&&storyOf(here.story))APP.story=here.story;}
   }
   else if(PROFILES.length)APP.picker=true;else APP.welcome=true;
   if(CLOUD.avail()){try{await CLOUD.load();await Promise.race([CLOUD.ready,new Promise(r=>setTimeout(r,8000))]);}catch(e){LG.err="প্রথমবার লগইনের জন্য ইন্টারনেট লাগবে।";}}
