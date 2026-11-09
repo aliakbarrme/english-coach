@@ -363,8 +363,8 @@ function TABS_FOR(){return isKid()?[["learn","Learn",IC.learn],["practice","Play
   :[["learn","Learn",IC.learn],...(warmAllowed()?[["warm","Warm-up",IC.warm]]:[]),["practice","Practice",IC.practice],["stories","Stories",IC.story],["me","Me",IC.me]];}
 
 let LASTKEY=null,LASTSUB=null;
-function viewKey(){if(CLOUD.avail()&&!CLOUD.user)return "login:"+LG.tab;if(APP.welcome)return "welcome";if(APP.onb)return "onb:"+(APP.onb.edit||"new");if(APP.picker)return "picker";if(L)return L.done?"L:done":"L";if(APP.busy)return "busy";if(APP.warm)return "warm:"+APP.warm.step;if(APP.story)return "story:"+APP.story;if(APP.cards)return "cards";if(APP.chat)return "chat";return "tab:"+APP.tab;}
-function subKey(){if(APP.onb)return "o"+APP.onb.step;if(L&&!L.done)return L.cheer?"cheer":"ex"+L.i;if(APP.warm)return "w"+APP.warm.ex+":"+APP.warm.tw+":"+(APP.warm.noPen?1:0);if(APP.cards)return "c"+APP.cards.i;if(!L&&!APP.busy&&!APP.story&&!APP.chat&&APP.tab==="learn")return "t:"+APP.track;return "";}
+function viewKey(){if(CLOUD.avail()&&!CLOUD.user)return "login:"+LG.tab;if(APP.welcome)return "welcome";if(APP.onb)return "onb:"+(APP.onb.edit||"new");if(APP.picker)return "picker";if(L)return L.done?"L:done":"L";if(APP.busy)return "busy";if(APP.warm)return "warm:"+APP.warm.step;if(APP.story)return "story:"+APP.story;if(APP.spell)return "spell:"+APP.spell.scr;if(APP.cards)return "cards";if(APP.chat)return "chat";return "tab:"+APP.tab;}
+function subKey(){if(APP.spell)return "s"+APP.spell.k+":"+(APP.spell.i||0);if(APP.onb)return "o"+APP.onb.step;if(L&&!L.done)return L.cheer?"cheer":"ex"+L.i;if(APP.warm)return "w"+APP.warm.ex+":"+APP.warm.tw+":"+(APP.warm.noPen?1:0);if(APP.cards)return "c"+APP.cards.i;if(!L&&!APP.busy&&!APP.story&&!APP.chat&&APP.tab==="learn")return "t:"+APP.track;return "";}
 function renderNav(instant){
   const t=$("#tabs"),tabs=TABS_FOR(),sig=tabs.map(x=>x[0]).join();
   if(t.dataset.sig!==sig){t.querySelectorAll("button").forEach(b=>b.remove());t.insertAdjacentHTML("beforeend",tabs.map(([id,l,i])=>`<button data-act="tab" data-v="${id}">${i}<span>${l}</span></button>`).join(""));t.dataset.sig=sig;t.style.setProperty("--n",tabs.length);instant=true;}
@@ -389,6 +389,7 @@ function render(){
   else if(APP.busy) html=`<main class="view"><div class="stack-lg" style="padding-top:20vh;text-align:center"><h2>${esc(APP.busy)}</h2><p class="muted">AI কাজ করছে, ২০ সেকেন্ড থেকে ২ মিনিট লাগতে পারে।</p></div></main>`;
   else if(APP.warm) html=viewWarmRun();
   else if(APP.story) html=viewStory();
+  else if(APP.spell) html=viewSpell();
   else if(APP.cards) html=viewCards();
   else if(APP.chat) html=viewChat();
   else html=`<main class="view ${({learn:"dash",me:"wide",practice:"mid",stories:"mid"})[APP.tab]||""}">${topbar()}${saveWarn()}${({learn:viewLearn,warm:viewWarm,practice:viewPractice,stories:viewStories,me:viewMe})[APP.tab]()}</main>`;
@@ -396,7 +397,7 @@ function render(){
   html=emojify(html);
   const root=$("#root"),key=viewKey(),sub=subKey(),first=LASTKEY===null,prevKey=LASTKEY;
   const nav=document.querySelector("nav.tabs"),navWasHidden=nav.hidden;
-  nav.hidden=!!(L||APP.warm||APP.welcome||APP.onb||APP.picker||gate);
+  nav.hidden=!!(L||(APP.spell&&APP.spell.scr!=="home")||APP.warm||APP.welcome||APP.onb||APP.picker||gate);
   if(key!==LASTKEY){root.innerHTML=html;placeSeg(true);enterView(root,first);}
   else{const subChanged=sub!==LASTSUB;morph(root,html,subChanged);placeSeg(subChanged&&!sub.startsWith("t:"));if(subChanged)enterSub(root);}
   if(!nav.hidden)renderNav(first||navWasHidden);
@@ -599,7 +600,8 @@ function viewWarmRun(){
 function viewPractice(){
   const due=dueItems(), learned=Object.keys(S.srs).length;
   if(isKid())return `<h1>Play</h1><p class="muted">ছবির কার্ড দেখো, আওয়াজ শোনো, একসাথে বলো!</p>
-   <div class="playgrid">${allUnits().filter(u=>u.track==="kids").map(u=>`<button class="playcard" data-act="openCards" data-u="${esc(u.id)}"><span class="pem">${u.lessons[0].items[0][2]}</span><b>${esc(u.title)}</b><span class="tiny bn muted">${esc(u.bn)}</span></button>`).join("")}</div>
+   <button class="spellcta" data-act="spellOpen"><span class="sc-abc"><i style="--c:#ff5c8a">A</i><i style="--c:#ffa62b">B</i><i style="--c:#2fbf71">C</i></span><span class="grow"><b>${esc(myName())}'s Spelling</b><span class="tiny bn">শব্দ বানান শেখার মজার খেলা · ⭐ ${SP().stars}</span></span><span class="sc-go">➜</span></button>
+   <div class="playgrid">${cardUnits("kids").map(u=>`<button class="playcard ${u.deck?"newdeck":""}" data-act="openCards" data-u="${esc(u.id)}">${u.deck?`<span class="nd-tag">NEW</span>`:""}<span class="pem">${u.lessons[0].items[0][2]}</span><b>${esc(u.title)}</b><span class="tiny bn muted">${esc(u.bn)}</span></button>`).join("")}</div>
    <div class="card"><div class="row between"><div><span class="eyebrow">রিভিশন</span><h3>${due.length}টা শব্দ আবার দেখো</h3></div><button class="btn" data-act="practiceDue" ${learned?"":"disabled"}>Khelo</button></div></div>`;
   const cardTrack=myTracks().some(t=>t[0]==="family")?"family":myTracks().some(t=>t[0]==="kids")?"kids":null;
   const scen=SCEN.filter(x=>myTracks().some(t=>t[0]===x.track)&&(PID==="ali"||!["daughter","wife"].includes(x.id)));
@@ -618,8 +620,8 @@ function startPractice(){
   startSession("practice",items);
 }
 function viewCards(){
-  const C=APP.cards;const it=C.items[C.i];const u=unitById(C.unit);const kid=u?.track==="kids";
-  const units=allUnits().filter(x=>x.track===u.track);
+  const C=APP.cards;const it=C.items[C.i];const u=cardUnit(C.unit);const kid=u?.track==="kids";
+  const units=cardUnits(u.track);
   const menu=APP.cardMenu?`<div class="ddscrim" data-act="cardMenu"></div><div class="ddmenu" role="listbox">${units.map((x,k)=>`<button class="dditem ${x.id===C.unit?"on":""}" role="option" aria-selected="${x.id===C.unit}" data-act="pickCardUnit" data-u="${x.id}"><span class="ddic">${x.track==="kids"?x.lessons[0].items[0][2]:k+1}</span><span class="grow"><b>${esc(x.title)}</b><span class="tiny bn muted">${esc(x.bn||"")}</span></span>${x.id===C.unit?IC.check.replace("<svg",'<svg width="16" height="16"'):""}</button>`).join("")}</div>`:"";
   return `<main class="view cardsview"><div class="cardbar"><button class="icon-btn" data-act="closeCards" aria-label="Close">${IC.close}</button><span class="cardcount num">${C.i+1}<span class="muted">/${C.items.length}</span></span>
     <div class="dd"><button class="ddbtn" data-act="cardMenu" aria-haspopup="listbox" aria-expanded="${!!APP.cardMenu}"><span class="tiny muted">ইউনিট</span><b>${esc(u.title)}</b><svg class="ddchev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>${menu}</div></div>
@@ -630,10 +632,11 @@ function viewCards(){
     </div></div>
    <div class="dots">${C.items.map((_,k)=>`<i class="${k===C.i?"on":k<C.i?"done":""}"></i>`).join("")}</div>
    <div class="row center"><button class="btn ghost" data-act="cardPrev" ${C.i?"":"disabled"}>${IC.back} আগের</button><button class="btn fam" data-act="cardNext">${C.i<C.items.length-1?"পরের":"শুরু থেকে"}</button></div>
+   <p class="tiny muted center swipehint">⬆️ উপরে সোয়াইপ = পরের কার্ড · ⬇️ নিচে = আগের</p>
    <p class="small muted center">${kid?"তুমি বলো, তারপর বাচ্চা বলবে। প্রতিবার হাততালি!":"টিপ: তুমি বলো, তারপর বাচ্চাকে বলতে বলো। প্রতিবার হাততালি দিয়ে উৎসাহ দাও!"}</p></main>`;
 }
-function openCards(uid){const tr=uid?unitById(uid)?.track:(myTracks().some(t=>t[0]==="family")?"family":"kids");const units=allUnits().filter(u=>u.track===tr);if(!units.length)return;
-  const u=uid?unitById(uid):units.find(x=>!nodeStates(tr).filter(n=>n.u.id===x.id).every(n=>n.st==="done"))||units[0];
+function openCards(uid){const tr=uid?cardUnit(uid)?.track:(myTracks().some(t=>t[0]==="family")?"family":"kids");const units=allUnits().filter(u=>u.track===tr);if(!units.length)return;
+  const u=uid?cardUnit(uid):units.find(x=>!nodeStates(tr).filter(n=>n.u.id===x.id).every(n=>n.st==="done"))||units[0];
   APP.cards={unit:u.id,items:u.lessons.flatMap((l,li)=>lessonItems(u,li)),i:0};day().cards=(day().cards||0)+1;Store.save();render();TTS.say(APP.cards.items[0].en);}
 
 /* ================= AI coach ================= */
@@ -817,7 +820,7 @@ Reply with only JSON {"title":"","bn":"one-sentence Bangla summary","text":"","p
 /* ================= actions ================= */
 function nodeByKey(k){for(const [tr] of TRACKS){const n=nodeStates(tr).find(x=>x.key===k);if(n)return n;}return null;}
 const ACT={
- tab(el){const same=APP.tab===el.dataset.v&&!APP.story&&!APP.cards&&!APP.chat;APP.tab=el.dataset.v;APP.pop=null;APP.modal=null;APP.story=null;APP.cards=null;APP.cardMenu=false;if(APP.chat){APP.chat=null;}TTS.stop();render();window.scrollTo({top:0,behavior:same?"smooth":"auto"});},
+ tab(el){const same=APP.tab===el.dataset.v&&!APP.story&&!APP.cards&&!APP.chat;APP.tab=el.dataset.v;APP.pop=null;APP.modal=null;APP.story=null;APP.cards=null;APP.spell=null;APP.cardMenu=false;if(APP.chat){APP.chat=null;}TTS.stop();render();window.scrollTo({top:0,behavior:same?"smooth":"auto"});},
  track(el){APP.track=el.dataset.v;APP.pop=null;render();},
  node(el){APP.pop=APP.pop===el.dataset.key?null:el.dataset.key;render();},
  startLesson(el){const n=nodeByKey(el.dataset.key);if(!n)return;if(S.warmReq&&!warmToday()){APP.tab="warm";render();return;}APP.pop=null;startSession("lesson",lessonItems(n.u,n.li),{key:n.key});},
@@ -865,8 +868,8 @@ const ACT={
  practiceDue(){startPractice();},
  openCards(el){openCards(el.dataset.u||"");},
  closeCards(){APP.cards=null;APP.cardMenu=false;render();},
- cardNext(){const C=APP.cards;C.flip=false;C.i=C.i<C.items.length-1?C.i+1:0;render();if(S.autoplay)TTS.say(C.items[C.i].en);},
- flipCard(el,e){if(e&&e.target.closest(".cardspk"))return;APP.cards.flip=!APP.cards.flip;render();if(!APP.cards.flip)TTS.say(APP.cards.items[APP.cards.i].en);},
+ cardNext(){const C=APP.cards;C.flip=false;C.i=C.i<C.items.length-1?C.i+1:0;render();cardSlide("up");if(S.autoplay)TTS.say(C.items[C.i].en);},
+ flipCard(el,e){if(e&&e.target.closest(".cardspk"))return;if(Date.now()-(window._swiped||0)<400)return;APP.cards.flip=!APP.cards.flip;render();if(!APP.cards.flip)TTS.say(APP.cards.items[APP.cards.i].en);},
  cardMenu(){APP.cardMenu=!APP.cardMenu;render();},
  pickCardUnit(el){APP.cardMenu=false;openCards(el.dataset.u);},
  googleSignIn(){CLOUD.signIn();},
@@ -881,7 +884,7 @@ const ACT={
  openHelp(){APP.modal=helpModal();render();},
  removePhoto(){const p=prof();delete p.photo;Store.saveProfiles();render();},
  toggleQuests(){APP.qOpen=!qOpen();try{localStorage.setItem("aec4:qopen",APP.qOpen?"1":"0");}catch(e){}render();},
- cardPrev(){APP.cards.flip=false;APP.cards.i=Math.max(0,APP.cards.i-1);render();},
+ cardPrev(){APP.cards.flip=false;APP.cards.i=Math.max(0,APP.cards.i-1);render();cardSlide("down");},
  startChat(el){startChat(el.dataset.id);},
  closeChat(){APP.chat=null;TTS.stop();render();},
  chatSend(){const i=$("#chatin");const t=i.value.trim();if(t){i.value="";chatTurn(t,null);}},
@@ -908,11 +911,12 @@ const ACT={
  cancel(){APP.confirm=null;render();},
  obSave(){S.names.d1=$("#ob-d1").value.trim();S.names.d2=$("#ob-d2").value.trim();S.onboarded=true;APP.modal=null;Store.save();render();}
 };
+Object.assign(ACT,SPELL_ACT);
 function confirmQuit(){return true;}
 function markSent(i){document.querySelectorAll(".sent.cur").forEach(x=>x.classList.remove("cur"));if(i>=0){const el=document.querySelectorAll(".sent")[i];if(el){el.classList.add("cur");const r=el.getBoundingClientRect();if(r.top<80||r.bottom>innerHeight-120)el.scrollIntoView({block:"center",behavior:"smooth"});}}}
 async function switchProfile(id){
   TTS.stop();HEAR.stop();if(PID)await Store.flush();PID=id;await Store.saveProfiles();await Store.load();
-  APP.picker=false;APP.tab="learn";APP.track=myTracks()[0]?.[0]||"everyday";APP.story=APP.cards=APP.chat=APP.warm=null;L=null;LASTKEY=null;render();window.scrollTo(0,0);
+  APP.picker=false;APP.tab="learn";APP.track=myTracks()[0]?.[0]||"everyday";APP.story=APP.cards=APP.chat=APP.warm=APP.spell=null;L=null;LASTKEY=null;render();window.scrollTo(0,0);
 }
 async function onbNext(){
   const O=APP.onb,d=O.draft,steps=d.age==="kid"?["name","avatar","age","goal","done"]:["name","avatar","age","goals","goal","warm","done"];

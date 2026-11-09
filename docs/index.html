@@ -1254,6 +1254,138 @@ body.kid nav.tabs .pill{background:linear-gradient(135deg,#ffd36b,#ff9ec0)!impor
 body.kid nav.tabs button[aria-current="page"]{color:#5a2a00}
 
 @media (prefers-reduced-motion:reduce){body.kid .unitban::before,body.kid .node.cur .nem,body.kid .kword{animation:none}}
+
+/* v19: hand-drawn spice/veg pictures, swipeable flash cards, Spelling Fun */
+.vart{width:1.05em;height:1.05em;display:inline-block;vertical-align:middle;filter:drop-shadow(0 10px 14px #10231f2e)}
+.ddic .vart,.pem .vart{width:1.1em;height:1.1em}
+.cardsview .deck{touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+.cardsview .deck:active{cursor:grabbing}
+.swipehint{margin:-4px 0 0;opacity:.8}
+.playcard{position:relative}
+.playcard.newdeck{border-color:color-mix(in srgb,#ff7a45 40%,var(--line))}
+.nd-tag{position:absolute;top:8px;right:8px;font:800 .6rem var(--font);letter-spacing:.06em;color:#fff;background:linear-gradient(135deg,#ff5c8a,#ff9a3c);border-radius:999px;padding:3px 7px;animation:combopop .5s var(--spring)}
+
+/* entry card on the Play page */
+.spellcta{display:flex;align-items:center;gap:14px;width:100%;border:0;cursor:pointer;text-align:left;border-radius:24px;padding:16px 18px;color:#fff;
+  background:linear-gradient(120deg,#7b5cff,#ff5c8a 60%,#ffa62b);box-shadow:0 6px 0 #5a3fc9,0 20px 34px -18px #7b5cff;transition:transform .15s,box-shadow .15s;font-family:var(--kidf)}
+.spellcta:active{transform:translateY(5px);box-shadow:0 1px 0 #5a3fc9}
+.spellcta b{display:block;font-size:1.25rem}
+.spellcta .tiny{color:#ffffffe0}
+.sc-abc{display:flex;gap:3px}
+.sc-abc i{font:800 1.6rem var(--kidf);font-style:normal;width:40px;height:44px;border-radius:12px;background:#fff;color:var(--c);display:grid;place-items:center;box-shadow:0 4px 0 #0002;animation:abcbob 2.4s ease-in-out infinite}
+.sc-abc i:nth-child(2){animation-delay:.25s}.sc-abc i:nth-child(3){animation-delay:.5s}
+@keyframes abcbob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-6px) rotate(4deg)}}
+.sc-go{font-size:1.4rem;animation:nudgeR 1.6s ease-in-out infinite}
+@keyframes nudgeR{0%,100%{transform:none}50%{transform:translateX(5px)}}
+
+/* spelling screens */
+.spellview{font-family:var(--kidf);display:flex;flex-direction:column;gap:16px;padding-bottom:110px}
+.spellview.sp-run{min-height:100dvh;padding-bottom:30px}
+.sptop{display:flex;justify-content:space-between;align-items:center;padding-top:calc(10px + env(safe-area-inset-top,0px))}
+.sp-stars{font:800 1.05rem var(--kidf);background:#fff5d6;color:#b8770a;border-radius:999px;padding:6px 14px;box-shadow:0 3px 0 #f0d58a}
+:root[data-theme="dark"] .sp-stars{background:#3a2e10;color:#ffd36b;box-shadow:0 3px 0 #5a4614}
+.sp-hero{text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px}
+.sp-heroem{font-size:64px;line-height:1;animation:cheerbob 2.4s ease-in-out infinite}
+.sp-heroem img.emo{width:72px;height:72px}
+.sp-hero h1{margin:4px 0 0;color:#e8457a}
+.sp-statrow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.sp-statrow div{background:var(--raised);border-radius:18px;padding:10px;text-align:center;box-shadow:0 3px 0 var(--line-2);display:flex;flex-direction:column}
+.sp-statrow b{font-size:1.5rem}.sp-statrow span{font-size:.75rem;color:var(--muted);font-family:var(--bn)}
+.sp-badges{display:flex;justify-content:center;gap:12px}
+.sp-badge{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-size:32px;background:var(--well);filter:grayscale(1);opacity:.45}
+.sp-badge img.emo{width:36px;height:36px}
+.sp-badge.got{filter:none;opacity:1;background:radial-gradient(circle at 35% 30%,#fff7c8,#ffd36b);box-shadow:0 4px 0 #e0a92a,0 0 0 4px #ffd36b55;animation:badgeglow 2.4s ease-in-out infinite}
+@keyframes badgeglow{0%,100%{box-shadow:0 4px 0 #e0a92a,0 0 0 4px #ffd36b55}50%{box-shadow:0 4px 0 #e0a92a,0 0 0 9px #ffd36b22}}
+.sp-level{background:var(--raised);border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:12px;border:2.5px solid color-mix(in srgb,var(--lc) 45%,transparent);box-shadow:0 5px 0 color-mix(in srgb,var(--lc) 35%,var(--line-2))}
+.sp-level.locked{border-color:var(--line-2);box-shadow:0 5px 0 var(--line-2);opacity:.7}
+.sp-lvtop{display:flex;gap:12px;align-items:center}
+.sp-lvtop b{display:block;font-size:1.2rem}
+.sp-lvk{font:800 .68rem var(--mono);letter-spacing:.08em;color:var(--lc)}
+.sp-lvbadge{width:54px;height:54px;border-radius:18px;display:grid;place-items:center;font-size:30px;background:color-mix(in srgb,var(--lc) 18%,var(--raised))}
+.sp-lvbadge img.emo{width:34px;height:34px}
+.sp-level.done .sp-lvbadge{animation:cheerbob 2.6s ease-in-out infinite}
+.sp-prog{height:12px;border-radius:999px;background:var(--well);overflow:hidden}
+.sp-prog i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,color-mix(in srgb,var(--lc) 70%,#fff),var(--lc));transition:width .8s var(--ease)}
+.sp-lvbtns{display:flex;gap:10px;flex-wrap:wrap}.sp-lvbtns .btn{flex:1}
+
+.sp-dots{display:flex;justify-content:center;gap:8px}
+.sp-dots i{width:12px;height:12px;border-radius:50%;background:var(--well);transition:all .4s var(--spring)}
+.sp-dots i.done{background:#2fbf71}.sp-dots i.on{background:#ffa62b;width:30px;border-radius:8px}
+.sp-card{position:relative;background:var(--raised);border-radius:32px;padding:30px 18px 22px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;
+  box-shadow:0 7px 0 color-mix(in srgb,var(--lc) 40%,var(--line-2)),0 24px 40px -24px #10231f55;border:3px solid color-mix(in srgb,var(--lc) 35%,transparent);animation:popdrop .5s var(--spring)}
+.sp-newtag{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--lc);color:#fff;font:800 .72rem var(--font);letter-spacing:.08em;padding:6px 14px;border-radius:999px;box-shadow:0 3px 0 #0002}
+.sp-pic{line-height:1;display:block}
+.sp-pic.big{font-size:clamp(110px,34vw,160px);animation:cheerbob 2.8s ease-in-out infinite}
+.sp-pic.mid{font-size:clamp(84px,26vw,120px);animation:cheerbob 2.8s ease-in-out infinite;margin:0 auto}
+.sp-pic img.emo,.sp-pic .vart{width:1em;height:1em;filter:drop-shadow(0 12px 16px #10231f33)}
+.sp-letters{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.spl{font:800 clamp(2.4rem,13vw,3.6rem)/1 var(--kidf);width:clamp(52px,17vw,76px);height:clamp(62px,20vw,88px);display:grid;place-items:center;border-radius:20px;color:#fff;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--lc) 80%,#fff),var(--lc));box-shadow:0 6px 0 color-mix(in srgb,var(--lc) 65%,#000 25%);opacity:0;transform:translateY(30px) scale(.4) rotate(-12deg);transition:opacity .3s,transform .55s cubic-bezier(.3,1.6,.5,1)}
+.spl.on{opacity:1;transform:none}
+.sp-letters.whole .spl{animation:wholejump .6s cubic-bezier(.3,1.5,.5,1) calc(var(--k)*.07s)}
+@keyframes wholejump{0%,100%{transform:none}40%{transform:translateY(-16px) scale(1.12)}}
+.spl.gap{color:#8a958f;background:var(--well);box-shadow:0 6px 0 var(--line-2);border:3px dashed #b8c2bd;animation:gappulse 1.3s ease-in-out infinite}
+@keyframes gappulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+.spl.sp-right{animation:wholejump .6s cubic-bezier(.3,1.5,.5,1)}
+.sp-round{width:58px;height:58px;border-radius:50%;border:0;display:grid;place-items:center;color:#fff;font-size:24px;cursor:pointer;background:linear-gradient(140deg,#4fb4ff,#7b7bff);box-shadow:0 5px 0 #4a55c9;transition:transform .12s,box-shadow .12s}
+.sp-round.alt{background:linear-gradient(140deg,#ffd36b,#ffa62b);box-shadow:0 5px 0 #d08410}
+.sp-round:active{transform:translateY(4px);box-shadow:0 1px 0 #4a55c9}
+.sp-round svg{width:26px;height:26px}
+.sp-round img.emo{width:28px;height:28px}
+.sp-foot{margin-top:auto;position:sticky;bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+
+.sp-intro,.sp-result{margin:auto 0;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding:30px 4px}
+.sp-introem,.sp-resem{font-size:110px;line-height:1;animation:cheerbob 2s ease-in-out infinite}
+.sp-introem img.emo,.sp-resem img.emo{width:120px;height:120px}
+.sp-intro h1,.sp-result h1{margin:0;font-size:2.2rem;animation:combopop .6s var(--spring)}
+.sp-intro .linkbtn{font-family:var(--bn)}
+.sp-bigbadge{width:150px;height:150px;border-radius:50%;display:grid;place-items:center;font-size:84px;background:radial-gradient(circle at 35% 30%,#fff7c8,#ffd36b);
+  box-shadow:0 8px 0 #e0a92a,0 0 0 10px color-mix(in srgb,var(--lc) 30%,transparent),0 30px 50px -20px #e0a92a;animation:badgein 1s cubic-bezier(.3,1.5,.5,1)}
+.sp-bigbadge img.emo{width:96px;height:96px}
+@keyframes badgein{0%{transform:scale(0) rotate(-200deg)}100%{transform:none}}
+.sp-earn{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;font-size:30px}
+.sp-earn span{opacity:0;animation:rbin .5s var(--spring) forwards;animation-delay:calc(.4s + var(--k)*.12s)}
+.sp-earn img.emo{width:32px;height:32px}
+
+.sp-gamebar{display:flex;align-items:center;gap:10px}
+.sp-gamebar .pbar i{background:linear-gradient(90deg,#ff6b9a,#ffa62b,#36c46f)}
+.sp-gtag{font:800 .8rem var(--kidf);background:#efe7ff;color:#6a3fd6;border-radius:999px;padding:5px 10px;white-space:nowrap}
+:root[data-theme="dark"] .sp-gtag{background:#2a1f4a;color:#c4a8ff}
+.sp-gst{font:800 .95rem var(--kidf);color:#b8770a;white-space:nowrap}
+.sp-game{display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center;animation:popdrop .45s var(--spring)}
+.sp-q{font:700 1.15rem var(--bn);margin:6px 0 0}
+.sp-try{font:600 .95rem var(--bn);color:#e8590c;animation:combopop .4s var(--spring)}
+.sp-opts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;width:100%;max-width:460px}
+.sp-opt{border:0;border-radius:22px;cursor:pointer;font:800 1.5rem var(--kidf);color:var(--ink);padding:16px 6px;background:color-mix(in srgb,var(--kt) 30%,var(--raised));
+  box-shadow:0 6px 0 color-mix(in srgb,var(--kt) 60%,#000 10%);transition:transform .15s var(--spring),box-shadow .12s}
+.sp-opt:nth-child(1){--kt:#ff9ec0}.sp-opt:nth-child(2){--kt:#8fcaff}.sp-opt:nth-child(3){--kt:#ffd36b}
+.sp-opt:not(:disabled):active{transform:translateY(5px);box-shadow:0 1px 0 color-mix(in srgb,var(--kt) 60%,#000 10%)}
+@media (hover:hover){.sp-opt:not(:disabled):hover{transform:translateY(-3px) rotate(-2deg)}}
+.sp-opt:disabled{opacity:.35;filter:grayscale(.8)}
+.sp-opt.sp-right,.sp-opt.sp-right:disabled{--kt:#4fd27f;opacity:1;filter:none;animation:wholejump .6s cubic-bezier(.3,1.5,.5,1)}
+.sp-opt.pic{font-size:clamp(52px,16vw,74px);aspect-ratio:1;display:grid;place-items:center;padding:0}
+.sp-opt.pic img.emo,.sp-opt.pic .vart{width:1em;height:1em}
+.sp-opt.letter{font-size:2.2rem}
+.sp-wordbig{display:inline-flex;align-items:center;gap:12px;border:0;border-radius:22px;padding:14px 24px;cursor:pointer;font:800 2.4rem var(--kidf);color:#fff;letter-spacing:.06em;
+  background:linear-gradient(140deg,#4fb4ff,#7b7bff);box-shadow:0 6px 0 #4a55c9}
+.sp-wordbig svg{width:28px;height:28px}
+.sp-wordbig:active{transform:translateY(4px);box-shadow:0 2px 0 #4a55c9}
+.sp-slots{display:flex;gap:8px;justify-content:center}
+.sp-slot{width:clamp(50px,16vw,70px);height:clamp(60px,19vw,80px);border-radius:18px;border:3px dashed #c3ccc7;display:grid;place-items:center;font:800 clamp(2rem,11vw,3rem) var(--kidf);color:#fff}
+.sp-slot.full{border:0;background:linear-gradient(180deg,color-mix(in srgb,var(--lc) 80%,#fff),var(--lc));box-shadow:0 6px 0 color-mix(in srgb,var(--lc) 65%,#000 25%)}
+.sp-slots.sp-right .sp-slot{animation:wholejump .6s cubic-bezier(.3,1.5,.5,1)}
+.sp-slots.sp-right .sp-slot:nth-child(2){animation-delay:.07s}.sp-slots.sp-right .sp-slot:nth-child(3){animation-delay:.14s}.sp-slots.sp-right .sp-slot:nth-child(4){animation-delay:.21s}
+.sp-tiles{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.sp-tile{width:62px;height:66px;border:0;border-radius:18px;cursor:pointer;font:800 2rem var(--kidf);color:var(--ink);background:#fff3c4;box-shadow:0 6px 0 #e3c35a;transition:transform .15s var(--spring),box-shadow .12s}
+:root[data-theme="dark"] .sp-tile{background:#4a3e14;color:#ffe9a0;box-shadow:0 6px 0 #2e260c}
+.sp-tile:not(:disabled):active{transform:translateY(5px);box-shadow:0 1px 0 #e3c35a}
+.sp-tile.used{opacity:.25;box-shadow:none;transform:scale(.85)}
+.sp-hear{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--line-2);background:var(--raised);border-radius:999px;padding:8px 16px;font:700 .95rem var(--bn);color:var(--primary);cursor:pointer}
+.sp-hear svg{width:18px;height:18px}
+@media (prefers-reduced-motion:reduce){.spl{transition:none}.sp-pic,.sc-abc i,.sp-heroem,.sp-badge.got{animation:none}}
+.spellview>*{flex-shrink:0}
+.flip .cardem .vart{width:1.3em;height:1.3em}
+@media (max-width:420px){.sc-abc i{width:30px;height:36px;font-size:1.25rem;border-radius:10px}.spellcta{gap:10px;padding:14px}.spellcta b{font-size:1.1rem}}
 </style>
 
 <div id="splash" aria-label="Bolo English loading"><img class="sp-native" src="icon-512.png" alt="" onerror="this.remove()"><div class="sp-in">
@@ -2176,7 +2308,7 @@ const ENV={claude:!!window.claude, ai:null, aiState:"off", micOk:!!(navigator.me
 if(ENV.claude) ENV.micOk=false; // artifact pages cannot use the microphone
 
 /* ================= voice: neural clips (Kokoro, pre-generated) with best-device-voice fallback ================= */
-const AUDIO_SET=new Set(["0000b652","000484e1","00230e14","002dd7ec","009eaf7c","00b592a2","011decbc","0148021c","01ec94ec","01f42734","023a2f6b","02688497","0290fb00","02b0e5d3","02c43c19","02e15768","0338b092","034719be","03a52f42","03b3ae71","03bba103","03e0ad50","03e232e5","03f5bdc5","0442e0c1","045e80ca","04617e32","046bea2e","046c3291","047458e1","04a7e04e","04c57359","04cf33f9","04d7ad34","053301db","0542aefc","0552c2b0","05579aca","055aedfe","0589e144","058f13c1","05bbdd3b","05bf6449","05c8a1a7","05f60e00","0655962e","06745c07","068e0514","06bf763c","06d827f1","06f19423","0721c830","07582b9c","07643fc0","07f30d08","07f58a90","07fb0760","081e8b0f","084a0654","087bec5f","087d3745","087f75e5","08a4d2b5","08b4ad08","08e6b35b","08ed2fa4","08f7954a","0959bb86","096f0fb5","0980c1ba","09bff60e","09efb87f","09f432fd","0a05bd8b","0a0a25b5","0a16f34b","0a5b3ffb","0a771b98","0a951847","0b233f33","0b24b67a","0b510a21","0b564508","0b938ea9","0badc75a","0bcfa060","0bf7d6aa","0c0f99a3","0c3a7c4b","0c78ab12","0c82102b","0c8e9f68","0d2b82c9","0d34be10","0d74e506","0d856aa2","0db1e446","0dbe9c6e","0dc5d201","0e2d4cbc","0e4d333e","0e4d97b8","0e57331a","0e6f5bde","0e74ffd5","0e8e807a","0e95d943","0ea1f7c4","0eab1686","0eb6dcd3","0efba0d4","0f32add4","0f3e7230","0f775ff7","0f8e150c","0f9c8a61","0fbc2c7e","0fdfd440","0fe06c21","0fe927ed","101ba0d3","104ab7ed","104c22e1","1088c5dd","10a92d3f","10ac8b2a","10bc2abf","11246f85","115129cb","116de1f9","11b4b933","1208bf36","122cd101","1243c07a","12721a22","127aafa8","12b6f84e","12dc68f5","1303cec6","133ab0da","13641202","137d05c5","13a30a94","13ac97a6","13c33781","13e26b9d","13eabbaa","146d8836","14e7c42d","1540d3b7","15743f91","157584b5","157843ff","15d2601e","15f1b213","15f9c9ff","160da1c3","16133d82","16266f55","1641bc19","167d2965","167dd3ca","16c283c6","16e312c3","1745751f","174c4839","175a7542","175b0cbf","179bf76f","17a9f2a9","17ec5b46","18004c79","181d2291","18582c23","18772acf","188930e2","188cca21","189d177d","18b271ee","18b4781c","18c8f335","18d02eed","18dcca85","18e2c78c","18fbaf67","190fe8d1","1910d7e3","1913423b","191aa89b","191b3aa0","1925fa8f","1968a0c1","198e9c6a","19a2ec54","19b0acd5","19b4e8e0","19c4ebdd","19c7877f","19efed3f","19faab42","1a018ac7","1a0b28a7","1a14069d","1a1fcafe","1a4660c8","1ac2e6f9","1ad003e1","1af62839","1b3c747b","1bbfa667","1bc4bd3c","1be59647","1bf96ad2","1c127f7e","1c3e73d7","1c422103","1c53a25f","1c697b5e","1c7be16c","1cda45e4","1cdd0535","1ce7ffe1","1d26c1bf","1dd5c380","1df5a4d3","1e5c7e2a","1e784f47","1eec6e59","1f66a902","1f812643","1fbd6bd6","204b2d04","20821216","20b86519","20e56d83","20f2d32d","210b2573","21372bcf","213f9c96","2157801c","21686050","216fa88e","21f5b729","224233b7","2248bc19","225e036d","22692a83","22a524e3","22a6d57a","22a9435f","22d8832e","232844a2","2333e69d","2357c397","237b4543","238268e3","2395b4e6","23a38f6b","23b99336","23d16399","23d9f349","23e15f2d","23e3d71a","24425763","2496a2d4","24cef546","24d0ada8","2504a76b","250530cf","251d38ae","2528b87b","2545d5e5","255b8e65","25a7329d","25b10e1d","25cc9098","25f081bb","2600146a","26435b3c","267ceeb6","26a8eeb9","26c24b6f","26c6a5e9","26defb84","271e5b0e","27287f22","272e3468","274513a6","274a7127","276cdcbc","277226b9","278bc4e7","2797237c","27a59c80","27ab1f2e","27ced89a","280c6c10","2846b47d","2869bdb7","28deb4f8","2906409a","294db401","29b9561c","29cea094","29f3a9f0","2a090bfe","2a13f646","2a1b55ab","2a8e70bc","2a969933","2aa480b4","2aa8a554","2acd4eca","2aefcd62","2b2235e9","2b5f1f52","2b62e79c","2b6ce2a9","2b6f279b","2beb70aa","2bee3d32","2c29b449","2c2efcfd","2c734d95","2cb3942b","2ce53393","2d4f2cfb","2d505a99","2d751eab","2d833361","2d8d782a","2e3c93ee","2e64f695","2e6c57d4","2e6ee3d4","2eb460db","2ebfa10e","2ec45ef7","2f26a47a","2f34cd7a","2f41c9df","2f69f5a5","2ff94659","3041553a","305062d6","3081def9","30be372f","30cda5c0","310e5717","3117fa62","3126f0c4","31407aa8","31420164","31454f13","3145ab21","315467c1","316a7069","3194f72e","31ac2c11","31e9dbcf","321ff1e3","322dcd28","331952d4","3327962d","332ff4ff","3338e445","3377364b","33f405d2","34145bca","3424321c","345e0fc6","34882301","348f1364","349cd22d","3583acfe","358d3023","359b1263","35a9622a","35ba9f20","35bc1205","35bd5a66","35c6a389","35e9bedb","35eefbc3","3611ddd4","36296080","3661654a","36c0484e","36c9fc84","36ccde07","36d23d15","372b6ec6","3733e627","375e0a9f","379cf769","37ba3753","37e760df","37f293d8","382749f0","385885d0","386f27b5","3892e779","38bb2c33","38dc729b","3917e3fa","3929d38a","3965f68f","39a5405c","39b1ddf4","39d12319","39e3fd52","39eb441a","39f248eb","3a32c2b8","3a4cf32b","3a5c70dd","3b00016b","3b24f0a0","3b278be3","3b67f595","3b6de271","3bc702f2","3bcfa722","3c0d0217","3c3000ac","3c31bddb","3d097040","3d1bb7eb","3d1d22e7","3d31a0e4","3d5ba51f","3d68bd2f","3d76e4cc","3da007ca","3da89a83","3daa5e85","3dd44e08","3de379b5","3e41b22b","3eaf9145","3ecddecd","3f01085d","3f32c75d","3f6ae937","3fd2162c","407b7c21","4098783f","40b58331","40bf5c3e","40d5e6c7","40e36c6b","40f480dc","41246266","41508dd5","4167a4b5","41a3d4f6","41e52010","42037c7c","4212152a","42289ede","42bb2a95","42cd9aa2","42e8dd78","42ea4dc0","42f4249c","4311c77c","432a2145","436f768a","438086b6","438d89ec","439d2035","43a7f8d5","43a85cd7","44280e47","4438b0cf","444d3bf9","44c9eccb","45754c79","45a7feb0","45b1c069","45b473eb","45c5c130","45d6cf34","45eecd32","45f7ebd8","45fc0c71","45fcc8b5","460be845","4676683a","4692397f","46933b35","4696a5bf","46d81d65","46eab4a9","47151ece","471995dd","475dc7dd","4778833f","477cbcf6","47809d30","47eda749","47f25948","47faaf1a","48370965","484b5510","48611346","48638768","4882e609","489021d0","48aa43b1","48d66544","48d8a5f0","48dd0ccb","48f21380","49243f98","4928d7dd","49605759","4972764e","497e8de2","49953032","49ba44b3","49c69a10","4a0a74a1","4a82b1af","4adab6f1","4b004c1d","4b19fbf5","4b6bee62","4b7424fa","4b7d8239","4b86c27d","4b8d12a2","4bc23729","4bd00151","4c1d7d7e","4c585403","4c6ff58f","4c820f5a","4c86e82a","4c8987b4","4c98779e","4cbb3396","4cdf3fa6","4ce2e57d","4d0c3ebd","4d32cdff","4d479f8d","4e195036","4e22daf2","4e23d92b","4e3971d0","4e5e772b","4e736b62","4ea41473","4eaed82b","4ebec0fb","4f1ad599","4f355e60","4f5cc7a9","4f9e380b","4fea5565","4ffa8d0f","5006af9e","5016ada9","5056db19","505bb5f4","50ae46ec","50bf6fd6","50e56c8b","50eb0c83","5133b672","5146705a","51860a67","5188e7d8","5198e853","51ac4fdf","51ac56b0","51b715a8","51c1dbae","51d22c4b","51e890f4","520be849","5235ebe8","52681acf","52a52ff3","52ae53bc","52b051c2","532c9bd8","539f51b0","53aa9a76","53b7cf22","53d67d7f","53f5efa1","5409f6e0","5440fc52","54587be5","54783e42","5489a4a3","54a4cae2","55099262","5584b71d","558b0adb","55e8f6f2","5604ebdd","561374cf","561c5fc5","5626a869","565783b9","568f4ba4","56ecb095","56ffab01","57854182","578f429b","57d9782a","57e92a7d","57f09072","5835969b","58459eed","5852f0a5","5884ce94","590ba84b","5919493c","59268b03","593d76e1","597d11c6","59f19213","59f218e1","59f5abd4","5a2d6394","5a334fff","5a481050","5a6b13fb","5a86e2b7","5a91241b","5a965d3f","5aa4a031","5ac8ba9d","5af0b38b","5b608299","5b68501a","5b869e35","5b970eaf","5b98d9f3","5baecbc4","5bb66f89","5bd56be9","5bfc3079","5c2e79ff","5c53d8e2","5c586deb","5c8c1036","5c9d4557","5cb49d8a","5cb4de74","5cbcbb12","5cf87077","5d4f2ae5","5d56b2ed","5d6b9e01","5d988ead","5dae1c40","5e57aa22","5e65fa16","5e821b57","5eb9de9d","5ed800cc","5edb8894","5ee71ef5","5ef1c0a8","5efe5e14","5f01e882","5f044831","5f07e32e","5f1aa8d1","5f4b30f0","5f5bfa76","5f6d300d","5fb2b5dc","5fe6b636","5fffac12","60654046","6098b3f0","60c6094e","60ce0ffa","60e06ca3","6147eed2","61b7e00f","61c916db","62477d33","62558b51","6257ed55","625902d0","6277f4c5","628fa194","62fa51b1","632c8164","639045b3","63afa4a9","63d50021","64120afc","6421031e","6480518d","6489b880","648d82ed","64af7275","64bfd14e","64d722b3","64fe6270","65259f74","6538ffed","65b1b745","65c2b48d","6613a05e","6615d15f","66564eb7","665f22e1","666e1bb3","667b9b67","668d5d53","66b3f994","66ceabf8","66f993d1","670a8850","6722a508","672531c6","676af089","67e18b7b","6823c0c2","682d9909","68358770","685fdcdc","692bd8df","692d1106","692da89a","6934b42a","696ff199","6982702e","6988079e","699b88c9","69ea5ad3","6a164f08","6a417fd2","6a4890db","6a63ffa2","6a79357f","6a8bcd82","6b3efd82","6b455db0","6b4b3a88","6b5b30bf","6bb7e10a","6bb8d698","6bf18241","6c04e369","6c6e2525","6c72727c","6c9980f8","6cc901f3","6d1a7401","6d984d77","6dcbdb08","6dd3f1e8","6ddbf9b7","6ddcaa16","6e18e1cf","6e3aa6ed","6e5cbb22","6e70b5c9","6e7e7726","6eef2802","6f3a01c9","6f3edcbe","6f85b094","6f892c5f","6f9bfdfe","6fc23ceb","6fe26253","70542717","70c97a63","70cfe2c9","70ec1762","7181a0e6","719ac9c4","71ac9a3f","71c11ef4","71da140d","720276f0","7204c7ba","7211d0fe","721fd970","72214f48","72286f37","7253cca6","728860bd","72aa19b1","72c9223c","72cce5c7","72d2c324","72e9543c","731559b7","7340ca85","7341563e","73442592","737120a1","7374aae4","73b9c553","73cdee60","73eb0151","740070db","7421494f","742581dc","748429fd","74964383","7496ea97","74b6650e","74f0dbb7","74f886b1","753fdf47","75639fba","75b6e87e","76433b72","76572788","76b7693d","76b9bc13","771a386e","771f12ff","77435de5","77588aab","777f3ad1","778bf4e3","781db81b","7829c19c","7829c8fe","782a8d0e","785f58bc","786dbcb8","78769107","78811788","788145a5","78a3cbac","78a959e4","78bc2c04","78c6ad2d","78f9a279","78fc0a8e","791ac7e7","7986e5d0","799817e0","79c8f450","7a32f41a","7a44ef11","7aad9cd2","7abf6421","7ac0f915","7ac322fc","7ae617d6","7af5267b","7b00dc25","7b27faa8","7b3ca978","7bde320b","7c2ecbd5","7c356335","7c8404c1","7c86aa33","7cb26ff3","7cd58b50","7cd7615d","7cebdcba","7d3a9aa8","7d3c726b","7d79acdf","7dcfa6c1","7df9e780","7e254e18","7e398855","7e6d1bfe","7e7183ca","7e76357b","7e8249c7","7eda7857","7ef25767","7f08777d","7f16a3ea","7f9c23f7","7fb4aa20","80205bf5","8024444b","8041cc68","8056016d","80754233","80a0de03","80a0fa9b","80bdb3c6","80dbb679","8118db08","816ea667","8170eeea","81aca2ef","81ea1b5c","82509757","82a360e2","82d2fcbe","82df1cfd","82f70795","82fbf5cd","832abdfa","8337338f","8385a5f2","839c81fb","83df6e18","83f65d95","84812db8","8481d4d6","849b3b6a","84f71907","850cb197","85568c04","856c0c09","857ef97e","85eceb18","86773b5b","86814916","868c04d6","86a8d5b2","86c42d01","86cafa68","86cbf517","86ce6ef4","86d09579","86d76154","86e7aaff","86ef28b9","870a4e69","870f77c9","875041d0","8774b405","877b90ed","87a251c9","87a525d7","8816b542","8836526e","888603c3","888e7aa2","88b00d51","88c14009","88ed60f5","88f0c561","890db1a1","895fe6a2","8987f4f5","89cc8cc1","89d450f4","89eabb08","8a1422ae","8a301da6","8a351b73","8a64bf38","8a6f89aa","8a777468","8a844ec6","8a84e6f9","8ac7f5ae","8ac8a49d","8aca0fd7","8aea8859","8afebe68","8b6fe763","8b8dd166","8ba1a5db","8ba8ed1a","8c3b074a","8c4ada55","8c8875c1","8cbad35c","8ce1e16c","8cea8e1c","8d14a02c","8d328961","8d50cf7e","8d75af33","8d7af174","8d8512e3","8d8ee843","8e2dad72","8eb6bca3","8eb9c2eb","8f4fbb0f","8fbca436","8fd8d4bf","9037978f","908684cb","9097dd8b","90a4d62f","90af1954","9142b985","914c3ba7","916849f3","918d404a","91a7dd08","921578f5","92510d5b","9252920f","92f7ec51","933682e3","93438a2f","93688bf7","937b74b5","93a526d3","93aa475a","93bdb442","93cc4148","940e2456","941992a9","9441eec0","944d0e10","94561917","9459fd80","9479d2ef","94a43db2","94b6626c","94e30a78","95f9b968","963b81aa","968f1765","969bb701","96d5b72d","96e647a8","972cee0e","97624549","97e7ee9e","97efefcd","982a4221","982fa5c8","9836b35a","988fffe1","98b736b9","994bc507","994e2065","99724c89","9973499c","99863551","99bf4b99","99cd055f","99d325d3","99f89d70","9a43a72b","9a615eba","9a6e02ff","9a755e75","9a7bde7d","9aeff534","9aff46fb","9b0cd94a","9b360032","9b5720ab","9b755e24","9b82e421","9bc66304","9bd022ee","9bd661c0","9be4da26","9bf20e40","9c05bb3a","9cd6f48c","9ce6e9a8","9ce87459","9ce98522","9d04eef0","9d16c54a","9d415b4f","9d53edfd","9d681aec","9d8691ef","9dc25598","9de5a486","9df8e990","9e2240d6","9e4fd9ff","9e5aec37","9e9c0ab0","9ea5de9c","9ef1636e","9ef278f9","9efdd21c","9f0ba64a","9f7fb60b","9f86603d","9f986d2f","9fa374c0","9fca7811","a007d689","a00b8ad0","a00e24ba","a03b9f61","a06e8e6c","a06f525d","a07e3d61","a0a1de16","a0b31258","a1011ea7","a10cb4c7","a10d582a","a11e56c2","a12438e3","a19ec17f","a1c7c72a","a1e173f8","a1ec49fc","a1f2c853","a1f791d4","a249dcf5","a2726acd","a2b30dd5","a2b7616b","a2f102bc","a347a011","a34ded01","a36db0dc","a373d5cc","a3934050","a3adc226","a409393f","a4c7642e","a4da37de","a4f12511","a53c2f27","a599e713","a5a1a0d9","a5a83d69","a5b57922","a5c0f498","a5e6f6af","a62a2777","a62f81cb","a63e0309","a63e506c","a641a60e","a64ea9bb","a6baa5f1","a6e6dbbb","a6ead28c","a72e58c1","a7378043","a73f5c0d","a7443e10","a74ae7d3","a75074c1","a772f6fd","a78acdf9","a78d1158","a7a03c94","a7d4b6c0","a80e58e8","a822e6c3","a87288d8","a87d0be0","a889990b","a8ce0b5e","a8d95ba2","a8f2c2ac","a9120796","a9128521","a9546d83","a95cfdd7","a9990f8e","a9b4c8f2","a9fd9775","aa217ef6","aa3c3c08","aa75ab58","aa984ed3","aab1bd73","aad78b5d","aae1220a","aaefc8d4","aaf2af28","ab453fe7","ab6aa2d1","ab7b354f","ab92fd6b","ab9f2cdc","abc4b098","abcc4993","ac79467a","acc4c449","acd75f50","ad316314","ad3ae191","ad96466c","addd7e45","adeb01c6","adf87693","ae0bbdb5","ae15ba9c","ae28da4c","ae35c7ca","ae5f77fe","ae60b4aa","ae69b0ab","aeadd377","aeb44395","af13dd27","af1d8c99","af1e5e9a","af2afe40","af3d672a","af6d9d5a","af89fafa","afad8963","afce6585","afdfa57f","afdff015","b025d597","b02d6c6d","b060337d","b067a801","b0ecacfa","b0fee263","b1091f60","b152d3c0","b194355d","b19a52a1","b23b45a9","b24b233e","b286ea8e","b2c33315","b3068a53","b32d5c18","b35f6629","b36a723b","b36bc228","b3afb19f","b3f1dc28","b3f501b7","b40180d3","b40702b8","b4390575","b45d40b0","b4b4d961","b50aaefe","b515c5a1","b5348b69","b5976f14","b5ab932f","b5d52392","b5d58496","b5e6d142","b5ee2c77","b61cd462","b635886e","b63aeb43","b63eab08","b6609e44","b6692982","b686a4f4","b6bf9ab4","b6dd9ed5","b6e638df","b754af40","b768941c","b784a108","b78dfe75","b7c14067","b7ca1fa1","b7e6a2d1","b805a6ae","b80d7258","b819476a","b841cbf5","b89421e2","b89636b9","b899d4ed","b8e37f86","b8f83bab","b9159054","b929dc2d","b92bc983","b939e0a5","b99192ed","b9f7a551","b9f999d5","b9fe3ff1","b9fed540","ba2719ef","ba4e9fad","ba5d9745","ba825116","ba96922e","baf81e08","bafd1c3e","bb323378","bb478499","bb4886cc","bb54a42c","bb683312","bbd2a998","bc2772f1","bc40ba14","bc462c25","bc67322a","bc95e962","bca4e216","bd01f454","bd2e521a","bd8bf367","bddabc53","bde2f71e","bdeebd1c","bdf868ea","be08f545","be248829","be4829fc","bebb3849","bed30a86","bf1075c2","bf419005","bf4e68a0","bf6f61eb","bf7dda39","bf82174d","bf8da3cc","bf9c058f","bfa9ff93","bfb690ff","bfb8d3e4","bfd74d4b","bffd99bb","c02e0627","c045322c","c046f8bd","c0648907","c0a119f8","c0af9f50","c0b39fd4","c0d559ca","c10857a2","c14676bd","c1514516","c1948a38","c19d7a73","c1eb19e8","c2111538","c2a6ebd9","c2a9c575","c2cbd863","c2fbfbdb","c3034875","c313461e","c36dbf35","c39078ea","c3bc799d","c3cc3aad","c3dfe61e","c3f4fca0","c3fb508d","c406332a","c421f53d","c42a1c9b","c45200c7","c4ba2f20","c4d0e006","c51dd95c","c54ce2fa","c57376df","c5b8e231","c60f594f","c6280ef7","c630015f","c6836818","c6e8abbe","c6fc7635","c77e4664","c800194d","c80a7b61","c838efd9","c8647fe5","c87702b1","c8801850","c936a239","c94eb73d","c9629cee","c9a4658d","c9a9240e","c9c45f04","ca019ed8","ca1d493c","ca285ef7","ca3007ab","cad27e00","cb1fdbb1","cb2669d8","cb2b4180","cb373bb3","cb608064","cb619ce5","cb6dc745","cba4acd5","cbd1b0d6","cbe360ce","cc18a2bd","cc2a9480","cc2d3f54","cc2fcea7","ccd068f2","cd1ce9c2","cd3a0f79","cd617edb","cdd4bbdf","cdeba9bb","cdf2468b","cdf79079","ce2a3909","ce343eb5","ce4b855b","ce753f10","ce98f579","cea50db9","cecad956","ced6a635","cedfa3c5","cef2bc99","cf30d232","cf322101","cf3c9b2e","cf493909","cf7d4b79","d00aab8a","d01efacc","d04b3e40","d07d87da","d08d2509","d0bdd0d0","d0d2d51a","d0ef4828","d11db5fc","d12ff539","d13b2f71","d13fec62","d1a843fb","d1b297d6","d1cae917","d1fb836d","d22486c7","d250c3d0","d2553182","d26daa2b","d294cb36","d296dbae","d2dc7e11","d2e0efd6","d379bad6","d392ef23","d3aa3e63","d3be1a65","d3c82cac","d3de3711","d40823f6","d41162ea","d44de8b0","d4685988","d46daa37","d48b3198","d4b03db5","d4b676b9","d4c5d671","d4da1060","d4fa8470","d4fb200b","d51d9bcf","d52c12ba","d56e6e2e","d587b4b5","d5ece6f2","d63b9d1c","d6801ef2","d68dcf29","d69e86a8","d6cfc78c","d6e443bc","d71dfa2b","d7367470","d7f15994","d80bea92","d823b621","d82cab6f","d85eac19","d86be86f","d88745d7","d888bfe5","d8d592d9","d8db91e5","d90c9ff2","d9119509","d92d8ef6","d96320da","d96c102f","d9889f50","d98ec220","d99d759e","d9e08bc3","da12f590","da885ec5","daa74b00","dad00b4c","dae8e4d4","db23cefb","db24a536","db5ce580","db79c418","db79ceb6","db86b9ea","db9d0a8a","dbb506c8","dbb53546","dbb5d8f8","dbfbe216","dc1064b8","dc19aa94","dc3118d3","dc55a752","dc63c21a","dc6b2931","dc811cc3","dca379ff","dcbb6691","dcbbbc0a","dcf07e86","dcfdb807","dd10dde3","dd289df3","dd485ed7","dd631433","ddb18d33","ddf42c71","de020766","de1d7eb8","de1e7100","de38baa3","de53e87f","de8e1d60","de94b462","dead7fd2","dece2ed3","df191870","df2b5cea","df4fb379","df580204","df636f9f","df66f84d","df6d573f","dfde88d5","e0209586","e02e3c3f","e077da36","e0c0e0aa","e0f6f63c","e0f90b33","e0fba6f7","e1009bc5","e1214443","e14abd85","e14f86e4","e1b2c3e5","e1d3d945","e22016cf","e27d2970","e2ac5c6d","e2b75e76","e2cb0c88","e2cc1232","e30fa7b5","e315e28d","e32e0d6f","e3307b90","e36197bb","e36b2ddd","e3731784","e3738b20","e3b20f4a","e3e4c884","e3edc559","e43d5942","e4448ddc","e44b339b","e4662880","e48028d3","e51d576d","e51f0592","e5379184","e558660e","e5bbdb4d","e5f12404","e5f34ba1","e61cac07","e62e3630","e64f7077","e668bd09","e6cf65d1","e6f81e82","e6fb31ad","e74907f7","e74e8032","e790f6a8","e7bad912","e7f287ef","e7f9cc99","e800bc57","e836d2d5","e8372d95","e8789c37","e8dc5b41","e8ec939d","e8fbf25e","e90ee1bb","e91a6363","e925bfaa","e96c1bbf","e99856b2","e9c08dfa","e9e6eeff","e9f7d8b8","ea0cecdc","ea107f2a","ea18f30b","ea5dbdfc","ea6eddeb","ea80202b","ea9a2905","eaba8629","eb21b862","eb34915d","eb6784ca","eb9e7cff","ebd64c97","ebe57ae3","ebfc116f","ec44eb31","ec476bb1","ec58e874","ec5c2485","ecc86596","ed634971","ed7131c5","ed86d512","ed993378","edaf9ff9","edd86c73","edd88272","edf6cf14","ee01ad61","ee2ccd3a","ee41e64e","ee41f6d0","ee46d9d0","ee480d88","eeab9df9","eeb0d3c5","eecba2df","eee08ef0","eef1062d","ef2afbeb","ef31976c","ef703938","ef7e4f4c","efa7f19c","efd9f221","f05b435c","f07c84e0","f09c6858","f0eea943","f0f33132","f138f80e","f16dae35","f18f8c9f","f19ef7b9","f1ef17dd","f20c1d60","f20dc54d","f2119de9","f2166280","f232822b","f23f4de7","f262ca1f","f270b0b8","f27909eb","f28995b7","f2dead7f","f31b954b","f35a02e7","f38fdae0","f3a81aec","f3cced9e","f3d1d2e4","f3eacd55","f3f7ac7a","f44d22cb","f4a7e11c","f4d22a22","f4df07c0","f519756d","f53ef58a","f54312a3","f5735727","f5e87993","f616ed43","f6240f6d","f6307864","f63dea40","f6529042","f65d137e","f65e96ee","f690fa11","f69566cd","f69c08a8","f6f24608","f749d51e","f78ddc50","f7c5ae25","f7d9a39d","f815289c","f81f1021","f82693a4","f83fc901","f8e627a2","f8ec54e7","f9045af4","f91ee02e","f96e1f1c","f96f5b5c","f9a10e1b","f9e65ffd","f9faae26","fa10e571","fa2c5dcb","fa52bc72","fa56340f","fa5ff2a3","fa92813f","fa95a44b","fad87c93","fb00e6e1","fb2abe07","fb33eac5","fb4784ff","fb8f55ba","fbae304f","fbda4b3f","fbef9efe","fc17dde0","fc4014c4","fc51d3af","fc89bcd1","fc913f2c","fccef323","fce6ec43","fcebcdf8","fced1ad4","fcf65c37","fcfd196b","fd16f905","fd18b61b","fd22b7c9","fd3f03cd","fd5f37a5","fd79e279","fe1d464f","fe691321","fe828386","fee75ca1","fef0f189","ff169e00","ff397449","ff4a5d84","ff58800a","ff624289","ff6d90fc","ffb7b2f1","ffd11fdd","ffd86f57","ffeccb4d"]);
+const AUDIO_SET=new Set(["0000b652","000484e1","00230e14","002dd7ec","009eaf7c","00b592a2","011decbc","0148021c","01ec94ec","01f42734","023a2f6b","02688497","0290fb00","02ab30d8","02b0e5d3","02c43c19","02e15768","0338b092","034719be","03a52f42","03b3ae71","03bba103","03e0ad50","03e232e5","03f5bdc5","0442e0c1","045e80ca","04617e32","046bea2e","046c3291","047458e1","04a7e04e","04c57359","04cf33f9","04d7ad34","053301db","0542aefc","0552c2b0","05579aca","055aedfe","0589e144","058f13c1","05bbdd3b","05bf6449","05c8a1a7","05f60e00","0655962e","06745c07","068e0514","06bf763c","06d827f1","06f19423","0721c830","07582b9c","07643fc0","07f30d08","07f58a90","07fb0760","081e8b0f","084a0654","087bec5f","087d3745","087f75e5","08a4d2b5","08b4ad08","08e6b35b","08ed2fa4","08f7954a","0959bb86","096f0fb5","0980c1ba","09bff60e","09efb87f","09f432fd","09fdcb53","0a05bd8b","0a0a25b5","0a16f34b","0a5b3ffb","0a771b98","0a951847","0b233f33","0b24b67a","0b510a21","0b564508","0b938ea9","0badc75a","0bcfa060","0bf7d6aa","0c0f99a3","0c3a7c4b","0c78ab12","0c82102b","0c8e9f68","0d2b82c9","0d34be10","0d74e506","0d856aa2","0db1e446","0dbe9c6e","0dc5d201","0e2d4cbc","0e4d333e","0e4d97b8","0e57331a","0e6f5bde","0e74ffd5","0e8e807a","0e95d943","0ea1f7c4","0eab1686","0eb6dcd3","0efba0d4","0f32add4","0f3e7230","0f775ff7","0f8e150c","0f9c8a61","0fbc2c7e","0fdfd440","0fe06c21","0fe927ed","101ba0d3","104ab7ed","104c22e1","1088c5dd","10a92d3f","10ac8b2a","10bc2abf","11246f85","115129cb","116de1f9","11b4b933","1208bf36","122cd101","1243c07a","12721a22","127aafa8","12b6f84e","12dc68f5","1303cec6","133ab0da","13641202","136d6c77","137d05c5","13a30a94","13ac97a6","13c33781","13e26b9d","13eabbaa","146d8836","14e7c42d","1540d3b7","15743f91","157584b5","157843ff","15d2601e","15f1b213","15f9c9ff","160da1c3","16133d82","16266f55","162cfc0a","1641bc19","167d2965","167dd3ca","16c283c6","16e312c3","1745751f","174c4839","175a7542","175b0cbf","179bf76f","17a9f2a9","17ec5b46","18004c79","181d2291","18582c23","18772acf","188930e2","188cca21","189d177d","18b271ee","18b4781c","18c8f335","18d02eed","18dcca85","18e2c78c","18f40e39","18fbaf67","190fe8d1","1910d7e3","1913423b","191aa89b","191b3aa0","1925fa8f","1968a0c1","198e9c6a","19a2ec54","19b0acd5","19b4e8e0","19c4ebdd","19c7877f","19efed3f","19faab42","1a018ac7","1a0b28a7","1a14069d","1a1fcafe","1a4660c8","1ac2e6f9","1ad003e1","1af62839","1b3c747b","1b5fc45b","1bbfa667","1bc4bd3c","1be59647","1bf96ad2","1c127f7e","1c3e73d7","1c422103","1c53a25f","1c697b5e","1c7be16c","1cc72499","1cda45e4","1cdd0535","1ce7ffe1","1d26c1bf","1dd5c380","1df5a4d3","1e5c7e2a","1e784f47","1eec6e59","1f29dbd6","1f66a902","1f812643","1fbd6bd6","204b2d04","20821216","20b86519","20e56d83","20f2d32d","210b2573","21372bcf","213f9c96","2157801c","21686050","216fa88e","21f5b729","224233b7","2248bc19","225e036d","22692a83","22a524e3","22a6d57a","22a9435f","22d8832e","232844a2","2333e69d","2357c397","237b4543","238268e3","2395b4e6","23a38f6b","23b99336","23d16399","23d9f349","23e15f2d","23e3d71a","24425763","2496a2d4","24cef546","24d0ada8","2504a76b","250530cf","251d38ae","2528b87b","2545d5e5","255b8e65","25a7329d","25b10e1d","25cc9098","25d4a652","25f081bb","2600146a","26435b3c","267ceeb6","26a8eeb9","26affa64","26c24b6f","26c6a5e9","26defb84","271e5b0e","27287f22","272e3468","274513a6","274a7127","276cdcbc","277226b9","278bc4e7","2797237c","27a59c80","27ab1f2e","27ced89a","280c6c10","2846b47d","2869bdb7","28deb4f8","2906409a","294db401","29b9561c","29cea094","29f3a9f0","2a090bfe","2a13f646","2a1b55ab","2a8e70bc","2a969933","2aa480b4","2aa8a554","2acd4eca","2aefcd62","2b2235e9","2b5f1f52","2b62e79c","2b6ce2a9","2b6f279b","2beb70aa","2bee3d32","2c29b449","2c2efcfd","2c734d95","2cb3942b","2ce53393","2d4f2cfb","2d505a99","2d751eab","2d833361","2d8d782a","2e3c93ee","2e64f695","2e6c57d4","2e6ee3d4","2eb460db","2ebfa10e","2ec45ef7","2f26a47a","2f34cd7a","2f41c9df","2f69f5a5","2ff94659","3041553a","305062d6","3081def9","30be372f","30cda5c0","310b5cff","310e5717","3117fa62","3126f0c4","31407aa8","31420164","31454f13","3145ab21","315467c1","316a7069","3194f72e","31ac2c11","31e9dbcf","321ff1e3","322dcd28","331952d4","3327962d","332ff4ff","3338e445","3377364b","33bf805d","33f405d2","34145bca","3424321c","345e0fc6","34882301","348f1364","349cd22d","3583acfe","358d3023","359b1263","35a2e5c3","35a9622a","35ba9f20","35bc1205","35bd5a66","35c6a389","35e9bedb","35eefbc3","3611ddd4","36296080","3661654a","36c0484e","36c9fc84","36ccde07","36d23d15","372b6ec6","3733e627","375e0a9f","379cf769","37ba3753","37e760df","37f293d8","381a575f","382749f0","385885d0","386f27b5","3892e779","38bb2c33","38dc729b","3917e3fa","391a58f2","3929d38a","3965f68f","39a5405c","39b1ddf4","39d12319","39e3fd52","39eb441a","39f248eb","3a32c2b8","3a4cf32b","3a5c70dd","3b00016b","3b24f0a0","3b278be3","3b67f595","3b6de271","3bc49eda","3bc702f2","3bcfa722","3c0d0217","3c3000ac","3c31bddb","3d097040","3d1bb7eb","3d1d22e7","3d31a0e4","3d5ba51f","3d68bd2f","3d76e4cc","3da007ca","3da89a83","3daa5e85","3dd44e08","3de379b5","3e41b22b","3eaf9145","3ecddecd","3eed3f54","3f01085d","3f1a6264","3f32c75d","3f6ae937","3fd2162c","401a63f7","407b7c21","4098783f","40b58331","40bf5c3e","40d5e6c7","40e36c6b","40f480dc","411a658a","41246266","41387a9e","41508dd5","4167a4b5","41a3d4f6","41e52010","42037c7c","4212152a","4220774b","42289ede","42bb2a95","42cd9aa2","42e8dd78","42ea4dc0","42f4249c","4311c77c","432a2145","43430b20","436f768a","438086b6","438d89ec","439d2035","43a7f8d5","43a85cd7","44280e47","4438b0cf","444d3bf9","4464601a","44c9eccb","45754c79","45a7feb0","45b1c069","45b473eb","45c5c130","45d6cf34","45eecd32","45f7ebd8","45fc0c71","45fcc8b5","460be845","4676683a","4692397f","46933b35","4696a5bf","46d81d65","46eab4a9","47151ece","471995dd","475dc7dd","4778833f","477cbcf6","47809d30","47e8cff0","47eda749","47f25948","47faaf1a","48370965","484b5510","48611346","48638768","4882e609","489021d0","48aa43b1","48d66544","48d8a5f0","48dd0ccb","48f21380","49243f98","4928d7dd","49605759","4972764e","497e8de2","49953032","49ba44b3","49c69a10","4a0a74a1","4a82b1af","4adab6f1","4b004c1d","4b19fbf5","4b1a7548","4b6bee62","4b7424fa","4b7d8239","4b86c27d","4b8d12a2","4bc23729","4bd00151","4c1d7d7e","4c585403","4c6ff58f","4c820f5a","4c86e82a","4c8987b4","4c98779e","4cbb3396","4cdf3fa6","4ce2e57d","4d0c3ebd","4d32cdff","4d479f8d","4e195036","4e22daf2","4e23d92b","4e3971d0","4e5e772b","4e736b62","4ea41473","4eaed82b","4eb3f7aa","4ebec0fb","4f1ad599","4f355e60","4f5cc7a9","4f9e380b","4fea5565","4ffa8d0f","5006af9e","5016ada9","5056db19","505bb5f4","50ae46ec","50b8d09c","50bf6fd6","50e56c8b","50eb0c83","5133b672","5146705a","51860a67","5188e7d8","5198e853","51ac4fdf","51ac56b0","51ae487f","51b715a8","51c1dbae","51d22c4b","51e890f4","520be849","5235ebe8","52681acf","52a52ff3","52ae53bc","52b051c2","52f6dcd9","532c9bd8","53309be9","539f51b0","53aa9a76","53b7cf22","53d67d7f","53f5efa1","5409f6e0","542510cf","5440fc52","54587be5","54783e42","5489a4a3","54a4cae2","55099262","5584b71d","558b0adb","55e8f6f2","5604ebdd","561374cf","561c5fc5","5626a869","565783b9","568f4ba4","56ecb095","56ffab01","57251588","57342012","57854182","578f429b","57d9782a","57e92a7d","57f09072","5835969b","58459eed","5852f0a5","5884ce94","590ba84b","5919493c","59268b03","593d76e1","597d11c6","59f19213","59f218e1","59f5abd4","5a2d6394","5a334fff","5a481050","5a6b13fb","5a86e2b7","5a91241b","5a965d3f","5aa4a031","5ac8ba9d","5af0b38b","5b608299","5b68501a","5b869e35","5b970eaf","5b98d9f3","5baecbc4","5bb66f89","5bd56be9","5bfc3079","5c2e79ff","5c47afa9","5c53d8e2","5c586deb","5c8c1036","5c9d4557","5cb49d8a","5cb4de74","5cbcbb12","5cf87077","5d251efa","5d4f2ae5","5d56b2ed","5d6b9e01","5d988ead","5dae1c40","5e57aa22","5e65fa16","5e821b57","5eb9de9d","5ed800cc","5edb8894","5ee71ef5","5ef1c0a8","5efe5e14","5f01e882","5f044831","5f07e32e","5f1aa8d1","5f4b30f0","5f5bfa76","5f6d300d","5fb2b5dc","5fd56df9","5fe6b636","5fffac12","600b2e78","60654046","6098b3f0","60c6094e","60ce0ffa","60e06ca3","61342fd0","6147eed2","61b7e00f","61c916db","62366ffa","62477d33","62558b51","6257ed55","625902d0","6277f4c5","628fa194","62fa51b1","632c8164","639045b3","63afa4a9","63b75f31","63d50021","64120afc","6421031e","6440f543","6480518d","6489b880","648d82ed","64af7275","64bfd14e","64d722b3","64fe6270","65259f74","6538ffed","65b1b745","65c2b48d","6613a05e","6615d15f","66564eb7","665f22e1","666e1bb3","667b9b67","668d5d53","66b3f994","66ceabf8","66f993d1","670a8850","6722a508","672531c6","67343942","676af089","67e18b7b","6823c0c2","682d9909","682e2aa7","68358770","683af69a","6840fb8f","685fdcdc","692bd8df","692d1106","692da89a","6934b42a","696ff199","6982702e","6988079e","699b88c9","69ea5ad3","6a164f08","6a417fd2","6a4890db","6a63ffa2","6a79357f","6a8bcd82","6b3efd82","6b455db0","6b4b3a88","6b5b30bf","6bb7e10a","6bb8d698","6bf18241","6c04e369","6c6e2525","6c72727c","6c9980f8","6cc901f3","6d1a7401","6d304773","6d8b34d5","6d984d77","6dcbdb08","6dd3f1e8","6ddbf9b7","6ddcaa16","6e18e1cf","6e3aa6ed","6e5cbb22","6e70b5c9","6e7e7726","6eef2802","6f3a01c9","6f3edcbe","6f4b93f0","6f85b094","6f892c5f","6f9bfdfe","6fc23ceb","6fe26253","70542717","70c67e32","70c97a63","70cfe2c9","70ec1762","7181a0e6","719ac9c4","71ac9a3f","71c11ef4","71da140d","720276f0","7204c7ba","7211d0fe","721c6d16","721fd970","72214f48","72286f37","7253cca6","728860bd","72aa19b1","72c9223c","72cce5c7","72d2c324","72e9543c","731559b7","7340ca85","7341563e","73442592","737120a1","7374aae4","73b9c553","73cdee60","73eb0151","740070db","7421494f","742581dc","748429fd","74964383","7496ea97","74b6650e","74f0dbb7","74f886b1","753fdf47","75639fba","7599bfee","75b6e87e","76433b72","76572788","76b7693d","76b9bc13","771a386e","771f12ff","77435de5","77588aab","777f3ad1","778bf4e3","781db81b","7829c19c","7829c8fe","782a8d0e","785f58bc","786dbcb8","78769107","78811788","788145a5","78a3cbac","78a959e4","78bc2c04","78c6ad2d","78f9a279","78fc0a8e","791426ea","791ac7e7","7986e5d0","799817e0","79c8f450","7a057f3f","7a32f41a","7a44ef11","7a4ba541","7aad9cd2","7abf6421","7ac0f915","7ac322fc","7ae617d6","7af5267b","7b00dc25","7b27faa8","7b3ca978","7bde320b","7c2ecbd5","7c356335","7c8404c1","7c86aa33","7cb26ff3","7cd58b50","7cd7615d","7cebdcba","7d3a9aa8","7d3c726b","7d79acdf","7dcfa6c1","7df9e780","7e254e18","7e398855","7e6d1bfe","7e7183ca","7e76357b","7e8249c7","7eda7857","7ef25767","7f08777d","7f16a3ea","7f9c23f7","7fb4aa20","80205bf5","8024444b","8041cc68","8056016d","80754233","80a0de03","80a0fa9b","80bdb3c6","80dbb679","8118db08","816ea667","8170eeea","81aca2ef","81ea1b5c","82509757","82a360e2","82d2fcbe","82df1cfd","82f70795","82fbf5cd","832abdfa","8337338f","8385a5f2","839c81fb","83df6e18","83f65d95","84812db8","8481d4d6","849b3b6a","84f71907","850cb197","8534ce9d","85568c04","856c0c09","857ef97e","85eceb18","86773b5b","86814916","868c04d6","86a8d5b2","86c42d01","86cafa68","86cbf517","86ce6ef4","86d09579","86d76154","86e7aaff","86ef28b9","870a4e69","870f77c9","875041d0","8774b405","877b90ed","87a251c9","87a525d7","8816b542","8836526e","888603c3","888e7aa2","88b00d51","88c14009","88ed60f5","88f0c561","890db1a1","895fe6a2","8987f4f5","89a3b5d3","89cc8cc1","89d450f4","89eabb08","8a1422ae","8a301da6","8a351b73","8a64bf38","8a6f89aa","8a777468","8a844ec6","8a84e6f9","8ac7f5ae","8ac8a49d","8aca0fd7","8aea8859","8afebe68","8b6fe763","8b8dd166","8ba1a5db","8ba8ed1a","8c3b074a","8c4ada55","8c8875c1","8cbad35c","8ce1e16c","8cea8e1c","8d14a02c","8d328961","8d50cf7e","8d75af33","8d7af174","8d8512e3","8d8ee843","8e2dad72","8eb6bca3","8eb9c2eb","8efef7c4","8f4fbb0f","8fbca436","8fd8d4bf","9037978f","90772fda","908684cb","9097dd8b","90a4d62f","90af1954","9142b985","914c3ba7","916849f3","918d404a","91a7dd08","921578f5","92510d5b","9252920f","92f7ec51","933682e3","93438a2f","93688bf7","937b74b5","93a526d3","93aa475a","93bdb442","93cc4148","940e2456","941992a9","9441eec0","944d0e10","94561917","9459fd80","9462cb44","9479d2ef","94a43db2","94b6626c","94e30a78","95f9b968","963b81aa","968f1765","969bb701","96d5b72d","96e647a8","972cee0e","97624549","977128b2","97e7ee9e","97efefcd","982a4221","982fa5c8","9836b35a","988fffe1","98b736b9","994bc507","994e2065","99724c89","9973499c","99863551","99bf4b99","99cd055f","99d325d3","99f89d70","9a43a72b","9a615eba","9a6e02ff","9a755e75","9a7bde7d","9aeff534","9aff46fb","9b0cd94a","9b360032","9b47cc32","9b5720ab","9b755e24","9b82e421","9bc66304","9bcd89e7","9bd022ee","9bd661c0","9be4da26","9bf20e40","9c05bb3a","9cd6f48c","9ce6e9a8","9ce87459","9ce98522","9d04eef0","9d16c54a","9d415b4f","9d53edfd","9d681aec","9d8691ef","9dc25598","9de5a486","9df8e990","9e2240d6","9e4fd9ff","9e5aec37","9e9c0ab0","9ea5de9c","9ef1636e","9ef278f9","9efdd21c","9f0ba64a","9f7fb60b","9f86603d","9f986d2f","9fa374c0","9fca7811","a007d689","a00b8ad0","a00e24ba","a03b9f61","a06e8e6c","a06f525d","a07e3d61","a0a1de16","a0b31258","a1011ea7","a10cb4c7","a10d582a","a11e56c2","a12438e3","a19ec17f","a1c7c72a","a1e173f8","a1ec49fc","a1f2c853","a1f791d4","a2289526","a249dcf5","a2726acd","a2b30dd5","a2b7616b","a2f102bc","a347a011","a34ded01","a36db0dc","a373d5cc","a3934050","a3adc226","a409393f","a4c7642e","a4da37de","a4f12511","a53c2f27","a599e713","a5a1a0d9","a5a83d69","a5b57922","a5c0f498","a5e6f6af","a62a2777","a62f81cb","a63e0309","a63e506c","a641a60e","a64ea9bb","a6baa5f1","a6e6dbbb","a6ead28c","a72e58c1","a7378043","a73f5c0d","a7443e10","a74ae7d3","a75074c1","a772f6fd","a78acdf9","a78d1158","a7a03c94","a7d4b6c0","a80e58e8","a822e6c3","a87288d8","a87d0be0","a889990b","a8ce0b5e","a8d95ba2","a8f2c2ac","a9120796","a9128521","a9546d83","a95cfdd7","a969113b","a9990f8e","a9b4c8f2","a9fd9775","aa217ef6","aa3c3c08","aa75ab58","aa984ed3","aab1bd73","aac3a2f2","aad78b5d","aae1220a","aaefc8d4","aaf2af28","ab453fe7","ab6aa2d1","ab7b354f","ab92fd6b","ab9f2cdc","abc4b098","abcc4993","ac79467a","acc4c449","acd75f50","ad316314","ad3ae191","ad96466c","addd7e45","adeb01c6","adf87693","ae0bbdb5","ae15ba9c","ae28da4c","ae35c7ca","ae5f77fe","ae60b4aa","ae69b0ab","aeadd377","aeb44395","af13dd27","af1d8c99","af1e5e9a","af2afe40","af3d672a","af6d9d5a","af89fafa","afad8963","afce6585","afdfa57f","afdff015","b025d597","b02d6c6d","b060337d","b067a801","b0ecacfa","b0fee263","b1091f60","b152d3c0","b194355d","b19a52a1","b23b45a9","b24b233e","b286ea8e","b2c33315","b3068a53","b32d5c18","b35f6629","b36a723b","b36bc228","b3afb19f","b3f1dc28","b3f501b7","b40180d3","b40702b8","b4390575","b45d40b0","b4b4d961","b50aaefe","b515c5a1","b526ec40","b5348b69","b5976f14","b5ab932f","b5d52392","b5d58496","b5e6d142","b5ee2c77","b61cd462","b635886e","b63aeb43","b63eab08","b6609e44","b6692982","b686a4f4","b6bf9ab4","b6dd9ed5","b6e638df","b6f3934e","b720bb72","b754af40","b768941c","b784a108","b78dfe75","b7c14067","b7ca1fa1","b7e6a2d1","b801ec75","b805a6ae","b80d7258","b819476a","b841cbf5","b88b8287","b89421e2","b89636b9","b899d4ed","b8e37f86","b8f83bab","b9159054","b929dc2d","b92bc983","b939e0a5","b99192ed","b9f7a551","b9f999d5","b9fe3ff1","b9fed540","ba2719ef","ba4e9fad","ba5d9745","ba825116","ba96922e","baf81e08","bafd1c3e","bb323378","bb478499","bb4886cc","bb54a42c","bb683312","bbd2a998","bc2772f1","bc40ba14","bc462c25","bc67322a","bc95e962","bca4e216","bd01f454","bd2e521a","bd8bf367","bddabc53","bde2f71e","bdeebd1c","bdf868ea","be08f545","be248829","be4829fc","bebb3849","bed30a86","bf1075c2","bf419005","bf4e68a0","bf6f61eb","bf7dda39","bf82174d","bf8da3cc","bf9c058f","bfa9ff93","bfb690ff","bfb8d3e4","bfd74d4b","bffd99bb","c02e0627","c045322c","c046f8bd","c0648907","c0a119f8","c0af9f50","c0b39fd4","c0d559ca","c10857a2","c14676bd","c1514516","c1948a38","c19d7a73","c1eb19e8","c20e7781","c2111538","c2631658","c2a6ebd9","c2a9c575","c2cbd863","c2fbfbdb","c3034875","c313461e","c36dbf35","c39078ea","c3bc799d","c3cc3aad","c3dfe61e","c3f4fca0","c3fb508d","c406332a","c421f53d","c42a1c9b","c45200c7","c4ba2f20","c4d0e006","c51dd95c","c54ce2fa","c57376df","c5b8e231","c60f594f","c6280ef7","c630015f","c6836818","c6e8abbe","c6fc7635","c77e4664","c800194d","c80a7b61","c838efd9","c8598345","c8647fe5","c87702b1","c8801850","c8e31957","c936a239","c94eb73d","c9629cee","c9a4658d","c9a9240e","c9c45f04","ca019ed8","ca1d493c","ca285ef7","ca3007ab","cad27e00","cb1fdbb1","cb2669d8","cb2b4180","cb373bb3","cb608064","cb619ce5","cb6dc745","cba4acd5","cbd1b0d6","cbe360ce","cc18a2bd","cc2a9480","cc2d3f54","cc2fcea7","ccd068f2","cd1ce9c2","cd3a0f79","cd617edb","cdd4bbdf","cdeba9bb","cdf2468b","cdf79079","ce2a3909","ce343eb5","ce4b855b","ce753f10","ce98f579","cea50db9","cebc0638","cecad956","ced6a635","cedfa3c5","cef2bc99","cf1fc0da","cf30d232","cf322101","cf3c9b2e","cf493909","cf7d4b79","d00aab8a","d01efacc","d04b3e40","d07d87da","d08d2509","d0bdd0d0","d0d2d51a","d0ef4828","d11db5fc","d12ff539","d13b2f71","d13fec62","d1a843fb","d1b297d6","d1cae917","d1fb836d","d22486c7","d250c3d0","d2553182","d26daa2b","d294cb36","d296dbae","d2dc7e11","d2e0efd6","d379bad6","d392ef23","d3aa3e63","d3be1a65","d3c82cac","d3de3711","d40823f6","d41162ea","d44de8b0","d45e5253","d4685988","d46daa37","d48b3198","d4b03db5","d4b676b9","d4c5d671","d4da1060","d4edb997","d4fa8470","d4fb200b","d51d9bcf","d52c12ba","d56e6e2e","d587b4b5","d5ece6f2","d63b9d1c","d6801ef2","d68dcf29","d69e86a8","d6cfc78c","d6e443bc","d71dfa2b","d7367470","d7f15994","d80bea92","d823b621","d82cab6f","d85eac19","d86be86f","d88745d7","d888bfe5","d8d592d9","d8db91e5","d90c9ff2","d9119509","d92d8ef6","d96320da","d96c102f","d9889f50","d98ec220","d99d759e","d9b9523f","d9e08bc3","da12f590","da885ec5","daa74b00","dad00b4c","dae8e4d4","db23cefb","db24a536","db5ce580","db6f49cf","db79c418","db79ceb6","db86b9ea","db9d0a8a","dbb506c8","dbb53546","dbb5d8f8","dbfbe216","dc1064b8","dc19aa94","dc3118d3","dc55a752","dc63c21a","dc6b2931","dc811cc3","dca379ff","dcbb6691","dcbbbc0a","dcf07e86","dcfdb807","dd10dde3","dd289df3","dd485ed7","dd631433","ddb18d33","ddf42c71","de020766","de1d7eb8","de1e7100","de38baa3","de53e87f","de8e1d60","de94b462","dead7fd2","dece2ed3","df191870","df2b5cea","df4fb379","df580204","df636f9f","df66f84d","df6d573f","dfde88d5","e0209586","e02e3c3f","e04e3f61","e077da36","e0c0e0aa","e0f6f63c","e0f90b33","e0fba6f7","e1009bc5","e1214443","e14abd85","e14f86e4","e160b53b","e1b2c3e5","e1d3d945","e22016cf","e27d2970","e2ac5c6d","e2b75e76","e2cb0c88","e2cc1232","e30fa7b5","e315e28d","e32e0d6f","e3307b90","e36197bb","e36b2ddd","e3731784","e3738b20","e3b20f4a","e3e4c884","e3edc559","e43d5942","e4448ddc","e44b339b","e4662880","e48028d3","e51d576d","e51f0592","e5379184","e5561300","e558660e","e5bbdb4d","e5f12404","e5f34ba1","e61cac07","e62e3630","e64f7077","e668bd09","e6cf65d1","e6f81e82","e6fb31ad","e74907f7","e74e8032","e790f6a8","e7bad912","e7f287ef","e7f9cc99","e800bc57","e836d2d5","e8372d95","e8789c37","e8dc5b41","e8ec939d","e8fbf25e","e90ee1bb","e91a6363","e925bfaa","e96c1bbf","e99856b2","e9c08dfa","e9e6eeff","e9f7d8b8","ea0cecdc","ea107f2a","ea18f30b","ea5dbdfc","ea6eddeb","ea80202b","ea9a2905","eaba8629","eb21b862","eb34915d","eb6784ca","eb9e7cff","ebd64c97","ebe57ae3","ebfc116f","ec44eb31","ec476bb1","ec58e874","ec5c2485","ecc86596","ed634971","ed7131c5","ed86d512","ed993378","edaf9ff9","edd86c73","edd88272","edf6cf14","ee01ad61","ee2ccd3a","ee41e64e","ee41f6d0","ee46d9d0","ee480d88","eeab9df9","eeb0d3c5","eecba2df","eee08ef0","eef1062d","ef2afbeb","ef31976c","ef703938","ef7e4f4c","efa7f19c","efd9f221","f05b435c","f07c84e0","f09c6858","f0eea943","f0f33132","f138f80e","f16dae35","f184ae40","f18f8c9f","f19ef7b9","f1ef17dd","f20c1d60","f20dc54d","f2119de9","f2166280","f232822b","f23f4de7","f262ca1f","f270b0b8","f27909eb","f28995b7","f2bf17c2","f2dead7f","f31b954b","f35a02e7","f38fdae0","f3a81aec","f3cced9e","f3d1d2e4","f3eacd55","f3f7ac7a","f44d22cb","f4a7e11c","f4d22a22","f4df07c0","f519756d","f53ef58a","f54312a3","f5735727","f5e87993","f616ed43","f6240f6d","f6307864","f63dea40","f6529042","f65d137e","f65e96ee","f690fa11","f69566cd","f69c08a8","f6f24608","f749d51e","f78d1d98","f78ddc50","f7c5ae25","f7d9a39d","f815289c","f81f1021","f82693a4","f83fc901","f8e627a2","f8ec54e7","f9045af4","f91ee02e","f96e1f1c","f96f5b5c","f9a10e1b","f9e65ffd","f9faae26","fa10e571","fa27abc2","fa2c5dcb","fa52bc72","fa56340f","fa5ff2a3","fa92813f","fa95a44b","fad87c93","fb00e6e1","fb2abe07","fb33eac5","fb4784ff","fb8f55ba","fbae304f","fbda4b3f","fbef9efe","fc17dde0","fc4014c4","fc51d3af","fc89bcd1","fc913f2c","fccef323","fce6ec43","fcebcdf8","fced1ad4","fcf65c37","fcfd196b","fd16f905","fd18b61b","fd22b7c9","fd3f03cd","fd5f37a5","fd79e279","fe1d464f","fe691321","fe828386","fee75ca1","fef0f189","ff169e00","ff397449","ff4a5d84","ff58800a","ff624289","ff6d90fc","ffb7b2f1","ffd11fdd","ffd86f57","ffeccb4d"]);
 function h32(s){let h=0x811c9dc5;const b=unescape(encodeURIComponent(s));for(let i=0;i<b.length;i++){h^=b.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}return h.toString(16).padStart(8,"0");}
 const akey=t=>h32(String(t).replace(/\s+/g," ").trim());
 function splitSentences(t){return String(t).split(/\n+/).flatMap(p=>p.trim().split(/(?<=[.!?]["”]?)\s+/)).map(s=>s.trim()).filter(Boolean);}
@@ -2332,7 +2464,7 @@ function warmToday(){return !!S.days[today()]?.warm;}
 /* ================= course helpers ================= */
 const TRACKS=[["kids","Kids","ছোটদের জগৎ"],["family","Family","পরিবার"],["client","Work","কাজ ও ক্লায়েন্ট"],["everyday","Everyday","সবার সাথে"]];
 /* ================= 3D emoji images (Fluent, bundled in e/) ================= */
-const EMOJI_SET=new Set(["1f0cf","1f308","1f319","1f31f","1f324","1f331","1f333","1f338","1f33f","1f343","1f347","1f349","1f34a","1f34c","1f34e","1f35a","1f35e","1f370","1f37d","1f380","1f381","1f382","1f388","1f389","1f392","1f393","1f3a4","1f3a7","1f3af","1f3c3","1f3c6","1f3ca","1f3e1","1f410","1f414","1f418","1f41f","1f427","1f42e","1f42f","1f430","1f431","1f435","1f436","1f438","1f43c","1f441","1f442","1f443","1f444","1f445","1f44b","1f44f","1f45f","1f466-1f3fd","1f466","1f467-1f3fd","1f467","1f468-1f3fd","1f468","1f469-1f3fd-200d-1f9b1","1f469-1f3fd","1f469","1f474-1f3fd","1f475-1f3fd","1f475","1f476-1f3fd","1f476","1f483","1f487","1f48e","1f4a7","1f4aa","1f4ac","1f4bc","1f4c5","1f4c8","1f4d6","1f4d8","1f4da","1f501","1f50a","1f51f","1f525","1f534","1f535","1f590","1f5bc","1f600","1f601","1f60b","1f60c","1f60f","1f610","1f617","1f619","1f61b","1f620","1f622","1f628","1f62c","1f62e","1f634","1f642","1f64c","1f64f","1f680","1f697","1f6aa","1f6cf","1f7e0","1f7e1","1f7e2","1f7e3","1f7e4","1f91d","1f92a","1f947","1f948","1f949","1f95a","1f95b","1f964","1f96d","1f97a","1f981","1f984","1f986","1f98a","1f98b","1f998","1f9b5","1f9b6","1f9b7","1f9d1-1f3fd-200d-1f4bb","1f9d2-1f3fd","1f9d4-1f3fd","1f9d7","1f9e9","1f9ee","1f9f1","1f9f8","1f9fc","1fa77","1fa81","1fa91","1faa5","23f1","2615","261d","26a1","26aa","26ab","26bd","270b","270d","2728","2764","2b50","30-20e3","31-20e3","32-20e3","33-20e3","34-20e3","35-20e3","36-20e3","37-20e3","38-20e3","39-20e3"]);
+const EMOJI_SET=new Set(["1f0cf","1f308","1f319","1f31f","1f324","1f327","1f331","1f333","1f336","1f338","1f33d","1f33f","1f343","1f345","1f346","1f347","1f349","1f34a","1f34c","1f34e","1f35a","1f35e","1f360","1f370","1f37d","1f380","1f381","1f382","1f383","1f388","1f389","1f392","1f393","1f3a4","1f3a7","1f3ae","1f3af","1f3c3","1f3c6","1f3ca","1f3e1","1f402","1f410","1f414","1f418","1f41c","1f41f","1f423","1f426","1f427","1f42e","1f42f","1f430","1f431","1f435","1f436","1f437","1f438","1f43c","1f441","1f442","1f443","1f444","1f445","1f44b","1f44f","1f452","1f45c","1f45f","1f466-1f3fd","1f466","1f467-1f3fd","1f467","1f468-1f3fd","1f468","1f469-1f3fd-200d-1f9b1","1f469-1f3fd","1f469","1f46d","1f474-1f3fd","1f475-1f3fd","1f475","1f476-1f3fd","1f476","1f483","1f487","1f48e","1f496","1f4a1","1f4a7","1f4aa","1f4ac","1f4bc","1f4c5","1f4c8","1f4cd","1f4d6","1f4d8","1f4da","1f4e6","1f501","1f50a","1f512","1f513","1f51f","1f524","1f525","1f534","1f535","1f58a","1f590","1f5bc","1f600","1f601","1f60b","1f60c","1f60f","1f610","1f617","1f619","1f61b","1f620","1f622","1f628","1f62c","1f62e","1f634","1f642","1f645","1f64b","1f64c","1f64f","1f680","1f68c","1f697","1f6a6","1f6aa","1f6cf","1f7e0","1f7e1","1f7e2","1f7e3","1f7e4","1f91d","1f92a","1f947","1f948","1f949","1f952","1f954","1f955","1f95a","1f95b","1f964","1f966","1f96c","1f96d","1f97a","1f981","1f984","1f986","1f98a","1f98b","1f998","1f9b5","1f9b6","1f9b7","1f9c2","1f9c4","1f9c5","1f9d1-1f3fd-200d-1f4bb","1f9d2-1f3fd","1f9d4-1f3fd","1f9d7","1f9e0","1f9e9","1f9ee","1f9f1","1f9f8","1f9fc","1fa77","1fa81","1fa91","1faa5","1fad1","1fada","1fadb","23f1","2600","2601","2615","261d","26a1","26aa","26ab","26bd","2705","270b","270d","2728","2764","2b06","2b07","2b50","30-20e3","31-20e3","32-20e3","33-20e3","34-20e3","35-20e3","36-20e3","37-20e3","38-20e3","39-20e3"]);
 const ART_OK=true;
 const art=(n,cls="")=>ART_OK?`<img class="art ${cls}" src="i/${n}.webp" alt="" loading="lazy" draggable="false">`:"";
 const EMO_RE=/\p{Extended_Pictographic}(?:\uFE0F|\u20E3|\p{Emoji_Modifier}|\u200D\p{Extended_Pictographic}\uFE0F?\p{Emoji_Modifier}?)*|[0-9]\uFE0F\u20E3/gu;
@@ -2878,6 +3010,250 @@ function kidBurst(el){
   try{el.animate([{transform:"scale(1)"},{transform:"scale(1.18,.86)"},{transform:"scale(.92,1.1)"},{transform:"scale(1.08)"}],{duration:520,easing:"ease-out"});}catch(e){}
 }
 
+/* ================= Play cards: extra decks (Spices, Vegetables), vertical swipe; Spelling Fun ================= */
+
+/* ---- hand-drawn pictures for items that have no emoji ---- */
+const ART={};
+(function(){
+  let seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return (seed-1)/2147483646;};
+  const svg=(body,defs="")=>`<svg class="vart" viewBox="0 0 100 100" aria-hidden="true"><defs>${defs}</defs>${body}</svg>`;
+  const shade=(id,a,b)=>`<radialGradient id="${id}" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></radialGradient>`;
+  /* a wooden bowl heaped with something */
+  const bowl=(heap,id)=>svg(`<ellipse cx="50" cy="88" rx="34" ry="5" fill="#0002"/>
+    <path d="M14 56 Q50 60 86 56 Q84 84 50 86 Q16 84 14 56Z" fill="url(#bw${id})"/>
+    ${heap}<ellipse cx="50" cy="56" rx="36" ry="7" fill="none" stroke="#7a4a22" stroke-width="3"/>`,
+    `<linearGradient id="bw${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c98a4b"/><stop offset="1" stop-color="#8a5226"/></linearGradient>`);
+  const mound=(c1,c2,id)=>`<defs>${shade("m"+id,c1,c2)}</defs><path d="M16 56 Q24 30 50 26 Q76 30 84 56Z" fill="url(#m${id})"/>`;
+  const seeds=(n,draw)=>{let s="";for(let i=0;i<n;i++){const a=rnd()*Math.PI,r=rnd();const x=50+Math.cos(a)*30*r*1.1,y=54-Math.sin(a)*24*r;s+=draw(x,y,rnd()*180);}return s;};
+  ART.turmeric=bowl(mound("#ffd54a","#e08a00","t")+`<path d="M66 70 q10 -6 20 -2 q6 3 2 8 q-4 4 -10 2 q-8 4 -12 -8z" fill="#d9822b" stroke="#a85a14" stroke-width="1.5"/><path d="M74 66 q2 -5 6 -6" stroke="#a85a14" stroke-width="2" fill="none"/>`,"t");
+  ART.cumin=bowl(mound("#d6b27a","#9a7240","c")+seeds(46,(x,y,r)=>`<ellipse cx="${x}" cy="${y}" rx="3.6" ry="1.3" transform="rotate(${r} ${x} ${y})" fill="#7a5426"/>`),"c");
+  ART.coriander=bowl(mound("#e2c48f","#b48a52","k")+seeds(34,(x,y)=>`<circle cx="${x}" cy="${y}" r="3.2" fill="#c49a5a" stroke="#8a6230" stroke-width=".8"/><circle cx="${x-1}" cy="${y-1}" r=".9" fill="#f2dcb0"/>`),"k");
+  ART.pepper=bowl(mound("#4a4a4a","#1b1b1b","p")+seeds(36,(x,y)=>`<circle cx="${x}" cy="${y}" r="3.3" fill="#2a2a2a"/><circle cx="${x-1.1}" cy="${y-1.1}" r="1" fill="#888"/>`),"p");
+  ART.mustard=bowl(mound("#f0c64a","#c9921a","s")+seeds(70,(x,y)=>`<circle cx="${x}" cy="${y}" r="1.7" fill="#b9801a"/>`),"s");
+  ART.nigella=bowl(mound("#3a3a3a","#111","n")+seeds(60,(x,y,r)=>`<path d="M${x} ${y} l2 -1.2 l-.6 2.6z" transform="rotate(${r} ${x} ${y})" fill="#000"/>`),"n");
+  ART.fenugreek=bowl(mound("#e8b84e","#b8801c","f")+seeds(50,(x,y,r)=>`<rect x="${x}" y="${y}" width="2.6" height="2" rx=".5" transform="rotate(${r} ${x} ${y})" fill="#9a6414"/>`),"f");
+  const stick=(x,y,r)=>`<g transform="rotate(${r} ${x} ${y})"><rect x="${x-34}" y="${y-6}" width="68" height="12" rx="5" fill="url(#cin)"/><path d="M${x-34} ${y-6} q-6 6 0 12" fill="#7a3d16"/><path d="M${x+34} ${y-6} a6 6 0 1 1 0 12 a3.5 3.5 0 1 1 0 -7" fill="none" stroke="#5a2a0c" stroke-width="2"/><path d="M${x-20} ${y-3} h36" stroke="#e0a36a" stroke-width="1.5" opacity=".6"/></g>`;
+  ART.cinnamon=svg(`<ellipse cx="50" cy="84" rx="38" ry="5" fill="#0002"/>${stick(50,40,-12)}${stick(50,56,4)}${stick(52,70,-4)}`,`<linearGradient id="cin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c97a3d"/><stop offset="1" stop-color="#8a4519"/></linearGradient>`);
+  const pod=(x,y,r)=>`<g transform="rotate(${r} ${x} ${y})"><ellipse cx="${x}" cy="${y}" rx="11" ry="17" fill="url(#cd)"/><path d="M${x} ${y-16} q-4 16 0 32 M${x-6} ${y-12} q-3 12 0 25 M${x+6} ${y-12} q3 12 0 25" stroke="#4f7a1e" stroke-width="1.4" fill="none"/><path d="M${x} ${y-17} l0 -5" stroke="#6b8f2e" stroke-width="2.5" stroke-linecap="round"/></g>`;
+  ART.cardamom=svg(`<ellipse cx="50" cy="86" rx="34" ry="5" fill="#0002"/>${pod(32,56,-25)}${pod(66,54,22)}${pod(50,46,0)}`,shade("cd","#b7d86a","#5f8f24"));
+  const clove=(x,y,r)=>`<g transform="rotate(${r} ${x} ${y})"><path d="M${x} ${y} l-2 30 q2 3 4 0 z" fill="#6b3518"/><circle cx="${x}" cy="${y-3}" r="7" fill="#7a3d1c"/><circle cx="${x-5}" cy="${y-1}" r="3.5" fill="#5a2a12"/><circle cx="${x+5}" cy="${y-1}" r="3.5" fill="#5a2a12"/><circle cx="${x}" cy="${y-8}" r="3.5" fill="#8a4a24"/><circle cx="${x-1.5}" cy="${y-5}" r="1.4" fill="#c4834f"/></g>`;
+  ART.clove=svg(`<ellipse cx="50" cy="86" rx="32" ry="5" fill="#0002"/>${clove(30,40,-20)}${clove(52,34,8)}${clove(72,44,28)}${clove(44,56,-6)}`);
+  ART.bayleaf=svg(`<ellipse cx="50" cy="88" rx="30" ry="4" fill="#0002"/><g transform="rotate(-30 50 50)"><path d="M50 8 Q80 40 50 92 Q20 40 50 8Z" fill="url(#bl)"/><path d="M50 12 V90" stroke="#5c6b2a" stroke-width="2"/>${[24,36,48,60,72].map(y=>`<path d="M50 ${y} l-12 -8 M50 ${y} l12 -8" stroke="#5c6b2a" stroke-width="1.2" opacity=".7"/>`).join("")}</g>`,shade("bl","#b6c46a","#6f7f2f"));
+  /* vegetables without emoji */
+  ART.cauliflower=svg(`<ellipse cx="50" cy="88" rx="34" ry="5" fill="#0002"/><path d="M10 62 Q20 44 36 58 Q30 76 50 86 Q70 76 64 58 Q80 44 90 62 Q86 84 50 90 Q14 84 10 62Z" fill="#4f9a3a"/>
+    ${[[34,44,13],[52,38,14],[68,46,12],[42,56,12],[60,56,12],[50,48,11]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="url(#cf)"/>`).join("")}`,shade("cf","#fffdf2","#e3dcc0"));
+  ART.cabbage=svg(`<ellipse cx="50" cy="88" rx="34" ry="5" fill="#0002"/><circle cx="50" cy="52" r="34" fill="url(#cb)"/><path d="M50 18 Q30 40 34 84 M50 18 Q70 40 66 84 M22 40 Q50 52 78 40" stroke="#5a9a3a" stroke-width="2.5" fill="none" opacity=".7"/><path d="M18 56 Q30 30 50 26" stroke="#e8ffd0" stroke-width="3" fill="none" opacity=".5"/>`,shade("cb","#c9f0a0","#5fae3c"));
+  ART.gourd=svg(`<ellipse cx="50" cy="90" rx="30" ry="4" fill="#0002"/><g transform="rotate(-18 50 50)"><path d="M46 8 h8 v8 h-8z" fill="#6b8f2e"/><path d="M44 14 Q38 30 34 48 Q22 66 32 82 Q50 96 68 82 Q78 66 66 48 Q62 30 56 14Z" fill="url(#gd)"/><path d="M40 52 Q34 66 40 78" stroke="#fff" stroke-width="3" opacity=".35" fill="none"/></g>`,shade("gd","#d8f2a8","#7cb84a"));
+  const okra=(x,y,r)=>`<g transform="rotate(${r} ${x} ${y})"><path d="M${x-4} ${y-30} h8 v6 h-8z" fill="#4d7a22"/><path d="M${x-7} ${y-24} Q${x} ${y+30} ${x} ${y+34} Q${x} ${y+30} ${x+7} ${y-24}Z" fill="url(#ok)"/><path d="M${x-2} ${y-22} Q${x} ${y+10} ${x} ${y+30}" stroke="#3f6f1c" stroke-width="1.2" fill="none"/></g>`;
+  ART.okra=svg(`<ellipse cx="50" cy="88" rx="30" ry="4" fill="#0002"/>${okra(34,50,-20)}${okra(52,46,4)}${okra(68,52,24)}`,`<linearGradient id="ok" x1="0" x2="1"><stop offset="0" stop-color="#9fd25a"/><stop offset="1" stop-color="#4f8f24"/></linearGradient>`);
+  ART.bittergourd=svg(`<ellipse cx="50" cy="90" rx="34" ry="4" fill="#0002"/><g transform="rotate(-35 50 50)"><path d="M46 6 h8 v8 h-8z" fill="#4d7a22"/><path d="M50 12 Q68 30 64 60 Q60 86 50 94 Q40 86 36 60 Q32 30 50 12Z" fill="url(#bg)"/>${seeds(26,(x,y)=>`<circle cx="${50+(x-50)*.4}" cy="${(y-30)*1.6+20}" r="2.2" fill="#3f7a1e"/>`)}</g>`,shade("bg","#b5e070","#4f8f24"));
+  ART.radish=svg(`<ellipse cx="50" cy="92" rx="22" ry="3" fill="#0002"/><path d="M50 30 Q36 10 28 14 Q40 20 46 32 M50 30 Q52 6 60 4 Q58 18 54 32 M50 30 Q70 12 76 18 Q64 22 54 34" fill="#4f9a3a" stroke="#3a7a2a" stroke-width="3"/><path d="M38 34 Q50 26 62 34 Q66 60 52 92 Q50 96 48 92 Q34 60 38 34Z" fill="url(#rd)"/>`,shade("rd","#ffffff","#dfe3e6"));
+  const potol=(x,y,r)=>`<g transform="rotate(${r} ${x} ${y})"><ellipse cx="${x}" cy="${y}" rx="11" ry="20" fill="#5f9f2e"/>${[-6,0,6].map(d=>`<path d="M${x+d} ${y-17} Q${x+d*1.5} ${y} ${x+d} ${y+17}" stroke="#e6f5c8" stroke-width="2.4" fill="none"/>`).join("")}<path d="M${x} ${y-20} v-5" stroke="#3f6f1c" stroke-width="3" stroke-linecap="round"/></g>`;
+  ART.pointedgourd=svg(`<ellipse cx="50" cy="88" rx="30" ry="4" fill="#0002"/>${potol(36,54,-18)}${potol(62,52,16)}`);
+  ART.redamaranth=svg(`<ellipse cx="50" cy="90" rx="26" ry="4" fill="#0002"/><path d="M44 90 L50 60 L56 90" stroke="#7a2a4a" stroke-width="4" fill="none"/>${[[30,40,-30],[50,28,0],[70,40,30],[38,58,-20],[62,58,20]].map(([x,y,r])=>`<path d="M${x} ${y} q-12 -14 0 -26 q12 12 0 26z" transform="rotate(${r} ${x} ${y})" fill="url(#ra)"/><path d="M${x} ${y} v-22" transform="rotate(${r} ${x} ${y})" stroke="#4f9a3a" stroke-width="1.5"/>`).join("")}`,shade("ra","#e0457a","#8a1a4a"));
+})();
+const DECKS=[
+ {id:"dspice",track:"kids",deck:true,title:"Spices",bn:"মসলা",lessons:[{title:"Spices",items:[
+  ["chilli","মরিচ","🌶️"],["turmeric","হলুদ",ART.turmeric],["ginger","আদা","🫚"],["garlic","রসুন","🧄"],["onion","পেঁয়াজ","🧅"],["cumin","জিরা",ART.cumin],
+  ["coriander","ধনে",ART.coriander],["cinnamon","দারুচিনি",ART.cinnamon],["cardamom","এলাচ",ART.cardamom],["clove","লবঙ্গ",ART.clove],["black pepper","গোলমরিচ",ART.pepper],
+  ["bay leaf","তেজপাতা",ART.bayleaf],["mustard seeds","সরিষা",ART.mustard],["black cumin","কালোজিরা",ART.nigella],["fenugreek","মেথি",ART.fenugreek],["salt","লবণ","🧂"]]}]},
+ {id:"dveg",track:"kids",deck:true,title:"Vegetables",bn:"শাকসবজি",lessons:[{title:"Vegetables",items:[
+  ["potato","আলু","🥔"],["tomato","টমেটো","🍅"],["eggplant","বেগুন","🍆"],["carrot","গাজর","🥕"],["cucumber","শসা","🥒"],["cauliflower","ফুলকপি",ART.cauliflower],
+  ["cabbage","বাঁধাকপি",ART.cabbage],["pumpkin","মিষ্টি কুমড়া","🎃"],["bottle gourd","লাউ",ART.gourd],["okra","ঢেঁড়স",ART.okra],["bitter gourd","করলা",ART.bittergourd],
+  ["spinach","পালং শাক","🥬"],["red amaranth","লাল শাক",ART.redamaranth],["radish","মুলা",ART.radish],["pointed gourd","পটল",ART.pointedgourd],["green chilli","কাঁচা মরিচ","🌶️"],
+  ["peas","মটরশুঁটি","🫛"],["corn","ভুট্টা","🌽"],["capsicum","ক্যাপসিকাম","🫑"],["broccoli","ব্রকলি","🥦"],["sweet potato","মিষ্টি আলু","🍠"]]}]}
+];
+function deckById(id){return DECKS.find(d=>d.id===id);}
+function cardUnit(id){return unitById(id)||deckById(id);}
+function cardUnits(track){return allUnits().filter(x=>x.track===track).concat(track==="kids"?DECKS:[]);}
+
+/* ---- vertical swipe on the flash card (mobile touch, mouse drag, trackpad/wheel) ---- */
+let CSW=null,CWHEEL=0;
+function cardSlide(dir){
+  const d=document.querySelector(".cardsview .deck");if(!d||!d.animate||RM.matches)return;
+  const up=dir==="up";
+  try{d.animate([{transform:`translateY(${up?110:-110}px) scale(.86) rotate(${up?4:-4}deg)`,opacity:0},{transform:`translateY(${up?-10:10}px) scale(1.02)`,opacity:1,offset:.65},{transform:"none",opacity:1}],{duration:520,easing:"cubic-bezier(.2,.9,.3,1.15)"});}catch(e){}
+}
+function cardGo(dir){const C=APP.cards;if(!C)return;
+  if(dir==="up"){ACT.cardNext();}else{if(!C.i){const d=document.querySelector(".cardsview .deck");d&&d.animate&&d.animate([{transform:"none"},{transform:"translateY(14px)"},{transform:"none"}],{duration:320,easing:EZ.out3});return;}ACT.cardPrev();}
+}
+document.addEventListener("pointerdown",e=>{
+  const d=e.target.closest&&e.target.closest(".cardsview .deck");if(!d||e.target.closest(".cardspk"))return;
+  CSW={y:e.clientY,x:e.clientX,d,moved:false,id:e.pointerId};
+});
+document.addEventListener("pointermove",e=>{
+  if(!CSW||e.pointerId!==CSW.id)return;const dy=e.clientY-CSW.y,dx=e.clientX-CSW.x;
+  if(!CSW.moved&&Math.abs(dy)>8&&Math.abs(dy)>Math.abs(dx))CSW.moved=true;
+  if(CSW.moved)CSW.d.style.transform=`translateY(${dy*.55}px) rotate(${dy*.02}deg)`;
+});
+const cswEnd=e=>{
+  if(!CSW||e.pointerId!==CSW.id)return;const dy=e.clientY-CSW.y,d=CSW.d,moved=CSW.moved;CSW=null;
+  if(!moved)return;window._swiped=Date.now();
+  if(Math.abs(dy)>60){d.style.transform="";cardGo(dy<0?"up":"down");}
+  else{const from=d.style.transform;d.style.transform="";d.animate&&d.animate([{transform:from},{transform:"none"}],{duration:380,easing:"cubic-bezier(.3,1.4,.5,1)"});}
+};
+document.addEventListener("pointerup",cswEnd);document.addEventListener("pointercancel",cswEnd);
+document.addEventListener("wheel",e=>{
+  if(!APP.cards||!e.target.closest||!e.target.closest(".cardsview .deck"))return;
+  e.preventDefault();const now=Date.now();if(now-CWHEEL<550||Math.abs(e.deltaY)<25)return;CWHEEL=now;cardGo(e.deltaY>0?"up":"down");
+},{passive:false});
+
+/* ================= Spelling Fun ================= */
+const SPELL=[
+ {lv:1,name:"2-letter words",bn:"২ অক্ষরের শব্দ",badge:"🐣",color:"#ff7eb0",words:[["up","⬆️","উপরে"],["on","💡","চালু"],["in","📦","ভেতরে"],["at","📍","এখানে"],["go","🚦","যাও"],["no","🙅","না"],["hi","👋","হাই"],["ox","🐂","ষাঁড়"],["me","🙋","আমি"],["we","👭","আমরা"]]},
+ {lv:2,name:"3-letter words",bn:"৩ অক্ষরের শব্দ",badge:"🦊",color:"#ffa62b",words:[["cat","🐱","বিড়াল"],["dog","🐶","কুকুর"],["sun","☀️","সূর্য"],["pen","🖊️","কলম"],["bus","🚌","বাস"],["cup","☕","কাপ"],["hat","👒","টুপি"],["bed","🛏️","বিছানা"],["egg","🥚","ডিম"],["box","📦","বাক্স"],["pig","🐷","শূকর"],["ant","🐜","পিঁপড়া"],["fox","🦊","শিয়াল"],["cow","🐮","গরু"],["bag","👜","ব্যাগ"]]},
+ {lv:3,name:"4-letter words",bn:"৪ অক্ষরের শব্দ",badge:"🦄",color:"#9b6bff",words:[["fish","🐟","মাছ"],["book","📖","বই"],["tree","🌳","গাছ"],["milk","🥛","দুধ"],["cake","🎂","কেক"],["ball","⚽","বল"],["duck","🦆","হাঁস"],["frog","🐸","ব্যাঙ"],["star","⭐","তারা"],["moon","🌙","চাঁদ"],["bird","🐦","পাখি"],["shoe","👟","জুতা"],["door","🚪","দরজা"],["kite","🪁","ঘুড়ি"],["rain","🌧️","বৃষ্টি"]]}
+];
+const LETTER={a:"ay",b:"bee",c:"see",d:"dee",e:"ee",f:"ef",g:"jee",h:"aitch",i:"eye",j:"jay",k:"kay",l:"el",m:"em",n:"en",o:"oh",p:"pee",q:"cue",r:"ar",s:"ess",t:"tee",u:"you",v:"vee",w:"double you",x:"ex",y:"why",z:"zee"};
+const LCOL=["#ff5c8a","#ff9a3c","#2fbf71","#3a9bff","#9b6bff","#ff6b5c"];
+function SP(){const s=S.spell||(S.spell={lv:{},w:{},stars:0,badges:[]});SPELL.forEach(L=>{s.lv[L.lv]=s.lv[L.lv]||{learned:[],games:0,quiz:false};});return s;}
+function spLevel(n){return SPELL.find(x=>x.lv===n);}
+function spUnlocked(n){return n===1||SP().lv[n-1].quiz;}
+/* what this level needs next: learn → game after every 5 → revision quiz → done */
+function spNext(n){
+  const L=spLevel(n),st=SP().lv[n],N=L.words.length,batches=Math.ceil(N/5),k=st.learned.length;
+  if(st.games<Math.floor(k/5)||(k===N&&st.games<batches))return {t:"game",batch:st.games};
+  if(k<N)return {t:"learn",i:k};
+  if(!st.quiz)return {t:"quiz"};
+  return {t:"done"};
+}
+function spWordsOf(n,list){const L=spLevel(n);return (list||L.words.map(w=>w[0])).map(w=>L.words.find(x=>x[0]===w)).filter(Boolean);}
+function spShuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function spRounds(n,words){
+  const types=n===1?["pic","word","miss"]:n===2?["pic","word","miss","build"]:["build","miss","pic","build","word"];
+  let last="";return spShuffle(words).map((w,k)=>{let t=types[(k+Math.floor(Math.random()*types.length))%types.length];if(t===last)t=types[(types.indexOf(t)+1)%types.length];last=t;return spMakeRound(n,w,t);});
+}
+function spMakeRound(n,w,t){
+  const L=spLevel(n),others=spShuffle(L.words.filter(x=>x[0]!==w[0])).slice(0,2);
+  const r={t,w,tries:0,wrong:[]};
+  if(t==="pic"||t==="word")r.opts=spShuffle([w,...others]);
+  if(t==="miss"){r.gap=Math.floor(Math.random()*w[0].length);const right=w[0][r.gap];const pool=spShuffle("abcdefghijklmnoprstuwy".split("").filter(c=>c!==right)).slice(0,2);r.opts=spShuffle([right,...pool]);}
+  if(t==="build"){const extra=n>=3?2:1;const pool=spShuffle("abcdefghiklmnoprstuw".split("").filter(c=>!w[0].includes(c))).slice(0,extra);r.tiles=spShuffle([...w[0].split(""),...pool]);r.sel=[];}
+  return r;
+}
+function spStartGame(n,kind,words){
+  const S2={scr:"game",lv:n,kind,rounds:spRounds(n,words),i:0,stars:0,k:Date.now()};APP.spell=S2;render();spSayRound();
+}
+function spGo(n){
+  const nx=spNext(n);
+  if(nx.t==="learn"){APP.spell={scr:"learn",lv:n,i:nx.i,k:Date.now()};render();spAnimate();return;}
+  if(nx.t==="game"){const L=spLevel(n),ws=L.words.slice(nx.batch*5,nx.batch*5+5);APP.spell={scr:"intro",lv:n,next:()=>spStartGame(n,"game",ws),k:Date.now(),title:"Game time!",sub:"৫টা নতুন শব্দ শিখেছ! এবার একটা মজার খেলা 🎮"};render();SND.play("done");return;}
+  if(nx.t==="quiz"){APP.spell={scr:"intro",lv:n,next:()=>spStartGame(n,"quiz",spLevel(n).words),k:Date.now(),title:"Revision time!",sub:"সব শব্দ একবার করে দেখি, তারপর নতুন লেভেল খুলবে! 🔓"};render();SND.play("done");return;}
+  APP.spell={scr:"home",k:Date.now()};render();
+}
+/* letter-by-letter: C → A → T → CAT */
+async function spAnimate(){
+  const sp=APP.spell;if(!sp||sp.scr!=="learn")return;const tok=sp.k=Date.now();
+  const L=spLevel(sp.lv),w=L.words[sp.i][0];
+  const els=[...document.querySelectorAll(".sp-letters .spl")];els.forEach(e=>e.classList.remove("on"));document.querySelector(".sp-letters")?.classList.remove("whole");
+  await new Promise(r=>setTimeout(r,450));
+  for(let k=0;k<w.length;k++){
+    if(!APP.spell||APP.spell.k!==tok)return;
+    const el=document.querySelectorAll(".sp-letters .spl")[k];if(el){el.classList.add("on");SND.play("pop");}
+    await Promise.race([TTS.say(LETTER[w[k]]||w[k]),new Promise(r=>setTimeout(r,1100))]);
+    await new Promise(r=>setTimeout(r,180));
+  }
+  if(!APP.spell||APP.spell.k!==tok)return;
+  document.querySelector(".sp-letters")?.classList.add("whole");
+  await TTS.say(w);
+}
+function spSayRound(){const sp=APP.spell;if(!sp||sp.scr!=="game")return;const r=sp.rounds[sp.i];if(!r)return;if(r.t!=="pic")setTimeout(()=>{if(APP.spell===sp&&sp.rounds[sp.i]===r)TTS.say(r.w[0]);},380);}
+function spRight(el){
+  const sp=APP.spell,r=sp.rounds[sp.i],s=SP(),w=r.w[0];
+  const rec=s.w[w]||(s.w[w]={ok:0,bad:0});rec.ok++;
+  if(!r.tries){sp.stars++;s.stars++;}
+  r.done=true;SND.play("ok");TTS.say(w);render();kidBurst(el||document.querySelector(".sp-right"));
+  Store.save();setTimeout(()=>{if(APP.spell===sp&&sp.rounds[sp.i]===r)spAdvance();},1300);
+}
+function spWrong(el){
+  const sp=APP.spell,r=sp.rounds[sp.i],s=SP(),w=r.w[0];
+  r.tries++;const rec=s.w[w]||(s.w[w]={ok:0,bad:0});rec.bad++;SND.play("no");
+  if(!r.requeued){r.requeued=true;sp.rounds.push(spMakeRound(sp.lv,r.w,r.t));}
+  if(el&&el.animate)el.animate([{transform:"none"},{transform:"translateX(-9px) rotate(-4deg)"},{transform:"translateX(9px) rotate(4deg)"},{transform:"translateX(-5px)"},{transform:"none"}],{duration:420});
+  Store.save();
+}
+function spAdvance(){
+  const sp=APP.spell;sp.i++;
+  if(sp.i<sp.rounds.length){render();spSayRound();return;}
+  const s=SP(),st=s.lv[sp.lv];
+  if(sp.kind==="game")st.games++;
+  let badge=null;
+  if(sp.kind==="quiz"){st.quiz=true;const L=spLevel(sp.lv);if(!s.badges.includes(sp.lv)){s.badges.push(sp.lv);badge=L;}addXP(15);}
+  else addXP(sp.kind==="game"?5:3);
+  Store.save();APP.spell={scr:"result",lv:sp.lv,kind:sp.kind,stars:sp.stars,total:new Set(sp.rounds.map(r=>r.w[0])).size,badge,k:Date.now()};render();
+  SND.play("done");confetti(badge?120:60);
+}
+/* ---- views ---- */
+function spPic(em,cls=""){return `<span class="sp-pic ${cls}">${em}</span>`;}
+function spLetters(w,show){return `<div class="sp-letters">${w.split("").map((c,k)=>`<span class="spl ${show?"on":""}" style="--lc:${LCOL[k%LCOL.length]};--k:${k}">${c.toUpperCase()}</span>`).join("")}</div>`;}
+function viewSpell(){
+  const sp=APP.spell,s=SP(),name=esc(myName());
+  const bar=(back)=>`<div class="sptop"><button class="icon-btn" data-act="${back}" aria-label="Back">${back==="spellClose"?IC.close:IC.back}</button><span class="sp-stars">⭐ <b>${s.stars}</b></span></div>`;
+  if(sp.scr==="home"){
+    const lv=SPELL.map(L=>{const st=s.lv[L.lv],N=L.words.length,k=st.learned.length,open=spUnlocked(L.lv),done=st.quiz;
+      const p=Math.round((k+(done?1:0))/(N+1)*100);
+      return `<div class="sp-level ${open?"":"locked"} ${done?"done":""}" style="--lc:${L.color}">
+        <div class="sp-lvtop"><span class="sp-lvbadge">${open?L.badge:"🔒"}</span><div class="grow"><span class="sp-lvk">LEVEL ${L.lv}</span><b>${L.name}</b><span class="tiny bn muted">${L.bn} · ${k}/${N} শব্দ${done?" · ✅ শেষ":""}</span></div></div>
+        <div class="sp-prog"><i style="width:${p}%"></i></div>
+        <div class="sp-lvbtns">${open?`<button class="btn" data-act="spellLevel" data-n="${L.lv}" style="--c:${L.color}">${done?"আবার খেলো":k?"চালিয়ে যাও":"শুরু করো"}</button>${k>=3?`<button class="btn ghost" data-act="spellRevise" data-n="${L.lv}">↻ Revise</button>`:""}`:`<p class="tiny muted">আগের লেভেল শেষ করলে খুলবে</p>`}</div></div>`;}).join("");
+    const tricky=Object.entries(s.w).filter(([w,r])=>r.bad>0).sort((a,b)=>b[1].bad-a[1].bad).slice(0,6);
+    const learned=SPELL.reduce((a,L)=>a+s.lv[L.lv].learned.length,0),ok=Object.values(s.w).reduce((a,r)=>a+r.ok,0),bad=Object.values(s.w).reduce((a,r)=>a+r.bad,0);
+    return `<main class="view spellview">${bar("spellClose")}
+      <div class="sp-hero"><span class="sp-heroem">🔤</span><h1>${name}'s Spelling</h1><p class="muted">শব্দ দেখো, শোনো, বানাও, খেলো!</p></div>
+      <div class="sp-statrow"><div><b>${learned}</b><span>শেখা শব্দ</span></div><div><b>${ok}</b><span>ঠিক উত্তর</span></div><div><b>${bad}</b><span>আবার চেষ্টা</span></div></div>
+      <div class="sp-badges">${SPELL.map(L=>`<span class="sp-badge ${s.badges.includes(L.lv)?"got":""}" title="${L.name}">${L.badge}</span>`).join("")}</div>
+      ${lv}
+      ${tricky.length?`<div class="card"><h3>আরেকটু অনুশীলন</h3><div class="revchips">${tricky.map(([w])=>`<button class="revchip" data-act="say" data-t="${esc(w)}">${IC.speak}<span>${esc(w)}</span></button>`).join("")}</div></div>`:""}</main>`;
+  }
+  const L=spLevel(sp.lv);
+  if(sp.scr==="learn"){
+    const w=L.words[sp.i],inBatch=sp.i%5;
+    return `<main class="view spellview sp-run">${bar("spellHome")}
+      <div class="sp-dots">${[0,1,2,3,4].filter(d=>Math.floor(sp.i/5)*5+d<L.words.length).map(d=>`<i class="${d<inBatch?"done":d===inBatch?"on":""}"></i>`).join("")}</div>
+      <div class="sp-card" style="--lc:${L.color}" data-key="w${sp.i}"><span class="sp-newtag">NEW WORD</span>${spPic(w[1],"big")}${spLetters(w[0])}<span class="bn muted">${esc(w[2])}</span>
+        <div class="row center"><button class="sp-round" data-act="say" data-t="${esc(w[0])}" aria-label="Listen">${IC.speak}</button><button class="sp-round alt" data-act="spellReplay" aria-label="Spell again">🔤</button></div></div>
+      <div class="sp-foot"><button class="btn good wide" data-act="spellLearned">${inBatch===4||sp.i===L.words.length-1?"খেলতে চলো! 🎮":"পরের শব্দ ➜"}</button></div></main>`;
+  }
+  if(sp.scr==="intro")return `<main class="view spellview sp-run"><div class="sp-intro"><span class="sp-introem">${sp.title.startsWith("Game")?"🎮":"🧠"}</span><h1>${sp.title}</h1><p class="bn">${sp.sub}</p><button class="btn good wide" data-act="spellIntroGo">Let's play!</button><button class="linkbtn" data-act="spellHome">পরে খেলব</button></div></main>`;
+  if(sp.scr==="game"){
+    const r=sp.rounds[sp.i],w=r.w;let q="",body="";
+    const fixedTotal=sp.rounds.length;
+    if(r.t==="pic"){q="ছবির নামটা কোনটা?";body=`${spPic(w[1],"mid")}<div class="sp-opts">${r.opts.map(o=>`<button class="sp-opt word ${r.done&&o[0]===w[0]?"sp-right":""}" data-act="spellPick" data-v="${esc(o[0])}" ${r.wrong.includes(o[0])||r.done?"disabled":""}>${o[0].toUpperCase()}</button>`).join("")}</div>`;}
+    if(r.t==="word"){q="শোনো, তারপর ছবিটা বেছে নাও";body=`<button class="sp-wordbig" data-act="say" data-t="${esc(w[0])}">${IC.speak}<span>${w[0].toUpperCase()}</span></button><div class="sp-opts pics">${r.opts.map(o=>`<button class="sp-opt pic ${r.done&&o[0]===w[0]?"sp-right":""}" data-act="spellPick" data-v="${esc(o[0])}" ${r.wrong.includes(o[0])||r.done?"disabled":""}>${o[1]}</button>`).join("")}</div>`;}
+    if(r.t==="miss"){q="কোন অক্ষরটা নেই?";body=`${spPic(w[1],"mid")}<div class="sp-letters show">${w[0].split("").map((c,k)=>k===r.gap&&!r.done?`<span class="spl on gap" style="--lc:#c8d0cc">?</span>`:`<span class="spl on ${k===r.gap?"sp-right":""}" style="--lc:${LCOL[k%LCOL.length]}">${c.toUpperCase()}</span>`).join("")}</div><div class="sp-opts">${r.opts.map(c=>`<button class="sp-opt letter" data-act="spellMiss" data-v="${c}" ${r.wrong.includes(c)||r.done?"disabled":""}>${c.toUpperCase()}</button>`).join("")}</div>`;}
+    if(r.t==="build"){q="অক্ষর সাজিয়ে শব্দ বানাও";body=`${spPic(w[1],"mid")}<div class="sp-slots ${r.done?"sp-right":""}">${w[0].split("").map((c,k)=>`<span class="sp-slot ${r.sel[k]!=null?"full":""}" style="--lc:${LCOL[k%LCOL.length]}">${r.sel[k]!=null?r.tiles[r.sel[k]].toUpperCase():""}</span>`).join("")}</div><div class="sp-tiles">${r.tiles.map((c,ti)=>`<button class="sp-tile ${r.sel.includes(ti)?"used":""}" data-act="spellTile" data-i="${ti}" ${r.sel.includes(ti)||r.done?"disabled":""}>${c.toUpperCase()}</button>`).join("")}</div><button class="sp-hear" data-act="say" data-t="${esc(w[0])}">${IC.speak} শোনো</button>`;}
+    return `<main class="view spellview sp-run">${bar("spellHome")}<div class="sp-gamebar"><span class="sp-gtag">${sp.kind==="quiz"?"🧠 Revision":sp.kind==="revise"?"↻ Revise":"🎮 Game"}</span><div class="pbar"><i style="width:${Math.round(sp.i/fixedTotal*100)}%"></i></div><span class="sp-gst">⭐ ${sp.stars}</span></div>
+      <div class="sp-game" data-key="r${sp.i}"><p class="sp-q">${q}</p>${body}${r.tries&&!r.done?`<p class="sp-try">আবার চেষ্টা করো, তুমি পারবে! 💪</p>`:""}</div></main>`;
+  }
+  if(sp.scr==="result"){
+    const s2=sp.badge;const next=spNext(sp.lv);
+    const nextLv=sp.badge&&spLevel(sp.lv+1);
+    return `<main class="view spellview sp-run"><div class="sp-result">${s2?`<div class="sp-bigbadge" style="--lc:${s2.color}">${s2.badge}</div><h1>New badge!</h1><p class="bn">${esc(s2.name)} শেষ! দারুণ, ${name}! 🎉${nextLv?` এবার Level ${nextLv.lv} খুলে গেছে!`:" তুমি সব লেভেল শেষ করেছ! 🏆"}</p>`
+      :`<div class="sp-resem">${sp.stars>=sp.total?"🏆":"🌟"}</div><h1>${["Great job!","Super star!","You did it!","Amazing!"][Math.floor(Math.random()*4)]}</h1><p class="bn">${sp.total}টা শব্দ খেললে।</p>`}
+      <div class="sp-earn">${Array.from({length:Math.min(sp.stars,10)},(_,k)=>`<span style="--k:${k}">⭐</span>`).join("")}</div><p class="small muted">+${sp.stars} star</p>
+      <button class="btn good wide" data-act="${sp.kind==="revise"||next.t==="done"?"spellHome":"spellLevel"}" data-n="${nextLv?nextLv.lv:sp.lv}">${sp.kind==="revise"||next.t==="done"?(nextLv?"পরের লেভেল দেখো":"ঠিক আছে"):"চালিয়ে যাও ➜"}</button></div></main>`;
+  }
+  return "";
+}
+/* ---- actions ---- */
+const SPELL_ACT={
+ spellOpen(){SP();APP.spell={scr:"home",k:Date.now()};render();window.scrollTo(0,0);},
+ spellClose(){TTS.stop();APP.spell=null;render();},
+ spellHome(){TTS.stop();APP.spell={scr:"home",k:Date.now()};render();window.scrollTo(0,0);},
+ spellLevel(el){const n=+el.dataset.n;if(!spUnlocked(n)){toast("আগের লেভেল শেষ করো 🔒");return;}const nx=spNext(n);if(nx.t==="done"){spStartGame(n,"revise",spLevel(n).words);return;}spGo(n);},
+ spellRevise(el){const n=+el.dataset.n,s=SP(),learned=s.lv[n].learned;const ws=spWordsOf(n,learned);const tricky=ws.filter(w=>(s.w[w[0]]||{}).bad).concat(spShuffle(ws)).filter((w,i,a)=>a.indexOf(w)===i).slice(0,8);spStartGame(n,"revise",tricky);},
+ spellReplay(){spAnimate();},
+ spellLearned(){const sp=APP.spell,L=spLevel(sp.lv),st=SP().lv[sp.lv],w=L.words[sp.i][0];TTS.stop();if(!st.learned.includes(w))st.learned.push(w);Store.save();spGo(sp.lv);},
+ spellIntroGo(){const f=APP.spell.next;f&&f();},
+ spellPick(el){const r=APP.spell.rounds[APP.spell.i];if(r.done)return;const v=el.dataset.v;if(v===r.w[0])spRight(el);else{r.wrong.push(v);spWrong(el);render();}},
+ spellMiss(el){const r=APP.spell.rounds[APP.spell.i];if(r.done)return;const v=el.dataset.v;if(v===r.w[0][r.gap])spRight(document.querySelector(".sp-letters .gap"));else{r.wrong.push(v);spWrong(el);render();}},
+ spellTile(el){const sp=APP.spell,r=sp.rounds[sp.i];if(r.done)return;const ti=+el.dataset.i,need=r.w[0][r.sel.length];
+   if(r.tiles[ti]!==need){spWrong(el);TTS.say(LETTER[need]||need);return;}
+   const from=el.getBoundingClientRect();r.sel.push(ti);TTS.say(LETTER[need]||need);render();
+   const slot=document.querySelectorAll(".sp-slot")[r.sel.length-1];flyTile(from,slot);
+   if(r.sel.length===r.w[0].length)setTimeout(()=>spRight(document.querySelector(".sp-slots")),350);}
+};
+
 function allUnits(){return [...COURSE.units,...Object.values(CUSTOM).sort((a,b)=>(a.created||"").localeCompare(b.created||""))];}
 function unitById(id){return allUnits().find(u=>u.id===id);}
 function nodesOf(track){const out=[];allUnits().filter(u=>u.track===track).forEach(u=>{u.lessons.forEach((l,i)=>out.push({type:"lesson",u,li:i,key:u.id+":"+i}));out.push({type:"story",u,key:u.id+":story"});});return out;}
@@ -3214,8 +3590,8 @@ function TABS_FOR(){return isKid()?[["learn","Learn",IC.learn],["practice","Play
   :[["learn","Learn",IC.learn],...(warmAllowed()?[["warm","Warm-up",IC.warm]]:[]),["practice","Practice",IC.practice],["stories","Stories",IC.story],["me","Me",IC.me]];}
 
 let LASTKEY=null,LASTSUB=null;
-function viewKey(){if(CLOUD.avail()&&!CLOUD.user)return "login:"+LG.tab;if(APP.welcome)return "welcome";if(APP.onb)return "onb:"+(APP.onb.edit||"new");if(APP.picker)return "picker";if(L)return L.done?"L:done":"L";if(APP.busy)return "busy";if(APP.warm)return "warm:"+APP.warm.step;if(APP.story)return "story:"+APP.story;if(APP.cards)return "cards";if(APP.chat)return "chat";return "tab:"+APP.tab;}
-function subKey(){if(APP.onb)return "o"+APP.onb.step;if(L&&!L.done)return L.cheer?"cheer":"ex"+L.i;if(APP.warm)return "w"+APP.warm.ex+":"+APP.warm.tw+":"+(APP.warm.noPen?1:0);if(APP.cards)return "c"+APP.cards.i;if(!L&&!APP.busy&&!APP.story&&!APP.chat&&APP.tab==="learn")return "t:"+APP.track;return "";}
+function viewKey(){if(CLOUD.avail()&&!CLOUD.user)return "login:"+LG.tab;if(APP.welcome)return "welcome";if(APP.onb)return "onb:"+(APP.onb.edit||"new");if(APP.picker)return "picker";if(L)return L.done?"L:done":"L";if(APP.busy)return "busy";if(APP.warm)return "warm:"+APP.warm.step;if(APP.story)return "story:"+APP.story;if(APP.spell)return "spell:"+APP.spell.scr;if(APP.cards)return "cards";if(APP.chat)return "chat";return "tab:"+APP.tab;}
+function subKey(){if(APP.spell)return "s"+APP.spell.k+":"+(APP.spell.i||0);if(APP.onb)return "o"+APP.onb.step;if(L&&!L.done)return L.cheer?"cheer":"ex"+L.i;if(APP.warm)return "w"+APP.warm.ex+":"+APP.warm.tw+":"+(APP.warm.noPen?1:0);if(APP.cards)return "c"+APP.cards.i;if(!L&&!APP.busy&&!APP.story&&!APP.chat&&APP.tab==="learn")return "t:"+APP.track;return "";}
 function renderNav(instant){
   const t=$("#tabs"),tabs=TABS_FOR(),sig=tabs.map(x=>x[0]).join();
   if(t.dataset.sig!==sig){t.querySelectorAll("button").forEach(b=>b.remove());t.insertAdjacentHTML("beforeend",tabs.map(([id,l,i])=>`<button data-act="tab" data-v="${id}">${i}<span>${l}</span></button>`).join(""));t.dataset.sig=sig;t.style.setProperty("--n",tabs.length);instant=true;}
@@ -3240,6 +3616,7 @@ function render(){
   else if(APP.busy) html=`<main class="view"><div class="stack-lg" style="padding-top:20vh;text-align:center"><h2>${esc(APP.busy)}</h2><p class="muted">AI কাজ করছে, ২০ সেকেন্ড থেকে ২ মিনিট লাগতে পারে।</p></div></main>`;
   else if(APP.warm) html=viewWarmRun();
   else if(APP.story) html=viewStory();
+  else if(APP.spell) html=viewSpell();
   else if(APP.cards) html=viewCards();
   else if(APP.chat) html=viewChat();
   else html=`<main class="view ${({learn:"dash",me:"wide",practice:"mid",stories:"mid"})[APP.tab]||""}">${topbar()}${saveWarn()}${({learn:viewLearn,warm:viewWarm,practice:viewPractice,stories:viewStories,me:viewMe})[APP.tab]()}</main>`;
@@ -3247,7 +3624,7 @@ function render(){
   html=emojify(html);
   const root=$("#root"),key=viewKey(),sub=subKey(),first=LASTKEY===null,prevKey=LASTKEY;
   const nav=document.querySelector("nav.tabs"),navWasHidden=nav.hidden;
-  nav.hidden=!!(L||APP.warm||APP.welcome||APP.onb||APP.picker||gate);
+  nav.hidden=!!(L||(APP.spell&&APP.spell.scr!=="home")||APP.warm||APP.welcome||APP.onb||APP.picker||gate);
   if(key!==LASTKEY){root.innerHTML=html;placeSeg(true);enterView(root,first);}
   else{const subChanged=sub!==LASTSUB;morph(root,html,subChanged);placeSeg(subChanged&&!sub.startsWith("t:"));if(subChanged)enterSub(root);}
   if(!nav.hidden)renderNav(first||navWasHidden);
@@ -3450,7 +3827,8 @@ function viewWarmRun(){
 function viewPractice(){
   const due=dueItems(), learned=Object.keys(S.srs).length;
   if(isKid())return `<h1>Play</h1><p class="muted">ছবির কার্ড দেখো, আওয়াজ শোনো, একসাথে বলো!</p>
-   <div class="playgrid">${allUnits().filter(u=>u.track==="kids").map(u=>`<button class="playcard" data-act="openCards" data-u="${esc(u.id)}"><span class="pem">${u.lessons[0].items[0][2]}</span><b>${esc(u.title)}</b><span class="tiny bn muted">${esc(u.bn)}</span></button>`).join("")}</div>
+   <button class="spellcta" data-act="spellOpen"><span class="sc-abc"><i style="--c:#ff5c8a">A</i><i style="--c:#ffa62b">B</i><i style="--c:#2fbf71">C</i></span><span class="grow"><b>${esc(myName())}'s Spelling</b><span class="tiny bn">শব্দ বানান শেখার মজার খেলা · ⭐ ${SP().stars}</span></span><span class="sc-go">➜</span></button>
+   <div class="playgrid">${cardUnits("kids").map(u=>`<button class="playcard ${u.deck?"newdeck":""}" data-act="openCards" data-u="${esc(u.id)}">${u.deck?`<span class="nd-tag">NEW</span>`:""}<span class="pem">${u.lessons[0].items[0][2]}</span><b>${esc(u.title)}</b><span class="tiny bn muted">${esc(u.bn)}</span></button>`).join("")}</div>
    <div class="card"><div class="row between"><div><span class="eyebrow">রিভিশন</span><h3>${due.length}টা শব্দ আবার দেখো</h3></div><button class="btn" data-act="practiceDue" ${learned?"":"disabled"}>Khelo</button></div></div>`;
   const cardTrack=myTracks().some(t=>t[0]==="family")?"family":myTracks().some(t=>t[0]==="kids")?"kids":null;
   const scen=SCEN.filter(x=>myTracks().some(t=>t[0]===x.track)&&(PID==="ali"||!["daughter","wife"].includes(x.id)));
@@ -3469,8 +3847,8 @@ function startPractice(){
   startSession("practice",items);
 }
 function viewCards(){
-  const C=APP.cards;const it=C.items[C.i];const u=unitById(C.unit);const kid=u?.track==="kids";
-  const units=allUnits().filter(x=>x.track===u.track);
+  const C=APP.cards;const it=C.items[C.i];const u=cardUnit(C.unit);const kid=u?.track==="kids";
+  const units=cardUnits(u.track);
   const menu=APP.cardMenu?`<div class="ddscrim" data-act="cardMenu"></div><div class="ddmenu" role="listbox">${units.map((x,k)=>`<button class="dditem ${x.id===C.unit?"on":""}" role="option" aria-selected="${x.id===C.unit}" data-act="pickCardUnit" data-u="${x.id}"><span class="ddic">${x.track==="kids"?x.lessons[0].items[0][2]:k+1}</span><span class="grow"><b>${esc(x.title)}</b><span class="tiny bn muted">${esc(x.bn||"")}</span></span>${x.id===C.unit?IC.check.replace("<svg",'<svg width="16" height="16"'):""}</button>`).join("")}</div>`:"";
   return `<main class="view cardsview"><div class="cardbar"><button class="icon-btn" data-act="closeCards" aria-label="Close">${IC.close}</button><span class="cardcount num">${C.i+1}<span class="muted">/${C.items.length}</span></span>
     <div class="dd"><button class="ddbtn" data-act="cardMenu" aria-haspopup="listbox" aria-expanded="${!!APP.cardMenu}"><span class="tiny muted">ইউনিট</span><b>${esc(u.title)}</b><svg class="ddchev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>${menu}</div></div>
@@ -3481,10 +3859,11 @@ function viewCards(){
     </div></div>
    <div class="dots">${C.items.map((_,k)=>`<i class="${k===C.i?"on":k<C.i?"done":""}"></i>`).join("")}</div>
    <div class="row center"><button class="btn ghost" data-act="cardPrev" ${C.i?"":"disabled"}>${IC.back} আগের</button><button class="btn fam" data-act="cardNext">${C.i<C.items.length-1?"পরের":"শুরু থেকে"}</button></div>
+   <p class="tiny muted center swipehint">⬆️ উপরে সোয়াইপ = পরের কার্ড · ⬇️ নিচে = আগের</p>
    <p class="small muted center">${kid?"তুমি বলো, তারপর বাচ্চা বলবে। প্রতিবার হাততালি!":"টিপ: তুমি বলো, তারপর বাচ্চাকে বলতে বলো। প্রতিবার হাততালি দিয়ে উৎসাহ দাও!"}</p></main>`;
 }
-function openCards(uid){const tr=uid?unitById(uid)?.track:(myTracks().some(t=>t[0]==="family")?"family":"kids");const units=allUnits().filter(u=>u.track===tr);if(!units.length)return;
-  const u=uid?unitById(uid):units.find(x=>!nodeStates(tr).filter(n=>n.u.id===x.id).every(n=>n.st==="done"))||units[0];
+function openCards(uid){const tr=uid?cardUnit(uid)?.track:(myTracks().some(t=>t[0]==="family")?"family":"kids");const units=allUnits().filter(u=>u.track===tr);if(!units.length)return;
+  const u=uid?cardUnit(uid):units.find(x=>!nodeStates(tr).filter(n=>n.u.id===x.id).every(n=>n.st==="done"))||units[0];
   APP.cards={unit:u.id,items:u.lessons.flatMap((l,li)=>lessonItems(u,li)),i:0};day().cards=(day().cards||0)+1;Store.save();render();TTS.say(APP.cards.items[0].en);}
 
 /* ================= AI coach ================= */
@@ -3668,7 +4047,7 @@ Reply with only JSON {"title":"","bn":"one-sentence Bangla summary","text":"","p
 /* ================= actions ================= */
 function nodeByKey(k){for(const [tr] of TRACKS){const n=nodeStates(tr).find(x=>x.key===k);if(n)return n;}return null;}
 const ACT={
- tab(el){const same=APP.tab===el.dataset.v&&!APP.story&&!APP.cards&&!APP.chat;APP.tab=el.dataset.v;APP.pop=null;APP.modal=null;APP.story=null;APP.cards=null;APP.cardMenu=false;if(APP.chat){APP.chat=null;}TTS.stop();render();window.scrollTo({top:0,behavior:same?"smooth":"auto"});},
+ tab(el){const same=APP.tab===el.dataset.v&&!APP.story&&!APP.cards&&!APP.chat;APP.tab=el.dataset.v;APP.pop=null;APP.modal=null;APP.story=null;APP.cards=null;APP.spell=null;APP.cardMenu=false;if(APP.chat){APP.chat=null;}TTS.stop();render();window.scrollTo({top:0,behavior:same?"smooth":"auto"});},
  track(el){APP.track=el.dataset.v;APP.pop=null;render();},
  node(el){APP.pop=APP.pop===el.dataset.key?null:el.dataset.key;render();},
  startLesson(el){const n=nodeByKey(el.dataset.key);if(!n)return;if(S.warmReq&&!warmToday()){APP.tab="warm";render();return;}APP.pop=null;startSession("lesson",lessonItems(n.u,n.li),{key:n.key});},
@@ -3716,8 +4095,8 @@ const ACT={
  practiceDue(){startPractice();},
  openCards(el){openCards(el.dataset.u||"");},
  closeCards(){APP.cards=null;APP.cardMenu=false;render();},
- cardNext(){const C=APP.cards;C.flip=false;C.i=C.i<C.items.length-1?C.i+1:0;render();if(S.autoplay)TTS.say(C.items[C.i].en);},
- flipCard(el,e){if(e&&e.target.closest(".cardspk"))return;APP.cards.flip=!APP.cards.flip;render();if(!APP.cards.flip)TTS.say(APP.cards.items[APP.cards.i].en);},
+ cardNext(){const C=APP.cards;C.flip=false;C.i=C.i<C.items.length-1?C.i+1:0;render();cardSlide("up");if(S.autoplay)TTS.say(C.items[C.i].en);},
+ flipCard(el,e){if(e&&e.target.closest(".cardspk"))return;if(Date.now()-(window._swiped||0)<400)return;APP.cards.flip=!APP.cards.flip;render();if(!APP.cards.flip)TTS.say(APP.cards.items[APP.cards.i].en);},
  cardMenu(){APP.cardMenu=!APP.cardMenu;render();},
  pickCardUnit(el){APP.cardMenu=false;openCards(el.dataset.u);},
  googleSignIn(){CLOUD.signIn();},
@@ -3732,7 +4111,7 @@ const ACT={
  openHelp(){APP.modal=helpModal();render();},
  removePhoto(){const p=prof();delete p.photo;Store.saveProfiles();render();},
  toggleQuests(){APP.qOpen=!qOpen();try{localStorage.setItem("aec4:qopen",APP.qOpen?"1":"0");}catch(e){}render();},
- cardPrev(){APP.cards.flip=false;APP.cards.i=Math.max(0,APP.cards.i-1);render();},
+ cardPrev(){APP.cards.flip=false;APP.cards.i=Math.max(0,APP.cards.i-1);render();cardSlide("down");},
  startChat(el){startChat(el.dataset.id);},
  closeChat(){APP.chat=null;TTS.stop();render();},
  chatSend(){const i=$("#chatin");const t=i.value.trim();if(t){i.value="";chatTurn(t,null);}},
@@ -3759,11 +4138,12 @@ const ACT={
  cancel(){APP.confirm=null;render();},
  obSave(){S.names.d1=$("#ob-d1").value.trim();S.names.d2=$("#ob-d2").value.trim();S.onboarded=true;APP.modal=null;Store.save();render();}
 };
+Object.assign(ACT,SPELL_ACT);
 function confirmQuit(){return true;}
 function markSent(i){document.querySelectorAll(".sent.cur").forEach(x=>x.classList.remove("cur"));if(i>=0){const el=document.querySelectorAll(".sent")[i];if(el){el.classList.add("cur");const r=el.getBoundingClientRect();if(r.top<80||r.bottom>innerHeight-120)el.scrollIntoView({block:"center",behavior:"smooth"});}}}
 async function switchProfile(id){
   TTS.stop();HEAR.stop();if(PID)await Store.flush();PID=id;await Store.saveProfiles();await Store.load();
-  APP.picker=false;APP.tab="learn";APP.track=myTracks()[0]?.[0]||"everyday";APP.story=APP.cards=APP.chat=APP.warm=null;L=null;LASTKEY=null;render();window.scrollTo(0,0);
+  APP.picker=false;APP.tab="learn";APP.track=myTracks()[0]?.[0]||"everyday";APP.story=APP.cards=APP.chat=APP.warm=APP.spell=null;L=null;LASTKEY=null;render();window.scrollTo(0,0);
 }
 async function onbNext(){
   const O=APP.onb,d=O.draft,steps=d.age==="kid"?["name","avatar","age","goal","done"]:["name","avatar","age","goals","goal","warm","done"];

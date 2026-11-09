@@ -25,6 +25,11 @@ for (const u of COURSE.units) {
 for (const t of COURSE.warmup.twisters || []) texts.add(t.t.replace(/\s+/g, " ").trim());
 for (const p of COURSE.warmup.passages || []) splitSentences(p.text).forEach(x => texts.add(x));
 for (const x of COURSE.warmup.exercises || []) texts.add(("Next: " + x.name).replace(/\s+/g, " ").trim());
+{ const SP = {}; new Function("S", fs.readFileSync(path.join(root, "src", "spell.js"), "utf8").split("/* ================= Spelling Fun")[0].replace(/document\.addEventListener[\s\S]*$/, "") + ";S.DECKS=DECKS;")(SP);
+  for (const d of SP.DECKS) for (const l of d.lessons) for (const it of l.items) texts.add(it[0]); }
+{ const src2 = fs.readFileSync(path.join(root, "src", "spell.js"), "utf8");
+  for (const m of src2.matchAll(/\["([a-z]{2,4})","[^"]+","[^"]+"\]/g)) texts.add(m[1]);
+  const LET = src2.match(/const LETTER=(\{[^}]+\})/); if (LET) Object.values(JSON.parse(LET[1].replace(/([a-z]):/g, '"$1":'))).forEach(v => texts.add(v)); }
 const textMap = {}; for (const t of texts) textMap[akey(t)] = t;
 fs.writeFileSync(path.join(root, "tts_texts.json"), JSON.stringify(textMap, null, 0));
 
@@ -34,9 +39,9 @@ const clips = fs.existsSync(audioDir) ? fs.readdirSync(audioDir).filter(f => f.e
 const emoDir = path.join(root, "docs", "e");
 const emojis = fs.existsSync(emoDir) ? fs.readdirSync(emoDir).filter(f => f.endsWith(".webp")).map(f => f.slice(0, -5)) : [];
 const pageWith = (audio, emo = []) => src("app.html")
-  .replace("/*__STYLE__*/", () => [src("style.css"), src("style-v6.css"), src("style-v7.css"), src("style-v8.css"), src("style-v9.css"), src("style-v10.css"), src("style-v11.css"), src("style-v12.css"), src("style-v13.css"), src("style-v14.css"), src("style-v15.css"), src("style-v16.css"), src("style-v17.css"), src("style-v18.css")].join("\n"))
+  .replace("/*__STYLE__*/", () => [src("style.css"), src("style-v6.css"), src("style-v7.css"), src("style-v8.css"), src("style-v9.css"), src("style-v10.css"), src("style-v11.css"), src("style-v12.css"), src("style-v13.css"), src("style-v14.css"), src("style-v15.css"), src("style-v16.css"), src("style-v17.css"), src("style-v18.css"), src("style-v19.css")].join("\n"))
   .replace("/*__VOICE__*/", () => src("voice.js").replace("/*__AUDIO__*/[]", JSON.stringify(audio)))
-  .replace("/*__EXTRAS__*/", () => [src("extras.js").replace("/*__EMOJI__*/[]", JSON.stringify(emo)).replace("/*__ART__*/false", emo.length ? "true" : "false"), src("progress.js"), src("warmart.js"), src("cloud.js"), src("login.js"), src("flow.js")].join("\n"))
+  .replace("/*__EXTRAS__*/", () => [src("extras.js").replace("/*__EMOJI__*/[]", JSON.stringify(emo)).replace("/*__ART__*/false", emo.length ? "true" : "false"), src("progress.js"), src("warmart.js"), src("cloud.js"), src("login.js"), src("flow.js"), src("spell.js")].join("\n"))
   .replace("/*__MOTION__*/", () => src("motion.js"))
   .replace("/*__CONTENT__*/", () => content)
   .replace("/*__WEB_URL__*/", () => WEB_URL);
