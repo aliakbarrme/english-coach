@@ -87,9 +87,9 @@ function enterView(root,first){
     rise(main.querySelectorAll(".list .item,.warmstep"),{y:12,dur:550,stagger:45,delay:220,scale:1});
   }
   if(player){
-    if(player.querySelector(".done-hero")){
-      popIn(player.querySelectorAll(".done-hero"),{from:.3});revealHead(player.querySelector("h1"),150);
-      tilt(player.querySelectorAll(".metric"),{delay:260});rise(player.querySelectorAll(".body>.card,.body>.okbox,.body>.btn"),{delay:520});
+    if(player.querySelector(".donebody")){
+      popIn(player.querySelectorAll(".done-hero,.sticker-win"),{from:.3});revealHead(player.querySelector("h1"),150);
+      tilt(player.querySelectorAll(".metric"),{delay:260});rise(player.querySelectorAll(".revise,.body>.okbox,.body>.row,.foot"),{delay:1000});
     }else{
       rise(player.querySelectorAll(".head>*"),{y:-10,dur:500,stagger:60,scale:1});
       enterSub(root);

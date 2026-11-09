@@ -69,11 +69,80 @@ body.kid .nodewrap.cur::before{color:var(--warm-d,#b86a00)}
 .bubble::before{content:"";position:absolute;left:50%;top:-9px;width:16px;height:16px;background:var(--raised);border-left:2px solid var(--line-2);border-top:2px solid var(--line-2);transform:translateX(-50%) rotate(45deg)}
 .bubble b{font-size:1.25rem}
 /* result badges */
-.rbadges{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.rb{--c:#f0a500;min-width:104px;border:2.5px solid var(--c);border-radius:18px;overflow:hidden;background:var(--raised);display:flex;flex-direction:column;opacity:0;animation:rbin .6s var(--spring) forwards}
-.rb span{background:var(--c);color:#fff;font:800 .68rem var(--font);letter-spacing:.06em;padding:5px 8px}
-.rb b{padding:12px 10px 14px;font-size:1.35rem;color:var(--c);display:flex;align-items:center;justify-content:center;gap:6px}
+.rbadges{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%;max-width:420px;margin:0 auto}
+.rb{--c:#f0a500;min-width:0;border:2.5px solid var(--c);border-radius:18px;overflow:hidden;background:var(--raised);display:flex;flex-direction:column;opacity:0;animation:rbin .6s var(--spring) forwards}
+.rb .rbt{background:var(--c);color:#fff;font:800 .68rem var(--font);letter-spacing:.06em;padding:5px 8px}
+.rb b i{font-style:normal}
+.rb b{padding:12px 6px 14px;font-size:1.3rem;color:var(--c);display:flex;align-items:center;justify-content:center;gap:6px}
 .rb b img.emo{width:22px;height:22px}
 .rb.xp{--c:#f0a500;animation-delay:.35s}.rb.acc{--c:#2fb86b;animation-delay:.6s}.rb.tm{--c:#3b8ef0;animation-delay:.85s}
 @keyframes rbin{from{opacity:0;transform:translateY(18px) scale(.7)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.rb{opacity:1;animation:none}.nodewrap.cur::before,.nodewrap.cur::after,.chest.ready .chest-ic,.cheer-em,.cheer-ring{animation:none}}
+
+/* done screen: content scrolls, Continue stays in the footer */
+.player .body.donebody{justify-content:safe center;align-items:center;text-align:center;gap:14px;padding-top:max(28px,env(safe-area-inset-top,0px));padding-bottom:120px}
+.donebody .sticker-win{flex:none;width:104px;height:104px;border-radius:30px}
+.donebody .sticker-win span{font-size:62px}
+.donebody h1{margin:0}
+.rb .rbt{text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:380px){.rb b{font-size:1.1rem}.rb .rbt{font-size:.6rem}}
+.revise{width:100%;max-width:460px;display:flex;flex-direction:column;gap:8px}
+.revchips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.revchip{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line-2);background:var(--raised);border-radius:999px;padding:7px 13px 7px 10px;font:600 .95rem var(--font);color:var(--ink);cursor:pointer;box-shadow:0 2px 0 var(--line-2)}
+.revchip svg{width:16px;height:16px;color:var(--primary)}
+.revchip:active{transform:scale(.94)}
+
+/* ===== Duolingo-style tactile motion, in our look ===== */
+/* 3D pressable path nodes: a solid lip that squashes when pressed */
+.node{box-shadow:0 7px 0 color-mix(in srgb,var(--c) 70%,#000 30%),0 18px 26px -14px color-mix(in srgb,var(--c) 80%,transparent),inset 0 2px 0 #ffffff40;transition:transform .18s var(--ease),box-shadow .18s var(--ease)}
+.node:active{transform:translateY(6px);box-shadow:0 1px 0 color-mix(in srgb,var(--c) 70%,#000 30%),0 6px 12px -8px color-mix(in srgb,var(--c) 80%,transparent),inset 0 2px 0 #ffffff40;transition-duration:.06s}
+.node.lock{box-shadow:0 7px 0 var(--line-2),inset 0 0 0 1px var(--line-2)}
+.node.lock:active{box-shadow:0 1px 0 var(--line-2)}
+@media (hover:hover){.node:not(.lock):hover{filter:brightness(1.06)}.node:hover svg,.node:hover .nem{animation:iconwig .5s var(--ease)}}
+@keyframes iconwig{0%,100%{transform:none}30%{transform:rotate(-10deg) scale(1.1)}65%{transform:rotate(8deg) scale(1.05)}}
+.node.cur{animation:curbreath 2.6s ease-in-out infinite}
+.node.cur:active{animation:none}
+@keyframes curbreath{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.node.done svg{animation:donepop 4s ease-in-out infinite}
+.nodewrap:nth-child(3n) .node.done svg{animation-delay:1.3s}.nodewrap:nth-child(3n+1) .node.done svg{animation-delay:2.6s}
+@keyframes donepop{0%,88%,100%{transform:none}92%{transform:scale(1.25) rotate(-8deg)}96%{transform:scale(.95)}}
+/* buttons in lessons press down too */
+.player .foot .btn.good,.player .foot .btn.bad,.lg-go{box-shadow:0 5px 0 #0000004d;transition:transform .12s,box-shadow .12s}
+.player .foot .btn.good:active,.player .foot .btn.bad:active,.lg-go:active{transform:translateY(4px);box-shadow:0 1px 0 #0000004d}
+.tile{box-shadow:0 3px 0 var(--line-2)}
+.tile:active{transform:translateY(3px);box-shadow:0 0 0 var(--line-2)}
+/* path buddies */
+.path{position:relative}
+.palrow{height:0;width:100%;display:flex;justify-content:center;position:relative;z-index:1}
+.pathpal{position:relative;top:-10px;transform:translateX(var(--x));border:0;background:none;padding:0;cursor:pointer;width:96px;height:110px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+.palbody{font-size:70px;line-height:1;display:block;animation:palfloat 3.2s ease-in-out infinite;animation-delay:var(--d,0s);transform-origin:50% 100%}
+.palbody img.emo{width:84px;height:84px;filter:drop-shadow(0 12px 14px #10231f30)}
+.pathpal.r .palbody{animation-name:palfloatR}
+.palshadow{width:56px;height:10px;border-radius:50%;background:#10231f22;margin-top:4px;animation:palshadow 3.2s ease-in-out infinite;animation-delay:var(--d,0s)}
+@keyframes palfloat{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-10px) rotate(3deg)}}
+@keyframes palfloatR{0%,100%{transform:translateY(0) rotate(3deg)}50%{transform:translateY(-10px) rotate(-3deg)}}
+@keyframes palshadow{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.75);opacity:.6}}
+.unitsec.locked .pathpal{filter:grayscale(.9);opacity:.6}
+@media (max-width:360px){.pathpal{width:80px}.palbody img.emo{width:66px;height:66px}}
+/* sidebar / nav icons */
+@media (hover:hover){nav.tabs button:hover svg{animation:iconwig .5s var(--ease)}}
+/* streak flame flickers when lit */
+.flame:not(.off) svg{animation:flick 1.8s ease-in-out infinite;transform-origin:50% 90%}
+@keyframes flick{0%,100%{transform:scale(1) rotate(0)}25%{transform:scale(1.08,.95) rotate(-4deg)}50%{transform:scale(.96,1.06) rotate(3deg)}75%{transform:scale(1.05,.97) rotate(-2deg)}}
+@media (prefers-reduced-motion:reduce){.node.cur,.node.done svg,.palbody,.palshadow,.flame svg{animation:none!important}}
+
+/* current node sits in a soft ring track */
+.node.cur::after{content:"";position:absolute;inset:-11px;border-radius:50%;border:6px solid color-mix(in srgb,var(--c) 22%,var(--well));pointer-events:none}
+/* node popover in the unit colour, arrow points at the node */
+.startpop{--c:var(--primary);position:relative;margin-top:22px;background:linear-gradient(160deg,color-mix(in srgb,var(--c) 88%,#fff),var(--c));color:#fff;border:0;box-shadow:0 7px 0 color-mix(in srgb,var(--c) 70%,#000 30%),0 22px 34px -18px color-mix(in srgb,var(--c) 90%,transparent);
+  animation:popdrop .42s var(--spring);transform-origin:calc(50% + var(--ax,0px)) -10px}
+.startpop::before{content:"";position:absolute;top:-8px;left:calc(50% + var(--ax,0px));width:18px;height:18px;background:color-mix(in srgb,var(--c) 88%,#fff);border-radius:3px;transform:translateX(-50%) rotate(45deg)}
+.startpop.kids{--c:var(--gold)}.startpop.family{--c:var(--fam)}.startpop.client{--c:var(--cli)}.startpop.everyday{--c:var(--eve)}.startpop.storyp{--c:var(--story)}
+.startpop.lock{--c:#8a9893}
+.startpop .muted,.startpop p{color:#ffffffd9!important}
+.startpop b{font-size:1.1rem}
+.startpop .pop-k{font:750 .7rem var(--mono);letter-spacing:.08em;opacity:.85}
+.startpop .btn{background:#fff!important;color:var(--c)!important;border:0;box-shadow:0 4px 0 #00000026;font-weight:800;transition:transform .12s,box-shadow .12s}
+.startpop .btn:active{transform:translateY(3px);box-shadow:0 1px 0 #00000026}
+:root[data-theme="dark"] .startpop{color:#fff}
+@keyframes popdrop{0%{opacity:0;transform:scale(.6) translateY(-14px)}100%{opacity:1;transform:none}}

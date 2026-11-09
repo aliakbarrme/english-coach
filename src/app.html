@@ -429,14 +429,15 @@ function viewLearn(){
     const un=ns.filter(n=>n.u.id===u.id);const doneN=un.filter(n=>n.st==="done").length;
     const locked=un.every(n=>n.st==="lock");
     html+=`<section class="unitsec ${locked?"locked":""}"><div class="unitban ${tr}"><div><div class="kick">${u.custom?"MY UNIT":"UNIT "+(ui+1)} · ${doneN}/${un.length}</div><h2>${esc(u.title)}</h2><div class="bn">${esc(u.bn||"")}</div></div>${ENV.claude?"":""}</div><div class="path">`;
-    un.forEach(n=>{
+    un.forEach((n,ni)=>{
       const off=offs[k++%offs.length];
+      if(ni===1)html+=palHTML(u,ui,off);
       const isStory=n.type==="story";
       const kidEm=tr==="kids"&&!isStory?n.u.lessons[n.li].items[0][2]:"";
       const icon=n.st==="lock"?(kidEm?`<span class="nem dim">${kidEm}</span>`:IC.lock):n.st==="done"?IC.check:isStory?IC.book:kidEm?`<span class="nem">${kidEm}</span>`:IC.star;
       const label=isStory?"Story":n.u.lessons[n.li].title;
       html+=`<div class="nodewrap ${n.st}" style="transform:translateX(${off}px)"><button class="node ${tr} ${isStory?"storyn":""} ${n.st}" data-act="node" data-key="${esc(n.key)}" aria-label="${esc(label)} (${n.st})">${icon}<span class="lbl">${esc(label)}</span></button></div>`;
-      if(APP.pop===n.key) html+=`<div class="startpop" style="margin-top:24px">${popHTML(n)}</div>`;
+      if(APP.pop===n.key) html+=`<div class="startpop ${tr} ${n.type==="story"?"storyp":""} ${n.st}" style="--ax:${off}px">${popHTML(n)}</div>`;
       html+=`<div style="height:6px"></div>`;
     });
     if(!u.custom){const off=offs[k++%offs.length];html+=chestHTML(u,doneN===un.length).replace('class="nodewrap chestwrap"',`class="nodewrap chestwrap" style="transform:translateX(${off}px)"`);}
@@ -451,7 +452,7 @@ function popHTML(n){
   if(n.type==="story") return `<b>${esc(n.u.story.title)}</b><p class="small muted">${n.u.track==="kids"?"ছোট গল্প: একসাথে শোনো আর বলো।":"পুরো ইউনিট নিয়ে একটা গল্প। শোনো, জোরে পড়ো, রেকর্ড করো।"}</p><button class="btn story wide" data-act="openStory" data-id="${esc(n.u.id)}">গল্প খোলো</button>`;
   const l=n.u.lessons[n.li], d=S.done[n.key];
   const gate=S.warmReq&&!warmToday();
-  return `<b>${esc(l.title)}</b><p class="small muted">${l.items.length}টা বাক্য · ~৪–৬ মিনিট${d?` · last: ${d.acc??"–"}% first-try`:""}</p>
+  return `<span class="pop-k">LESSON ${n.li+1}/${n.u.lessons.length}</span><b>${esc(l.title)}</b><p class="small muted">${l.items.length}টা বাক্য · ~৪–৬ মিনিট${d?` · last: ${d.acc??"–"}% first-try`:""}</p>
    ${gate?`<p class="small" style="color:var(--warm-d)">লেসনের আগে আজকের warm-up করো।</p><button class="btn warm wide" data-act="tab" data-v="warm">Warm-up e jao</button>`
    :`<button class="btn ${APP.track==="family"?"fam":APP.track==="everyday"?"eve":""} wide" data-act="startLesson" data-key="${esc(n.key)}">${d?"আবার প্র্যাকটিস (+XP)":"শুরু করো +10 XP"}</button>`}`;
 }
@@ -467,12 +468,13 @@ function viewLesson(){
   if(L.done){
     const acc=L.t?Math.round(L.c/L.t*100):100;
     const ttl=L.kind!=="lesson"?"Practice complete!":acc===100?"Perfect lesson!":acc>=80?"Great performance!":"Lesson complete!";
-    return `<div class="player"><div class="body" style="justify-content:center;text-align:center;padding-bottom:40px">
+    const miss=Object.keys(L.mistakes).map(itemById).filter(Boolean);
+    return `<div class="player"><div class="body donebody">
       ${L.sticker?`<div class="sticker-win"><span>${L.sticker}</span></div><p class="small muted">নতুন স্টিকার পেলে!</p>`:`<div class="done-hero">${IC.check}</div>`}<h1>${ttl}</h1>${L.best>=3?`<p class="small muted">সবচেয়ে বড় combo: ${L.best}টা টানা ঠিক 🔥</p>`:""}
-      <div class="rbadges"><div class="rb xp"><span>TOTAL XP</span><b>⚡ <span data-count="${L.xp}">${L.xp}</span></b></div><div class="rb acc"><span>${acc>=90?"AMAZING":acc>=70?"GOOD":"ACCURACY"}</span><b>🎯 <span data-count="${acc}">${acc}</span>%</b></div><div class="rb tm"><span>TIME</span><b>⏱️ ${fmt(L.secs)}</b></div></div>
-      ${Object.keys(L.mistakes).length?`<div class="card" style="text-align:left"><h3>${L.items[0]?.track==="kids"?"এগুলো আবার দেখব":"Revise korar sentence"}</h3>${Object.keys(L.mistakes).map(id=>{const it=itemById(id);return it?`<div class="row between" style="flex-wrap:nowrap"><span>${esc(it.en)}<br><span class="small bn muted">${esc(it.bn)}</span></span><button class="icon-btn" data-act="say" data-t="${esc(it.en)}" aria-label="Listen">${IC.speak}</button></div>`:"";}).join("")}<p class="tiny muted">এগুলো কাল Practice-এ আবার আসবে।</p></div>`:`<p class="okbox">কোনো ভুল নেই! +৫ বোনাস XP।</p>`}
-      <div class="row center">${levelChip()}</div>
-      <button class="btn good wide" data-act="closeLesson">Continue</button></div></div>`;
+      <div class="rbadges"><div class="rb xp"><span class="rbt">TOTAL XP</span><b>⚡ <i data-count="${L.xp}">${L.xp}</i></b></div><div class="rb acc"><span class="rbt">${acc>=90?"AMAZING":acc>=70?"GOOD":"ACCURACY"}</span><b>🎯 <i data-count="${acc}">${acc}</i>%</b></div><div class="rb tm"><span class="rbt">TIME</span><b>⏱️ ${fmt(L.secs)}</b></div></div>
+      ${miss.length?`<div class="revise"><p class="small muted">${L.items[0]?.track==="kids"?"এগুলো আবার দেখব":"আবার দেখার বাক্য"} · কাল Practice-এ আসবে</p><div class="revchips">${miss.map(it=>`<button class="revchip" data-act="say" data-t="${esc(it.en)}" title="${esc(it.bn)}">${IC.speak}<span>${esc(it.en)}</span></button>`).join("")}</div></div>`:`<p class="okbox">কোনো ভুল নেই! +৫ বোনাস XP।</p>`}
+      <div class="row center">${levelChip()}</div></div>
+      <div class="foot"><div class="in"><button class="btn good wide" data-act="closeLesson">Continue</button></div></div></div>`;
   }
   const e=cur(), done=L.i, total=L.ex.length;
   let body="", canCheck=true, checkLabel="Check";
@@ -825,6 +827,7 @@ const ACT={
  tile(el){const e=cur();if(L.fb)return;const i=+el.dataset.i;if(e.sel.includes(i))return;const r=el.getBoundingClientRect();e.sel.push(i);render();flyTile(r,document.querySelector(".answer-line .tile:last-child"));},
  untile(el){const e=cur();if(L.fb)return;const k=+el.dataset.k,ti=e.sel[k],r=el.getBoundingClientRect();e.sel.splice(k,1);render();flyTile(r,document.querySelector(`.bank .tile[data-i="${ti}"]`));},
  chest(el){openChest(el);},
+ palTap(el){palTap(el);},
  dictate(){dictate();},
  cheerGo(){L.cheer=false;render();playIfAuto();},
  check(){grade();},

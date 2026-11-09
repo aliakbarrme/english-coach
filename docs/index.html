@@ -1085,14 +1085,83 @@ body.kid .nodewrap.cur::before{color:var(--warm-d,#b86a00)}
 .bubble::before{content:"";position:absolute;left:50%;top:-9px;width:16px;height:16px;background:var(--raised);border-left:2px solid var(--line-2);border-top:2px solid var(--line-2);transform:translateX(-50%) rotate(45deg)}
 .bubble b{font-size:1.25rem}
 /* result badges */
-.rbadges{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.rb{--c:#f0a500;min-width:104px;border:2.5px solid var(--c);border-radius:18px;overflow:hidden;background:var(--raised);display:flex;flex-direction:column;opacity:0;animation:rbin .6s var(--spring) forwards}
-.rb span{background:var(--c);color:#fff;font:800 .68rem var(--font);letter-spacing:.06em;padding:5px 8px}
-.rb b{padding:12px 10px 14px;font-size:1.35rem;color:var(--c);display:flex;align-items:center;justify-content:center;gap:6px}
+.rbadges{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%;max-width:420px;margin:0 auto}
+.rb{--c:#f0a500;min-width:0;border:2.5px solid var(--c);border-radius:18px;overflow:hidden;background:var(--raised);display:flex;flex-direction:column;opacity:0;animation:rbin .6s var(--spring) forwards}
+.rb .rbt{background:var(--c);color:#fff;font:800 .68rem var(--font);letter-spacing:.06em;padding:5px 8px}
+.rb b i{font-style:normal}
+.rb b{padding:12px 6px 14px;font-size:1.3rem;color:var(--c);display:flex;align-items:center;justify-content:center;gap:6px}
 .rb b img.emo{width:22px;height:22px}
 .rb.xp{--c:#f0a500;animation-delay:.35s}.rb.acc{--c:#2fb86b;animation-delay:.6s}.rb.tm{--c:#3b8ef0;animation-delay:.85s}
 @keyframes rbin{from{opacity:0;transform:translateY(18px) scale(.7)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.rb{opacity:1;animation:none}.nodewrap.cur::before,.nodewrap.cur::after,.chest.ready .chest-ic,.cheer-em,.cheer-ring{animation:none}}
+
+/* done screen: content scrolls, Continue stays in the footer */
+.player .body.donebody{justify-content:safe center;align-items:center;text-align:center;gap:14px;padding-top:max(28px,env(safe-area-inset-top,0px));padding-bottom:120px}
+.donebody .sticker-win{flex:none;width:104px;height:104px;border-radius:30px}
+.donebody .sticker-win span{font-size:62px}
+.donebody h1{margin:0}
+.rb .rbt{text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:380px){.rb b{font-size:1.1rem}.rb .rbt{font-size:.6rem}}
+.revise{width:100%;max-width:460px;display:flex;flex-direction:column;gap:8px}
+.revchips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.revchip{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line-2);background:var(--raised);border-radius:999px;padding:7px 13px 7px 10px;font:600 .95rem var(--font);color:var(--ink);cursor:pointer;box-shadow:0 2px 0 var(--line-2)}
+.revchip svg{width:16px;height:16px;color:var(--primary)}
+.revchip:active{transform:scale(.94)}
+
+/* ===== Duolingo-style tactile motion, in our look ===== */
+/* 3D pressable path nodes: a solid lip that squashes when pressed */
+.node{box-shadow:0 7px 0 color-mix(in srgb,var(--c) 70%,#000 30%),0 18px 26px -14px color-mix(in srgb,var(--c) 80%,transparent),inset 0 2px 0 #ffffff40;transition:transform .18s var(--ease),box-shadow .18s var(--ease)}
+.node:active{transform:translateY(6px);box-shadow:0 1px 0 color-mix(in srgb,var(--c) 70%,#000 30%),0 6px 12px -8px color-mix(in srgb,var(--c) 80%,transparent),inset 0 2px 0 #ffffff40;transition-duration:.06s}
+.node.lock{box-shadow:0 7px 0 var(--line-2),inset 0 0 0 1px var(--line-2)}
+.node.lock:active{box-shadow:0 1px 0 var(--line-2)}
+@media (hover:hover){.node:not(.lock):hover{filter:brightness(1.06)}.node:hover svg,.node:hover .nem{animation:iconwig .5s var(--ease)}}
+@keyframes iconwig{0%,100%{transform:none}30%{transform:rotate(-10deg) scale(1.1)}65%{transform:rotate(8deg) scale(1.05)}}
+.node.cur{animation:curbreath 2.6s ease-in-out infinite}
+.node.cur:active{animation:none}
+@keyframes curbreath{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.node.done svg{animation:donepop 4s ease-in-out infinite}
+.nodewrap:nth-child(3n) .node.done svg{animation-delay:1.3s}.nodewrap:nth-child(3n+1) .node.done svg{animation-delay:2.6s}
+@keyframes donepop{0%,88%,100%{transform:none}92%{transform:scale(1.25) rotate(-8deg)}96%{transform:scale(.95)}}
+/* buttons in lessons press down too */
+.player .foot .btn.good,.player .foot .btn.bad,.lg-go{box-shadow:0 5px 0 #0000004d;transition:transform .12s,box-shadow .12s}
+.player .foot .btn.good:active,.player .foot .btn.bad:active,.lg-go:active{transform:translateY(4px);box-shadow:0 1px 0 #0000004d}
+.tile{box-shadow:0 3px 0 var(--line-2)}
+.tile:active{transform:translateY(3px);box-shadow:0 0 0 var(--line-2)}
+/* path buddies */
+.path{position:relative}
+.palrow{height:0;width:100%;display:flex;justify-content:center;position:relative;z-index:1}
+.pathpal{position:relative;top:-10px;transform:translateX(var(--x));border:0;background:none;padding:0;cursor:pointer;width:96px;height:110px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+.palbody{font-size:70px;line-height:1;display:block;animation:palfloat 3.2s ease-in-out infinite;animation-delay:var(--d,0s);transform-origin:50% 100%}
+.palbody img.emo{width:84px;height:84px;filter:drop-shadow(0 12px 14px #10231f30)}
+.pathpal.r .palbody{animation-name:palfloatR}
+.palshadow{width:56px;height:10px;border-radius:50%;background:#10231f22;margin-top:4px;animation:palshadow 3.2s ease-in-out infinite;animation-delay:var(--d,0s)}
+@keyframes palfloat{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-10px) rotate(3deg)}}
+@keyframes palfloatR{0%,100%{transform:translateY(0) rotate(3deg)}50%{transform:translateY(-10px) rotate(-3deg)}}
+@keyframes palshadow{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.75);opacity:.6}}
+.unitsec.locked .pathpal{filter:grayscale(.9);opacity:.6}
+@media (max-width:360px){.pathpal{width:80px}.palbody img.emo{width:66px;height:66px}}
+/* sidebar / nav icons */
+@media (hover:hover){nav.tabs button:hover svg{animation:iconwig .5s var(--ease)}}
+/* streak flame flickers when lit */
+.flame:not(.off) svg{animation:flick 1.8s ease-in-out infinite;transform-origin:50% 90%}
+@keyframes flick{0%,100%{transform:scale(1) rotate(0)}25%{transform:scale(1.08,.95) rotate(-4deg)}50%{transform:scale(.96,1.06) rotate(3deg)}75%{transform:scale(1.05,.97) rotate(-2deg)}}
+@media (prefers-reduced-motion:reduce){.node.cur,.node.done svg,.palbody,.palshadow,.flame svg{animation:none!important}}
+
+/* current node sits in a soft ring track */
+.node.cur::after{content:"";position:absolute;inset:-11px;border-radius:50%;border:6px solid color-mix(in srgb,var(--c) 22%,var(--well));pointer-events:none}
+/* node popover in the unit colour, arrow points at the node */
+.startpop{--c:var(--primary);position:relative;margin-top:22px;background:linear-gradient(160deg,color-mix(in srgb,var(--c) 88%,#fff),var(--c));color:#fff;border:0;box-shadow:0 7px 0 color-mix(in srgb,var(--c) 70%,#000 30%),0 22px 34px -18px color-mix(in srgb,var(--c) 90%,transparent);
+  animation:popdrop .42s var(--spring);transform-origin:calc(50% + var(--ax,0px)) -10px}
+.startpop::before{content:"";position:absolute;top:-8px;left:calc(50% + var(--ax,0px));width:18px;height:18px;background:color-mix(in srgb,var(--c) 88%,#fff);border-radius:3px;transform:translateX(-50%) rotate(45deg)}
+.startpop.kids{--c:var(--gold)}.startpop.family{--c:var(--fam)}.startpop.client{--c:var(--cli)}.startpop.everyday{--c:var(--eve)}.startpop.storyp{--c:var(--story)}
+.startpop.lock{--c:#8a9893}
+.startpop .muted,.startpop p{color:#ffffffd9!important}
+.startpop b{font-size:1.1rem}
+.startpop .pop-k{font:750 .7rem var(--mono);letter-spacing:.08em;opacity:.85}
+.startpop .btn{background:#fff!important;color:var(--c)!important;border:0;box-shadow:0 4px 0 #00000026;font-weight:800;transition:transform .12s,box-shadow .12s}
+.startpop .btn:active{transform:translateY(3px);box-shadow:0 1px 0 #00000026}
+:root[data-theme="dark"] .startpop{color:#fff}
+@keyframes popdrop{0%{opacity:0;transform:scale(.6) translateY(-14px)}100%{opacity:1;transform:none}}
 </style>
 
 <div id="splash" aria-label="Bolo English loading"><img class="sp-native" src="icon-512.png" alt="" onerror="this.remove()"><div class="sp-in">
@@ -2639,7 +2708,7 @@ function flowAfter(key,prev){
     const back=prev==="L:done"||prev==="L";
     scrollToCur(false,back);requestAnimationFrame(()=>{scrollToCur(false);jumpUpdate();});
   }
-  jumpUpdate();
+  jumpUpdate();navHop();
 }
 /* a word tile glides from where it was tapped to its new place */
 function flyTile(fromRect,el){
@@ -2684,6 +2753,27 @@ function viewCheer(){
     <div class="foot"><div class="in"><button class="btn good wide" data-act="cheerGo">Continue</button></div></div></div>`;
 }
 const WAVE='<span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>';
+
+/* path buddies: a 3D character floats beside each unit's path; tap it to hear a word */
+const PALS={family:["🏡","🧸","🎂","🌸"],client:["💼","🤝","🏆","🎯"],everyday:["☕","🍎","🎧","🌈"]};
+function palHTML(u,ui,off){
+  let em,say;
+  if(u.track==="kids"){const it=(u.lessons[0]&&u.lessons[0].items[1])||[];em=it[2]||"🌟";say=it[0]?fill(it[0]):u.title;}
+  else{const l=PALS[u.track]||PALS.everyday;em=l[ui%l.length];say=u.title;}
+  const x=off>=0?-128:128;
+  return `<div class="palrow" aria-hidden="false"><button class="pathpal ${x<0?"l":"r"}" style="--x:${x}px;--d:${(ui%4)*.6}s" data-act="palTap" data-t="${esc(say)}" aria-label="${esc(say)}"><span class="palbody">${em}</span><span class="palshadow"></span></button></div>`;
+}
+function palTap(el){
+  const b=el.querySelector(".palbody");TTS.say(el.dataset.t);SND.play&&SND.play("pop");
+  if(b&&b.animate&&!RM.matches)b.animate([{transform:"translateY(0) scale(1)"},{transform:"translateY(4px) scale(1.12,.86)",offset:.18},{transform:"translateY(-26px) scale(.92,1.1) rotate(-8deg)",offset:.5},{transform:"translateY(2px) scale(1.06,.94)",offset:.82},{transform:"none"}],{duration:750,easing:"cubic-bezier(.3,.7,.4,1)"});
+}
+/* bottom-nav / sidebar icon hops when its tab becomes active */
+let NAVCUR=null;
+function navHop(){
+  const b=document.querySelector("nav.tabs button[aria-current] svg");const v=APP.tab;
+  if(NAVCUR!==null&&v!==NAVCUR&&b&&b.animate&&!RM.matches)b.animate([{transform:"none"},{transform:"translateY(-6px) scale(1.18) rotate(-8deg)",offset:.35},{transform:"translateY(1px) scale(.95)",offset:.7},{transform:"none"}],{duration:560,easing:EZ.out3});
+  NAVCUR=v;
+}
 
 function allUnits(){return [...COURSE.units,...Object.values(CUSTOM).sort((a,b)=>(a.created||"").localeCompare(b.created||""))];}
 function unitById(id){return allUnits().find(u=>u.id===id);}
@@ -2946,9 +3036,9 @@ function enterView(root,first){
     rise(main.querySelectorAll(".list .item,.warmstep"),{y:12,dur:550,stagger:45,delay:220,scale:1});
   }
   if(player){
-    if(player.querySelector(".done-hero")){
-      popIn(player.querySelectorAll(".done-hero"),{from:.3});revealHead(player.querySelector("h1"),150);
-      tilt(player.querySelectorAll(".metric"),{delay:260});rise(player.querySelectorAll(".body>.card,.body>.okbox,.body>.btn"),{delay:520});
+    if(player.querySelector(".donebody")){
+      popIn(player.querySelectorAll(".done-hero,.sticker-win"),{from:.3});revealHead(player.querySelector("h1"),150);
+      tilt(player.querySelectorAll(".metric"),{delay:260});rise(player.querySelectorAll(".revise,.body>.okbox,.body>.row,.foot"),{delay:1000});
     }else{
       rise(player.querySelectorAll(".head>*"),{y:-10,dur:500,stagger:60,scale:1});
       enterSub(root);
@@ -3087,14 +3177,15 @@ function viewLearn(){
     const un=ns.filter(n=>n.u.id===u.id);const doneN=un.filter(n=>n.st==="done").length;
     const locked=un.every(n=>n.st==="lock");
     html+=`<section class="unitsec ${locked?"locked":""}"><div class="unitban ${tr}"><div><div class="kick">${u.custom?"MY UNIT":"UNIT "+(ui+1)} · ${doneN}/${un.length}</div><h2>${esc(u.title)}</h2><div class="bn">${esc(u.bn||"")}</div></div>${ENV.claude?"":""}</div><div class="path">`;
-    un.forEach(n=>{
+    un.forEach((n,ni)=>{
       const off=offs[k++%offs.length];
+      if(ni===1)html+=palHTML(u,ui,off);
       const isStory=n.type==="story";
       const kidEm=tr==="kids"&&!isStory?n.u.lessons[n.li].items[0][2]:"";
       const icon=n.st==="lock"?(kidEm?`<span class="nem dim">${kidEm}</span>`:IC.lock):n.st==="done"?IC.check:isStory?IC.book:kidEm?`<span class="nem">${kidEm}</span>`:IC.star;
       const label=isStory?"Story":n.u.lessons[n.li].title;
       html+=`<div class="nodewrap ${n.st}" style="transform:translateX(${off}px)"><button class="node ${tr} ${isStory?"storyn":""} ${n.st}" data-act="node" data-key="${esc(n.key)}" aria-label="${esc(label)} (${n.st})">${icon}<span class="lbl">${esc(label)}</span></button></div>`;
-      if(APP.pop===n.key) html+=`<div class="startpop" style="margin-top:24px">${popHTML(n)}</div>`;
+      if(APP.pop===n.key) html+=`<div class="startpop ${tr} ${n.type==="story"?"storyp":""} ${n.st}" style="--ax:${off}px">${popHTML(n)}</div>`;
       html+=`<div style="height:6px"></div>`;
     });
     if(!u.custom){const off=offs[k++%offs.length];html+=chestHTML(u,doneN===un.length).replace('class="nodewrap chestwrap"',`class="nodewrap chestwrap" style="transform:translateX(${off}px)"`);}
@@ -3109,7 +3200,7 @@ function popHTML(n){
   if(n.type==="story") return `<b>${esc(n.u.story.title)}</b><p class="small muted">${n.u.track==="kids"?"ছোট গল্প: একসাথে শোনো আর বলো।":"পুরো ইউনিট নিয়ে একটা গল্প। শোনো, জোরে পড়ো, রেকর্ড করো।"}</p><button class="btn story wide" data-act="openStory" data-id="${esc(n.u.id)}">গল্প খোলো</button>`;
   const l=n.u.lessons[n.li], d=S.done[n.key];
   const gate=S.warmReq&&!warmToday();
-  return `<b>${esc(l.title)}</b><p class="small muted">${l.items.length}টা বাক্য · ~৪–৬ মিনিট${d?` · last: ${d.acc??"–"}% first-try`:""}</p>
+  return `<span class="pop-k">LESSON ${n.li+1}/${n.u.lessons.length}</span><b>${esc(l.title)}</b><p class="small muted">${l.items.length}টা বাক্য · ~৪–৬ মিনিট${d?` · last: ${d.acc??"–"}% first-try`:""}</p>
    ${gate?`<p class="small" style="color:var(--warm-d)">লেসনের আগে আজকের warm-up করো।</p><button class="btn warm wide" data-act="tab" data-v="warm">Warm-up e jao</button>`
    :`<button class="btn ${APP.track==="family"?"fam":APP.track==="everyday"?"eve":""} wide" data-act="startLesson" data-key="${esc(n.key)}">${d?"আবার প্র্যাকটিস (+XP)":"শুরু করো +10 XP"}</button>`}`;
 }
@@ -3125,12 +3216,13 @@ function viewLesson(){
   if(L.done){
     const acc=L.t?Math.round(L.c/L.t*100):100;
     const ttl=L.kind!=="lesson"?"Practice complete!":acc===100?"Perfect lesson!":acc>=80?"Great performance!":"Lesson complete!";
-    return `<div class="player"><div class="body" style="justify-content:center;text-align:center;padding-bottom:40px">
+    const miss=Object.keys(L.mistakes).map(itemById).filter(Boolean);
+    return `<div class="player"><div class="body donebody">
       ${L.sticker?`<div class="sticker-win"><span>${L.sticker}</span></div><p class="small muted">নতুন স্টিকার পেলে!</p>`:`<div class="done-hero">${IC.check}</div>`}<h1>${ttl}</h1>${L.best>=3?`<p class="small muted">সবচেয়ে বড় combo: ${L.best}টা টানা ঠিক 🔥</p>`:""}
-      <div class="rbadges"><div class="rb xp"><span>TOTAL XP</span><b>⚡ <span data-count="${L.xp}">${L.xp}</span></b></div><div class="rb acc"><span>${acc>=90?"AMAZING":acc>=70?"GOOD":"ACCURACY"}</span><b>🎯 <span data-count="${acc}">${acc}</span>%</b></div><div class="rb tm"><span>TIME</span><b>⏱️ ${fmt(L.secs)}</b></div></div>
-      ${Object.keys(L.mistakes).length?`<div class="card" style="text-align:left"><h3>${L.items[0]?.track==="kids"?"এগুলো আবার দেখব":"Revise korar sentence"}</h3>${Object.keys(L.mistakes).map(id=>{const it=itemById(id);return it?`<div class="row between" style="flex-wrap:nowrap"><span>${esc(it.en)}<br><span class="small bn muted">${esc(it.bn)}</span></span><button class="icon-btn" data-act="say" data-t="${esc(it.en)}" aria-label="Listen">${IC.speak}</button></div>`:"";}).join("")}<p class="tiny muted">এগুলো কাল Practice-এ আবার আসবে।</p></div>`:`<p class="okbox">কোনো ভুল নেই! +৫ বোনাস XP।</p>`}
-      <div class="row center">${levelChip()}</div>
-      <button class="btn good wide" data-act="closeLesson">Continue</button></div></div>`;
+      <div class="rbadges"><div class="rb xp"><span class="rbt">TOTAL XP</span><b>⚡ <i data-count="${L.xp}">${L.xp}</i></b></div><div class="rb acc"><span class="rbt">${acc>=90?"AMAZING":acc>=70?"GOOD":"ACCURACY"}</span><b>🎯 <i data-count="${acc}">${acc}</i>%</b></div><div class="rb tm"><span class="rbt">TIME</span><b>⏱️ ${fmt(L.secs)}</b></div></div>
+      ${miss.length?`<div class="revise"><p class="small muted">${L.items[0]?.track==="kids"?"এগুলো আবার দেখব":"আবার দেখার বাক্য"} · কাল Practice-এ আসবে</p><div class="revchips">${miss.map(it=>`<button class="revchip" data-act="say" data-t="${esc(it.en)}" title="${esc(it.bn)}">${IC.speak}<span>${esc(it.en)}</span></button>`).join("")}</div></div>`:`<p class="okbox">কোনো ভুল নেই! +৫ বোনাস XP।</p>`}
+      <div class="row center">${levelChip()}</div></div>
+      <div class="foot"><div class="in"><button class="btn good wide" data-act="closeLesson">Continue</button></div></div></div>`;
   }
   const e=cur(), done=L.i, total=L.ex.length;
   let body="", canCheck=true, checkLabel="Check";
@@ -3483,6 +3575,7 @@ const ACT={
  tile(el){const e=cur();if(L.fb)return;const i=+el.dataset.i;if(e.sel.includes(i))return;const r=el.getBoundingClientRect();e.sel.push(i);render();flyTile(r,document.querySelector(".answer-line .tile:last-child"));},
  untile(el){const e=cur();if(L.fb)return;const k=+el.dataset.k,ti=e.sel[k],r=el.getBoundingClientRect();e.sel.splice(k,1);render();flyTile(r,document.querySelector(`.bank .tile[data-i="${ti}"]`));},
  chest(el){openChest(el);},
+ palTap(el){palTap(el);},
  dictate(){dictate();},
  cheerGo(){L.cheer=false;render();playIfAuto();},
  check(){grade();},

@@ -27,7 +27,7 @@ function flowAfter(key,prev){
     const back=prev==="L:done"||prev==="L";
     scrollToCur(false,back);requestAnimationFrame(()=>{scrollToCur(false);jumpUpdate();});
   }
-  jumpUpdate();
+  jumpUpdate();navHop();
 }
 /* a word tile glides from where it was tapped to its new place */
 function flyTile(fromRect,el){
@@ -72,3 +72,24 @@ function viewCheer(){
     <div class="foot"><div class="in"><button class="btn good wide" data-act="cheerGo">Continue</button></div></div></div>`;
 }
 const WAVE='<span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>';
+
+/* path buddies: a 3D character floats beside each unit's path; tap it to hear a word */
+const PALS={family:["🏡","🧸","🎂","🌸"],client:["💼","🤝","🏆","🎯"],everyday:["☕","🍎","🎧","🌈"]};
+function palHTML(u,ui,off){
+  let em,say;
+  if(u.track==="kids"){const it=(u.lessons[0]&&u.lessons[0].items[1])||[];em=it[2]||"🌟";say=it[0]?fill(it[0]):u.title;}
+  else{const l=PALS[u.track]||PALS.everyday;em=l[ui%l.length];say=u.title;}
+  const x=off>=0?-128:128;
+  return `<div class="palrow" aria-hidden="false"><button class="pathpal ${x<0?"l":"r"}" style="--x:${x}px;--d:${(ui%4)*.6}s" data-act="palTap" data-t="${esc(say)}" aria-label="${esc(say)}"><span class="palbody">${em}</span><span class="palshadow"></span></button></div>`;
+}
+function palTap(el){
+  const b=el.querySelector(".palbody");TTS.say(el.dataset.t);SND.play&&SND.play("pop");
+  if(b&&b.animate&&!RM.matches)b.animate([{transform:"translateY(0) scale(1)"},{transform:"translateY(4px) scale(1.12,.86)",offset:.18},{transform:"translateY(-26px) scale(.92,1.1) rotate(-8deg)",offset:.5},{transform:"translateY(2px) scale(1.06,.94)",offset:.82},{transform:"none"}],{duration:750,easing:"cubic-bezier(.3,.7,.4,1)"});
+}
+/* bottom-nav / sidebar icon hops when its tab becomes active */
+let NAVCUR=null;
+function navHop(){
+  const b=document.querySelector("nav.tabs button[aria-current] svg");const v=APP.tab;
+  if(NAVCUR!==null&&v!==NAVCUR&&b&&b.animate&&!RM.matches)b.animate([{transform:"none"},{transform:"translateY(-6px) scale(1.18) rotate(-8deg)",offset:.35},{transform:"translateY(1px) scale(.95)",offset:.7},{transform:"none"}],{duration:560,easing:EZ.out3});
+  NAVCUR=v;
+}
