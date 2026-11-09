@@ -27,7 +27,7 @@ function flowAfter(key,prev){
     const back=prev==="L:done"||prev==="L";
     scrollToCur(false,back);requestAnimationFrame(()=>{scrollToCur(false);jumpUpdate();});
   }
-  jumpUpdate();navHop();
+  jumpUpdate();
 }
 /* a word tile glides from where it was tapped to its new place */
 function flyTile(fromRect,el){

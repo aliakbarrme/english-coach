@@ -1141,7 +1141,7 @@ body.kid .nodewrap.cur::before{color:var(--warm-d,#b86a00)}
 .unitsec.locked .pathpal{filter:grayscale(.9);opacity:.6}
 @media (max-width:360px){.pathpal{width:80px}.palbody img.emo{width:66px;height:66px}}
 /* sidebar / nav icons */
-@media (hover:hover){nav.tabs button:hover svg{animation:iconwig .5s var(--ease)}}
+
 /* streak flame flickers when lit */
 .flame:not(.off) svg{animation:flick 1.8s ease-in-out infinite;transform-origin:50% 90%}
 @keyframes flick{0%,100%{transform:scale(1) rotate(0)}25%{transform:scale(1.08,.95) rotate(-4deg)}50%{transform:scale(.96,1.06) rotate(3deg)}75%{transform:scale(1.05,.97) rotate(-2deg)}}
@@ -1489,6 +1489,10 @@ body.kid nav.tabs button[aria-current="page"]{color:#5a2a00}
   nav.tabs button[aria-current="page"] svg{transform:translateY(-1px) scale(1.06)}
 }
 .sp-abct .ab-w{font-size:.7rem;line-height:1}.sp-abct .ab-l{font-size:inherit}.sp-abct .ab-pic{font-size:30px}.sp-abct .ab-l b{font-size:1.75rem}.sp-abct .ab-wave{font-size:0}
+/* flex children named .grow fill the row, so trailing icons/arrows sit at the far edge */
+.grow{flex:1 1 auto;min-width:0}
+.sp-chev{margin-left:auto}
+nav.tabs button,nav.tabs button svg{animation:none!important}
 </style>
 
 <div id="splash" aria-label="Bolo English loading"><img class="sp-native" src="icon-512.png" alt="" onerror="this.remove()"><div class="sp-in">
@@ -3035,7 +3039,7 @@ function flowAfter(key,prev){
     const back=prev==="L:done"||prev==="L";
     scrollToCur(false,back);requestAnimationFrame(()=>{scrollToCur(false);jumpUpdate();});
   }
-  jumpUpdate();navHop();
+  jumpUpdate();
 }
 /* a word tile glides from where it was tapped to its new place */
 function flyTile(fromRect,el){

@@ -44,3 +44,7 @@
   nav.tabs button[aria-current="page"] svg{transform:translateY(-1px) scale(1.06)}
 }
 .sp-abct .ab-w{font-size:.7rem;line-height:1}.sp-abct .ab-l{font-size:inherit}.sp-abct .ab-pic{font-size:30px}.sp-abct .ab-l b{font-size:1.75rem}.sp-abct .ab-wave{font-size:0}
+/* flex children named .grow fill the row, so trailing icons/arrows sit at the far edge */
+.grow{flex:1 1 auto;min-width:0}
+.sp-chev{margin-left:auto}
+nav.tabs button,nav.tabs button svg{animation:none!important}

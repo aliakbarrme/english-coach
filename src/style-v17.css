@@ -125,7 +125,7 @@ body.kid .nodewrap.cur::before{color:var(--warm-d,#b86a00)}
 .unitsec.locked .pathpal{filter:grayscale(.9);opacity:.6}
 @media (max-width:360px){.pathpal{width:80px}.palbody img.emo{width:66px;height:66px}}
 /* sidebar / nav icons */
-@media (hover:hover){nav.tabs button:hover svg{animation:iconwig .5s var(--ease)}}
+
 /* streak flame flickers when lit */
 .flame:not(.off) svg{animation:flick 1.8s ease-in-out infinite;transform-origin:50% 90%}
 @keyframes flick{0%,100%{transform:scale(1) rotate(0)}25%{transform:scale(1.08,.95) rotate(-4deg)}50%{transform:scale(.96,1.06) rotate(3deg)}75%{transform:scale(1.05,.97) rotate(-2deg)}}
