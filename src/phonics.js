@@ -27,7 +27,8 @@ const PHS={a:["æ","ah"],b:["bə","buh"],c:["kə","kuh"],d:["də","duh"],e:["ɛ"
   sh:["ʃʃʃ","shh"],ch:["ʧə","chuh"],tch:["ʧə","chuh"],th:["θθθ","th"],ck:["kə","kuh"],ng:["ŋ","ng"],wh:["wə","wuh"],ph:["ff","fff"],qu:["kwə","kwuh"],igh:["aɪ","eye"],ie:["aɪ","eye"],
   ee:["iː","ee"],ea:["iː","ee"],oo:["uː","oo"],ai:["eɪ","ay"],ay:["eɪ","ay"],oa:["oʊ","oh"],ow:["oʊ","oh"],ou:["aʊ","ow"],ar:["ɑɹ","ar"],or:["ɔɹ","or"],er:["ɜɹ","er"],ir:["ɜɹ","er"],ur:["ɜɹ","er"]};
 const PHFB={};const ph=k=>{const p=PHS[k];if(!p)return k;PHFB["ph:"+p[0]]=p[1];return "ph:"+p[0];};
-const LSOUND={};"abcdefghijklmnopqrstuvwxyz".split("").forEach(c=>LSOUND[c]=ph(c));
+/* letters covered by the Phonicademy recordings use them; the rest keep the generated sounds for now */
+const LSOUND={};"abcdefghijklmnopqrstuvwxyz".split("").forEach(c=>{if(PA.has(c)){LSOUND[c]="pa:"+c;PHFB["pa:"+c]=PHS[c][1];}else LSOUND[c]=ph(c);});
 const DIG={};["igh","tch","sh","ch","th","ck","ng","wh","ph","qu","ee","ea","oo","ai","ay","oa","ow","ou","ar","or","er","ir","ur","ie"].forEach(k=>DIG[k]=ph(k));
 ["ll","ss","ff","tt","pp","bb","dd","rr","nn","mm","gg","zz"].forEach(k=>DIG[k]=LSOUND[k[0]]);
 const ABC_ART={igloo:'<svg class="vart" viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="86" rx="40" ry="5" fill="#0002"/><path d="M10 84 A40 40 0 0 1 90 84Z" fill="#eaf6ff" stroke="#9cc9ea" stroke-width="2"/><path d="M14 70h72M20 57h60M30 45h40M38 84V70M62 84V70M30 70V57M50 70V57M70 70V57M40 57V45M60 57V45" stroke="#9cc9ea" stroke-width="2"/><path d="M38 84V70a12 12 0 0 1 24 0v14Z" fill="#3a6f9a"/></svg>',

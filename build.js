@@ -28,7 +28,7 @@ for (const x of COURSE.warmup.exercises || []) texts.add(("Next: " + x.name).rep
 { const SP = {}; new Function("S", fs.readFileSync(path.join(root, "src", "spell.js"), "utf8").split("/* ================= Spelling Fun")[0].replace(/document\.addEventListener[\s\S]*$/, "") + ";S.DECKS=DECKS;")(SP);
   for (const d of SP.DECKS) for (const l of d.lessons) for (const it of l.items) texts.add(it[0]); }
 { const ph = fs.readFileSync(path.join(root, "src", "phonics.js"), "utf8");
-  const T = new Function(ph + ";return SPELL_TEXTS();")(); T.forEach(t => texts.add(String(t).replace(/\s+/g, " ").trim())); }
+  const T = new Function("const PA={has:()=>false};" + ph + ";return SPELL_TEXTS();")(); T.forEach(t => texts.add(String(t).replace(/\s+/g, " ").trim())); }
 const textMap = {}; for (const t of texts) textMap[akey(t)] = t;
 fs.writeFileSync(path.join(root, "tts_texts.json"), JSON.stringify(textMap, null, 0));
 
@@ -40,10 +40,28 @@ const emojis = fs.existsSync(emoDir) ? fs.readdirSync(emoDir).filter(f => f.ends
 const pageWith = (audio, emo = []) => src("app.html")
   .replace("/*__STYLE__*/", () => [src("style.css"), src("style-v6.css"), src("style-v7.css"), src("style-v8.css"), src("style-v9.css"), src("style-v10.css"), src("style-v11.css"), src("style-v12.css"), src("style-v13.css"), src("style-v14.css"), src("style-v15.css"), src("style-v16.css"), src("style-v17.css"), src("style-v18.css"), src("style-v19.css"), src("style-v20.css")].join("\n"))
   .replace("/*__VOICE__*/", () => src("voice.js").replace("/*__AUDIO__*/[]", JSON.stringify(audio)))
-  .replace("/*__EXTRAS__*/", () => [src("extras.js").replace("/*__EMOJI__*/[]", JSON.stringify(emo)).replace("/*__ART__*/false", emo.length ? "true" : "false"), src("progress.js"), src("warmart.js"), src("cloud.js"), src("login.js"), src("flow.js"), src("spell.js"), src("phonics.js")].join("\n"))
+  .replace("/*__EXTRAS__*/", () => [src("extras.js").replace("/*__EMOJI__*/[]", JSON.stringify(emo)).replace("/*__ART__*/false", emo.length ? "true" : "false"), src("progress.js"), src("warmart.js"), src("cloud.js"), src("login.js"), src("flow.js"), src("spell.js"), src("phonicademy.js"), src("phonics.js")].join("\n"))
   .replace("/*__MOTION__*/", () => src("motion.js"))
   .replace("/*__CONTENT__*/", () => content)
+  .replace("/*__PA_INDEX__*/{}", () => (audio.length ? JSON.stringify(PA_INDEX) : "{}"))
   .replace("/*__WEB_URL__*/", () => WEB_URL);
+// ---- Phonicademy sounds: packed from the licensed pack (kept outside the repo) into one encoded bundle; never served as single MP3s ----
+const PA_LETTERS = "abcdefghijklmnopqrstuvwxyz".split("");   // all 26 letter sounds (approved after A, B, C review)
+const PA_FILE = { q: "qu" };                           // letter -> file name in the pack
+const PA_SRC = path.join(root, "..", "Phonics file", "pack", "phonemes");
+const PA_OUT = path.join(root, "docs", "x"), PA_IDX = path.join(root, "pa-index.json");
+let PA_INDEX = {};
+if (fs.existsSync(PA_SRC)) {
+  const key = [...require("crypto").createHash("sha256").update("bolo-english-pa").digest()].slice(0, 16);
+  const parts = [], files = {}; let off = 0;
+  const meta = fs.existsSync(path.join(root, "pa-meta.json")) ? JSON.parse(fs.readFileSync(path.join(root, "pa-meta.json"), "utf8")) : {};
+  // files that already repeat the sound (b, c, qu…) are played only up to the end of the first sound, so one play = one sound
+  for (const c of PA_LETTERS) { const nm = PA_FILE[c] || c, b = fs.readFileSync(path.join(PA_SRC, nm + ".mp3")); files[c] = [off, b.length, (meta[nm] && meta[nm].firstEnd) || 0]; parts.push(b); off += b.length; }
+  const all = Buffer.concat(parts); for (let i = 0; i < all.length; i++) all[i] ^= key[i % key.length];
+  fs.mkdirSync(PA_OUT, { recursive: true }); fs.writeFileSync(path.join(PA_OUT, "ps.bin"), all);
+  PA_INDEX = { v: require("crypto").createHash("sha1").update(all).digest("hex").slice(0, 8), k: key, files };
+  fs.writeFileSync(PA_IDX, JSON.stringify(PA_INDEX));
+} else if (fs.existsSync(PA_IDX)) PA_INDEX = JSON.parse(fs.readFileSync(PA_IDX, "utf8"));
 const page = pageWith([]);
 fs.writeFileSync(path.join(root, "..", "projects", "ali-english-coach.html"), page);
 
@@ -105,7 +123,7 @@ const C="coach-${ver}",A="coach-audio-v1";
 self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(["./","./index.html","./manifest.webmanifest","./icon-192.png"])).then(()=>self.skipWaiting()));});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C&&k!==A).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
 self.addEventListener("fetch",e=>{const r=e.request;if(r.method!=="GET")return;const u=new URL(r.url);
-  if(u.origin===location.origin&&((u.pathname.includes("/a/")||u.pathname.includes("/e/")||u.pathname.includes("/i/"))||r.url.includes("gstatic.com/firebasejs"))){e.respondWith(caches.open(A).then(c=>c.match(r).then(m=>m||fetch(r).then(res=>{if(res.ok)c.put(r,res.clone());return res;}))));return;}
+  if(u.origin===location.origin&&((u.pathname.includes("/a/")||u.pathname.includes("/e/")||u.pathname.includes("/i/")||u.pathname.includes("/x/"))||r.url.includes("gstatic.com/firebasejs"))){e.respondWith(caches.open(A).then(c=>c.match(r).then(m=>m||fetch(r).then(res=>{if(res.ok)c.put(r,res.clone());return res;}))));return;}
   if(r.mode==="navigate"){e.respondWith((async()=>{
     const cached=()=>caches.match(r,{ignoreSearch:true}).then(m=>m||caches.match("./index.html")||caches.match("./"));
     try{const res=await Promise.race([fetch(r,{cache:"no-store"}),new Promise((_,no)=>setTimeout(()=>no(0),4000))]);

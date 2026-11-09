@@ -1,0 +1,247 @@
+{
+ "a": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.05
+ },
+ "ai": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.0
+ },
+ "air": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.0
+ },
+ "ar": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.0
+ },
+ "aw": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 0.93
+ },
+ "b": {
+  "reps": 3,
+  "firstEnd": 0.32,
+  "dur": 1.32
+ },
+ "c": {
+  "reps": 3,
+  "firstEnd": 0.38,
+  "dur": 1.62
+ },
+ "ch": {
+  "reps": 3,
+  "firstEnd": 0.4,
+  "dur": 1.66
+ },
+ "d": {
+  "reps": 3,
+  "firstEnd": 0.3,
+  "dur": 1.24
+ },
+ "e": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.0
+ },
+ "ear": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.0
+ },
+ "ee": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.0
+ },
+ "f": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 0.98
+ },
+ "g": {
+  "reps": 3,
+  "firstEnd": 0.32,
+  "dur": 1.27
+ },
+ "h": {
+  "reps": 3,
+  "firstEnd": 0.48,
+  "dur": 2.03
+ },
+ "i": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.0
+ },
+ "igh": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.0
+ },
+ "j": {
+  "reps": 3,
+  "firstEnd": 0.42,
+  "dur": 1.59
+ },
+ "k": {
+  "reps": 3,
+  "firstEnd": 0.38,
+  "dur": 1.62
+ },
+ "l": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 0.61
+ },
+ "m": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.0
+ },
+ "n": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.0
+ },
+ "ng": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.0
+ },
+ "nk": {
+  "reps": 2,
+  "firstEnd": 0.68,
+  "dur": 1.48
+ },
+ "o": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.0
+ },
+ "oa": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.0
+ },
+ "oi": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.0
+ },
+ "oo-book": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.0
+ },
+ "oo": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.0
+ },
+ "or": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.0
+ },
+ "ow": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.0
+ },
+ "p": {
+  "reps": 3,
+  "firstEnd": 0.34,
+  "dur": 1.39
+ },
+ "qu": {
+  "reps": 2,
+  "firstEnd": 0.64,
+  "dur": 1.45
+ },
+ "r": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.0
+ },
+ "s": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.12
+ },
+ "sh": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.14
+ },
+ "t": {
+  "reps": 3,
+  "firstEnd": 0.38,
+  "dur": 1.63
+ },
+ "th-voiced": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.43
+ },
+ "th": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.04
+ },
+ "u-e": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.0
+ },
+ "u": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.0
+ },
+ "ur": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.0
+ },
+ "ure": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.0
+ },
+ "v": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.32
+ },
+ "w": {
+  "reps": 3,
+  "firstEnd": 0.34,
+  "dur": 1.36
+ },
+ "x": {
+  "reps": 2,
+  "firstEnd": 0.56,
+  "dur": 1.22
+ },
+ "y": {
+  "reps": 3,
+  "firstEnd": 0.42,
+  "dur": 1.34
+ },
+ "z": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.2
+ },
+ "zh": {
+  "reps": 1,
+  "firstEnd": null,
+  "dur": 1.33
+ }
+}

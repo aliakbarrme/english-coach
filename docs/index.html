@@ -2450,6 +2450,14 @@ const TTS={
   this.stop();const my=++this.run;const r=this.rateFor(rate);
   const one=(t)=>new Promise(res=>{
    if(my!==this.run)return res();
+   if(/^pa:/.test(t)){
+    PA.url(t.slice(3)).then(u=>{if(my!==this.run)return res();if(!u)return this.devSay(t,r).then(res);
+     const a=this.el||(this.el=new Audio());let done=false,cut=null;const fin=()=>{if(done)return;done=true;clearTimeout(cut);a.onplaying=null;res();};
+     const end=PA.end(t.slice(3));a.src=u;a.playbackRate=1;a.onended=a.onerror=fin;
+     a.onplaying=()=>{if(end){clearTimeout(cut);cut=setTimeout(()=>{try{if(my===this.run)a.pause();}catch(e){}fin();},end*1000-(a.currentTime*1000||0));}};
+     a.play().catch(()=>{if(!done){done=true;this.devSay(t,r).then(res);}});});
+    return;
+   }
    if(this.clip(t)){
     const a=this.el||(this.el=new Audio());a.src=(window.AUDIO_BASE||"a/")+akey(t)+".mp3";a.preservesPitch=true;
     a.playbackRate=r>=1?1:r<=.65?.78:r<=.75?.86:.95;
@@ -2460,7 +2468,7 @@ const TTS={
   return (async()=>{for(let i=0;i<list.length;i++){if(my!==this.run)break;onIdx&&onIdx(i);await one(list[i]);}
    if(my===this.run){this.speaking(false);onIdx&&onIdx(-1);}})();
  },
- devSay(t,r){if(/^ph:/.test(t))t=(typeof PHFB!=="undefined"&&PHFB[t])||t.slice(3);return new Promise(res=>{
+ devSay(t,r){if(/^p[ha]:/.test(t))t=(typeof PHFB!=="undefined"&&PHFB[t])||t.slice(3);return new Promise(res=>{
   if(!this.dev){res();return;}
   try{const u=new SpeechSynthesisUtterance(t);const v=this.voice();if(v)u.voice=v;u.lang=v?.lang||"en-US";u.rate=r;
    let done=false;const fin=()=>{if(!done){done=true;res();}};u.onend=fin;u.onerror=fin;
@@ -3248,6 +3256,26 @@ document.addEventListener("wheel",e=>{
 },{passive:false});
 
 
+/* ================= Phonicademy phonics sounds (licensed, credited in Me → Credits) =================
+   The original MP3s are built into the app as one encoded bundle (docs/x/ps.bin), never as standalone files.
+   Play a sound with TTS.say("pa:<name>"), e.g. "pa:a". Letter names and example words stay separate clips. */
+const PA_INDEX={"v":"eec349f3","k":[57,240,139,237,17,118,24,211,42,107,226,123,209,42,189,167],"files":{"a":[0,18016,0],"b":[18016,22251,0.32],"c":[40267,27267,0.38],"d":[67534,20998,0.3],"e":[88532,17180,0],"f":[105712,16818,0],"g":[122530,21415,0.32],"h":[143945,33536,0.48],"i":[177481,17180,0],"j":[194661,26431,0.42],"k":[221092,27267,0.38],"l":[248359,10911,0],"m":[259270,17180,0],"n":[276450,17180,0],"o":[293630,17180,0],"p":[310810,23505,0.34],"q":[334315,24341,0.64],"r":[358656,17180,0],"s":[375836,19326,0],"t":[395162,27267,0.38],"u":[422429,17180,0],"v":[439609,22251,0],"w":[461860,23087,0.34],"x":[484947,20524,0.56],"y":[505471,22613,0.42],"z":[528084,20162,0]}};
+const PA={
+ urls:{},loading:null,
+ has(n){return !!PA_INDEX.files&&!!PA_INDEX.files[n];},
+ load(){
+  if(this.loading)return this.loading;
+  this.loading=fetch((window.AUDIO_BASE?window.AUDIO_BASE.replace(/a\/$/,""):"")+"x/ps.bin?v="+(PA_INDEX.v||"")).then(r=>{if(!r.ok)throw 0;return r.arrayBuffer();}).then(buf=>{
+    const b=new Uint8Array(buf),k=PA_INDEX.k||[];for(let i=0;i<b.length;i++)b[i]^=k[i%k.length];
+    for(const [n,[o,l]] of Object.entries(PA_INDEX.files))this.urls[n]=URL.createObjectURL(new Blob([b.slice(o,o+l)],{type:"audio/mpeg"}));
+    return this.urls;}).catch(()=>{this.loading=null;return {};});
+  return this.loading;
+ },
+ end(n){const f=PA_INDEX.files&&PA_INDEX.files[n];return f&&f[2]||0;},
+ async url(n){if(this.urls[n])return this.urls[n];await this.load();return this.urls[n]||null;}
+};
+if(PA_INDEX.files)setTimeout(()=>{if(!ENV.claude)PA.load();},3000);
+
 /* ================= Spelling & Phonics: a growing curriculum =================
    Add a level = add one object to SPELL (lv must be the next number). Words are [english, picture, bangla, sentence?].
    Optional per level: tip (Bangla hint), names:true (teach by letter names, for words that break the rules), types (game mix). */
@@ -3277,7 +3305,8 @@ const PHS={a:["æ","ah"],b:["bə","buh"],c:["kə","kuh"],d:["də","duh"],e:["ɛ"
   sh:["ʃʃʃ","shh"],ch:["ʧə","chuh"],tch:["ʧə","chuh"],th:["θθθ","th"],ck:["kə","kuh"],ng:["ŋ","ng"],wh:["wə","wuh"],ph:["ff","fff"],qu:["kwə","kwuh"],igh:["aɪ","eye"],ie:["aɪ","eye"],
   ee:["iː","ee"],ea:["iː","ee"],oo:["uː","oo"],ai:["eɪ","ay"],ay:["eɪ","ay"],oa:["oʊ","oh"],ow:["oʊ","oh"],ou:["aʊ","ow"],ar:["ɑɹ","ar"],or:["ɔɹ","or"],er:["ɜɹ","er"],ir:["ɜɹ","er"],ur:["ɜɹ","er"]};
 const PHFB={};const ph=k=>{const p=PHS[k];if(!p)return k;PHFB["ph:"+p[0]]=p[1];return "ph:"+p[0];};
-const LSOUND={};"abcdefghijklmnopqrstuvwxyz".split("").forEach(c=>LSOUND[c]=ph(c));
+/* letters covered by the Phonicademy recordings use them; the rest keep the generated sounds for now */
+const LSOUND={};"abcdefghijklmnopqrstuvwxyz".split("").forEach(c=>{if(PA.has(c)){LSOUND[c]="pa:"+c;PHFB["pa:"+c]=PHS[c][1];}else LSOUND[c]=ph(c);});
 const DIG={};["igh","tch","sh","ch","th","ck","ng","wh","ph","qu","ee","ea","oo","ai","ay","oa","ow","ou","ar","or","er","ir","ur","ie"].forEach(k=>DIG[k]=ph(k));
 ["ll","ss","ff","tt","pp","bb","dd","rr","nn","mm","gg","zz"].forEach(k=>DIG[k]=LSOUND[k[0]]);
 const ABC_ART={igloo:'<svg class="vart" viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="86" rx="40" ry="5" fill="#0002"/><path d="M10 84 A40 40 0 0 1 90 84Z" fill="#eaf6ff" stroke="#9cc9ea" stroke-width="2"/><path d="M14 70h72M20 57h60M30 45h40M38 84V70M62 84V70M30 70V57M50 70V57M70 70V57M40 57V45M60 57V45" stroke="#9cc9ea" stroke-width="2"/><path d="M38 84V70a12 12 0 0 1 24 0v14Z" fill="#3a6f9a"/></svg>',
@@ -4292,7 +4321,11 @@ function viewMe(){
     <p><b>নতুন কেউ:</b> বদলাও → "প্রোফাইল যোগ করো"। প্রত্যেক প্রোফাইলের অগ্রগতি আলাদা।</p></div></details>`;
   const about=`<div class="card about"><div class="row"><span class="ab-logo"><i class="bmark">${document.querySelector(".bmark")?.innerHTML||""}</i></span><div class="grow"><b>Bolo English</b><span class="tiny muted">Version 1.1 · Speak English, every day</span></div></div>
     <p class="small">Designed &amp; developed by <b>Ali Akbar</b>, Founder of <b>BD Webhut</b>.</p>
-    <p class="tiny muted">© 2026 Ali Akbar · BD Webhut. All rights reserved. Lessons, stories, voice, illustrations and code are the property of the author.</p></div>`;
+    <p class="tiny muted">© 2026 Ali Akbar · BD Webhut. All rights reserved. Lessons, stories, illustrations and code are the property of the author. Third-party assets are listed under Credits.</p></div>
+   <div class="card credits" id="credits"><h3>Credits</h3><ul class="small credit-list">
+    <li><b>Phonics sounds: Phonicademy</b> (<a href="https://phonicademy.com" target="_blank" rel="noopener">phonicademy.com</a>), used under the <a href="https://phonicademy.com/audio-license" target="_blank" rel="noopener">Phonicademy Audio License</a>.</li>
+    <li>Letter names, words and sentences: Kokoro neural text-to-speech (Apache-2.0).</li>
+    <li>3D pictures: Microsoft Fluent Emoji (MIT).</li></ul></div>`;
   const del=`<div class="card"><h3>প্রোফাইল মুছে দাও</h3><p class="small muted">${esc(P.name)}-এর সব অগ্রগতি এই ডিভাইস থেকে মুছে যাবে।</p>
     ${APP.confirm?.type==="delprof"?`<div class="warnbox small">নিশ্চিত? এটা আর ফেরানো যাবে না। <button class="btn sm bad" data-act="doDelProfile">হ্যাঁ, মুছে দাও</button> <button class="btn sm ghost" data-act="cancel">বাতিল</button></div>`:`<button class="btn sm ghost" data-act="delProfile">প্রোফাইল মুছো</button>`}</div>`;
   const days=`<div class="card"><span class="eyebrow">গত ১৪ দিন</span><div class="grid14">${last.map(x=>`<i class="${x.c}" title="${x.k}"></i>`).join("")}</div><p class="tiny muted">গাঢ় = লেসন/প্র্যাকটিস করেছ · হালকা = শুধু warm-up</p></div>`;
