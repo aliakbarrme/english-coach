@@ -56,7 +56,9 @@ if (fs.existsSync(PA_SRC)) {
   const parts = [], files = {}; let off = 0;
   const meta = fs.existsSync(path.join(root, "pa-meta.json")) ? JSON.parse(fs.readFileSync(path.join(root, "pa-meta.json"), "utf8")) : {};
   // files that already repeat the sound (b, c, qu…) are played only up to the end of the first sound, so one play = one sound
-  for (const c of PA_LETTERS) { const nm = PA_FILE[c] || c, b = fs.readFileSync(path.join(PA_SRC, nm + ".mp3")); files[c] = [off, b.length, (meta[nm] && meta[nm].firstEnd) || 0]; parts.push(b); off += b.length; }
+  // letter teams and vowel sounds from the same pack (key -> file name)
+  Object.assign(PA_FILE, { sh: "sh", ch: "ch", th: "th", thv: "th-voiced", ng: "ng", nk: "nk", ai: "ai", ee: "ee", igh: "igh", oa: "oa", ue: "u-e", oo: "oo", oob: "oo-book", ar: "ar", or: "or", ur: "ur", ow: "ow", oi: "oi", aw: "aw", ear: "ear", air: "air", ure: "ure", zh: "zh" });
+  for (const c of PA_LETTERS.concat(["sh", "ch", "th", "thv", "ng", "nk", "ai", "ee", "igh", "oa", "ue", "oo", "oob", "ar", "or", "ur", "ow", "oi", "aw", "ear", "air", "ure", "zh"])) { const nm = PA_FILE[c] || c, b = fs.readFileSync(path.join(PA_SRC, nm + ".mp3")); files[c] = [off, b.length, (meta[nm] && meta[nm].firstEnd) || 0]; parts.push(b); off += b.length; }
   const all = Buffer.concat(parts); for (let i = 0; i < all.length; i++) all[i] ^= key[i % key.length];
   fs.mkdirSync(PA_OUT, { recursive: true }); fs.writeFileSync(path.join(PA_OUT, "ps.bin"), all);
   PA_INDEX = { v: require("crypto").createHash("sha1").update(all).digest("hex").slice(0, 8), k: key, files };

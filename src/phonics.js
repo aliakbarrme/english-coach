@@ -25,11 +25,20 @@ const LETTER={a:"ay",b:"bee",c:"see",d:"dee",e:"ee",f:"ef",g:"jee",h:"aitch",i:"
 /* real phonics sounds: "ph:<IPA>" clips are rendered straight from IPA by the neural voice; PHFB is what a device voice says if a clip is missing */
 const PHS={a:["æ","ah"],b:["bə","buh"],c:["kə","kuh"],d:["də","duh"],e:["ɛ","eh"],f:["fff","fff"],g:["ɡə","guh"],h:["hə","huh"],i:["ɪ","ih"],j:["ʤə","juh"],k:["kə","kuh"],l:["lll","lll"],m:["mmm","mmm"],n:["nnn","nnn"],o:["ɒ","o"],p:["pə","puh"],q:["kwə","kwuh"],r:["ɹə","ruh"],s:["sss","sss"],t:["tə","tuh"],u:["ʌ","uh"],v:["vvv","vvv"],w:["wə","wuh"],x:["ks","ks"],y:["jə","yuh"],z:["zzz","zzz"],
   sh:["ʃʃʃ","shh"],ch:["ʧə","chuh"],tch:["ʧə","chuh"],th:["θθθ","th"],ck:["kə","kuh"],ng:["ŋ","ng"],wh:["wə","wuh"],ph:["ff","fff"],qu:["kwə","kwuh"],igh:["aɪ","eye"],ie:["aɪ","eye"],
-  ee:["iː","ee"],ea:["iː","ee"],oo:["uː","oo"],ai:["eɪ","ay"],ay:["eɪ","ay"],oa:["oʊ","oh"],ow:["oʊ","oh"],ou:["aʊ","ow"],ar:["ɑɹ","ar"],or:["ɔɹ","or"],er:["ɜɹ","er"],ir:["ɜɹ","er"],ur:["ɜɹ","er"]};
+  ee:["iː","ee"],ea:["iː","ee"],oo:["uː","oo"],ai:["eɪ","ay"],ay:["eɪ","ay"],oa:["oʊ","oh"],ow:["oʊ","oh"],ou:["aʊ","ow"],ar:["ɑɹ","ar"],or:["ɔɹ","or"],er:["ɜɹ","er"],ir:["ɜɹ","er"],ur:["ɜɹ","er"],
+  oor:["ɔɹ","or"],ui:["uː","oo"],nk:["ŋk","nk"],oi:["ɔɪ","oy"],oy:["ɔɪ","oy"],aw:["ɔ","aw"],au:["ɔ","aw"],ear:["ɪɹ","ear"],air:["ɛɹ","air"],ure:["jʊɹ","your"]};
 const PHFB={};const ph=k=>{const p=PHS[k];if(!p)return k;PHFB["ph:"+p[0]]=p[1];return "ph:"+p[0];};
 /* letters covered by the Phonicademy recordings use them; the rest keep the generated sounds for now */
 const LSOUND={};"abcdefghijklmnopqrstuvwxyz".split("").forEach(c=>{if(PA.has(c)){LSOUND[c]="pa:"+c;PHFB["pa:"+c]=PHS[c][1];}else LSOUND[c]=ph(c);});
-const DIG={};["igh","tch","sh","ch","th","ck","ng","wh","ph","qu","ee","ea","oo","ai","ay","oa","ow","ou","ar","or","er","ir","ur","ie"].forEach(k=>DIG[k]=ph(k));
+/* letter teams: Phonicademy recordings where the pack has them (key -> pack sound), generated sound otherwise */
+const PA_DIG={ui:"oo",sh:"sh",ch:"ch",tch:"ch",th:"th",ng:"ng",nk:"nk",wh:"w",ph:"f",qu:"q",ck:"k",ai:"ai",ay:"ai",ee:"ee",ea:"ee",igh:"igh",ie:"igh",oa:"oa",ow:"oa",ou:"ow",oo:"oo",oor:"or",ar:"ar",or:"or",er:"ur",ir:"ur",ur:"ur",oi:"oi",oy:"oi",aw:"aw",au:"aw",ear:"ear",air:"air",ure:"ure"};
+const DIG={};Object.keys(PA_DIG).forEach(k=>{const p=PA_DIG[k];if(PA.has(p)){DIG[k]="pa:"+p;PHFB["pa:"+p]=PHFB["pa:"+p]||(PHS[k]||PHS[p]||[0,k])[1];}else DIG[k]=ph(k);});
+/* words where a team makes its other sound */
+const SP_THV=new Set(["they","there","mother","father","feather","the","this","that","with","then","them","brother","other","weather"]);
+const SP_OWAU=new Set(["cow","flower","down","brown","how","now","town","owl","clown","crown","towel"]);
+const SP_OOB=new Set(["book","look","foot","good","cook","wood","hook","took"]);
+const SP_UE=new Set(["cube","tube","mule","cute","huge","use","fuse"]);
+const paOr=(name,fallback)=>PA.has(name)?"pa:"+name:fallback;
 ["ll","ss","ff","tt","pp","bb","dd","rr","nn","mm","gg","zz"].forEach(k=>DIG[k]=LSOUND[k[0]]);
 const ABC_ART={igloo:'<svg class="vart" viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="86" rx="40" ry="5" fill="#0002"/><path d="M10 84 A40 40 0 0 1 90 84Z" fill="#eaf6ff" stroke="#9cc9ea" stroke-width="2"/><path d="M14 70h72M20 57h60M30 45h40M38 84V70M62 84V70M30 70V57M50 70V57M70 70V57M40 57V45M60 57V45" stroke="#9cc9ea" stroke-width="2"/><path d="M38 84V70a12 12 0 0 1 24 0v14Z" fill="#3a6f9a"/></svg>',
   zoo:'<svg class="vart" viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="90" rx="42" ry="4" fill="#0002"/><rect x="10" y="30" width="10" height="58" rx="3" fill="#8a5a2b"/><rect x="80" y="30" width="10" height="58" rx="3" fill="#8a5a2b"/><path d="M8 34 Q50 4 92 34" fill="none" stroke="#2fbf71" stroke-width="9" stroke-linecap="round"/><rect x="28" y="20" width="44" height="20" rx="5" fill="#ffd36b" stroke="#c98a1a" stroke-width="2"/><text x="50" y="35" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="15" fill="#7a3d0a">ZOO</text><path d="M24 88V50M32 88V50M40 88V50M60 88V50M68 88V50M76 88V50" stroke="#555" stroke-width="2.5"/><circle cx="50" cy="64" r="9" fill="#ffb547"/><circle cx="46" cy="62" r="1.6" fill="#333"/><circle cx="54" cy="62" r="1.6" fill="#333"/><path d="M46 68q4 3 8 0" stroke="#333" stroke-width="1.6" fill="none"/><path d="M42 57l-3-6M58 57l3-6" stroke="#c97a1a" stroke-width="3" stroke-linecap="round"/></svg>'};
@@ -44,9 +53,16 @@ function spChunks(w,names){
   while(k<w.length){
     if(magic&&k===w.length-1){out.push({s:k,n:1,say:"",silent:true});k++;continue;}
     let hit=null;for(const d of Object.keys(DIG).sort((a,b)=>b.length-a.length)){if(w.startsWith(d,k)){hit=d;break;}}
-    if(hit){out.push({s:k,n:hit.length,say:DIG[hit]});k+=hit.length;continue;}
+    if(hit){let say=DIG[hit];
+      if(hit==="th"&&SP_THV.has(w))say=paOr("thv",say);
+      if(hit==="ow"&&SP_OWAU.has(w))say=paOr("ow",DIG.ou);
+      if(hit==="oo"&&SP_OOB.has(w))say=paOr("oob",say);
+      out.push({s:k,n:hit.length,say});k+=hit.length;continue;}
     const c=w[k];const longV=magic&&k===w.length-3&&"aeiou".includes(c);
-    out.push({s:k,n:1,say:longV?LETTER[c]:(LSOUND[c]||c),long:longV});k++;
+    let say=longV?LETTER[c]:(LSOUND[c]||c);
+    if(longV){const lv={a:"ai",e:"ee",i:"igh",o:"oa"}[c];if(lv)say=paOr(lv,say);}   // magic e: the vowel says its long sound
+    if(longV&&c==="u")say=SP_UE.has(w)?paOr("ue",say):paOr("oo",say);   // cube says "you", flute says "oo"
+    out.push({s:k,n:1,say,long:longV});k++;
   }
   return out;
 }
