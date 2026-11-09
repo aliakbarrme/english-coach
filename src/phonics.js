@@ -196,7 +196,7 @@ function viewSpell(){
       <div class="sp-statrow four"><div><b>${learned}</b><span>শেখা শব্দ</span></div><div><b>${ok}</b><span>ঠিক উত্তর</span></div><div><b>${s.said}</b><span>🎤 বলেছে</span></div><div><b>${doneLv}/${SPELL.length}</b><span>লেভেল শেষ</span></div></div>
       ${rev?`<button class="sp-daily ${s.dailyAt===today()?"done":""}" data-act="spellDaily"><span class="sp-dem">${s.dailyAt===today()?"✅":"🔁"}</span><span class="grow"><b>Daily review</b><span class="tiny bn">${s.dailyAt===today()?"আজকের রিভিশন শেষ! চাইলে আবার খেলো":"আগে শেখা ৮টা শব্দ আবার খেলো"}</span></span><span>➜</span></button>`:""}
       <div class="sp-badges">${SPELL.map(L=>`<span class="sp-badge ${s.badges.includes(L.lv)?"got":""}" title="${esc(L.name)}">${L.badge}</span>`).join("")}</div>
-      <details class="sp-abc" ${learned<3?"open":""}><summary><span class="sp-abcic">🔠</span><span class="grow"><b>ABC sounds</b><span class="tiny bn muted">চাপো: আওয়াজ ৩ বার → শব্দ ২ বার</span></span><span class="sp-chev" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></summary>
+      <details class="sp-abc" ${learned<3?"open":""}><summary><span class="sp-abcic">🔠</span><span class="grow"><b>ABC sounds</b><span class="tiny bn muted">চাপো: অক্ষর ১ বার → আওয়াজ ৩ বার → শব্দ</span></span><span class="sp-chev" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></summary>
         <div class="sp-abcgrid">${ABC.map(([c,w,em],k)=>`<button class="sp-abct" data-act="spellAbc" data-c="${c}" style="--lc:${LCOL[k%LCOL.length]};--k:${k}" aria-label="${c.toUpperCase()} for ${w}"><span class="ab-l"><b>${c.toUpperCase()}</b><i>${c}</i></span><span class="ab-pic">${em}</span><span class="ab-w">${w}</span><span class="ab-wave"><i></i><i></i><i></i></span></button>`).join("")}</div></details>
       ${lv}
       ${tricky.length?`<div class="card"><h3 class="bn">আরেকটু অনুশীলন</h3><div class="revchips">${tricky.map(([w])=>`<button class="revchip" data-act="say" data-t="${esc(w)}">${IC.speak}<span>${esc(w)}</span></button>`).join("")}</div></div>`:""}
@@ -283,6 +283,7 @@ const SPELL_ACT={
    if(el.animate)el.animate([{transform:"scale(1)"},{transform:"scale(1.15) rotate(-4deg)"},{transform:"scale(1)"}],{duration:450,easing:"cubic-bezier(.3,1.5,.5,1)"});
    const tok=SPELL_ACT._abc=Date.now();TTS.stop();
    const step=(cls)=>{el.classList.remove("s-name","s-sound","s-word");if(cls)el.classList.add(cls);};
+   step("s-name");await spSay(LETTER[c]);if(SPELL_ACT._abc!==tok)return;await spWait(350);
    step("s-sound");for(let n=0;n<3;n++){if(SPELL_ACT._abc!==tok)return;el.style.setProperty("--beat",n);el.classList.remove("beat");void el.offsetWidth;el.classList.add("beat");await spSay(LSOUND[c]);await spWait(280);}
    step("s-word");for(let n=0;n<2;n++){if(SPELL_ACT._abc!==tok)return;await spSay(a[1]);await spWait(300);}
    if(SPELL_ACT._abc===tok){step();el.classList.remove("hl");}}
