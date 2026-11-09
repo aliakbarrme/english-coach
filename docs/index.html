@@ -1162,6 +1162,98 @@ body.kid .nodewrap.cur::before{color:var(--warm-d,#b86a00)}
 .startpop .btn:active{transform:translateY(3px);box-shadow:0 1px 0 #00000026}
 :root[data-theme="dark"] .startpop{color:#fff}
 @keyframes popdrop{0%{opacity:0;transform:scale(.6) translateY(-14px)}100%{opacity:1;transform:none}}
+
+/* v18: modern playful buttons for everyone + a colourful, funny kids mode */
+
+/* ---------- buttons: chunky, tactile, a little bouncy ---------- */
+.btn{--lip:color-mix(in srgb,var(--c) 68%,#000 32%);border-radius:16px;min-height:50px;font-weight:750;letter-spacing:.01em;
+  box-shadow:0 4px 0 var(--lip),0 12px 22px -14px color-mix(in srgb,var(--c) 90%,transparent),inset 0 1px 0 #ffffff38;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--c) 88%,#fff),var(--c) 60%);
+  transition:transform .16s var(--ease),box-shadow .16s var(--ease),filter .2s,opacity .25s}
+@media (hover:hover){.btn:not(:disabled):hover{transform:translateY(-1px);filter:brightness(1.06);box-shadow:0 5px 0 var(--lip),0 16px 26px -14px color-mix(in srgb,var(--c) 90%,transparent),inset 0 1px 0 #ffffff38}}
+.btn:not(:disabled):active{transform:translateY(4px);box-shadow:0 0 0 var(--lip),0 4px 10px -8px color-mix(in srgb,var(--c) 90%,transparent),inset 0 1px 0 #ffffff38;transition-duration:.06s}
+.btn.ghost{--lip:var(--line-2);background:var(--raised);box-shadow:0 3px 0 var(--lip)}
+@media (hover:hover){.btn.ghost:not(:disabled):hover{box-shadow:0 4px 0 var(--lip);background:var(--raised)}}
+.btn.ghost:not(:disabled):active{box-shadow:0 0 0 var(--lip)}
+.btn.sm{min-height:38px;border-radius:12px;--lipH:3px}
+.btn.sm{box-shadow:0 3px 0 var(--lip),inset 0 1px 0 #ffffff38}
+.btn.ghost.sm{box-shadow:0 2px 0 var(--lip)}
+.btn:disabled{box-shadow:0 3px 0 var(--line-2);background:var(--well);color:var(--faint);opacity:1;filter:none}
+.btn svg{transition:transform .3s var(--spring)}
+@media (hover:hover){.btn:not(:disabled):hover svg{transform:scale(1.15) rotate(-6deg)}}
+.icon-btn{transition:transform .25s var(--spring)}
+.icon-btn:active{transform:scale(.86)}
+
+/* ---------- kids mode ---------- */
+body.kid{background:
+  radial-gradient(520px 360px at 8% 6%,#ffd6e866,transparent 70%),
+  radial-gradient(480px 340px at 96% 18%,#c9ecff66,transparent 70%),
+  radial-gradient(520px 380px at 12% 92%,#fff1b866,transparent 70%),
+  radial-gradient(460px 340px at 92% 88%,#d4f7dc66,transparent 70%),var(--bg);background-attachment:fixed}
+:root[data-theme="dark"] body.kid{background:radial-gradient(520px 360px at 8% 6%,#ff6b9a1f,transparent 70%),radial-gradient(480px 340px at 96% 18%,#4cb8ff1c,transparent 70%),radial-gradient(520px 380px at 12% 92%,#ffc94a17,transparent 70%),var(--bg);background-attachment:fixed}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body.kid{background:radial-gradient(520px 360px at 8% 6%,#ff6b9a1f,transparent 70%),radial-gradient(480px 340px at 96% 18%,#4cb8ff1c,transparent 70%),radial-gradient(520px 380px at 12% 92%,#ffc94a17,transparent 70%),var(--bg);background-attachment:fixed}}
+
+/* candy-coloured buttons */
+body.kid .btn{font-family:var(--kidf);font-size:1.08rem;border-radius:20px;min-height:54px}
+body.kid .btn:not(.ghost):not(.good):not(.bad):not(.story):not(.warm){--c:#ff7a45}
+body.kid .btn.good{--c:#2fc36b}
+body.kid .player .foot .btn.good{--c:#2fc36b}
+
+/* rainbow path: each lesson its own candy colour */
+.node.kc0{--c:#ff6b9a}.node.kc1{--c:#ffa62b}.node.kc2{--c:#36c46f}.node.kc3{--c:#3aa7ff}.node.kc4{--c:#9b6bff}.node.kc5{--c:#ff5c5c}
+body.kid .node .nem{font-size:38px;line-height:1;display:block;transition:transform .35s var(--spring)}
+body.kid .node .nem img.emo{width:44px;height:44px}
+body.kid .node.done{filter:none}
+body.kid .node.done .nem{display:none}
+body.kid .node.cur .nem{animation:kidwave 2.4s ease-in-out infinite}
+@keyframes kidwave{0%,100%{transform:rotate(0)}20%{transform:rotate(-12deg) scale(1.08)}40%{transform:rotate(10deg)}60%{transform:rotate(-6deg)}80%{transform:rotate(0) scale(1.04)}}
+body.kid .node:active .nem{transform:scale(1.25) rotate(-10deg)}
+body.kid .node .lbl{font-family:var(--kidf);font-weight:700;font-size:.85rem;color:var(--ink)}
+
+/* unit banners: bright gradients with floating bubbles */
+.unitban.ku0{background:linear-gradient(120deg,#ff7eb0,#ff9f5a)}
+.unitban.ku1{background:linear-gradient(120deg,#4fb4ff,#7b7bff)}
+.unitban.ku2{background:linear-gradient(120deg,#34c97a,#20b2b0)}
+.unitban.ku3{background:linear-gradient(120deg,#ffb52e,#ff7a45)}
+.unitban.ku4{background:linear-gradient(120deg,#a06bff,#ff6bb5)}
+body.kid .unitban{color:#fff!important;border-radius:24px;box-shadow:0 6px 0 #00000022,0 18px 30px -18px #0005}
+body.kid .unitban::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 78% 30%,#ffffff40 0 9px,transparent 10px),radial-gradient(circle at 88% 70%,#ffffff33 0 6px,transparent 7px),radial-gradient(circle at 66% 78%,#ffffff2b 0 4px,transparent 5px);
+  animation:bubbles 5s ease-in-out infinite}
+@keyframes bubbles{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+body.kid .startpop.kids{--c:#ff7a45}
+
+/* kid lesson: pastel picture cards that jiggle */
+body.kid .ktile{border:0;border-radius:26px;box-shadow:0 6px 0 color-mix(in srgb,var(--kt) 55%,#000 12%),0 14px 24px -16px #0004;background:color-mix(in srgb,var(--kt) 28%,var(--raised));transition:transform .2s var(--spring),box-shadow .15s}
+body.kid .ktile:nth-child(6n+1){--kt:#ff9ec0}body.kid .ktile:nth-child(6n+2){--kt:#ffd36b}body.kid .ktile:nth-child(6n+3){--kt:#8fe0a8}
+body.kid .ktile:nth-child(6n+4){--kt:#8fcaff}body.kid .ktile:nth-child(6n+5){--kt:#c4a8ff}body.kid .ktile:nth-child(6n+6){--kt:#ffb08a}
+@media (hover:hover){body.kid .ktile:not(:disabled):hover{transform:translateY(-3px) rotate(-2deg)}}
+body.kid .ktile:not(:disabled):active{transform:translateY(5px) scale(.97);box-shadow:0 1px 0 color-mix(in srgb,var(--kt) 55%,#000 12%)}
+body.kid .ktile .emo{transition:transform .3s var(--spring)}
+body.kid .ktile:active .emo{transform:scale(1.15) rotate(8deg)}
+body.kid .ktile.right{--kt:#4fd27f;background:color-mix(in srgb,#4fd27f 35%,var(--raised));box-shadow:0 6px 0 #2a9c55,0 0 0 6px #4fd27f44}
+body.kid .ktile.err{animation:kshake .45s ease}
+@keyframes kshake{0%,100%{transform:none}20%{transform:translateX(-8px) rotate(-4deg)}40%{transform:translateX(8px) rotate(4deg)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.kburst{position:fixed;z-index:200;font-size:26px;pointer-events:none;line-height:1}
+.kburst img.emo{width:26px;height:26px}
+body.kid .kemoji{transition:transform .25s var(--spring)}
+body.kid .kemoji:active{transform:scale(.85,1.12)}
+body.kid .kword{background:linear-gradient(90deg,#ff5c8a,#ff9a3c,#2fbf71,#3a9bff,#9b6bff);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% 100%;animation:rainbowtxt 6s linear infinite}
+body.kid .kword .said span{-webkit-text-fill-color:initial}
+@keyframes rainbowtxt{to{background-position:-200% 0}}
+body.kid .bigspeak{background:linear-gradient(140deg,#4fb4ff,#7b7bff);box-shadow:0 6px 0 #4a55c9,0 16px 28px -14px #4f6bff;color:#fff;transition:transform .15s,box-shadow .15s}
+body.kid .bigspeak:active{transform:translateY(5px);box-shadow:0 1px 0 #4a55c9}
+body.kid .micbig{background:linear-gradient(140deg,#ff7eb0,#ff9f5a);box-shadow:0 6px 0 #c9507d,0 16px 28px -14px #ff6b9a}
+body.kid .micbig.on{background:linear-gradient(140deg,#ff5c5c,#ff8a3d)}
+body.kid .player .pbar i{background:linear-gradient(90deg,#ff6b9a,#ffa62b,#36c46f,#3aa7ff)}
+body.kid .player .foot.ok .fbtitle{font-family:var(--kidf);font-size:1.4rem}
+body.kid .player .foot.ok .fbtitle i{animation:combopop .5s var(--spring)}
+
+/* kid nav: the active tab bounces in a candy pill */
+body.kid nav.tabs .pill{background:linear-gradient(135deg,#ffd36b,#ff9ec0)!important}
+body.kid nav.tabs button[aria-current="page"]{color:#5a2a00}
+
+@media (prefers-reduced-motion:reduce){body.kid .unitban::before,body.kid .node.cur .nem,body.kid .kword{animation:none}}
 </style>
 
 <div id="splash" aria-label="Bolo English loading"><img class="sp-native" src="icon-512.png" alt="" onerror="this.remove()"><div class="sp-in">
@@ -2775,6 +2867,17 @@ function navHop(){
   NAVCUR=v;
 }
 
+/* kids: a burst of stars and sparkles from the right answer */
+function kidBurst(el){
+  if(!el||RM.matches)return;const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+  const set=["⭐","✨","🎉","💖","🌟","🎈"];
+  for(let i=0;i<12;i++){const s=document.createElement("span");s.className="kburst";s.textContent=set[i%set.length];s.style.left=cx+"px";s.style.top=cy+"px";document.body.append(s);
+    const ang=(i/12)*Math.PI*2+Math.random()*.4,d=70+Math.random()*60,dx=Math.cos(ang)*d,dy=Math.sin(ang)*d-30;
+    const a=s.animate([{transform:"translate(-50%,-50%) scale(.3)",opacity:1},{transform:`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(1.1) rotate(${(Math.random()-.5)*90}deg)`,opacity:1,offset:.6},{transform:`translate(calc(-50% + ${dx*1.15}px),calc(-50% + ${dy+40}px)) scale(.6)`,opacity:0}],{duration:900+Math.random()*300,easing:"cubic-bezier(.2,.8,.3,1)"});
+    a.onfinish=()=>s.remove();}
+  try{el.animate([{transform:"scale(1)"},{transform:"scale(1.18,.86)"},{transform:"scale(.92,1.1)"},{transform:"scale(1.08)"}],{duration:520,easing:"ease-out"});}catch(e){}
+}
+
 function allUnits(){return [...COURSE.units,...Object.values(CUSTOM).sort((a,b)=>(a.created||"").localeCompare(b.created||""))];}
 function unitById(id){return allUnits().find(u=>u.id===id);}
 function nodesOf(track){const out=[];allUnits().filter(u=>u.track===track).forEach(u=>{u.lessons.forEach((l,i)=>out.push({type:"lesson",u,li:i,key:u.id+":"+i}));out.push({type:"story",u,key:u.id+":story"});});return out;}
@@ -2859,7 +2962,7 @@ function kidChoose(id){
   const e=cur();if(L.fb||e.wrong.includes(id))return;
   L.t++;day().t++;S.stats.t++;skillHit(e.t,id===e.it.id);
   L.combo=id===e.it.id?(L.combo||0)+1:0;L.best=Math.max(L.best||0,L.combo);
-  if(id===e.it.id){L.c++;day().c++;S.stats.c++;L.fb={ok:true,show:"",bn:""};SND.play("ok");render();const i=L.i;setTimeout(()=>{if(L&&L.i===i&&L.fb)next();},1300);}
+  if(id===e.it.id){L.c++;day().c++;S.stats.c++;L.fb={ok:true,show:"",bn:""};SND.play("ok");render();kidBurst(document.querySelector(".ktile.right"));const i=L.i;setTimeout(()=>{if(L&&L.i===i&&L.fb)next();},1300);}
   else{e.wrong.push(id);L.mistakes[e.it.id]=1;SND.play("no");render();}
 }
 function grade(){
@@ -3176,7 +3279,7 @@ function viewLearn(){
   allUnits().filter(u=>u.track===tr).forEach((u,ui)=>{
     const un=ns.filter(n=>n.u.id===u.id);const doneN=un.filter(n=>n.st==="done").length;
     const locked=un.every(n=>n.st==="lock");
-    html+=`<section class="unitsec ${locked?"locked":""}"><div class="unitban ${tr}"><div><div class="kick">${u.custom?"MY UNIT":"UNIT "+(ui+1)} · ${doneN}/${un.length}</div><h2>${esc(u.title)}</h2><div class="bn">${esc(u.bn||"")}</div></div>${ENV.claude?"":""}</div><div class="path">`;
+    html+=`<section class="unitsec ${locked?"locked":""}"><div class="unitban ${tr} ${tr==="kids"?"ku"+(ui%5):""}"><div><div class="kick">${u.custom?"MY UNIT":"UNIT "+(ui+1)} · ${doneN}/${un.length}</div><h2>${esc(u.title)}</h2><div class="bn">${esc(u.bn||"")}</div></div>${ENV.claude?"":""}</div><div class="path">`;
     un.forEach((n,ni)=>{
       const off=offs[k++%offs.length];
       if(ni===1)html+=palHTML(u,ui,off);
@@ -3184,7 +3287,7 @@ function viewLearn(){
       const kidEm=tr==="kids"&&!isStory?n.u.lessons[n.li].items[0][2]:"";
       const icon=n.st==="lock"?(kidEm?`<span class="nem dim">${kidEm}</span>`:IC.lock):n.st==="done"?IC.check:isStory?IC.book:kidEm?`<span class="nem">${kidEm}</span>`:IC.star;
       const label=isStory?"Story":n.u.lessons[n.li].title;
-      html+=`<div class="nodewrap ${n.st}" style="transform:translateX(${off}px)"><button class="node ${tr} ${isStory?"storyn":""} ${n.st}" data-act="node" data-key="${esc(n.key)}" aria-label="${esc(label)} (${n.st})">${icon}<span class="lbl">${esc(label)}</span></button></div>`;
+      html+=`<div class="nodewrap ${n.st}" style="transform:translateX(${off}px)"><button class="node ${tr} ${isStory?"storyn":""} ${tr==="kids"?"kc"+(k%6):""} ${n.st}" data-act="node" data-key="${esc(n.key)}" aria-label="${esc(label)} (${n.st})">${icon}<span class="lbl">${esc(label)}</span></button></div>`;
       if(APP.pop===n.key) html+=`<div class="startpop ${tr} ${n.type==="story"?"storyp":""} ${n.st}" style="--ax:${off}px">${popHTML(n)}</div>`;
       html+=`<div style="height:6px"></div>`;
     });

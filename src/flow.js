@@ -93,3 +93,14 @@ function navHop(){
   if(NAVCUR!==null&&v!==NAVCUR&&b&&b.animate&&!RM.matches)b.animate([{transform:"none"},{transform:"translateY(-6px) scale(1.18) rotate(-8deg)",offset:.35},{transform:"translateY(1px) scale(.95)",offset:.7},{transform:"none"}],{duration:560,easing:EZ.out3});
   NAVCUR=v;
 }
+
+/* kids: a burst of stars and sparkles from the right answer */
+function kidBurst(el){
+  if(!el||RM.matches)return;const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+  const set=["⭐","✨","🎉","💖","🌟","🎈"];
+  for(let i=0;i<12;i++){const s=document.createElement("span");s.className="kburst";s.textContent=set[i%set.length];s.style.left=cx+"px";s.style.top=cy+"px";document.body.append(s);
+    const ang=(i/12)*Math.PI*2+Math.random()*.4,d=70+Math.random()*60,dx=Math.cos(ang)*d,dy=Math.sin(ang)*d-30;
+    const a=s.animate([{transform:"translate(-50%,-50%) scale(.3)",opacity:1},{transform:`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(1.1) rotate(${(Math.random()-.5)*90}deg)`,opacity:1,offset:.6},{transform:`translate(calc(-50% + ${dx*1.15}px),calc(-50% + ${dy+40}px)) scale(.6)`,opacity:0}],{duration:900+Math.random()*300,easing:"cubic-bezier(.2,.8,.3,1)"});
+    a.onfinish=()=>s.remove();}
+  try{el.animate([{transform:"scale(1)"},{transform:"scale(1.18,.86)"},{transform:"scale(.92,1.1)"},{transform:"scale(1.08)"}],{duration:520,easing:"ease-out"});}catch(e){}
+}

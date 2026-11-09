@@ -267,7 +267,7 @@ function kidChoose(id){
   const e=cur();if(L.fb||e.wrong.includes(id))return;
   L.t++;day().t++;S.stats.t++;skillHit(e.t,id===e.it.id);
   L.combo=id===e.it.id?(L.combo||0)+1:0;L.best=Math.max(L.best||0,L.combo);
-  if(id===e.it.id){L.c++;day().c++;S.stats.c++;L.fb={ok:true,show:"",bn:""};SND.play("ok");render();const i=L.i;setTimeout(()=>{if(L&&L.i===i&&L.fb)next();},1300);}
+  if(id===e.it.id){L.c++;day().c++;S.stats.c++;L.fb={ok:true,show:"",bn:""};SND.play("ok");render();kidBurst(document.querySelector(".ktile.right"));const i=L.i;setTimeout(()=>{if(L&&L.i===i&&L.fb)next();},1300);}
   else{e.wrong.push(id);L.mistakes[e.it.id]=1;SND.play("no");render();}
 }
 function grade(){
@@ -428,7 +428,7 @@ function viewLearn(){
   allUnits().filter(u=>u.track===tr).forEach((u,ui)=>{
     const un=ns.filter(n=>n.u.id===u.id);const doneN=un.filter(n=>n.st==="done").length;
     const locked=un.every(n=>n.st==="lock");
-    html+=`<section class="unitsec ${locked?"locked":""}"><div class="unitban ${tr}"><div><div class="kick">${u.custom?"MY UNIT":"UNIT "+(ui+1)} · ${doneN}/${un.length}</div><h2>${esc(u.title)}</h2><div class="bn">${esc(u.bn||"")}</div></div>${ENV.claude?"":""}</div><div class="path">`;
+    html+=`<section class="unitsec ${locked?"locked":""}"><div class="unitban ${tr} ${tr==="kids"?"ku"+(ui%5):""}"><div><div class="kick">${u.custom?"MY UNIT":"UNIT "+(ui+1)} · ${doneN}/${un.length}</div><h2>${esc(u.title)}</h2><div class="bn">${esc(u.bn||"")}</div></div>${ENV.claude?"":""}</div><div class="path">`;
     un.forEach((n,ni)=>{
       const off=offs[k++%offs.length];
       if(ni===1)html+=palHTML(u,ui,off);
@@ -436,7 +436,7 @@ function viewLearn(){
       const kidEm=tr==="kids"&&!isStory?n.u.lessons[n.li].items[0][2]:"";
       const icon=n.st==="lock"?(kidEm?`<span class="nem dim">${kidEm}</span>`:IC.lock):n.st==="done"?IC.check:isStory?IC.book:kidEm?`<span class="nem">${kidEm}</span>`:IC.star;
       const label=isStory?"Story":n.u.lessons[n.li].title;
-      html+=`<div class="nodewrap ${n.st}" style="transform:translateX(${off}px)"><button class="node ${tr} ${isStory?"storyn":""} ${n.st}" data-act="node" data-key="${esc(n.key)}" aria-label="${esc(label)} (${n.st})">${icon}<span class="lbl">${esc(label)}</span></button></div>`;
+      html+=`<div class="nodewrap ${n.st}" style="transform:translateX(${off}px)"><button class="node ${tr} ${isStory?"storyn":""} ${tr==="kids"?"kc"+(k%6):""} ${n.st}" data-act="node" data-key="${esc(n.key)}" aria-label="${esc(label)} (${n.st})">${icon}<span class="lbl">${esc(label)}</span></button></div>`;
       if(APP.pop===n.key) html+=`<div class="startpop ${tr} ${n.type==="story"?"storyp":""} ${n.st}" style="--ax:${off}px">${popHTML(n)}</div>`;
       html+=`<div style="height:6px"></div>`;
     });
