@@ -247,7 +247,7 @@ function startSession(kind,items,meta){
 function cur(){return L.ex[L.i];}
 function playIfAuto(){const e=L&&cur();if(!e)return;if(e.it&&(["kintro","kpick","kfind","ksay"].includes(e.t)||(S.autoplay&&["intro","listen","meaning","speak"].includes(e.t))))setTimeout(()=>{if(L&&cur()===e)TTS.say(e.it.en);},350);}
 function isSpeakEx(e){return e&&(e.t==="speak"||e.t==="ksay");}
-function speakPass(){const e=cur();skillHit(e.t,true);L.t++;L.c++;day().t++;day().c++;S.stats.t++;S.stats.c++;day().speak=(day().speak||0)+1;S.speakTotal=(S.speakTotal||0)+1;L.fb={ok:true,show:"",bn:""};SND.play("ok");render();}
+function speakPass(){const e=cur();L.combo=(L.combo||0)+1;L.best=Math.max(L.best||0,L.combo);skillHit(e.t,true);L.t++;L.c++;day().t++;day().c++;S.stats.t++;S.stats.c++;day().speak=(day().speak||0)+1;S.speakTotal=(S.speakTotal||0)+1;L.fb={ok:true,show:"",bn:""};SND.play("ok");render();}
 function hearNow(){
   const e=cur();if(!e||L.fb)return;e.hs=e.hs||{tries:0};
   if(HEAR.on){HEAR.stop();e.hs.state=null;render();return;}
@@ -266,6 +266,7 @@ function hearNow(){
 function kidChoose(id){
   const e=cur();if(L.fb||e.wrong.includes(id))return;
   L.t++;day().t++;S.stats.t++;skillHit(e.t,id===e.it.id);
+  L.combo=id===e.it.id?(L.combo||0)+1:0;L.best=Math.max(L.best||0,L.combo);
   if(id===e.it.id){L.c++;day().c++;S.stats.c++;L.fb={ok:true,show:"",bn:""};SND.play("ok");render();const i=L.i;setTimeout(()=>{if(L&&L.i===i&&L.fb)next();},1300);}
   else{e.wrong.push(id);L.mistakes[e.it.id]=1;SND.play("no");render();}
 }
@@ -275,14 +276,15 @@ function grade(){
   if(e.t==="build"||e.t==="listen"){if(!e.sel.length)return;const got=norm(e.sel.map(i=>e.tiles[i]).join(" "),true);ok=got===norm(e.it.en,true);show=e.it.en;}
   if(e.t==="type"){const v=($("#typein")?.value||"").trim();if(!v)return;L.typed=v;const a=norm(v,true),b=norm(e.it.en,true);const d=lev(a,b);ok=d===0||d<=Math.max(1,Math.floor(b.length*.08));show=e.it.en;if(ok&&d>0)L.typo=true;}
   L.t++;day().t++;S.stats.t++;skillHit(e.t,ok);
+  L.combo=ok?(L.combo||0)+1:0;L.best=Math.max(L.best||0,L.combo);
   if(ok){L.c++;day().c++;S.stats.c++;}else{L.mistakes[e.it.id]=1;if((e.retry||0)<2)L.ex.push(Object.assign(prepare({t:e.t==="listen"&&!TTS.ok?"build":e.t,it:e.it},allItems()),{retry:(e.retry||0)+1}));}
   L.fb={ok,show,bn:e.it.bn};render();
   SND.play(ok?"ok":"no");
 }
 function next(){
-  HEAR.stop();L.fb=null;L.answer=null;L.typo=false;L.typed=null;L.i++;
+  HEAR.stop();L.fb=null;L.answer=null;L.typo=false;L.typed=null;L.dict=false;L.dictErr=null;L.i++;
   if(L.i>=L.ex.length){finishSession();return;}
-  render();playIfAuto();
+  maybeCheer();render();if(!L.cheer)playIfAuto();
 }
 function finishSession(){
   L.items.forEach(it=>srsUpdate(it.id,!L.mistakes[it.id]));
@@ -362,7 +364,7 @@ function TABS_FOR(){return isKid()?[["learn","Learn",IC.learn],["practice","Play
 
 let LASTKEY=null,LASTSUB=null;
 function viewKey(){if(CLOUD.avail()&&!CLOUD.user)return "login:"+LG.tab;if(APP.welcome)return "welcome";if(APP.onb)return "onb:"+(APP.onb.edit||"new");if(APP.picker)return "picker";if(L)return L.done?"L:done":"L";if(APP.busy)return "busy";if(APP.warm)return "warm:"+APP.warm.step;if(APP.story)return "story:"+APP.story;if(APP.cards)return "cards";if(APP.chat)return "chat";return "tab:"+APP.tab;}
-function subKey(){if(APP.onb)return "o"+APP.onb.step;if(L&&!L.done)return "ex"+L.i;if(APP.warm)return "w"+APP.warm.ex+":"+APP.warm.tw+":"+(APP.warm.noPen?1:0);if(APP.cards)return "c"+APP.cards.i;if(!L&&!APP.busy&&!APP.story&&!APP.chat&&APP.tab==="learn")return "t:"+APP.track;return "";}
+function subKey(){if(APP.onb)return "o"+APP.onb.step;if(L&&!L.done)return L.cheer?"cheer":"ex"+L.i;if(APP.warm)return "w"+APP.warm.ex+":"+APP.warm.tw+":"+(APP.warm.noPen?1:0);if(APP.cards)return "c"+APP.cards.i;if(!L&&!APP.busy&&!APP.story&&!APP.chat&&APP.tab==="learn")return "t:"+APP.track;return "";}
 function renderNav(instant){
   const t=$("#tabs"),tabs=TABS_FOR(),sig=tabs.map(x=>x[0]).join();
   if(t.dataset.sig!==sig){t.querySelectorAll("button").forEach(b=>b.remove());t.insertAdjacentHTML("beforeend",tabs.map(([id,l,i])=>`<button data-act="tab" data-v="${id}">${i}<span>${l}</span></button>`).join(""));t.dataset.sig=sig;t.style.setProperty("--n",tabs.length);instant=true;}
@@ -392,7 +394,7 @@ function render(){
   else html=`<main class="view ${({learn:"dash",me:"wide",practice:"mid",stories:"mid"})[APP.tab]||""}">${topbar()}${saveWarn()}${({learn:viewLearn,warm:viewWarm,practice:viewPractice,stories:viewStories,me:viewMe})[APP.tab]()}</main>`;
   if(APP.modal) html+=APP.modal;
   html=emojify(html);
-  const root=$("#root"),key=viewKey(),sub=subKey(),first=LASTKEY===null;
+  const root=$("#root"),key=viewKey(),sub=subKey(),first=LASTKEY===null,prevKey=LASTKEY;
   const nav=document.querySelector("nav.tabs"),navWasHidden=nav.hidden;
   nav.hidden=!!(L||APP.warm||APP.welcome||APP.onb||APP.picker||gate);
   if(key!==LASTKEY){root.innerHTML=html;placeSeg(true);enterView(root,first);}
@@ -400,6 +402,7 @@ function render(){
   if(!nav.hidden)renderNav(first||navWasHidden);
   if(navWasHidden&&!nav.hidden)rise([nav],{y:30,dur:600,scale:1,ease:EZ.out3});
   LASTKEY=key;LASTSUB=sub;
+  flowAfter(key,prevKey);
   try{if(APP.picker&&PID)sessionStorage.setItem("aec4:here",JSON.stringify({pid:PID,picker:true}));else if(PID&&!APP.picker&&!APP.welcome&&!APP.onb)sessionStorage.setItem("aec4:here",JSON.stringify({pid:PID,tab:APP.tab,track:APP.track,story:APP.story||null}));else if(APP.picker)sessionStorage.removeItem("aec4:here");}catch(e){}
 }
 function saveWarn(){return Store.failed?`<p class="warnbox small">অগ্রগতি সেভ হয়নি (ইন্টারনেট বা স্টোরেজ)। <button class="btn sm" data-act="retrySave">আবার সেভ</button></p>`:"";}
@@ -424,18 +427,20 @@ function viewLearn(){
   let k=0;
   allUnits().filter(u=>u.track===tr).forEach((u,ui)=>{
     const un=ns.filter(n=>n.u.id===u.id);const doneN=un.filter(n=>n.st==="done").length;
-    html+=`<div class="unitban ${tr}"><div><div class="kick">${u.custom?"MY UNIT":"UNIT "+(ui+1)} · ${doneN}/${un.length}</div><h2>${esc(u.title)}</h2><div class="bn">${esc(u.bn||"")}</div></div>${ENV.claude?"":""}</div><div class="path">`;
+    const locked=un.every(n=>n.st==="lock");
+    html+=`<section class="unitsec ${locked?"locked":""}"><div class="unitban ${tr}"><div><div class="kick">${u.custom?"MY UNIT":"UNIT "+(ui+1)} · ${doneN}/${un.length}</div><h2>${esc(u.title)}</h2><div class="bn">${esc(u.bn||"")}</div></div>${ENV.claude?"":""}</div><div class="path">`;
     un.forEach(n=>{
       const off=offs[k++%offs.length];
       const isStory=n.type==="story";
       const kidEm=tr==="kids"&&!isStory?n.u.lessons[n.li].items[0][2]:"";
       const icon=n.st==="lock"?(kidEm?`<span class="nem dim">${kidEm}</span>`:IC.lock):n.st==="done"?IC.check:isStory?IC.book:kidEm?`<span class="nem">${kidEm}</span>`:IC.star;
       const label=isStory?"Story":n.u.lessons[n.li].title;
-      html+=`<div class="nodewrap" style="transform:translateX(${off}px)"><button class="node ${tr} ${isStory?"storyn":""} ${n.st}" data-act="node" data-key="${esc(n.key)}" aria-label="${esc(label)} (${n.st})">${icon}<span class="lbl">${esc(label)}</span></button></div>`;
+      html+=`<div class="nodewrap ${n.st}" style="transform:translateX(${off}px)"><button class="node ${tr} ${isStory?"storyn":""} ${n.st}" data-act="node" data-key="${esc(n.key)}" aria-label="${esc(label)} (${n.st})">${icon}<span class="lbl">${esc(label)}</span></button></div>`;
       if(APP.pop===n.key) html+=`<div class="startpop" style="margin-top:24px">${popHTML(n)}</div>`;
       html+=`<div style="height:6px"></div>`;
     });
-    html+=`</div>`;
+    if(!u.custom){const off=offs[k++%offs.length];html+=chestHTML(u,doneN===un.length).replace('class="nodewrap chestwrap"',`class="nodewrap chestwrap" style="transform:translateX(${off}px)"`);}
+    html+=`</div></section>`;
   });
   if(ENV.claude&&!isKid()) html+=`<div class="card"><h3>নতুন ইউনিট চাও?</h3><p class="small muted">যেকোনো বিষয় লেখো, AI তোমার লেভেল অনুযায়ী ৩টা লেসন আর একটা গল্প বানিয়ে পথে যোগ করবে।</p>${newUnitForm()}</div>`;
   html+=`<div class="mob-only">${leagueCard()}</div>`;
@@ -458,17 +463,20 @@ function newUnitForm(){
 
 /* ================= LESSON PLAYER ================= */
 function viewLesson(){
+  if(L.cheer&&!L.done)return viewCheer();
   if(L.done){
     const acc=L.t?Math.round(L.c/L.t*100):100;
+    const ttl=L.kind!=="lesson"?"Practice complete!":acc===100?"Perfect lesson!":acc>=80?"Great performance!":"Lesson complete!";
     return `<div class="player"><div class="body" style="justify-content:center;text-align:center;padding-bottom:40px">
-      ${L.sticker?`<div class="sticker-win"><span>${L.sticker}</span></div><p class="small muted">নতুন স্টিকার পেলে!</p>`:`<div class="done-hero">${IC.check}</div>`}<h1>${L.kind==="lesson"?"Lesson complete!":"Practice complete!"}</h1>
-      <div class="row center" style="gap:12px"><div class="metric" style="min-width:110px"><span class="tag n">XP</span><b>+<span data-count="${L.xp}">${L.xp}</span></b></div><div class="metric" style="min-width:110px"><span class="tag m">first-try</span><b><span data-count="${acc}">${acc}</span>%</b></div><div class="metric" style="min-width:110px"><span class="tag n">time</span><b>${fmt(L.secs)}</b></div></div>
+      ${L.sticker?`<div class="sticker-win"><span>${L.sticker}</span></div><p class="small muted">নতুন স্টিকার পেলে!</p>`:`<div class="done-hero">${IC.check}</div>`}<h1>${ttl}</h1>${L.best>=3?`<p class="small muted">সবচেয়ে বড় combo: ${L.best}টা টানা ঠিক 🔥</p>`:""}
+      <div class="rbadges"><div class="rb xp"><span>TOTAL XP</span><b>⚡ <span data-count="${L.xp}">${L.xp}</span></b></div><div class="rb acc"><span>${acc>=90?"AMAZING":acc>=70?"GOOD":"ACCURACY"}</span><b>🎯 <span data-count="${acc}">${acc}</span>%</b></div><div class="rb tm"><span>TIME</span><b>⏱️ ${fmt(L.secs)}</b></div></div>
       ${Object.keys(L.mistakes).length?`<div class="card" style="text-align:left"><h3>${L.items[0]?.track==="kids"?"এগুলো আবার দেখব":"Revise korar sentence"}</h3>${Object.keys(L.mistakes).map(id=>{const it=itemById(id);return it?`<div class="row between" style="flex-wrap:nowrap"><span>${esc(it.en)}<br><span class="small bn muted">${esc(it.bn)}</span></span><button class="icon-btn" data-act="say" data-t="${esc(it.en)}" aria-label="Listen">${IC.speak}</button></div>`:"";}).join("")}<p class="tiny muted">এগুলো কাল Practice-এ আবার আসবে।</p></div>`:`<p class="okbox">কোনো ভুল নেই! +৫ বোনাস XP।</p>`}
       <div class="row center">${levelChip()}</div>
       <button class="btn good wide" data-act="closeLesson">Continue</button></div></div>`;
   }
   const e=cur(), done=L.i, total=L.ex.length;
   let body="", canCheck=true, checkLabel="Check";
+  const hardTag=e.retry?`<span class="hardtag">↻ আবার চেষ্টা</span>`:"";
   const sp=(t,big)=>`<button class="${big?"bigspeak":"icon-btn"}" data-act="say" data-t="${esc(t)}" aria-label="Listen">${IC.speak}</button>`;
   if(e.t==="intro"){body=`<span class="newtag">New sentence</span><div class="intro"><div class="speaker">${sp(e.it.en,true)}<button class="icon-btn" data-act="saySlow" data-t="${esc(e.it.en)}" aria-label="Slow">${IC.slow}</button></div><div class="en">${esc(e.it.en)}</div><div class="bn muted">${esc(e.it.bn)}</div></div><p class="small muted">শোনো, তারপর ২ বার জোরে জোরে বলো।</p>`;checkLabel="Continue";}
   if(e.t==="meaning"){body=`<p class="eyebrow">মানে কী?</p><div class="speaker">${sp(e.it.en)}<div class="prompt">${esc(e.it.en)}</div></div><div class="opts">${e.opts.map(o=>`<button class="opt bn" data-act="choose" data-v="${esc(o)}" aria-pressed="${L.answer===o}" ${L.fb?"disabled":""}>${esc(o)}</button>`).join("")}</div>`;canCheck=L.answer!=null;}
@@ -476,11 +484,11 @@ function viewLesson(){
     body=e.t==="build"?`<p class="eyebrow">English e lekho</p><div class="prompt bn">${esc(e.it.bn)}</div>`:`<p class="eyebrow">শোনো আর সাজাও</p><div class="speaker">${sp(e.it.en,true)}<button class="icon-btn" data-act="saySlow" data-t="${esc(e.it.en)}" aria-label="Slow">${IC.slow}</button></div>`;
     body+=`<div class="answer-line">${e.sel.map((ti,k)=>`<button class="tile" data-act="untile" data-k="${k}" ${L.fb?"disabled":""}>${esc(e.tiles[ti])}</button>`).join("")}</div><div class="bank">${e.tiles.map((w,ti)=>`<button class="tile ${e.sel.includes(ti)?"used":""}" data-act="tile" data-i="${ti}" ${L.fb?"disabled":""}>${esc(w)}</button>`).join("")}</div>`;canCheck=e.sel.length>0;}
   if(e.t==="fill"){body=`<p class="eyebrow">খালি জায়গা পূরণ করো</p><div class="prompt">${esc(e.blanked)}</div><p class="small bn muted">${esc(e.it.bn)}</p><div class="opts">${e.opts.map(o=>`<button class="opt" data-act="choose" data-v="${esc(o)}" aria-pressed="${L.answer===o}" ${L.fb?"disabled":""}>${esc(o)}</button>`).join("")}</div>`;canCheck=L.answer!=null;}
-  if(e.t==="type"){body=`<p class="eyebrow">ইংরেজিতে লেখো</p><div class="prompt bn">${esc(e.it.bn)}</div><textarea id="typein" data-key="t${L.i}" placeholder="Type in English…" ${L.fb?"disabled":""} autocapitalize="sentences">${esc(L.typed||"")}</textarea><p class="tiny muted">ফোনের কিবোর্ডের মাইক দিয়ে বললেও চলবে।</p>`;canCheck=!!(L.typed||"").trim();}
+  if(e.t==="type"){body=`<p class="eyebrow">ইংরেজিতে লেখো</p><div class="prompt bn">${esc(e.it.bn)}</div><textarea id="typein" data-key="t${L.i}" placeholder="Type in English…" ${L.fb?"disabled":""} autocapitalize="sentences">${esc(L.typed||"")}</textarea>${HEAR.avail()&&!L.fb?`<button class="dictbtn ${L.dict?"on":""}" data-act="dictate">${L.dict?WAVE+"শুনছি… থামাতে চাপো":IC.mic+"লেখার বদলে বলো"}</button>${L.dictErr?`<p class="warnbox small">${esc(L.dictErr)}</p>`:""}`:`<p class="tiny muted">ফোনের কিবোর্ডের মাইক দিয়ে বললেও চলবে।</p>`}`;canCheck=!!(L.typed||"").trim();}
   if(e.t==="match"){body=`<p class="eyebrow">Jora milao</p><div class="match"><div class="stack">${e.left.map(x=>`<button class="opt ${e.gone.includes(x.id)?"gone":""} ${e.flash===x.id?"err":""}" data-act="mL" data-id="${esc(x.id)}" aria-pressed="${e.selL===x.id}">${esc(x.txt)}</button>`).join("")}</div><div class="stack">${e.right.map(x=>`<button class="opt bn ${e.gone.includes(x.id)?"gone":""} ${e.flashR===x.id?"err":""}" data-act="mR" data-id="${esc(x.id)}" aria-pressed="${e.selR===x.id}">${esc(x.txt)}</button>`).join("")}</div></div>`;canCheck=false;}
   const hasSR=HEAR.avail(), hs=e.hs||{};
   const sayWords=()=>hs.words?`<span class="said">${hs.words.map(w=>`<span class="${w.ok?"ok":"bad"}">${esc(w.w)}</span>`).join(" ")}</span>`:esc(e.it.en);
-  const micBlock=()=>`<button class="micbig ${hs.state==="listen"?"on":""}" data-act="hear" aria-label="${hs.state==="listen"?"Stop":"Tap and speak"}">${IC.mic}</button>
+  const micBlock=()=>`<button class="micbig ${hs.state==="listen"?"on":""}" data-act="hear" aria-label="${hs.state==="listen"?"Stop":"Tap and speak"}">${hs.state==="listen"?WAVE:IC.mic}</button>
     <p class="tiny muted center">${hs.state==="listen"?"শুনছি… বলো":"চাপো, তারপর বলো"}</p>
     ${hs.err?`<p class="warnbox small">${esc(hs.err)}</p>`:""}
     ${hs.score!=null&&!L.fb?`<p class="note small center">${Math.round(hs.score*100)}% শব্দ মিলেছে। লাল শব্দগুলো আবার বলো।${hs.tries>=2?" চাইলে Continue চাপো।":""}</p>`:""}`;
@@ -496,7 +504,8 @@ function viewLesson(){
   else if(e.t==="kpick"||e.t==="kfind")foot=`<div class="foot"><div class="in"><p class="small muted center">${e.wrong.length?"আবার চেষ্টা করো! 🔊 চেপে আবার শোনো।":"কী শুনলে?"}</p></div></div>`;
   else if(e.t==="speak"&&hasSR)foot=`<div class="foot"><div class="in">${hs.tries>=2?`<button class="btn good wide" data-act="skipEx">Continue</button>`:`<p class="small muted center">মাইকে চাপো, তারপর বাক্যটা বলো</p>`}</div></div>`;
   else foot=`<div class="foot"><div class="in">${e.t==="match"?`<p class="small muted center">বাম আর ডান থেকে মিলিয়ে চাপো।</p>`:`<button class="btn ${e.t==="ksay"&&hasSR?"ghost":"good"} wide" data-act="${["intro","speak","kintro","ksay"].includes(e.t)?"skipEx":"check"}" ${canCheck?"":"disabled"}>${checkLabel}</button>`}</div></div>`;
-  return `<div class="player"><div class="head"><button class="icon-btn" data-act="quitLesson" aria-label="Close lesson">${IC.close}</button><div class="pbar"><i style="width:${Math.round(done/total*100)}%"></i></div></div><div class="body">${body}</div>${foot}</div>`;
+  const combo=(L.combo||0)>=3?`<span class="combo" aria-label="combo">🔥 ×${L.combo}</span>`:"";
+  return `<div class="player"><div class="head"><button class="icon-btn" data-act="quitLesson" aria-label="Close lesson">${IC.close}</button><div class="pbar ${(L.combo||0)>=3?"hot":""}"><i style="width:${Math.round(done/total*100)}%"></i></div>${combo}</div><div class="body">${hardTag}${body}</div>${foot}</div>`;
 }
 function recorderMini(id){
   const mine=REC.forId===id;
@@ -813,8 +822,11 @@ const ACT={
  say(el){TTS.say(el.dataset.t);},
  saySlow(el){TTS.say(el.dataset.t,.6);},
  choose(el){if(L.fb)return;L.answer=el.dataset.v;render();},
- tile(el){const e=cur();if(L.fb)return;const i=+el.dataset.i;if(!e.sel.includes(i))e.sel.push(i);render();},
- untile(el){const e=cur();if(L.fb)return;e.sel.splice(+el.dataset.k,1);render();},
+ tile(el){const e=cur();if(L.fb)return;const i=+el.dataset.i;if(e.sel.includes(i))return;const r=el.getBoundingClientRect();e.sel.push(i);render();flyTile(r,document.querySelector(".answer-line .tile:last-child"));},
+ untile(el){const e=cur();if(L.fb)return;const k=+el.dataset.k,ti=e.sel[k],r=el.getBoundingClientRect();e.sel.splice(k,1);render();flyTile(r,document.querySelector(`.bank .tile[data-i="${ti}"]`));},
+ chest(el){openChest(el);},
+ dictate(){dictate();},
+ cheerGo(){L.cheer=false;render();playIfAuto();},
  check(){grade();},
  skipEx(){const e=cur();HEAR.stop();if(isSpeakEx(e)&&!HEAR.avail()){day().speak=(day().speak||0)+1;S.speakTotal=(S.speakTotal||0)+1;}L.fb=null;L.i++;if(L.i>=L.ex.length){finishSession();return;}render();playIfAuto();},
  hear(){hearNow();},
@@ -928,7 +940,7 @@ document.addEventListener("click",e=>{const el=e.target.closest("[data-act]");if
   const snd=el.dataset.act in ACT_SOUND?ACT_SOUND[el.dataset.act]:"tap";if(snd&&!(el.dataset.act==="tab"&&el.dataset.v===APP.tab&&!APP.story&&!APP.cards&&!APP.chat))SND.play(snd);
   f(el,e);});
 document.addEventListener("touchstart",()=>{},{passive:true}); // enables :active press states on iOS
-document.addEventListener("input",e=>{if(e.target.id==="typein"){const b=document.querySelector('[data-act="check"]');if(b)b.disabled=!e.target.value.trim();}});
+document.addEventListener("input",e=>{if(e.target.id==="typein"){if(L)L.typed=e.target.value;const b=document.querySelector('[data-act="check"]');if(b)b.disabled=!e.target.value.trim();}});
 addEventListener("resize",()=>{renderNav(true);placeSeg(true);});
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{renderNav(true);placeSeg(true);});
 document.addEventListener("change",e=>{
