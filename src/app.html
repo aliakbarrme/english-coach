@@ -911,7 +911,7 @@ const ACT={
  cancel(){APP.confirm=null;render();},
  obSave(){S.names.d1=$("#ob-d1").value.trim();S.names.d2=$("#ob-d2").value.trim();S.onboarded=true;APP.modal=null;Store.save();render();}
 };
-Object.assign(ACT,SPELL_ACT);
+Object.assign(ACT,SPELL_ACT,LOGIN_ACT);
 function confirmQuit(){return true;}
 function markSent(i){document.querySelectorAll(".sent.cur").forEach(x=>x.classList.remove("cur"));if(i>=0){const el=document.querySelectorAll(".sent")[i];if(el){el.classList.add("cur");const r=el.getBoundingClientRect();if(r.top<80||r.bottom>innerHeight-120)el.scrollIntoView({block:"center",behavior:"smooth"});}}}
 async function switchProfile(id){

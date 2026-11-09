@@ -8,7 +8,8 @@ function authMsg(e){const c=(e&&e.code)||"";
   return m[c]||("লগইন হয়নি ("+(c||"error")+")।");}
 function viewLogin(){
   const t=LG.tab, logo=document.querySelector(".bmark")?.innerHTML||"";
-  const field=(id,label,type,ph,ac)=>`<label class="lg-field"><span>${label}</span><input id="${id}" type="${type}" placeholder="${ph}" autocomplete="${ac}" ${LG.busy?"disabled":""}></label>`;
+  const field=(id,label,type,ph,ac)=>type!=="password"?`<label class="lg-field"><span>${label}</span><input id="${id}" type="${type}" placeholder="${ph}" autocomplete="${ac}" ${LG.busy?"disabled":""}></label>`
+    :`<label class="lg-field"><span>${label}</span><span class="lg-pw"><input id="${id}" type="${LG.showPw?"text":"password"}" placeholder="${ph}" autocomplete="${ac}" ${LG.busy?"disabled":""}><button type="button" class="lg-eye" data-act="lgEye" aria-label="${LG.showPw?"Hide password":"Show password"}" aria-pressed="${!!LG.showPw}">${LG.showPw?EYE_OFF:EYE_ON}</button></span></label>`;
   let form="";
   if(t==="login")form=`${field("lg-email","Email","email","you@example.com","email")}${field("lg-pass","Password","password","Your password","current-password")}
     <button class="lg-go" data-act="lgSubmit" ${LG.busy?"disabled":""}>${LG.busy?"Please wait…":"CONTINUE"} <span>›</span></button>
@@ -28,6 +29,11 @@ function viewLogin(){
     <button class="gbtn wide" data-act="lgGoogle" ${LG.busy?"disabled":""}>${GLOGO}<span>Continue with Google</span></button></div>
    <p class="lg-foot">© 2026 Ali Akbar · BD Webhut</p></main>`;
 }
+const EYE_ON='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYE_OFF='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.6 5.1A10.4 10.4 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.2M6.6 6.6A17.4 17.4 0 0 0 2 12s3.6 7 10 7a9.9 9.9 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="M3 3l18 18"/></svg>';
+/* show/hide the password without re-rendering, so what was typed stays and the cursor keeps its place */
+const LOGIN_ACT={lgEye(el){LG.showPw=!LG.showPw;const inp=el.parentNode.querySelector("input");if(inp){const pos=inp.selectionStart;inp.type=LG.showPw?"text":"password";try{inp.focus();inp.setSelectionRange(pos,pos);}catch(e){}}
+  el.innerHTML=LG.showPw?EYE_OFF:EYE_ON;el.setAttribute("aria-pressed",LG.showPw);el.setAttribute("aria-label",LG.showPw?"Hide password":"Show password");}};
 async function lgSubmit(){
   const v=id=>($("#"+id)?.value||"").trim(),email=v("lg-email"),pass=$("#lg-pass")?.value||"",name=v("lg-name");
   LG.err=LG.ok=null;
