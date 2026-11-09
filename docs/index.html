@@ -17,7 +17,17 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
-<script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
+<script>if("serviceWorker" in navigator){
+  /* always look for a new version on open and when the app comes back to the front; when it arrives, refresh once (never in the middle of a lesson or game) */
+  const had=!!navigator.serviceWorker.controller;let ready=false;
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{if(had)ready=true;});
+  const busy=()=>{try{return (typeof L!=="undefined"&&L)||(typeof APP!=="undefined"&&APP.spell&&APP.spell.scr==="game")||(typeof APP!=="undefined"&&APP.warm);}catch(e){return false;}};
+  setInterval(()=>{if(ready&&!busy()){ready=false;location.reload();}},1500);
+  addEventListener("load",()=>navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(reg=>{
+    const check=()=>reg.update().catch(()=>{});check();
+    document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")check();});
+  }).catch(()=>{}));
+}</script>
 </head>
 <body>
 <title>Bolo English</title>
