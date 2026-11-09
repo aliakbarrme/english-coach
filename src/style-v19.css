@@ -129,3 +129,6 @@
 .spellview>*{flex-shrink:0}
 .flip .cardem .vart{width:1.3em;height:1.3em}
 @media (max-width:420px){.sc-abc i{width:30px;height:36px;font-size:1.25rem;border-radius:10px}.spellcta{gap:10px;padding:14px}.spellcta b{font-size:1.1rem}}
+.cardsview .deck{z-index:2}
+.cardghost{transform-style:preserve-3d;will-change:transform,opacity}
+.cardsview .deck .flip{will-change:transform}

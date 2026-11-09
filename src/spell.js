@@ -57,28 +57,47 @@ function cardUnits(track){return allUnits().filter(x=>x.track===track).concat(tr
 
 /* ---- vertical swipe on the flash card (mobile touch, mouse drag, trackpad/wheel) ---- */
 let CSW=null,CWHEEL=0;
-function cardSlide(dir){
-  const d=document.querySelector(".cardsview .deck");if(!d||!d.animate||RM.matches)return;
-  const up=dir==="up";
-  try{d.animate([{transform:`translateY(${up?110:-110}px) scale(.86) rotate(${up?4:-4}deg)`,opacity:0},{transform:`translateY(${up?-10:10}px) scale(1.02)`,opacity:1,offset:.65},{transform:"none",opacity:1}],{duration:520,easing:"cubic-bezier(.2,.9,.3,1.15)"});}catch(e){}
+/* the current card is lifted off the deck as a floating copy, so the page itself never re-animates */
+function cardSnap(){
+  const f=document.querySelector(".cardsview .deck .flip");if(!f||RM.matches||!f.animate)return null;
+  const r=f.getBoundingClientRect(),c=f.cloneNode(true);
+  c.classList.add("cardghost");c.removeAttribute("data-act");
+  Object.assign(c.style,{position:"fixed",left:r.left+"px",top:r.top+"px",width:r.width+"px",height:r.height+"px",margin:"0",zIndex:"30",pointerEvents:"none",transition:"none",minHeight:"0"});
+  return {c,from:f.style.transform||"none"};
 }
+function cardSwap(dir,snap){
+  const f=document.querySelector(".cardsview .deck .flip");
+  if(!snap||!f){return;}
+  document.body.append(snap.c);const g=snap.c,up=dir==="up";
+  setTimeout(()=>g.remove(),1000);
+  const E="cubic-bezier(.22,.8,.3,1)";
+  if(up){
+    g.animate([{transform:snap.from,opacity:1,zIndex:30,offset:0},{transform:"translateY(-62%) rotate(-6deg) scale(1.03)",opacity:1,zIndex:30,offset:.42},{transform:"translateY(-40%) rotate(-3deg) scale(.95)",opacity:1,zIndex:1,offset:.5},{transform:"translateY(22px) scale(.88)",opacity:0,zIndex:1}],{duration:720,easing:E}).onfinish=()=>g.remove();
+    f.animate([{transform:"translateY(18px) scale(.93)",filter:"brightness(.96)"},{transform:"translateY(10px) scale(.96)",offset:.4},{transform:"none",filter:"none"}],{duration:620,easing:"cubic-bezier(.3,1.3,.5,1)"});
+  }else{
+    g.style.zIndex="1";
+    g.animate([{transform:snap.from,opacity:1},{transform:"translateY(18px) scale(.93)",opacity:0}],{duration:560,easing:E}).onfinish=()=>g.remove();
+    f.animate([{transform:"translateY(-70%) rotate(-5deg) scale(1.02)",opacity:0},{transform:"translateY(-20%) rotate(-2deg)",opacity:1,offset:.45},{transform:"none",opacity:1}],{duration:620,easing:"cubic-bezier(.3,1.25,.5,1)"});
+  }
+}
+function cardSlide(){}
 function cardGo(dir){const C=APP.cards;if(!C)return;
-  if(dir==="up"){ACT.cardNext();}else{if(!C.i){const d=document.querySelector(".cardsview .deck");d&&d.animate&&d.animate([{transform:"none"},{transform:"translateY(14px)"},{transform:"none"}],{duration:320,easing:EZ.out3});return;}ACT.cardPrev();}
+  if(dir==="up"){ACT.cardNext();}else{if(!C.i){const f=document.querySelector(".cardsview .deck .flip");const from=f&&f.style.transform||"none";if(f){f.style.transform="";f.animate&&f.animate([{transform:from},{transform:"translateY(14px)"},{transform:"none"}],{duration:380,easing:EZ.out3});}return;}ACT.cardPrev();}
 }
 document.addEventListener("pointerdown",e=>{
   const d=e.target.closest&&e.target.closest(".cardsview .deck");if(!d||e.target.closest(".cardspk"))return;
-  CSW={y:e.clientY,x:e.clientX,d,moved:false,id:e.pointerId};
+  const fl=d.querySelector(".flip");if(!fl)return;CSW={y:e.clientY,x:e.clientX,d:fl,moved:false,id:e.pointerId};
 });
 document.addEventListener("pointermove",e=>{
   if(!CSW||e.pointerId!==CSW.id)return;const dy=e.clientY-CSW.y,dx=e.clientX-CSW.x;
   if(!CSW.moved&&Math.abs(dy)>8&&Math.abs(dy)>Math.abs(dx))CSW.moved=true;
-  if(CSW.moved)CSW.d.style.transform=`translateY(${dy*.55}px) rotate(${dy*.02}deg)`;
+  if(CSW.moved){CSW.d.style.transition="none";CSW.d.style.transform=`translateY(${dy*.6}px) rotate(${dy*.025}deg)`;}
 });
 const cswEnd=e=>{
   if(!CSW||e.pointerId!==CSW.id)return;const dy=e.clientY-CSW.y,d=CSW.d,moved=CSW.moved;CSW=null;
   if(!moved)return;window._swiped=Date.now();
-  if(Math.abs(dy)>60){d.style.transform="";cardGo(dy<0?"up":"down");}
-  else{const from=d.style.transform;d.style.transform="";d.animate&&d.animate([{transform:from},{transform:"none"}],{duration:380,easing:"cubic-bezier(.3,1.4,.5,1)"});}
+  if(Math.abs(dy)>60){if(dy>0&&!APP.cards.i){cardGo("down");return;}cardGo(dy<0?"up":"down");}
+  else{const from=d.style.transform;d.style.transform="";d.style.transition="";d.animate&&d.animate([{transform:from},{transform:"none"}],{duration:380,easing:"cubic-bezier(.3,1.4,.5,1)"});}
 };
 document.addEventListener("pointerup",cswEnd);document.addEventListener("pointercancel",cswEnd);
 document.addEventListener("wheel",e=>{
@@ -210,7 +229,7 @@ function viewSpell(){
     if(r.t==="word"){q="শোনো, তারপর ছবিটা বেছে নাও";body=`<button class="sp-wordbig" data-act="say" data-t="${esc(w[0])}">${IC.speak}<span>${w[0].toUpperCase()}</span></button><div class="sp-opts pics">${r.opts.map(o=>`<button class="sp-opt pic ${r.done&&o[0]===w[0]?"sp-right":""}" data-act="spellPick" data-v="${esc(o[0])}" ${r.wrong.includes(o[0])||r.done?"disabled":""}>${o[1]}</button>`).join("")}</div>`;}
     if(r.t==="miss"){q="কোন অক্ষরটা নেই?";body=`${spPic(w[1],"mid")}<div class="sp-letters show">${w[0].split("").map((c,k)=>k===r.gap&&!r.done?`<span class="spl on gap" style="--lc:#c8d0cc">?</span>`:`<span class="spl on ${k===r.gap?"sp-right":""}" style="--lc:${LCOL[k%LCOL.length]}">${c.toUpperCase()}</span>`).join("")}</div><div class="sp-opts">${r.opts.map(c=>`<button class="sp-opt letter" data-act="spellMiss" data-v="${c}" ${r.wrong.includes(c)||r.done?"disabled":""}>${c.toUpperCase()}</button>`).join("")}</div>`;}
     if(r.t==="build"){q="অক্ষর সাজিয়ে শব্দ বানাও";body=`${spPic(w[1],"mid")}<div class="sp-slots ${r.done?"sp-right":""}">${w[0].split("").map((c,k)=>`<span class="sp-slot ${r.sel[k]!=null?"full":""}" style="--lc:${LCOL[k%LCOL.length]}">${r.sel[k]!=null?r.tiles[r.sel[k]].toUpperCase():""}</span>`).join("")}</div><div class="sp-tiles">${r.tiles.map((c,ti)=>`<button class="sp-tile ${r.sel.includes(ti)?"used":""}" data-act="spellTile" data-i="${ti}" ${r.sel.includes(ti)||r.done?"disabled":""}>${c.toUpperCase()}</button>`).join("")}</div><button class="sp-hear" data-act="say" data-t="${esc(w[0])}">${IC.speak} শোনো</button>`;}
-    return `<main class="view spellview sp-run">${bar("spellHome")}<div class="sp-gamebar"><span class="sp-gtag">${sp.kind==="quiz"?"🧠 Revision":sp.kind==="revise"?"↻ Revise":"🎮 Game"}</span><div class="pbar"><i style="width:${Math.round(sp.i/fixedTotal*100)}%"></i></div><span class="sp-gst">⭐ ${sp.stars}</span></div>
+    return `<main class="view spellview sp-run">${bar("spellHome")}<div class="sp-gamebar"><span class="sp-gtag">${sp.kind==="quiz"?"🧠 Revision":sp.kind==="revise"?"↻ Revise":"🎮 Game"}</span><div class="pbar"><i style="width:${Math.round((sp.i+(r.done?1:0))/fixedTotal*100)}%"></i></div><span class="sp-gst">⭐ ${sp.stars}</span></div>
       <div class="sp-game" data-key="r${sp.i}"><p class="sp-q">${q}</p>${body}${r.tries&&!r.done?`<p class="sp-try">আবার চেষ্টা করো, তুমি পারবে! 💪</p>`:""}</div></main>`;
   }
   if(sp.scr==="result"){

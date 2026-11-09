@@ -364,7 +364,7 @@ function TABS_FOR(){return isKid()?[["learn","Learn",IC.learn],["practice","Play
 
 let LASTKEY=null,LASTSUB=null;
 function viewKey(){if(CLOUD.avail()&&!CLOUD.user)return "login:"+LG.tab;if(APP.welcome)return "welcome";if(APP.onb)return "onb:"+(APP.onb.edit||"new");if(APP.picker)return "picker";if(L)return L.done?"L:done":"L";if(APP.busy)return "busy";if(APP.warm)return "warm:"+APP.warm.step;if(APP.story)return "story:"+APP.story;if(APP.spell)return "spell:"+APP.spell.scr;if(APP.cards)return "cards";if(APP.chat)return "chat";return "tab:"+APP.tab;}
-function subKey(){if(APP.spell)return "s"+APP.spell.k+":"+(APP.spell.i||0);if(APP.onb)return "o"+APP.onb.step;if(L&&!L.done)return L.cheer?"cheer":"ex"+L.i;if(APP.warm)return "w"+APP.warm.ex+":"+APP.warm.tw+":"+(APP.warm.noPen?1:0);if(APP.cards)return "c"+APP.cards.i;if(!L&&!APP.busy&&!APP.story&&!APP.chat&&APP.tab==="learn")return "t:"+APP.track;return "";}
+function subKey(){if(APP.spell)return "s"+APP.spell.k+":"+(APP.spell.i||0);if(APP.onb)return "o"+APP.onb.step;if(L&&!L.done)return L.cheer?"cheer":"ex"+L.i;if(APP.warm)return "w"+APP.warm.ex+":"+APP.warm.tw+":"+(APP.warm.noPen?1:0);if(APP.cards)return "c"+APP.cards.unit;if(!L&&!APP.busy&&!APP.story&&!APP.chat&&APP.tab==="learn")return "t:"+APP.track;return "";}
 function renderNav(instant){
   const t=$("#tabs"),tabs=TABS_FOR(),sig=tabs.map(x=>x[0]).join();
   if(t.dataset.sig!==sig){t.querySelectorAll("button").forEach(b=>b.remove());t.insertAdjacentHTML("beforeend",tabs.map(([id,l,i])=>`<button data-act="tab" data-v="${id}">${i}<span>${l}</span></button>`).join(""));t.dataset.sig=sig;t.style.setProperty("--n",tabs.length);instant=true;}
@@ -868,7 +868,7 @@ const ACT={
  practiceDue(){startPractice();},
  openCards(el){openCards(el.dataset.u||"");},
  closeCards(){APP.cards=null;APP.cardMenu=false;render();},
- cardNext(){const C=APP.cards;C.flip=false;C.i=C.i<C.items.length-1?C.i+1:0;render();cardSlide("up");if(S.autoplay)TTS.say(C.items[C.i].en);},
+ cardNext(){const C=APP.cards,snap=cardSnap();C.flip=false;C.i=C.i<C.items.length-1?C.i+1:0;render();cardSwap("up",snap);if(S.autoplay)TTS.say(C.items[C.i].en);},
  flipCard(el,e){if(e&&e.target.closest(".cardspk"))return;if(Date.now()-(window._swiped||0)<400)return;APP.cards.flip=!APP.cards.flip;render();if(!APP.cards.flip)TTS.say(APP.cards.items[APP.cards.i].en);},
  cardMenu(){APP.cardMenu=!APP.cardMenu;render();},
  pickCardUnit(el){APP.cardMenu=false;openCards(el.dataset.u);},
@@ -884,7 +884,7 @@ const ACT={
  openHelp(){APP.modal=helpModal();render();},
  removePhoto(){const p=prof();delete p.photo;Store.saveProfiles();render();},
  toggleQuests(){APP.qOpen=!qOpen();try{localStorage.setItem("aec4:qopen",APP.qOpen?"1":"0");}catch(e){}render();},
- cardPrev(){APP.cards.flip=false;APP.cards.i=Math.max(0,APP.cards.i-1);render();cardSlide("down");},
+ cardPrev(){if(!APP.cards.i)return;const snap=cardSnap();APP.cards.flip=false;APP.cards.i=APP.cards.i-1;render();cardSwap("down",snap);},
  startChat(el){startChat(el.dataset.id);},
  closeChat(){APP.chat=null;TTS.stop();render();},
  chatSend(){const i=$("#chatin");const t=i.value.trim();if(t){i.value="";chatTurn(t,null);}},

@@ -1386,6 +1386,9 @@ body.kid nav.tabs button[aria-current="page"]{color:#5a2a00}
 .spellview>*{flex-shrink:0}
 .flip .cardem .vart{width:1.3em;height:1.3em}
 @media (max-width:420px){.sc-abc i{width:30px;height:36px;font-size:1.25rem;border-radius:10px}.spellcta{gap:10px;padding:14px}.spellcta b{font-size:1.1rem}}
+.cardsview .deck{z-index:2}
+.cardghost{transform-style:preserve-3d;will-change:transform,opacity}
+.cardsview .deck .flip{will-change:transform}
 </style>
 
 <div id="splash" aria-label="Bolo English loading"><img class="sp-native" src="icon-512.png" alt="" onerror="this.remove()"><div class="sp-in">
@@ -3069,28 +3072,47 @@ function cardUnits(track){return allUnits().filter(x=>x.track===track).concat(tr
 
 /* ---- vertical swipe on the flash card (mobile touch, mouse drag, trackpad/wheel) ---- */
 let CSW=null,CWHEEL=0;
-function cardSlide(dir){
-  const d=document.querySelector(".cardsview .deck");if(!d||!d.animate||RM.matches)return;
-  const up=dir==="up";
-  try{d.animate([{transform:`translateY(${up?110:-110}px) scale(.86) rotate(${up?4:-4}deg)`,opacity:0},{transform:`translateY(${up?-10:10}px) scale(1.02)`,opacity:1,offset:.65},{transform:"none",opacity:1}],{duration:520,easing:"cubic-bezier(.2,.9,.3,1.15)"});}catch(e){}
+/* the current card is lifted off the deck as a floating copy, so the page itself never re-animates */
+function cardSnap(){
+  const f=document.querySelector(".cardsview .deck .flip");if(!f||RM.matches||!f.animate)return null;
+  const r=f.getBoundingClientRect(),c=f.cloneNode(true);
+  c.classList.add("cardghost");c.removeAttribute("data-act");
+  Object.assign(c.style,{position:"fixed",left:r.left+"px",top:r.top+"px",width:r.width+"px",height:r.height+"px",margin:"0",zIndex:"30",pointerEvents:"none",transition:"none",minHeight:"0"});
+  return {c,from:f.style.transform||"none"};
 }
+function cardSwap(dir,snap){
+  const f=document.querySelector(".cardsview .deck .flip");
+  if(!snap||!f){return;}
+  document.body.append(snap.c);const g=snap.c,up=dir==="up";
+  setTimeout(()=>g.remove(),1000);
+  const E="cubic-bezier(.22,.8,.3,1)";
+  if(up){
+    g.animate([{transform:snap.from,opacity:1,zIndex:30,offset:0},{transform:"translateY(-62%) rotate(-6deg) scale(1.03)",opacity:1,zIndex:30,offset:.42},{transform:"translateY(-40%) rotate(-3deg) scale(.95)",opacity:1,zIndex:1,offset:.5},{transform:"translateY(22px) scale(.88)",opacity:0,zIndex:1}],{duration:720,easing:E}).onfinish=()=>g.remove();
+    f.animate([{transform:"translateY(18px) scale(.93)",filter:"brightness(.96)"},{transform:"translateY(10px) scale(.96)",offset:.4},{transform:"none",filter:"none"}],{duration:620,easing:"cubic-bezier(.3,1.3,.5,1)"});
+  }else{
+    g.style.zIndex="1";
+    g.animate([{transform:snap.from,opacity:1},{transform:"translateY(18px) scale(.93)",opacity:0}],{duration:560,easing:E}).onfinish=()=>g.remove();
+    f.animate([{transform:"translateY(-70%) rotate(-5deg) scale(1.02)",opacity:0},{transform:"translateY(-20%) rotate(-2deg)",opacity:1,offset:.45},{transform:"none",opacity:1}],{duration:620,easing:"cubic-bezier(.3,1.25,.5,1)"});
+  }
+}
+function cardSlide(){}
 function cardGo(dir){const C=APP.cards;if(!C)return;
-  if(dir==="up"){ACT.cardNext();}else{if(!C.i){const d=document.querySelector(".cardsview .deck");d&&d.animate&&d.animate([{transform:"none"},{transform:"translateY(14px)"},{transform:"none"}],{duration:320,easing:EZ.out3});return;}ACT.cardPrev();}
+  if(dir==="up"){ACT.cardNext();}else{if(!C.i){const f=document.querySelector(".cardsview .deck .flip");const from=f&&f.style.transform||"none";if(f){f.style.transform="";f.animate&&f.animate([{transform:from},{transform:"translateY(14px)"},{transform:"none"}],{duration:380,easing:EZ.out3});}return;}ACT.cardPrev();}
 }
 document.addEventListener("pointerdown",e=>{
   const d=e.target.closest&&e.target.closest(".cardsview .deck");if(!d||e.target.closest(".cardspk"))return;
-  CSW={y:e.clientY,x:e.clientX,d,moved:false,id:e.pointerId};
+  const fl=d.querySelector(".flip");if(!fl)return;CSW={y:e.clientY,x:e.clientX,d:fl,moved:false,id:e.pointerId};
 });
 document.addEventListener("pointermove",e=>{
   if(!CSW||e.pointerId!==CSW.id)return;const dy=e.clientY-CSW.y,dx=e.clientX-CSW.x;
   if(!CSW.moved&&Math.abs(dy)>8&&Math.abs(dy)>Math.abs(dx))CSW.moved=true;
-  if(CSW.moved)CSW.d.style.transform=`translateY(${dy*.55}px) rotate(${dy*.02}deg)`;
+  if(CSW.moved){CSW.d.style.transition="none";CSW.d.style.transform=`translateY(${dy*.6}px) rotate(${dy*.025}deg)`;}
 });
 const cswEnd=e=>{
   if(!CSW||e.pointerId!==CSW.id)return;const dy=e.clientY-CSW.y,d=CSW.d,moved=CSW.moved;CSW=null;
   if(!moved)return;window._swiped=Date.now();
-  if(Math.abs(dy)>60){d.style.transform="";cardGo(dy<0?"up":"down");}
-  else{const from=d.style.transform;d.style.transform="";d.animate&&d.animate([{transform:from},{transform:"none"}],{duration:380,easing:"cubic-bezier(.3,1.4,.5,1)"});}
+  if(Math.abs(dy)>60){if(dy>0&&!APP.cards.i){cardGo("down");return;}cardGo(dy<0?"up":"down");}
+  else{const from=d.style.transform;d.style.transform="";d.style.transition="";d.animate&&d.animate([{transform:from},{transform:"none"}],{duration:380,easing:"cubic-bezier(.3,1.4,.5,1)"});}
 };
 document.addEventListener("pointerup",cswEnd);document.addEventListener("pointercancel",cswEnd);
 document.addEventListener("wheel",e=>{
@@ -3222,7 +3244,7 @@ function viewSpell(){
     if(r.t==="word"){q="শোনো, তারপর ছবিটা বেছে নাও";body=`<button class="sp-wordbig" data-act="say" data-t="${esc(w[0])}">${IC.speak}<span>${w[0].toUpperCase()}</span></button><div class="sp-opts pics">${r.opts.map(o=>`<button class="sp-opt pic ${r.done&&o[0]===w[0]?"sp-right":""}" data-act="spellPick" data-v="${esc(o[0])}" ${r.wrong.includes(o[0])||r.done?"disabled":""}>${o[1]}</button>`).join("")}</div>`;}
     if(r.t==="miss"){q="কোন অক্ষরটা নেই?";body=`${spPic(w[1],"mid")}<div class="sp-letters show">${w[0].split("").map((c,k)=>k===r.gap&&!r.done?`<span class="spl on gap" style="--lc:#c8d0cc">?</span>`:`<span class="spl on ${k===r.gap?"sp-right":""}" style="--lc:${LCOL[k%LCOL.length]}">${c.toUpperCase()}</span>`).join("")}</div><div class="sp-opts">${r.opts.map(c=>`<button class="sp-opt letter" data-act="spellMiss" data-v="${c}" ${r.wrong.includes(c)||r.done?"disabled":""}>${c.toUpperCase()}</button>`).join("")}</div>`;}
     if(r.t==="build"){q="অক্ষর সাজিয়ে শব্দ বানাও";body=`${spPic(w[1],"mid")}<div class="sp-slots ${r.done?"sp-right":""}">${w[0].split("").map((c,k)=>`<span class="sp-slot ${r.sel[k]!=null?"full":""}" style="--lc:${LCOL[k%LCOL.length]}">${r.sel[k]!=null?r.tiles[r.sel[k]].toUpperCase():""}</span>`).join("")}</div><div class="sp-tiles">${r.tiles.map((c,ti)=>`<button class="sp-tile ${r.sel.includes(ti)?"used":""}" data-act="spellTile" data-i="${ti}" ${r.sel.includes(ti)||r.done?"disabled":""}>${c.toUpperCase()}</button>`).join("")}</div><button class="sp-hear" data-act="say" data-t="${esc(w[0])}">${IC.speak} শোনো</button>`;}
-    return `<main class="view spellview sp-run">${bar("spellHome")}<div class="sp-gamebar"><span class="sp-gtag">${sp.kind==="quiz"?"🧠 Revision":sp.kind==="revise"?"↻ Revise":"🎮 Game"}</span><div class="pbar"><i style="width:${Math.round(sp.i/fixedTotal*100)}%"></i></div><span class="sp-gst">⭐ ${sp.stars}</span></div>
+    return `<main class="view spellview sp-run">${bar("spellHome")}<div class="sp-gamebar"><span class="sp-gtag">${sp.kind==="quiz"?"🧠 Revision":sp.kind==="revise"?"↻ Revise":"🎮 Game"}</span><div class="pbar"><i style="width:${Math.round((sp.i+(r.done?1:0))/fixedTotal*100)}%"></i></div><span class="sp-gst">⭐ ${sp.stars}</span></div>
       <div class="sp-game" data-key="r${sp.i}"><p class="sp-q">${q}</p>${body}${r.tries&&!r.done?`<p class="sp-try">আবার চেষ্টা করো, তুমি পারবে! 💪</p>`:""}</div></main>`;
   }
   if(sp.scr==="result"){
@@ -3591,7 +3613,7 @@ function TABS_FOR(){return isKid()?[["learn","Learn",IC.learn],["practice","Play
 
 let LASTKEY=null,LASTSUB=null;
 function viewKey(){if(CLOUD.avail()&&!CLOUD.user)return "login:"+LG.tab;if(APP.welcome)return "welcome";if(APP.onb)return "onb:"+(APP.onb.edit||"new");if(APP.picker)return "picker";if(L)return L.done?"L:done":"L";if(APP.busy)return "busy";if(APP.warm)return "warm:"+APP.warm.step;if(APP.story)return "story:"+APP.story;if(APP.spell)return "spell:"+APP.spell.scr;if(APP.cards)return "cards";if(APP.chat)return "chat";return "tab:"+APP.tab;}
-function subKey(){if(APP.spell)return "s"+APP.spell.k+":"+(APP.spell.i||0);if(APP.onb)return "o"+APP.onb.step;if(L&&!L.done)return L.cheer?"cheer":"ex"+L.i;if(APP.warm)return "w"+APP.warm.ex+":"+APP.warm.tw+":"+(APP.warm.noPen?1:0);if(APP.cards)return "c"+APP.cards.i;if(!L&&!APP.busy&&!APP.story&&!APP.chat&&APP.tab==="learn")return "t:"+APP.track;return "";}
+function subKey(){if(APP.spell)return "s"+APP.spell.k+":"+(APP.spell.i||0);if(APP.onb)return "o"+APP.onb.step;if(L&&!L.done)return L.cheer?"cheer":"ex"+L.i;if(APP.warm)return "w"+APP.warm.ex+":"+APP.warm.tw+":"+(APP.warm.noPen?1:0);if(APP.cards)return "c"+APP.cards.unit;if(!L&&!APP.busy&&!APP.story&&!APP.chat&&APP.tab==="learn")return "t:"+APP.track;return "";}
 function renderNav(instant){
   const t=$("#tabs"),tabs=TABS_FOR(),sig=tabs.map(x=>x[0]).join();
   if(t.dataset.sig!==sig){t.querySelectorAll("button").forEach(b=>b.remove());t.insertAdjacentHTML("beforeend",tabs.map(([id,l,i])=>`<button data-act="tab" data-v="${id}">${i}<span>${l}</span></button>`).join(""));t.dataset.sig=sig;t.style.setProperty("--n",tabs.length);instant=true;}
@@ -4095,7 +4117,7 @@ const ACT={
  practiceDue(){startPractice();},
  openCards(el){openCards(el.dataset.u||"");},
  closeCards(){APP.cards=null;APP.cardMenu=false;render();},
- cardNext(){const C=APP.cards;C.flip=false;C.i=C.i<C.items.length-1?C.i+1:0;render();cardSlide("up");if(S.autoplay)TTS.say(C.items[C.i].en);},
+ cardNext(){const C=APP.cards,snap=cardSnap();C.flip=false;C.i=C.i<C.items.length-1?C.i+1:0;render();cardSwap("up",snap);if(S.autoplay)TTS.say(C.items[C.i].en);},
  flipCard(el,e){if(e&&e.target.closest(".cardspk"))return;if(Date.now()-(window._swiped||0)<400)return;APP.cards.flip=!APP.cards.flip;render();if(!APP.cards.flip)TTS.say(APP.cards.items[APP.cards.i].en);},
  cardMenu(){APP.cardMenu=!APP.cardMenu;render();},
  pickCardUnit(el){APP.cardMenu=false;openCards(el.dataset.u);},
@@ -4111,7 +4133,7 @@ const ACT={
  openHelp(){APP.modal=helpModal();render();},
  removePhoto(){const p=prof();delete p.photo;Store.saveProfiles();render();},
  toggleQuests(){APP.qOpen=!qOpen();try{localStorage.setItem("aec4:qopen",APP.qOpen?"1":"0");}catch(e){}render();},
- cardPrev(){APP.cards.flip=false;APP.cards.i=Math.max(0,APP.cards.i-1);render();cardSlide("down");},
+ cardPrev(){if(!APP.cards.i)return;const snap=cardSnap();APP.cards.flip=false;APP.cards.i=APP.cards.i-1;render();cardSwap("down",snap);},
  startChat(el){startChat(el.dataset.id);},
  closeChat(){APP.chat=null;TTS.stop();render();},
  chatSend(){const i=$("#chatin");const t=i.value.trim();if(t){i.value="";chatTurn(t,null);}},
