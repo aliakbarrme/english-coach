@@ -27,7 +27,7 @@ const TTS={
   return (async()=>{for(let i=0;i<list.length;i++){if(my!==this.run)break;onIdx&&onIdx(i);await one(list[i]);}
    if(my===this.run){this.speaking(false);onIdx&&onIdx(-1);}})();
  },
- devSay(t,r){return new Promise(res=>{
+ devSay(t,r){if(/^ph:/.test(t))t=(typeof PHFB!=="undefined"&&PHFB[t])||t.slice(3);return new Promise(res=>{
   if(!this.dev){res();return;}
   try{const u=new SpeechSynthesisUtterance(t);const v=this.voice();if(v)u.voice=v;u.lang=v?.lang||"en-US";u.rate=r;
    let done=false;const fin=()=>{if(!done){done=true;res();}};u.onend=fin;u.onerror=fin;

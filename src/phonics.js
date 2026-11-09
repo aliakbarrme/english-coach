@@ -22,11 +22,17 @@ const SPELL=[
 ];
 /* letter names, letter sounds, and sounds of letter teams */
 const LETTER={a:"ay",b:"bee",c:"see",d:"dee",e:"ee",f:"ef",g:"jee",h:"aitch",i:"eye",j:"jay",k:"kay",l:"el",m:"em",n:"en",o:"oh",p:"pee",q:"cue",r:"ar",s:"ess",t:"tee",u:"you",v:"vee",w:"double you",x:"ex",y:"why",z:"zee"};
-const LSOUND={a:"ah",b:"buh",c:"kuh",d:"duh",e:"eh",f:"fuh",g:"guh",h:"huh",i:"ih",j:"juh",k:"kuh",l:"luh",m:"muh",n:"nuh",o:"aw",p:"puh",q:"kwuh",r:"ruh",s:"suh",t:"tuh",u:"uh",v:"vuh",w:"wuh",x:"ecks",y:"yuh",z:"zuh"};
-const DIG={igh:"eye",tch:"chuh",sh:"shh",ch:"chuh",th:"thuh",ck:"kuh",ng:"ung",wh:"wuh",ph:"fuh",qu:"kwuh",ee:"ee",ea:"ee",oo:"oo",ai:"ay",ay:"ay",oa:"oh",ow:"oh",ou:"ow",ar:"ar",or:"or",er:"er",ir:"er",ur:"er",ie:"eye",ll:"luh",ss:"suh",ff:"fuh",tt:"tuh",pp:"puh",bb:"buh",dd:"duh",rr:"ruh",nn:"nuh",mm:"muh",gg:"guh",zz:"zuh"};
+/* real phonics sounds: "ph:<IPA>" clips are rendered straight from IPA by the neural voice; PHFB is what a device voice says if a clip is missing */
+const PHS={a:["æ","ah"],b:["bə","buh"],c:["kə","kuh"],d:["də","duh"],e:["ɛ","eh"],f:["ff","fff"],g:["ɡə","guh"],h:["hə","huh"],i:["ɪ","ih"],j:["ʤə","juh"],k:["kə","kuh"],l:["ll","lll"],m:["mm","mmm"],n:["nn","nnn"],o:["ɑ","aw"],p:["pə","puh"],q:["kwə","kwuh"],r:["ɹə","ruh"],s:["ss","sss"],t:["tə","tuh"],u:["ʌ","uh"],v:["vv","vvv"],w:["wə","wuh"],x:["ks","ks"],y:["jə","yuh"],z:["zz","zzz"],
+  sh:["ʃʃ","shh"],ch:["ʧə","chuh"],tch:["ʧə","chuh"],th:["θθ","th"],ck:["kə","kuh"],ng:["ŋ","ng"],wh:["wə","wuh"],ph:["ff","fff"],qu:["kwə","kwuh"],igh:["aɪ","eye"],ie:["aɪ","eye"],
+  ee:["iː","ee"],ea:["iː","ee"],oo:["uː","oo"],ai:["eɪ","ay"],ay:["eɪ","ay"],oa:["oʊ","oh"],ow:["oʊ","oh"],ou:["aʊ","ow"],ar:["ɑɹ","ar"],or:["ɔɹ","or"],er:["ɜɹ","er"],ir:["ɜɹ","er"],ur:["ɜɹ","er"]};
+const PHFB={};const ph=k=>{const p=PHS[k];if(!p)return k;PHFB["ph:"+p[0]]=p[1];return "ph:"+p[0];};
+const LSOUND={};"abcdefghijklmnopqrstuvwxyz".split("").forEach(c=>LSOUND[c]=ph(c));
+const DIG={};["igh","tch","sh","ch","th","ck","ng","wh","ph","qu","ee","ea","oo","ai","ay","oa","ow","ou","ar","or","er","ir","ur","ie"].forEach(k=>DIG[k]=ph(k));
+["ll","ss","ff","tt","pp","bb","dd","rr","nn","mm","gg","zz"].forEach(k=>DIG[k]=LSOUND[k[0]]);
 const ABC=[["a","apple","🍎"],["b","ball","⚽"],["c","cat","🐱"],["d","dog","🐶"],["e","egg","🥚"],["f","fish","🐟"],["g","goat","🐐"],["h","hat","👒"],["i","insect","🐛"],["j","juice","🧃"],["k","kite","🪁"],["l","lion","🦁"],["m","moon","🌙"],["n","nest","🪺"],["o","octopus","🐙"],["p","pen","🖊️"],["q","queen","👸"],["r","rabbit","🐰"],["s","sun","☀️"],["t","tiger","🐯"],["u","umbrella","☂️"],["v","van","🚐"],["w","watch","⌚"],["x","fox","🦊"],["y","yellow","💛"],["z","zebra","🦓"]];
 const LCOL=["#ff5c8a","#ff9a3c","#2fbf71","#3a9bff","#9b6bff","#ff6b5c"];
-const SPELL_TEXTS=()=>{const out=[];SPELL.forEach(L=>L.words.forEach(w=>{out.push(w[0]);if(w[3])out.push(w[3]);}));out.push(...Object.values(LETTER),...Object.values(LSOUND),...Object.values(DIG));ABC.forEach(([c,w])=>out.push(c.toUpperCase()+" for "+w,w));return out;};
+const SPELL_TEXTS=()=>{const out=[];SPELL.forEach(L=>L.words.forEach(w=>{out.push(w[0]);if(w[3])out.push(w[3]);}));out.push(...Object.values(LETTER),...Object.values(LSOUND),...Object.values(DIG));ABC.forEach(([c,w])=>out.push(c.toUpperCase()+" for "+w,w));return [...new Set(out)];};
 
 /* split a word into sound chunks: sh·i·p, c·a·k(e), b·oa·t */
 function spChunks(w,names){
@@ -188,8 +194,8 @@ function viewSpell(){
       <div class="sp-statrow four"><div><b>${learned}</b><span>শেখা শব্দ</span></div><div><b>${ok}</b><span>ঠিক উত্তর</span></div><div><b>${s.said}</b><span>🎤 বলেছে</span></div><div><b>${doneLv}/${SPELL.length}</b><span>লেভেল শেষ</span></div></div>
       ${rev?`<button class="sp-daily ${s.dailyAt===today()?"done":""}" data-act="spellDaily"><span class="sp-dem">${s.dailyAt===today()?"✅":"🔁"}</span><span class="grow"><b>Daily review</b><span class="tiny bn">${s.dailyAt===today()?"আজকের রিভিশন শেষ! চাইলে আবার খেলো":"আগে শেখা ৮টা শব্দ আবার খেলো"}</span></span><span>➜</span></button>`:""}
       <div class="sp-badges">${SPELL.map(L=>`<span class="sp-badge ${s.badges.includes(L.lv)?"got":""}" title="${esc(L.name)}">${L.badge}</span>`).join("")}</div>
-      <details class="sp-abc" ${learned<3?"open":""}><summary><span>🔠</span><b>ABC sounds</b><span class="tiny bn muted">অক্ষরের নাম আর আওয়াজ</span></summary>
-        <div class="sp-abcgrid">${ABC.map(([c,w,em],k)=>`<button class="sp-abct" data-act="spellAbc" data-c="${c}" style="--lc:${LCOL[k%LCOL.length]}"><b>${c.toUpperCase()}${c}</b><span>${em}</span></button>`).join("")}</div></details>
+      <details class="sp-abc" ${learned<3?"open":""}><summary><span class="sp-abcic">🔠</span><span class="grow"><b>ABC sounds</b><span class="tiny bn muted">চাপো: নাম → আওয়াজ → শব্দ</span></span><span class="sp-chev" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></summary>
+        <div class="sp-abcgrid">${ABC.map(([c,w,em],k)=>`<button class="sp-abct" data-act="spellAbc" data-c="${c}" style="--lc:${LCOL[k%LCOL.length]};--k:${k}" aria-label="${c.toUpperCase()} for ${w}"><span class="ab-l"><b>${c.toUpperCase()}</b><i>${c}</i></span><span class="ab-pic">${em}</span><span class="ab-w">${w}</span><span class="ab-wave"><i></i><i></i><i></i></span></button>`).join("")}</div></details>
       ${lv}
       ${tricky.length?`<div class="card"><h3 class="bn">আরেকটু অনুশীলন</h3><div class="revchips">${tricky.map(([w])=>`<button class="revchip" data-act="say" data-t="${esc(w)}">${IC.speak}<span>${esc(w)}</span></button>`).join("")}</div></div>`:""}
       <p class="tiny muted center bn">লেভেল শেষ হলে পরেরটা খুলবে। নতুন লেভেল আসতেই থাকবে!</p></main>`;
@@ -274,6 +280,9 @@ const SPELL_ACT={
    document.querySelectorAll(".sp-abct.hl").forEach(x=>x.classList.remove("hl"));el.classList.add("hl");
    if(el.animate)el.animate([{transform:"scale(1)"},{transform:"scale(1.15) rotate(-4deg)"},{transform:"scale(1)"}],{duration:450,easing:"cubic-bezier(.3,1.5,.5,1)"});
    const tok=SPELL_ACT._abc=Date.now();TTS.stop();
-   await spSay(LETTER[c]);if(SPELL_ACT._abc!==tok)return;await spWait(150);await spSay(LSOUND[c]);if(SPELL_ACT._abc!==tok)return;await spWait(150);await spSay(c.toUpperCase()+" for "+a[1]);
-   if(SPELL_ACT._abc===tok)el.classList.remove("hl");}
+   const step=(cls)=>{el.classList.remove("s-name","s-sound","s-word");if(cls)el.classList.add(cls);};
+   step("s-name");await spSay(LETTER[c]);if(SPELL_ACT._abc!==tok)return;await spWait(220);
+   step("s-sound");await spSay(LSOUND[c]);await spWait(260);if(SPELL_ACT._abc!==tok)return;await spSay(LSOUND[c]);if(SPELL_ACT._abc!==tok)return;await spWait(220);
+   step("s-word");await spSay(c.toUpperCase()+" for "+a[1]);
+   if(SPELL_ACT._abc===tok){step();el.classList.remove("hl");}}
 };
