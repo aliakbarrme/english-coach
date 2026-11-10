@@ -55,19 +55,29 @@ nav.tabs button,nav.tabs button svg{animation:none!important}
 .lg-eye:hover{background:var(--well);color:var(--ink)}
 .lg-eye[aria-pressed="true"]{color:var(--primary)}
 .lg-eye:active{transform:translateY(-50%) scale(.9)}
-/* profile picker: logout, delete and popup icons in one soft-UI (neumorphic) system:
-   .nm = raised shell (light top-left, shadow bottom-right), .nm-well = carved-in well, glyph = recessed stroke */
-.nm{--nb:#153b36;--nd:#05161400;--sd:#041311;--sl:#ffffff17;--s:42px;--ic:#ffb4a8;width:var(--s);height:var(--s);flex:none;padding:0;border:0;border-radius:calc(var(--s)*.36);display:grid;place-items:center;cursor:pointer;
-  background:var(--nb);box-shadow:calc(var(--s)*.12) calc(var(--s)*.12) calc(var(--s)*.26) var(--sd),calc(var(--s)*-.08) calc(var(--s)*-.08) calc(var(--s)*.2) var(--sl),inset 1px 1px 0 #ffffff14,inset -1px -1px 0 #00000033;
-  transition:box-shadow .18s ease,transform .18s ease}
-.nm-well{width:74%;height:74%;border-radius:calc(var(--s)*.26);display:grid;place-items:center;background:var(--nb);
-  box-shadow:inset calc(var(--s)*.07) calc(var(--s)*.07) calc(var(--s)*.14) var(--sd),inset calc(var(--s)*-.05) calc(var(--s)*-.05) calc(var(--s)*.12) var(--sl)}
-.nm-well svg{width:calc(var(--s)*.44);height:calc(var(--s)*.44);color:var(--ic);filter:drop-shadow(1px 1px 0 #00000059) drop-shadow(-.6px -.6px 0 #ffffff1f);transition:color .18s}
+/* soft-UI (neumorphic) icon system, light from top-left. Three styles, square or .round:
+   .nm        raised   (extruded button: main actions, e.g. logout)
+   .nm.in     inset    (carved-in: pressed / selected state)
+   .nm.ring   carved ring with a raised plate inside (small or destructive actions, status icons)
+   --s sets the size; shadows, radius and glyph scale with it. Glyph is always recessed. */
+.nm{--nb:#153b36;--sd:#041311;--sl:#ffffff17;--s:42px;--ic:#ffb4a8;--r:calc(var(--s)*.34);width:var(--s);height:var(--s);flex:none;padding:0;border:0;border-radius:var(--r);display:grid;place-items:center;cursor:pointer;background:var(--nb);
+  --raise:calc(var(--s)*.12) calc(var(--s)*.12) calc(var(--s)*.26) var(--sd),calc(var(--s)*-.08) calc(var(--s)*-.08) calc(var(--s)*.2) var(--sl);
+  --sink:inset calc(var(--s)*.08) calc(var(--s)*.08) calc(var(--s)*.16) var(--sd),inset calc(var(--s)*-.06) calc(var(--s)*-.06) calc(var(--s)*.14) var(--sl);
+  box-shadow:var(--raise),inset 1px 1px 0 #ffffff12,inset -1px -1px 0 #0000002e;transition:box-shadow .2s ease,transform .2s ease}
+.nm.round{--r:50%}
+.nm-well{width:100%;height:100%;border-radius:var(--r);display:grid;place-items:center;transition:box-shadow .2s ease,transform .2s ease}
+.nm-well svg{width:calc(var(--s)*.44);height:calc(var(--s)*.44);color:var(--ic);filter:drop-shadow(1px 1px 0 #00000059) drop-shadow(-.6px -.6px 0 #ffffff1f);transition:color .2s}
+.nm.in,.nm:active{box-shadow:var(--sink)}
+.nm:active{transform:scale(.97)}
+.nm.ring{box-shadow:var(--sink)}
+.nm.ring .nm-well{width:72%;height:72%;background:var(--nb);
+  box-shadow:calc(var(--s)*.06) calc(var(--s)*.06) calc(var(--s)*.12) var(--sd),calc(var(--s)*-.04) calc(var(--s)*-.04) calc(var(--s)*.1) var(--sl),inset 1px 1px 0 #ffffff12}
+.nm.ring:not(.round) .nm-well{border-radius:calc(var(--r)*.7)}
+.nm.ring:active .nm-well{box-shadow:none;transform:scale(.94)}
+.nm.ring .nm-well svg{width:calc(var(--s)*.36);height:calc(var(--s)*.36)}
 @media (hover:hover){.nm:hover .nm-well svg{color:#fff}}
-.nm:active{transform:scale(.97);box-shadow:inset calc(var(--s)*.1) calc(var(--s)*.1) calc(var(--s)*.2) var(--sd),inset calc(var(--s)*-.07) calc(var(--s)*-.07) calc(var(--s)*.16) var(--sl)}
-.nm:active .nm-well{box-shadow:none}
 .nm:focus-visible{outline:2px solid #5cd0b4;outline-offset:3px}
-.nm.light{--nb:#f1f4f2;--sd:#c7d1cc;--sl:#ffffff;--ic:#e0483d;cursor:default}
+.nm.light{--nb:#eef1f4;--sd:#c3cad3;--sl:#ffffff;--ic:#e0483d;cursor:default}
 .pk-out{position:absolute;top:max(18px,env(safe-area-inset-top));right:16px;z-index:3;--s:46px;--nb:#123e38;--ic:#9fe6d3}
 .pk-cell{position:relative;display:grid}
 .pk-cell>.pk-card{height:100%}
