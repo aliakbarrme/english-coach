@@ -115,7 +115,7 @@ function spMakeRound(n,w,t){
 function spStartGame(n,kind,words){APP.spell={scr:"game",lv:n,kind,rounds:spRounds(words),i:0,stars:0,k:Date.now()};render();spSayRound();}
 function spGo(n){
   const nx=spNext(n);
-  if(nx.t==="learn"){APP.spell={scr:"learn",lv:n,i:nx.i,k:Date.now()};render();spAnimate("sound");return;}
+  if(nx.t==="learn"){APP.spell={scr:"learn",lv:n,i:nx.i,k:Date.now()};render();spAnimate();return;}
   if(nx.t==="game"){const L=spLevel(n),ws=L.words.slice(nx.batch*5,nx.batch*5+5);APP.spell={scr:"intro",lv:n,next:()=>spStartGame(n,"game",ws),k:Date.now(),title:"Game time!",sub:"৫টা নতুন শব্দ শিখেছ! এবার একটা মজার খেলা 🎮"};render();SND.play("done");return;}
   if(nx.t==="quiz"){APP.spell={scr:"intro",lv:n,next:()=>spStartGame(n,"quiz",spLevel(n).words),k:Date.now(),title:"Revision time!",sub:"সব শব্দ একবার করে দেখি, তারপর নতুন লেভেল খুলবে! 🔓"};render();SND.play("done");return;}
   APP.spell={scr:"home",k:Date.now()};render();
@@ -126,7 +126,7 @@ const spSay=(t,rate)=>Promise.race([TTS.say(t,rate),spWait(1600)]);
    names mode: highlight each letter while its name plays (c-a-t), then the word. */
 async function spAnimate(mode){
   const sp=APP.spell;if(!sp||sp.scr!=="learn")return;const tok=sp.k=Date.now();
-  const L=spLevel(sp.lv),w=L.words[sp.i][0];mode=mode||(L.names?"name":"sound");sp.mode=mode;
+  const L=spLevel(sp.lv),w=L.words[sp.i][0];mode=mode||(L.names?"name":APP.spMode||"name");sp.mode=mode;
   const box=document.querySelector(".sp-card .sp-letters");if(!box)return;
   const els=()=>[...document.querySelectorAll(".sp-card .sp-letters .spl")];
   const fresh=!els().some(e=>e.classList.contains("on"));
@@ -221,7 +221,7 @@ function viewSpell(){
   }
   const L=spLevel(sp.lv);
   if(sp.scr==="learn"){
-    const w=L.words[sp.i],inBatch=sp.i%5,mode=sp.mode||(L.names?"name":"sound");
+    const w=L.words[sp.i],inBatch=sp.i%5,mode=sp.mode||(L.names?"name":APP.spMode||"name");
     return `<main class="view spellview sp-run">${bar("spellHome")}
       <div class="sp-dots">${[0,1,2,3,4].filter(d=>Math.floor(sp.i/5)*5+d<L.words.length).map(d=>`<i class="${d<inBatch?"done":d===inBatch?"on":""}"></i>`).join("")}</div>
       <div class="sp-card" style="--lc:${L.color}" data-key="w${sp.i}"><span class="sp-newtag">LEVEL ${L.lv} · NEW WORD</span>${spPic(w[1],"big")}${spLetters(w[0])}<span class="bn muted">${esc(w[2])}</span>
@@ -269,7 +269,7 @@ const SPELL_ACT={
  spellLevel(el){const n=+el.dataset.n;if(!spLevel(n))return;if(!spUnlocked(n)){toast("আগের লেভেল শেষ করো 🔒");return;}const nx=spNext(n);if(nx.t==="done"){spStartGame(n,"revise",spShuffle(spLevel(n).words).slice(0,10));return;}spGo(n);},
  spellRevise(el){const n=+el.dataset.n,s=SP(),ws=s.lv[n].learned.map(spWordRec).filter(Boolean);const pick=ws.filter(w=>(s.w[w[0]]||{}).bad).concat(spShuffle(ws)).filter((w,i,a)=>a.indexOf(w)===i).slice(0,8);spStartGame(n,"revise",pick);},
  spellDaily(){const ws=spReviewWords(8);if(!ws.length)return;spStartGame(spLvOf(ws[0][0]),"daily",ws);},
- spellReplay(el){spAnimate(el&&el.dataset&&el.dataset.m);},
+ spellReplay(el){const m=el&&el.dataset&&el.dataset.m;if(m)APP.spMode=m;spAnimate(m);},
  spellLearned(){const sp=APP.spell,L=spLevel(sp.lv),st=SP().lv[sp.lv],w=L.words[sp.i][0];TTS.stop();HEAR.stop();if(!st.learned.includes(w))st.learned.push(w);Store.save();spGo(sp.lv);},
  spellIntroGo(){const f=APP.spell.next;f&&f();},
  spellPick(el){const r=APP.spell.rounds[APP.spell.i];if(r.done)return;const v=el.dataset.v;if(v===r.w[0])spRight(el);else{r.wrong.push(v);spWrong(el);render();if(r.t==="fix")TTS.say(r.w[0]);}},

@@ -55,3 +55,17 @@ nav.tabs button,nav.tabs button svg{animation:none!important}
 .lg-eye:hover{background:var(--well);color:var(--ink)}
 .lg-eye[aria-pressed="true"]{color:var(--primary)}
 .lg-eye:active{transform:translateY(-50%) scale(.9)}
+/* profile picker: logout button, delete icon on each card, delete popup */
+.pk-out{position:absolute;top:max(18px,env(safe-area-inset-top));right:16px;z-index:3;width:46px;height:46px;border-radius:15px;display:grid;place-items:center;color:#ffd4cf;background:#ffffff14;border:1px solid #ffffff26;box-shadow:0 10px 22px -12px #000c,inset 0 1px 0 #ffffff26;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);cursor:pointer;transition:transform .15s,background .15s}
+.pk-out svg{width:22px;height:22px}
+.pk-out:hover{background:#ff6b5a33;color:#fff}.pk-out:active{transform:scale(.92)}
+.pk-cell{position:relative;display:grid}
+.pk-cell>.pk-card{height:100%}
+.pk-del{position:absolute;top:12px;right:12px;z-index:2;width:36px;height:36px;border-radius:12px;display:grid;place-items:center;color:#ffb3aa;background:#0000002e;border:1px solid #ffffff1f;cursor:pointer;transition:transform .15s,background .15s,color .15s}
+.pk-del svg{width:19px;height:19px}
+.pk-del:hover{background:#ff5a4a;color:#fff}.pk-del:active{transform:scale(.9)}
+.pk-ask{max-width:360px;width:100%;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;padding:26px 20px 20px}
+.pk-ask h3{margin:0;font-size:1.12rem;line-height:1.35}
+.pk-askic{width:58px;height:58px;border-radius:20px;display:grid;place-items:center;color:#fff;background:linear-gradient(145deg,#ff7a6b,#e0443a);box-shadow:0 12px 24px -10px #e0443a99}
+.pk-askic svg{width:28px;height:28px}
+.pk-askbtns{width:100%;gap:10px;margin-top:6px}.pk-askbtns .btn{flex:1}

@@ -161,17 +161,30 @@ function viewOnb(){
    <div class="onb-body">${body}</div>
    <div class="onb-foot"><button class="btn wide xl" data-act="onbNext" ${can?"":"disabled"}>${nextLbl}</button></div></main>`;
 }
+const PK_OUT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h3a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-3"/><path d="M9 8l-4 4 4 4M5 12h10"/></svg>';
+const PK_DEL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>';
+const PICK_ACT={
+ pkLogout(){logoutAll();},
+ pkDel(el){const p=PROFILES.find(x=>x.id===el.dataset.id);if(!p)return;
+  APP.modal=`<div class="modal" data-act="closeModal"><div class="card pk-ask" role="alertdialog" aria-labelledby="pkq"><span class="pk-askic">${PK_DEL}</span>
+   <h3 id="pkq">Are you sure you want to delete this profile?</h3><p class="small muted"><b>${esc(p.name)}</b>-এর সব অগ্রগতি মুছে যাবে, আর ফেরানো যাবে না।</p>
+   <div class="row pk-askbtns"><button class="btn ghost" data-act="closeModal">No</button><button class="btn bad" data-act="pkDelYes" data-id="${esc(p.id)}">Yes, delete</button></div></div></div>`;render();},
+ async pkDelYes(el){const id=el.dataset.id;el.disabled=true;
+  await Store.delProfile(id);CLOUD.removeProfile(id);PROFILES=PROFILES.filter(p=>p.id!==id);
+  if(PID===id){PID=null;S=defaultState();CUSTOM={};MARKS={};}
+  APP.modal=null;await Store.saveProfiles();APP.picker=PROFILES.length>0;APP.welcome=!PROFILES.length;render();toast("প্রোফাইল মুছে ফেলা হয়েছে");}
+};
 function viewPicker(){
   const h=new Date().getHours(),g=h<5?"Good night":h<12?"Good morning":h<17?"Good afternoon":"Good evening";
   const role=p=>p.age==="kid"?"Kids · 3–7":p.age==="teen"?"Teen":"Adult";
   const last=p=>!p.last?"New":p.last===today()?"Active today":p.last===addDays(-1)?"Yesterday":"";
-  return `<main class="picker2"><div class="pk-glow" aria-hidden="true"></div>
+  return `<main class="picker2"><div class="pk-glow" aria-hidden="true"></div>${CLOUD.avail()&&CLOUD.user?`<button class="pk-out" data-act="pkLogout" aria-label="Log out" title="Log out">${PK_OUT}</button>`:""}
    <div class="pk-top"><span class="pk-logo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3h-8l-4.5 3.2c-.5.4-1.2 0-1.2-.6V17.5H5a3 3 0 0 1-3-3v-7a3 3 0 0 1 3-3z" fill="#fff"/><rect x="7.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/><rect x="10.8" y="7.4" width="2.4" height="8.2" rx="1.2" fill="#f2b632"/><rect x="14.3" y="9" width="2.4" height="5" rx="1.2" fill="#e8782a"/></svg></span><span class="pk-brand">Bolo English</span></div>
    <div class="pk-head"><span class="pk-hi"><i></i>${g}</span><h1>Who's learning today?</h1><p>Choose your profile. Everyone keeps their own progress.</p></div>
-   <div class="pk-grid">${PROFILES.map(p=>`<button class="pk-card ${p.age==="kid"?"kid":""}" data-act="pickProfile" data-id="${esc(p.id)}">
+   <div class="pk-grid">${PROFILES.map(p=>`<div class="pk-cell"><button class="pk-del" data-act="pkDel" data-id="${esc(p.id)}" aria-label="Delete ${esc(p.name)}" title="Delete profile">${PK_DEL}</button><button class="pk-card ${p.age==="kid"?"kid":""}" data-act="pickProfile" data-id="${esc(p.id)}">
       ${last(p)?`<span class="pk-last ${p.last===today()?"live":""}">${last(p)}</span>`:""}
       <span class="pk-ring">${avatarHTML(p,"xl")}</span>
       <b class="pk-name">${esc(p.name)}</b><span class="pk-role">${role(p)}</span>
-      <span class="pk-stats"><span><em>${p.streak||0}</em>Streak</span><span><em>${p.xp||0}</em>XP</span></span></button>`).join("")}</div>
+      <span class="pk-stats"><span><em>${p.streak||0}</em>Streak</span><span><em>${p.xp||0}</em>XP</span></span></button></div>`).join("")}</div>
    <button class="pk-add" data-act="addProfile"><span class="pk-plus">＋</span><span class="grow"><b>Add a profile</b><small>Partner, kids, anyone</small></span><span class="pk-arrow">→</span></button><p class="pk-copy">© 2026 Ali Akbar · BD Webhut</p></main>`;
 }
