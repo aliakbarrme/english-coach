@@ -82,3 +82,8 @@ nav.tabs .railbtn:active{box-shadow:inset 3px 3px 6px #030d0c,inset -2px -2px 5p
 .wfloat.run .wf-ic{animation:wfTick 1s steps(2) infinite}
 @keyframes wfTick{50%{transform:rotate(-8deg)}}
 .wfloat .btn{white-space:nowrap}
+/* add-profile icons are SVG so they sit exactly in the middle of their circles */
+.pk-add .pk-plus svg{width:22px;height:22px;display:block;filter:drop-shadow(1px 1px 0 #0007)}
+.pk-arrow{padding:0;line-height:0}
+.pk-arrow svg{width:20px;height:20px;display:block;color:#7fe0c7;transform:translateX(-.5px);transition:transform .3s var(--ease)}
+.pk-add:hover .pk-arrow{transform:none}.pk-add:hover .pk-arrow svg{transform:translateX(4px)}

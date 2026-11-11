@@ -1627,6 +1627,11 @@ nav.tabs .railbtn:active{box-shadow:inset 3px 3px 6px #030d0c,inset -2px -2px 5p
 .wfloat.run .wf-ic{animation:wfTick 1s steps(2) infinite}
 @keyframes wfTick{50%{transform:rotate(-8deg)}}
 .wfloat .btn{white-space:nowrap}
+/* add-profile icons are SVG so they sit exactly in the middle of their circles */
+.pk-add .pk-plus svg{width:22px;height:22px;display:block;filter:drop-shadow(1px 1px 0 #0007)}
+.pk-arrow{padding:0;line-height:0}
+.pk-arrow svg{width:20px;height:20px;display:block;color:#7fe0c7;transform:translateX(-.5px);transition:transform .3s var(--ease)}
+.pk-add:hover .pk-arrow{transform:none}.pk-add:hover .pk-arrow svg{transform:translateX(4px)}
 </style>
 
 <div id="splash" aria-label="Bolo English loading"><img class="sp-native" src="icon-512.png" alt="" onerror="this.remove()"><div class="sp-in">
@@ -2900,7 +2905,7 @@ function viewPicker(){
       <span class="pk-ring">${avatarHTML(p,"xl")}</span>
       <b class="pk-name">${esc(p.name)}</b><span class="pk-role">${role(p)}</span>
       <span class="pk-stats"><span><em>${p.streak||0}</em>Streak</span><span><em>${p.xp||0}</em>XP</span></span></button></div>`).join("")}</div>
-   <button class="pk-add" data-act="addProfile"><span class="pk-plus">＋</span><span class="grow"><b>Add a profile</b><small>Partner, kids, anyone</small></span><span class="pk-arrow">→</span></button><p class="pk-copy">© 2026 Ali Akbar · BD Webhut</p></main>`;
+   <button class="pk-add" data-act="addProfile"><span class="pk-plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span><span class="grow"><b>Add a profile</b><small>Partner, kids, anyone</small></span><span class="pk-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 7l5 5-5 5"/></svg></span></button><p class="pk-copy">© 2026 Ali Akbar · BD Webhut</p></main>`;
 }
 
 /* ================= progress report: course level, skills, weekly report ================= */
