@@ -588,9 +588,10 @@ function viewWarmRun(){
   if(W.step===3){
     if(W.left==null)W.left=penSecs();
     const p=w.passage;
-    body=`<div class="row between"><h2>${esc(p.title)}</h2><div class="timer" id="wt" style="font-size:2rem">${fmt(W.left)}</div></div>
+    /* the timer and its buttons float at the top, so they stay in sight while the passage scrolls */
+    body=`<h2 class="wp-title">${esc(p.title)}</h2>
      <p class="note small bn">${W.noPen?"এবার কলম ছাড়া পড়ো — পার্থক্য খেয়াল করো।":"কলম আড়াআড়ি দাঁতে ধরে জোরে জোরে, ধীরে পড়ো। শেষ হলে আবার শুরু থেকে পড়ো।"}</p>
-     <div class="row center"><button class="btn warm" data-act="warmToggle">${W.run?"Pause":W.left===penSecs()?"Start "+fmt(penSecs()):"Resume"}</button>${W.left<penSecs()?`<button class="btn ghost" data-act="warmFinish3">শেষ</button>`:""}</div>
+     <div class="wfloat ${W.run?"run":""}"><span class="wf-ic">⏱️</span><div class="timer" id="wt">${fmt(W.left)}</div><span class="grow"></span><button class="btn warm sm" data-act="warmToggle">${W.run?"Pause":W.left===penSecs()?"Start "+fmt(penSecs()):"Resume"}</button>${W.left<penSecs()?`<button class="btn ghost sm" data-act="warmFinish3">শেষ</button>`:""}</div>
      <div class="card"><div class="passage">${esc(p.text)}</div></div>`;
   }
   return `<main class="view" style="padding-bottom:40px">${head}${body}</main>`;

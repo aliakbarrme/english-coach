@@ -1616,6 +1616,17 @@ nav.tabs .railbtn:active{box-shadow:inset 3px 3px 6px #030d0c,inset -2px -2px 5p
 /* ---- match pairs: matched cards stay, faded; a wrong pick gets a red focus ring ---- */
 .match .opt.gone{opacity:.2;transform:none;pointer-events:none;filter:saturate(.6)}
 .match .opt.err{border-color:var(--bad);box-shadow:0 0 0 3px color-mix(in srgb,var(--bad) 28%,transparent)}
+
+/* ---- warm-up pen reading: timer bar floats at the top while the passage scrolls ---- */
+.wp-title{margin:4px 0 0}
+.wfloat{position:sticky;top:calc(8px + env(safe-area-inset-top,0px));z-index:6;display:flex;align-items:center;gap:10px;padding:8px 8px 8px 14px;border-radius:20px;
+  background:color-mix(in srgb,var(--surface) 82%,transparent);-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);
+  box-shadow:var(--nm-up),0 14px 30px -18px #10231f66;border:1px solid color-mix(in srgb,var(--line) 60%,transparent)}
+.wfloat .timer{font-size:1.9rem;line-height:1;font-variant-numeric:tabular-nums;padding:6px 12px;border-radius:14px;background:var(--nm-b);box-shadow:var(--nm-in-s);color:var(--warm-d)}
+.wfloat .wf-ic{font-size:1.3rem}
+.wfloat.run .wf-ic{animation:wfTick 1s steps(2) infinite}
+@keyframes wfTick{50%{transform:rotate(-8deg)}}
+.wfloat .btn{white-space:nowrap}
 </style>
 
 <div id="splash" aria-label="Bolo English loading"><img class="sp-native" src="icon-512.png" alt="" onerror="this.remove()"><div class="sp-in">
@@ -4264,9 +4275,10 @@ function viewWarmRun(){
   if(W.step===3){
     if(W.left==null)W.left=penSecs();
     const p=w.passage;
-    body=`<div class="row between"><h2>${esc(p.title)}</h2><div class="timer" id="wt" style="font-size:2rem">${fmt(W.left)}</div></div>
+    /* the timer and its buttons float at the top, so they stay in sight while the passage scrolls */
+    body=`<h2 class="wp-title">${esc(p.title)}</h2>
      <p class="note small bn">${W.noPen?"এবার কলম ছাড়া পড়ো — পার্থক্য খেয়াল করো।":"কলম আড়াআড়ি দাঁতে ধরে জোরে জোরে, ধীরে পড়ো। শেষ হলে আবার শুরু থেকে পড়ো।"}</p>
-     <div class="row center"><button class="btn warm" data-act="warmToggle">${W.run?"Pause":W.left===penSecs()?"Start "+fmt(penSecs()):"Resume"}</button>${W.left<penSecs()?`<button class="btn ghost" data-act="warmFinish3">শেষ</button>`:""}</div>
+     <div class="wfloat ${W.run?"run":""}"><span class="wf-ic">⏱️</span><div class="timer" id="wt">${fmt(W.left)}</div><span class="grow"></span><button class="btn warm sm" data-act="warmToggle">${W.run?"Pause":W.left===penSecs()?"Start "+fmt(penSecs()):"Resume"}</button>${W.left<penSecs()?`<button class="btn ghost sm" data-act="warmFinish3">শেষ</button>`:""}</div>
      <div class="card"><div class="passage">${esc(p.text)}</div></div>`;
   }
   return `<main class="view" style="padding-bottom:40px">${head}${body}</main>`;
