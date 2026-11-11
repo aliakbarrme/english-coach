@@ -27,7 +27,7 @@ const TTS={
    }
    if(this.clip(t)){
     const a=this.el||(this.el=new Audio());a.src=(window.AUDIO_BASE||"a/")+akey(t)+".mp3";a.preservesPitch=true;
-    a.playbackRate=r>=1?1:r<=.65?.78:r<=.75?.86:.95;
+    a.playbackRate=r>=1?1:r<=.55?.5:r<=.65?.78:r<=.75?.86:.95;
     a.onended=a.onerror=()=>res();a.play().catch(()=>this.devSay(t,r).then(res));
    }else this.devSay(t,r).then(res);
   });

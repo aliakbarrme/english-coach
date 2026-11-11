@@ -829,7 +829,7 @@ const ACT={
  node(el){APP.pop=APP.pop===el.dataset.key?null:el.dataset.key;render();},
  startLesson(el){const n=nodeByKey(el.dataset.key);if(!n)return;if(S.warmReq&&!warmToday()){APP.tab="warm";render();return;}APP.pop=null;startSession("lesson",lessonItems(n.u,n.li),{key:n.key});},
  say(el){TTS.say(el.dataset.t);},
- saySlow(el){TTS.say(el.dataset.t,.6);},
+ saySlow(el){TTS.say(el.dataset.t,.5);},
  choose(el){if(L.fb)return;L.answer=el.dataset.v;render();},
  tile(el){const e=cur();if(L.fb)return;const i=+el.dataset.i;if(e.sel.includes(i))return;const r=el.getBoundingClientRect();e.sel.push(i);render();flyTile(r,document.querySelector(".answer-line .tile:last-child"));},
  untile(el){const e=cur();if(L.fb)return;const k=+el.dataset.k,ti=e.sel[k],r=el.getBoundingClientRect();e.sel.splice(k,1);render();flyTile(r,document.querySelector(`.bank .tile[data-i="${ti}"]`));},
@@ -940,7 +940,7 @@ function matchPick(side,id){
   const e=cur();if(e.gone.includes(id))return;
   if(side==="L")e.selL=id;else e.selR=id;e.flash=e.flashR=null;
   if(e.selL&&e.selR){
-    if(e.selL===e.selR){e.gone.push(e.selL);skillHit("match",true);SND.play("pair");}
+    if(e.selL===e.selR){e.gone.push(e.selL);skillHit("match",true);SND.play("pair");const it=e.items.find(x=>x.id===e.selL);if(it)setTimeout(()=>TTS.say(it.en),250);}
     else{e.errs++;e.flash=e.selL;e.flashR=e.selR;L.mistakes[e.selL]=1;skillHit("match",false);SND.play("no");}
     e.selL=e.selR=null;
     if(e.gone.length===e.left.length){L.t++;day().t++;S.stats.t++;const ok=e.errs<=1;if(ok){L.c++;day().c++;S.stats.c++;}L.fb={ok,show:ok?"":"কিছু জোড়া ভুল ছিল, রিভিশনে যোগ হলো।",bn:""};}
