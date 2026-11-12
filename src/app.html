@@ -363,8 +363,8 @@ function TABS_FOR(){return isKid()?[["learn","Learn",IC.learn],["practice","Play
   :[["learn","Learn",IC.learn],...(warmAllowed()?[["warm","Warm-up",IC.warm]]:[]),["practice","Practice",IC.practice],["stories","Stories",IC.story],["me","Me",IC.me]];}
 
 let LASTKEY=null,LASTSUB=null;
-function viewKey(){if(CLOUD.avail()&&!CLOUD.user)return "login:"+LG.tab;if(APP.welcome)return "welcome";if(APP.onb)return "onb:"+(APP.onb.edit||"new");if(APP.picker)return "picker";if(L)return L.done?"L:done":"L";if(APP.busy)return "busy";if(APP.warm)return "warm:"+APP.warm.step;if(APP.story)return "story:"+APP.story;if(APP.spell)return "spell:"+APP.spell.scr;if(APP.cards)return "cards";if(APP.chat)return "chat";return "tab:"+APP.tab;}
-function subKey(){if(APP.spell)return "s"+APP.spell.k+":"+(APP.spell.i||0);if(APP.onb)return "o"+APP.onb.step;if(L&&!L.done)return L.cheer?"cheer":"ex"+L.i;if(APP.warm)return "w"+APP.warm.ex+":"+APP.warm.tw+":"+(APP.warm.noPen?1:0);if(APP.cards)return "c"+APP.cards.unit;if(!L&&!APP.busy&&!APP.story&&!APP.chat&&APP.tab==="learn")return "t:"+APP.track;return "";}
+function viewKey(){if(CLOUD.avail()&&!CLOUD.user)return "login:"+LG.tab;if(APP.welcome)return "welcome";if(APP.onb)return "onb:"+(APP.onb.edit||"new");if(APP.picker)return "picker";if(L)return L.done?"L:done":"L";if(APP.busy)return "busy";if(APP.warm)return "warm:"+APP.warm.step;if(APP.story)return "story:"+APP.story;if(APP.book)return "book:"+APP.book.scr+(APP.book.id||"");if(APP.spell)return "spell:"+APP.spell.scr;if(APP.cards)return "cards";if(APP.chat)return "chat";return "tab:"+APP.tab;}
+function subKey(){if(APP.book)return "b"+APP.book.k+":"+(APP.book.ri||0);if(APP.spell)return "s"+APP.spell.k+":"+(APP.spell.i||0);if(APP.onb)return "o"+APP.onb.step;if(L&&!L.done)return L.cheer?"cheer":"ex"+L.i;if(APP.warm)return "w"+APP.warm.ex+":"+APP.warm.tw+":"+(APP.warm.noPen?1:0);if(APP.cards)return "c"+APP.cards.unit;if(!L&&!APP.busy&&!APP.story&&!APP.chat&&APP.tab==="learn")return "t:"+APP.track;return "";}
 function renderNav(instant){
   const t=$("#tabs"),tabs=TABS_FOR(),sig=tabs.map(x=>x[0]).join();
   if(t.dataset.sig!==sig){t.querySelectorAll("button").forEach(b=>b.remove());t.insertAdjacentHTML("beforeend",tabs.map(([id,l,i])=>`<button data-act="tab" data-v="${id}">${i}<span>${l}</span></button>`).join(""));t.dataset.sig=sig;t.style.setProperty("--n",tabs.length);instant=true;}
@@ -389,6 +389,7 @@ function render(){
   else if(APP.busy) html=`<main class="view"><div class="stack-lg" style="padding-top:20vh;text-align:center"><h2>${esc(APP.busy)}</h2><p class="muted">AI কাজ করছে, ২০ সেকেন্ড থেকে ২ মিনিট লাগতে পারে।</p></div></main>`;
   else if(APP.warm) html=viewWarmRun();
   else if(APP.story) html=viewStory();
+  else if(APP.book) html=viewBook();
   else if(APP.spell) html=viewSpell();
   else if(APP.cards) html=viewCards();
   else if(APP.chat) html=viewChat();
@@ -397,7 +398,7 @@ function render(){
   html=emojify(html);
   const root=$("#root"),key=viewKey(),sub=subKey(),first=LASTKEY===null,prevKey=LASTKEY;
   const nav=document.querySelector("nav.tabs"),navWasHidden=nav.hidden;
-  nav.hidden=!!(L||(APP.spell&&APP.spell.scr!=="home")||APP.warm||APP.welcome||APP.onb||APP.picker||gate);
+  nav.hidden=!!(L||(APP.book&&APP.book.scr!=="home")||(APP.spell&&APP.spell.scr!=="home")||APP.warm||APP.welcome||APP.onb||APP.picker||gate);
   if(key!==LASTKEY){root.innerHTML=html;placeSeg(true);enterView(root,first);}
   else{const subChanged=sub!==LASTSUB;morph(root,html,subChanged);placeSeg(subChanged&&!sub.startsWith("t:"));if(subChanged)enterSub(root);}
   if(!nav.hidden)renderNav(first||navWasHidden);
@@ -601,12 +602,12 @@ function viewWarmRun(){
 function viewPractice(){
   const due=dueItems(), learned=Object.keys(S.srs).length;
   if(isKid())return `<h1>Play</h1><p class="muted">ছবির কার্ড দেখো, আওয়াজ শোনো, একসাথে বলো!</p>
-   <button class="spellcta" data-act="spellOpen"><span class="sc-abc"><i style="--c:#ff5c8a">A</i><i style="--c:#ffa62b">B</i><i style="--c:#2fbf71">C</i></span><span class="grow"><b>${esc(myName())}'s Spelling</b><span class="tiny bn">শব্দ বানান শেখার মজার খেলা · ⭐ ${SP().stars}</span></span><span class="sc-go">➜</span></button>
+   ${bookCTA()}<button class="spellcta" data-act="spellOpen"><span class="sc-abc"><i style="--c:#ff5c8a">A</i><i style="--c:#ffa62b">B</i><i style="--c:#2fbf71">C</i></span><span class="grow"><b>${esc(myName())}'s Spelling</b><span class="tiny bn">শব্দ বানান শেখার মজার খেলা · ⭐ ${SP().stars}</span></span><span class="sc-go">➜</span></button>
    <div class="playgrid">${cardUnits("kids").map(u=>`<button class="playcard ${u.deck?"newdeck":""}" data-act="openCards" data-u="${esc(u.id)}">${u.deck?`<span class="nd-tag">NEW</span>`:""}<span class="pem">${u.lessons[0].items[0][2]}</span><b>${esc(u.title)}</b><span class="tiny bn muted">${esc(u.bn)}</span></button>`).join("")}</div>
    <div class="card"><div class="row between"><div><span class="eyebrow">রিভিশন</span><h3>${due.length}টা শব্দ আবার দেখো</h3></div><button class="btn" data-act="practiceDue" ${learned?"":"disabled"}>Khelo</button></div></div>`;
   const cardTrack=myTracks().some(t=>t[0]==="family")?"family":myTracks().some(t=>t[0]==="kids")?"kids":null;
   const scen=SCEN.filter(x=>myTracks().some(t=>t[0]===x.track)&&(PID==="ali"||!["daughter","wife"].includes(x.id)));
-  return `<div class="pagehero"><div><h1>Practice</h1><p class="muted">রিভিশন, ছবির কার্ড আর কথোপকথন।</p></div>${art("m-speak","phimg")}</div><div class="pgrid2">
+  return `${bookCTA()}<div class="pagehero"><div><h1>Practice</h1><p class="muted">রিভিশন, ছবির কার্ড আর কথোপকথন।</p></div>${art("m-speak","phimg")}</div><div class="pgrid2">
    <div class="card"><div class="row between"><div><span class="eyebrow">রিভিশন বাকি</span><h2 class="num">${due.length}টা বাক্য</h2></div><button class="btn" data-act="practiceDue" ${learned?"":"disabled"}>Start</button></div>
     <p class="small muted">ভুল করা আর পুরনো বাক্যগুলো সময়মতো আবার আসে: ১ → ২ → ৪ → ৭ → ১৫ → ৩০ দিন পরে।${!due.length&&learned?" আজ কিছু বাকি নেই, তবু প্র্যাকটিস করলে দুর্বল বাক্যগুলো আসবে।":""}${!learned?" আগে একটা লেসন করো।":""}</p></div>
    ${cardTrack?`<div class="card"><h3>${cardTrack==="kids"?"ছবির কার্ড (বাচ্চাদের সাথে)":"Family time cards"}</h3><p class="small muted">বড় বড় কার্ড: একসাথে বসে বলো। চাপলে আওয়াজ।</p><button class="btn fam" data-act="openCards" data-u="">কার্ড খোলো</button></div>`:""}
@@ -825,7 +826,7 @@ Reply with only JSON {"title":"","bn":"one-sentence Bangla summary","text":"","p
 /* ================= actions ================= */
 function nodeByKey(k){for(const [tr] of TRACKS){const n=nodeStates(tr).find(x=>x.key===k);if(n)return n;}return null;}
 const ACT={
- tab(el){const same=APP.tab===el.dataset.v&&!APP.story&&!APP.cards&&!APP.chat;APP.tab=el.dataset.v;APP.pop=null;APP.modal=null;APP.story=null;APP.cards=null;APP.spell=null;APP.cardMenu=false;if(APP.chat){APP.chat=null;}TTS.stop();render();window.scrollTo({top:0,behavior:same?"smooth":"auto"});},
+ tab(el){const same=APP.tab===el.dataset.v&&!APP.story&&!APP.cards&&!APP.chat;APP.tab=el.dataset.v;APP.pop=null;APP.modal=null;APP.story=null;APP.cards=null;APP.spell=null;APP.book=null;APP.cardMenu=false;if(APP.chat){APP.chat=null;}TTS.stop();render();window.scrollTo({top:0,behavior:same?"smooth":"auto"});},
  track(el){APP.track=el.dataset.v;APP.pop=null;render();},
  node(el){APP.pop=APP.pop===el.dataset.key?null:el.dataset.key;render();},
  startLesson(el){const n=nodeByKey(el.dataset.key);if(!n)return;if(S.warmReq&&!warmToday()){APP.tab="warm";render();return;}APP.pop=null;startSession("lesson",lessonItems(n.u,n.li),{key:n.key});},
@@ -916,12 +917,12 @@ const ACT={
  cancel(){APP.confirm=null;render();},
  obSave(){S.names.d1=$("#ob-d1").value.trim();S.names.d2=$("#ob-d2").value.trim();S.onboarded=true;APP.modal=null;Store.save();render();}
 };
-Object.assign(ACT,SPELL_ACT,LOGIN_ACT,PICK_ACT);
+Object.assign(ACT,SPELL_ACT,LOGIN_ACT,PICK_ACT,BOOK_ACT);
 function confirmQuit(){return true;}
 function markSent(i){document.querySelectorAll(".sent.cur").forEach(x=>x.classList.remove("cur"));if(i>=0){const el=document.querySelectorAll(".sent")[i];if(el){el.classList.add("cur");const r=el.getBoundingClientRect();if(r.top<80||r.bottom>innerHeight-120)el.scrollIntoView({block:"center",behavior:"smooth"});}}}
 async function switchProfile(id){
   TTS.stop();HEAR.stop();if(PID)await Store.flush();PID=id;await Store.saveProfiles();await Store.load();
-  APP.picker=false;APP.tab="learn";APP.track=myTracks()[0]?.[0]||"everyday";APP.story=APP.cards=APP.chat=APP.warm=APP.spell=null;L=null;LASTKEY=null;render();window.scrollTo(0,0);
+  APP.picker=false;APP.tab="learn";APP.track=myTracks()[0]?.[0]||"everyday";APP.story=APP.cards=APP.chat=APP.warm=APP.spell=APP.book=null;L=null;LASTKEY=null;render();window.scrollTo(0,0);
 }
 async function onbNext(){
   const O=APP.onb,d=O.draft,steps=d.age==="kid"?["name","avatar","age","goal","done"]:["name","avatar","age","goals","goal","warm","done"];

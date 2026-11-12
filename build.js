@@ -29,6 +29,12 @@ for (const x of COURSE.warmup.exercises || []) texts.add(("Next: " + x.name).rep
   for (const d of SP.DECKS) for (const l of d.lessons) for (const it of l.items) texts.add(it[0]); }
 { const ph = fs.readFileSync(path.join(root, "src", "phonics.js"), "utf8");
   const T = new Function("const PA={has:()=>false};" + ph + ";return SPELL_TEXTS();")(); T.forEach(t => texts.add(String(t).replace(/\s+/g, " ").trim())); }
+// ---- the private book (../book-verify/book.json, never in this repo): its words need voice clips ----
+const BOOK_FILE = path.join(root, "..", "book-verify", "book.json");
+const BOOK_DATA = fs.existsSync(BOOK_FILE) ? JSON.parse(fs.readFileSync(BOOK_FILE, "utf8")) : null;
+{ const bk = fs.readFileSync(path.join(root, "src", "book.js"), "utf8").replace(/^document\.addEventListener.*$/m, "");
+  new Function(bk + ";return BOOK_TEXTS();")().forEach(t => texts.add(t));
+  if (BOOK_DATA) for (const l of BOOK_DATA.levels) for (const c of l.chapters) { (c.items || []).forEach(x => x.en.length > 1 && texts.add(x.en)); if (c.mixed) c.mixed.rows.flat().forEach(w => texts.add(w)); } }
 const textMap = {}; for (const t of texts) textMap[akey(t)] = t;
 fs.writeFileSync(path.join(root, "tts_texts.json"), JSON.stringify(textMap, null, 0));
 
@@ -37,14 +43,15 @@ const clips = fs.existsSync(audioDir) ? fs.readdirSync(audioDir).filter(f => f.e
 
 const emoDir = path.join(root, "docs", "e");
 const emojis = fs.existsSync(emoDir) ? fs.readdirSync(emoDir).filter(f => f.endsWith(".webp")).map(f => f.slice(0, -5)) : [];
-const pageWith = (audio, emo = []) => src("app.html")
-  .replace("/*__STYLE__*/", () => [src("style.css"), src("style-v6.css"), src("style-v7.css"), src("style-v8.css"), src("style-v9.css"), src("style-v10.css"), src("style-v11.css"), src("style-v12.css"), src("style-v13.css"), src("style-v14.css"), src("style-v15.css"), src("style-v16.css"), src("style-v17.css"), src("style-v18.css"), src("style-v19.css"), src("style-v20.css"), src("style-v21.css")].join("\n"))
+const pageWith = (audio, emo = [], bookData = null) => src("app.html")
+  .replace("/*__STYLE__*/", () => [src("style.css"), src("style-v6.css"), src("style-v7.css"), src("style-v8.css"), src("style-v9.css"), src("style-v10.css"), src("style-v11.css"), src("style-v12.css"), src("style-v13.css"), src("style-v14.css"), src("style-v15.css"), src("style-v16.css"), src("style-v17.css"), src("style-v18.css"), src("style-v19.css"), src("style-v20.css"), src("style-v21.css"), src("style-v22.css")].join("\n"))
   .replace("/*__VOICE__*/", () => src("voice.js").replace("/*__AUDIO__*/[]", JSON.stringify(audio)))
-  .replace("/*__EXTRAS__*/", () => [src("extras.js").replace("/*__EMOJI__*/[]", JSON.stringify(emo)).replace("/*__ART__*/false", emo.length ? "true" : "false"), src("progress.js"), src("warmart.js"), src("cloud.js"), src("login.js"), src("flow.js"), src("spell.js"), src("phonicademy.js"), src("phonics.js")].join("\n"))
+  .replace("/*__EXTRAS__*/", () => [src("extras.js").replace("/*__EMOJI__*/[]", JSON.stringify(emo)).replace("/*__ART__*/false", emo.length ? "true" : "false"), src("progress.js"), src("warmart.js"), src("cloud.js"), src("login.js"), src("flow.js"), src("spell.js"), src("phonicademy.js"), src("phonics.js"), src("book.js")].join("\n"))
   .replace("/*__MOTION__*/", () => src("motion.js"))
   .replace("/*__CONTENT__*/", () => content)
   .replace("/*__PA_INDEX__*/{}", () => (audio.length ? JSON.stringify(PA_INDEX) : "{}"))
-  .replace("/*__WEB_URL__*/", () => WEB_URL);
+  .replace("/*__WEB_URL__*/", () => WEB_URL)
+  .replace("/*__BOOK_EMBED__*/null", () => (bookData ? JSON.stringify(bookData) : "null"));
 // ---- Phonicademy sounds: packed from the licensed pack (kept outside the repo) into one encoded bundle; never served as single MP3s ----
 const PA_LETTERS = "abcdefghijklmnopqrstuvwxyz".split("");   // all 26 letter sounds (approved after A, B, C review)
 const PA_FILE = { q: "qu" };                           // letter -> file name in the pack
@@ -64,7 +71,7 @@ if (fs.existsSync(PA_SRC)) {
   PA_INDEX = { v: require("crypto").createHash("sha1").update(all).digest("hex").slice(0, 8), k: key, files };
   fs.writeFileSync(PA_IDX, JSON.stringify(PA_INDEX));
 } else if (fs.existsSync(PA_IDX)) PA_INDEX = JSON.parse(fs.readFileSync(PA_IDX, "utf8"));
-const page = pageWith([]);
+const page = pageWith([], [], BOOK_DATA);   // private artifact + local standalone only; the public PWA never contains the book
 fs.writeFileSync(path.join(root, "..", "projects", "ali-english-coach.html"), page);
 
 const head = (body, extra) => `<!doctype html>
@@ -105,7 +112,7 @@ const pwa = head(pageWith(clips, emojis), `<link rel="manifest" href="manifest.w
   /* always look for a new version on open and when the app comes back to the front; when it arrives, refresh once (never in the middle of a lesson or game) */
   const had=!!navigator.serviceWorker.controller;let ready=false;
   navigator.serviceWorker.addEventListener("controllerchange",()=>{if(had)ready=true;});
-  const busy=()=>{try{return (typeof L!=="undefined"&&L)||(typeof APP!=="undefined"&&APP.spell&&APP.spell.scr==="game")||(typeof APP!=="undefined"&&APP.warm);}catch(e){return false;}};
+  const busy=()=>{try{return (typeof L!=="undefined"&&L)||(typeof APP!=="undefined"&&APP.spell&&APP.spell.scr==="game")||(typeof APP!=="undefined"&&APP.book&&APP.book.scr==="ch")||(typeof APP!=="undefined"&&APP.warm);}catch(e){return false;}};
   setInterval(()=>{if(ready&&!busy()){ready=false;location.reload();}},1500);
   addEventListener("load",()=>navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(reg=>{
     const check=()=>reg.update().catch(()=>{});check();

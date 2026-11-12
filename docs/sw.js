@@ -1,5 +1,5 @@
 // Offline cache: the page itself is network-first (so a new version shows on the next open), falling back to cache when offline; media is cache-first.
-const C="coach-0b8eb9dad2",A="coach-audio-v1";
+const C="coach-c06d193832",A="coach-audio-v1";
 self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(["./","./index.html","./manifest.webmanifest","./icon-192.png"])).then(()=>self.skipWaiting()));});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C&&k!==A).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
 self.addEventListener("fetch",e=>{const r=e.request;if(r.method!=="GET")return;const u=new URL(r.url);

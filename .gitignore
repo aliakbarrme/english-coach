@@ -1,2 +1,6 @@
 dist/
 src/*.bak.html
+
+# the book PDF stays private, never in the public repo
+*.pdf
+Missing image/
