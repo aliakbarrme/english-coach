@@ -6,6 +6,7 @@
    Everything that is not the book is labelled "✨ Extra". */
 const BOOK_EMBED=/*__BOOK_EMBED__*/null;
 const BOOK_V=/*__BOOK_V__*/"";
+const BOOK_KEY=/*__BOOK_KEY__*/"";   // Ali (2026-11-13): the book is for every user of the app
 /* The web app ships the book only as an encrypted bundle (x/bk.bin). Its key comes from the book itself: a device that
    already has the book (or the book.json file) makes the key, saves it to the signed-in account (users/{uid}/p/_bookkey),
    and every other device of that account then opens the bundle by itself, including future book updates. */
@@ -27,11 +28,11 @@ const BOOK={data:null,state:"idle",err:null,uid:null,
   if(this.state==="loading"||(this.data&&(!BOOK_V||this.data._bv===BOOK_V)))return this.data;
   this.state="loading";this.uid=CLOUD.user&&CLOUD.user.uid;
   let cached=null;try{const c=localStorage.getItem("aec4:bookdata");if(c)cached=JSON.parse(c);}catch(e){}
-  let k=null;try{k=localStorage.getItem("aec4:bookkey");}catch(e){}
+  let k=BOOK_KEY||null;if(!k)try{k=localStorage.getItem("aec4:bookkey");}catch(e){}
   if(!k&&cached){const s=this.keyFrom(cached);if(s)k=this.hex(await this.rawKey(s));}
   if(!k&&CLOUD.bookKey)k=CLOUD.bookKey;
   if(!k&&CLOUD.avail()&&CLOUD.user){try{const {fs}=await CLOUD.load();const d=await fs.getDoc(CLOUD.ref());if(d.exists()&&d.data().bookKey)k=d.data().bookKey;}catch(e){}}
-  if(k&&BOOK_V){try{this.data=await this.open(k);this.data._bv=BOOK_V;this.cache();this.saveKey(k);this.state="ready";render();return this.data;}catch(e){}}
+  if(k&&BOOK_V){try{this.data=await this.open(k);this.data._bv=BOOK_V;this.cache();if(!BOOK_KEY)this.saveKey(k);this.state="ready";render();return this.data;}catch(e){}}
   if(cached){this.data=cached;this.state="ready";}else this.state="none";
   render();return this.data;
  },
@@ -72,10 +73,31 @@ const BK_EMO={Potato:"🥔",Tomato:"🍅",Onion:"🧅",Carrot:"🥕",Pumpkin:"�
  Rice:"🍚",Bread:"🍞",Chicken:"🍗",Beef:"🥩",Fish:"🐟",Salad:"🥗",Pizza:"🍕",Pasta:"🍝",Eggs:"🥚",Milk:"🥛",Yogurt:"🍶",Sandwich:"🥪",
  Football:"⚽",Basketball:"🏀",Cricket:"🏏",Tennis:"🎾",Volleyball:"🏐",Swimming:"🏊",Running:"🏃",Athletics:"🏅",Boxing:"🥊",Golf:"⛳",Hockey:"🏑",Baseball:"⚾",Badminton:"🏸","Table Tennis":"🏓",
  Ginger:"🫚","Black Pepper":"🧂","Bay Leaf":"🍃","Star Anise":"⭐",
+ Lips:"💋",Arm:"💪",Leg:"🦵",Kale:"🥬",Mustard:"🌼",Zucchini:"🥒",Asparagus:"🌱",Cauliflower:"🥦",Okra:"🌿",Lettuce:"🥬",
+ Cousin:"🧒",Nephew:"👦",Niece:"👧",Litchi:"🍒",Jackfruit:"🍈",Cinnamon:"🪵",Cloves:"🌰",Turmeric:"🫚",Coriander:"🌿",Cumin:"🌾",Cardamom:"🫛",Paprika:"🌶️",Saffron:"🌸","Mustard Seeds":"🌼",
+ Saturday:"📅",Sunday:"☀️",Monday:"📅",Tuesday:"📅",Wednesday:"📅",Thursday:"📅",Friday:"🕌",
+ January:"⛄",February:"💝",March:"🌸",April:"🌷",May:"🌞",June:"🌧️",July:"☔",August:"🌻",September:"🍂",October:"🎃",November:"🍁",December:"🎄",
  Tuna:"🐟",Salmon:"🐟",Sardine:"🐟",Mackerel:"🐟",Seabass:"🐠",Trout:"🐟",Swordfish:"🐡",Octopus:"🐙",Lobster:"🦞",Shrimp:"🦐"};
 const BK_COL={Red:"#e53935",Yellow:"#fdd835",Green:"#43a047",Purple:"#8e24aa",Pink:"#f48fb1",Black:"#212121",Gray:"#9e9e9e",Brown:"#795548",Gold:"#d4af37",Silver:"#c0c0c0",Bronze:"#cd7f32",Violet:"#7f00ff",Maroon:"#800000",Magenta:"#ff00ff"};
 /* picture shown for a word: colour swatch, number, emoji, or nothing */
-function bkPic(x,big){if(BK_COL[x.en])return `<i class="bk-sw ${big?"big":""}" style="--c:${BK_COL[x.en]}"></i>`;if(/^\d+$/.test(x.bn||""))return `<i class="bk-numpic ${big?"big":""}">${x.bn}</i>`;const e=BK_EMO[x.en];return e?`<i class="bk-emo ${big?"big":""}">${e}</i>`:"";}
+function bkPic(x,big,noFallback){if(BK_COL[x.en])return `<i class="bk-sw ${big?"big":""}" style="--c:${BK_COL[x.en]}"></i>`;if(/^\d+$/.test(x.bn||""))return `<i class="bk-numpic ${big?"big":""}">${x.bn}</i>`;const e=BK_EMO[x.en];if(e)return `<i class="bk-emo ${big?"big":""}">${e}</i>`;
+ if(noFallback)return "";const h=[...x.en].reduce((a,ch)=>a+ch.charCodeAt(0),0)*47%360;return `<i class="bk-ini ${big?"big":""}" style="--h:${h}">${esc(x.en[0].toUpperCase())}</i>`;}
+/* chapter icons for the book path */
+const BK_CHIC={L1C1:"🔤",L1C2:"👄",L1C3:"📅",L1C4:"🔢",L1C5:"🥕",L1C6:"🧍",L1C7:"🌸",L1C8:"🎨",L1C9:"🐘",L1C10:"🦜",L1C11:"👨‍👩‍👧",L1C12:"🌍",L1C13:"🍎",L1C14:"🍕",L1C15:"⚽",L1C16:"🌶️",L1C17:"🐟",L1C18:"💬",
+ L2C1:"🙋",L2C2:"🎒",L2C3:"💪",L2C4:"👍",L2C5:"✅",L2C6:"📦",L2C7:"🏃",L2C8:"💃",L2C9:"⏰",L2C10:"🔮",L2C11:"❓",L2C12:"🤔",L2C13:"🌈",L2C14:"🏷️",L2C15:"✂️",
+ SEC1:"👋",SEC2:"🙏",SEC3:"🕒",SEC4:"🙋",SEC5:"🤞"};
+const BK_CANDY=["#ff8fab","#ffb347","#7bd389","#6ec6ff","#b39ddb","#ffd54f","#4dd0c4","#f48fb1"];
+/* one card per word, in the book's order: picture-card labels first, then table rows not shown on a card */
+function bkDeck(c){if(c._deck)return c._deck;const out=[],seen=new Set(),key=s=>s.toLowerCase().replace(/\s+/g," ").trim();
+ const find=en=>c.items.find(x=>key(x.en)===key(en));
+ for(const s of c.sections||[]){for(const cd of s.cards||[]){const en=cd.replace(/\s*[(\[].*$/,"").replace(/\s+[\u0980-\u09FF].*$/,"").trim();const m=cd.match(/[(\[](.*)[)\]]\s*$/)||cd.match(/\s([\u0980-\u09FF].*)$/);
+   const it=find(en)||find(en.replace(/\s+/g,""))||{en,pr:m?m[1].trim():"",bn:""};if(seen.has(key(it.en)))continue;seen.add(key(it.en));out.push(it);}
+  for(const x of s.rows||[])if(!seen.has(key(x.en))){seen.add(key(x.en));out.push(x);}}
+ for(const x of c.items)if(!seen.has(key(x.en))){seen.add(key(x.en));out.push(x);}
+ return (c._deck=out);}
+/* a big playful word card: picture, word, how to say it, meaning, and a speaker */
+function bkKCard(x,i,act){return `<button class="bk-kc" style="--c:${BK_CANDY[i%BK_CANDY.length]};--d:${(i%6)*.05}s" data-act="${act||"bookSay"}" data-t="${esc(x.en)}">
+ <span class="bk-kspk">${IC.speak}</span><span class="bk-kpic">${bkPic(x,true)}</span><b class="bk-ken">${esc(x.en)}</b>${x.pr?`<span class="bk-kpr bn">${esc(x.pr)}</span>`:""}${x.bn&&!/^\d+$/.test(x.bn)?`<span class="bk-kbn bn">${esc(x.bn)}</span>`:""}</button>`;}
 
 /* ✨ Extra rhymes (not from the book): a traditional public-domain rhyme or an original chant */
 const BK_RHYME={
@@ -145,7 +167,7 @@ function viewBook(){
    ${l.chapters.map((c,i)=>{const st=b.c[c.id],open=bkOpen(c,l),cur=open&&!st?.done;
     const cls=st?.done?"done":!c.ready?"soon":open?"cur":"lock";
     return `<button class="bk-node ${cls}" data-act="bookCh" data-id="${esc(c.id)}" ${cls==="lock"||cls==="soon"?"aria-disabled=\"true\"":""}>
-     <span class="bk-num">${st?.done?"✓":c.no}</span><span class="grow"><b>Chapter ${c.no}</b><span class="bk-ct">${esc(c.title)}</span></span>
+     <span class="bk-num">${st?.done?"✓":c.no}</span><span class="bk-chic">${BK_CHIC[c.id]||"📘"}</span><span class="grow"><b>Chapter ${c.no}</b><span class="bk-ct">${esc(c.title)}</span></span>
      <span class="bk-nstate">${st?.done?"⭐".repeat(st.stars||1):cls==="soon"?"শীঘ্রই":cls==="lock"?"🔒":`<i class="bk-go">শুরু ➜</i>`}</span></button>`;}).join("")}
   </div></section>`).join("")}
   <p class="tiny muted center">📘 = বইয়ের লেখা · ✨ = মজার বাড়তি কাজ (বইয়ের বাইরে)</p>
@@ -163,21 +185,23 @@ const bkNext=(lbl)=>`<button class="btn good wide bk-next" data-act="bookNext">$
 function bkPage(c,st){
  if(c.kind==="letters")return `<div class="bk-paper">${bkSrc(c.pages)}<h2 class="bk-h">${esc(c.title)}</h2>
    <p class="small muted bn">অক্ষরে চাপো, শোনো আর বলো।</p>
-   <div class="bk-letters">${c.items.map((it,i)=>`<button class="bk-let" data-act="bookSay" data-l="${esc(it.en)}" data-i="${i}"><b>${esc(it.en)}</b><span class="bn">(${esc(it.pr)})</span></button>`).join("")}</div>
-   <div class="row center"><button class="btn" data-act="bookPlayAll">▶ সব শোনো</button></div></div>${bkNext("পরের ধাপ: রিভিশন")}`;
+   <div class="bk-letters">${c.items.map((it,i)=>`<button class="bk-let" style="--c:${BK_CANDY[i%BK_CANDY.length]}" data-act="bookSay" data-l="${esc(it.en)}" data-i="${i}"><span class="bk-kspk">${IC.speak}</span><b>${esc(it.en)}</b><span class="bn">(${esc(it.pr)})</span></button>`).join("")}</div>
+   <div class="row center"><button class="btn bk-candy" data-act="bookPlayAll">▶ সব শোনো</button></div></div>${bkNext("পরের ধাপ: রিভিশন")}`;
  if(c.kind==="sounds")return `<div class="bk-paper">${bkSrc(c.pages)}<h2 class="bk-h">${esc(c.title)}</h2>
    ${c.sounds.map(s=>`<section class="bk-sec"><h3><span class="bk-snd">${s.sound}</span> ${esc(s.title)}</h3><p class="bn">${esc(s.intro)}</p>
-    <table class="bk-tb"><thead><tr>${s.cols.map(h=>`<th>${esc(h)}</th>`).join("")}<th></th></tr></thead><tbody>${s.rows.map(r=>`<tr data-act="bookSay" data-t="${esc(r.en)}"><td><b>${esc(r.en)}</b></td><td class="bn">${esc(r.pr)}</td><td class="bn">${esc(r.bn)}</td><td class="bk-spk">${IC.speak}</td></tr>`).join("")}</tbody></table></section>`).join("")}
+    <div class="bk-kgrid">${s.rows.map((x,i)=>bkKCard(x,i)).join("")}</div>
+    <details class="bk-book"><summary>📘 বইয়ের টেবিল দেখো</summary><table class="bk-tb"><thead><tr>${s.cols.map(h=>`<th>${esc(h)}</th>`).join("")}<th></th></tr></thead><tbody>${s.rows.map(r=>`<tr data-act="bookSay" data-t="${esc(r.en)}"><td><b>${esc(r.en)}</b></td><td class="bn">${esc(r.pr)}</td><td class="bn">${esc(r.bn)}</td><td class="bk-spk">${IC.speak}</td></tr>`).join("")}</tbody></table></details></section>`).join("")}
    <section class="bk-sec"><h3>${esc(c.mixed.title)}</h3><p class="bn">${esc(c.mixed.intro)}</p>
-    <div class="bk-mix">${c.mixed.rows.flat().map(w=>`<button class="bk-w" data-act="bookSay" data-t="${esc(w)}">${esc(w)}</button>`).join("")}</div></section>
+    <div class="bk-mix">${c.mixed.rows.flat().map((w,i)=>`<button class="bk-w" style="--c:${BK_CANDY[i%BK_CANDY.length]}" data-act="bookSay" data-t="${esc(w)}">${esc(w)} <i class="bk-mini">${IC.speak}</i></button>`).join("")}</div></section>
    ${(c.after||[]).map(t=>`<p class="bn small">${esc(t)}</p>`).join("")}</div>${bkNext("পরের ধাপ: রিভিশন")}`;
-  if(c.kind==="words")return `<div class="bk-paper">${bkSrc(c.pages)}<h2 class="bk-h">${esc(c.heading?c.heading.replace(/^CHAPTER-\s*/,"Chapter "):c.title)}</h2>
-   ${c.sections.map(s=>`<section class="bk-sec">${s.title?`<h3>${esc(s.title)}</h3>`:""}
-    ${(s.text||[]).map(p=>`<p class="bn">${esc(p)}</p>`).join("")}
-    ${s.cards.length?`<div class="bk-cards">${s.cards.map(cd=>{const en=cd.replace(/\s*[(\[].*$/,"").replace(/\s+[\u0980-\u09FF].*$/,"").trim();const it=c.items.find(x=>x.en.toLowerCase()===en.toLowerCase().replace(/\s+/g," "))||{en};
-      return `<button class="bk-cardw" data-act="bookSay" data-t="${esc(en)}">${bkPic(it)}<span>${esc(cd)}</span></button>`;}).join("")}</div>`:""}
-    ${s.rows.length?`<table class="bk-tb"><thead><tr>${s.cols.map(h=>`<th>${esc(h)}</th>`).join("")}<th></th></tr></thead><tbody>${s.rows.map(x=>`<tr data-act="bookSay" data-t="${esc(x.en)}">${s.cols[0]==="Number"?`<td><b>${esc(x.bn)}</b></td><td><b>${esc(x.en)}</b></td><td class="bn">${esc(x.pr)}</td>`:`<td><b>${esc(x.en)}</b></td><td class="bn">${esc(x.pr)}</td><td class="bn">${esc(x.bn)}</td>`}<td class="bk-spk">${IC.speak}</td></tr>`).join("")}</tbody></table>`:""}</section>`).join("")}
-   </div>${bkNext("পরের ধাপ: রিভিশন")}`;
+  if(c.kind==="words"){const deck=bkDeck(c);
+   return `<div class="bk-paper bk-play">${bkSrc(c.pages)}<h2 class="bk-h">${BK_CHIC[c.id]||""} ${esc(c.sections[0]&&c.sections[0].title||c.title)}</h2>
+   <p class="bk-hint bn">ছবিতে চাপো, শোনো আর জোরে বলো! 🔊</p>
+   <div class="bk-kgrid">${deck.map((x,i)=>bkKCard(x,i)).join("")}</div>
+   <div class="row center"><button class="btn bk-candy" data-act="bookPlayAll">▶ সবগুলো শোনো</button></div>
+   ${c.sections.filter(s=>s.rows.length).map(s=>`<details class="bk-book"><summary>📘 বইয়ের টেবিল দেখো${s.title?` · ${esc(s.title)}`:""}</summary>
+    <table class="bk-tb"><thead><tr>${s.cols.map(h=>`<th>${esc(h)}</th>`).join("")}<th></th></tr></thead><tbody>${s.rows.map(x=>`<tr data-act="bookSay" data-t="${esc(x.en)}">${s.cols[0]==="Number"?`<td><b>${esc(x.bn)}</b></td><td><b>${esc(x.en)}</b></td><td class="bn">${esc(x.pr)}</td>`:`<td><b>${esc(x.en)}</b></td><td class="bn">${esc(x.pr)}</td><td class="bn">${esc(x.bn)}</td>`}<td class="bk-spk">${IC.speak}</td></tr>`).join("")}</tbody></table></details>`).join("")}
+   </div>${bkNext("পরের ধাপ: রিভিশন")}`;}
  if(c.kind==="lesson"){let pg=null;const lat=s=>/[A-Za-z]/.test(s)&&!/[\u0980-\u09FF]/.test(s);
   const html=c.blocks.map(b=>{let pre="";if(b.page!==pg){pre=pg==null?"":`<div class="bk-pgmark">পৃষ্ঠা ${b.page}</div>`;pg=b.page;}
    if(b.t==="h2")return pre+`<h2 class="bk-h">${esc(b.text.replace(/^CHAPTER-\s*/,"Chapter "))}</h2>`;
@@ -191,16 +215,18 @@ function bkPage(c,st){
   return `<div class="bk-paper bk-lesson">${bkSrc(c.pages.length>1?[c.pages[0],c.pages[c.pages.length-1]]:c.pages)}${html}</div>${bkNext("পরের ধাপ: রিভিশন")}`;}
  return `<p>শীঘ্রই আসছে।</p>`;
 }
-function bkRevItems(c,A){if(!A.rv)A.rv=c.items.length>15?bkShuf(c.items.map((_,i)=>i)).slice(0,15).sort((a,b)=>a-b):c.items.map((_,i)=>i);return A.rv.map(i=>c.items[i]);}
+function bkRevItems(c,A){const all=c.kind==="words"?bkDeck(c):c.items;
+ if(!A.rv){if(all.length<=20)A.rv=all.map((_,i)=>i);else{const s=Math.floor(Math.random()*(all.length-14));A.rv=all.map((_,i)=>i).slice(s,s+15);}}   // long lists: 15 in a row, in the book's order
+ return A.rv.map(i=>all[i]);}
 function bkRevise(c,st,A){
  const it=bkRevItems(c,A),i=Math.min(A.ri||0,it.length-1),x=it[i],last=i>=it.length-1;
  return `<div class="bk-card-wrap">${bkExtra("রিভিশন (বইয়ের শব্দ দিয়ে)")}
-  <div class="bk-flash ${x.bn?"":"nobn"}" data-k="${i}">${bkPic(x,true)}<span class="bk-fen ${x.en.length>14?"long":""}">${esc(x.en)}</span><span class="bn bk-fpr">${esc(x.pr)}</span>${x.bn?`<span class="bn bk-fbn">${esc(x.bn)}</span>`:""}
-   <button class="bk-round" data-act="bookSayCur" aria-label="Listen">${IC.speak}</button></div>
-  <div class="dots bk-dots"><span class="tiny muted">${i+1} / ${it.length}</span></div>
+  <div class="bk-flash ${x.bn?"":"nobn"}" style="--c:${BK_CANDY[i%BK_CANDY.length]}" data-k="${i}" data-act="bookSayCur">${c.kind==="lesson"?"":`<span class="bk-fpic">${c.kind==="letters"?`<i class="bk-ini big" style="--h:${i*37%360}">${esc(x.en)}</i>`:bkPic(x,true)}</span>`}<span class="bk-fen ${x.en.length>14?"long":""}">${esc(c.kind==="letters"?x.en+" "+x.en.toLowerCase():x.en)}</span>${x.pr?`<span class="bn bk-fpr">${esc(x.pr)}</span>`:""}${x.bn&&!/^\d+$/.test(x.bn)?`<span class="bn bk-fbn">${esc(x.bn)}</span>`:""}
+   <span class="bk-round big" aria-hidden="true">${IC.speak}</span></div>
+  <div class="bk-stardots">${it.map((_,k)=>`<i class="${k<i?"on":k===i?"cur":""}">${k<i?"⭐":"•"}</i>`).join("")}</div>
   <div class="row center"><button class="btn ghost" data-act="bookRev" data-d="-1" ${i?"":"disabled"}>${IC.back} আগের</button>
-   ${last?`<button class="btn good" data-act="bookNext">কুইজে যাও ➜</button>`:`<button class="btn" data-act="bookRev" data-d="1">পরেরটা ➜</button>`}</div>
-  <p class="small muted center bn">শোনো, তারপর জোরে জোরে ২ বার বলো।${c.items.length>15?` (আজ ${it.length}টা শব্দ, প্রতিবার নতুন করে বাছাই হয়)`:""}</p></div>`;
+   ${last?`<button class="btn good bk-candy" data-act="bookNext">কুইজে যাও ➜</button>`:`<button class="btn bk-candy" data-act="bookRev" data-d="1">পরেরটা ➜</button>`}</div>
+  <p class="small muted center bn">কার্ডে চাপো, শোনো, তারপর জোরে জোরে ২ বার বলো! 🗣️</p></div>`;
 }
 function bkMakeQuiz(c){
  const it=c.items,qs=[];
@@ -216,7 +242,8 @@ function bkMakeQuiz(c){
   return qs.map(q=>Object.assign(q,{opts:[...new Set(q.opts)]}));
  }else if(c.kind==="words"){
   const num=it.some(x=>/^\d+$/.test(x.bn||"")),S3=bkShuf(it),others=x=>bkShuf(it.filter(y=>y!==x)).slice(0,3);
-  S3.slice(0,3).forEach(x=>qs.push({t:"listen",say:x.en,q:"শোনো, কোনটা?",ans:x.en,opts:bkShuf([x.en,...others(x).map(y=>y.en)])}));
+  S3.slice(0,3).forEach(x=>{const pk=y=>bkPic(y,false,true)||y.en;const ot=[];for(const y of bkShuf(it))if(y!==x&&ot.length<3&&pk(y)!==pk(x)&&!ot.some(z=>pk(z)===pk(y)))ot.push(y);
+   qs.push({t:"listen",pics:true,say:x.en,q:"শোনো, কোনটা?",ans:x.en,opts:bkShuf([x.en,...ot.map(y=>y.en)])});});
   S3.slice(3,6).forEach(x=>x.bn&&qs.push({t:"mean",q:num?`"${x.en}" কোন সংখ্যা?`:`"${x.en}" মানে কী?`,big:x.en,say:x.en,ans:x.bn,opts:bkShuf([x.bn,...bkShuf(it.filter(y=>y.bn&&y.bn!==x.bn)).slice(0,3).map(y=>y.bn)])}));
   S3.slice(6,9).forEach(x=>qs.push({t:"pr",q:`"${x.en}" কীভাবে বলে?`,big:x.en,say:x.en,ans:x.pr,opts:bkShuf([x.pr,...bkShuf(it.filter(y=>y.pr!==x.pr)).slice(0,3).map(y=>y.pr)])}));
   return bkShuf(qs).slice(0,8).map(q=>Object.assign(q,{opts:[...new Set(q.opts)]}));
@@ -243,8 +270,9 @@ function bkQuiz(c,st,A){
  return `<div class="bk-quiz">${bkExtra("কুইজ")}<div class="pbar"><i style="width:${Q.i/Q.qs.length*100}%"></i></div>
   <p class="bk-q bn">${esc(q.q)}</p>
   ${q.big?`<div class="bk-qbig">${esc(q.big)}${q.say?`<button class="bk-round sm" data-act="bookSayQ" aria-label="Listen">${IC.speak}</button>`:""}</div>`:`<button class="bk-bigear" data-act="bookSayQ" aria-label="Listen">${IC.speak}</button>`}
-  <div class="bk-opts ${q.t==="snd"?"three":""}">${q.opts.map(o=>{const s=Q.pick==null?"":o===q.ans?"right":o===Q.pick?"wrong":"dim";
-   return `<button class="bk-opt ${s} ${/[ঀ-৿]/.test(o)?"bn":""}" data-act="bookAns" data-v="${esc(o)}" ${Q.pick!=null?"disabled":""}>${esc(o)}</button>`;}).join("")}</div></div>`;
+  <div class="bk-opts ${q.t==="snd"?"three":""} ${q.pics?"pics":""}">${q.opts.map((o,k)=>{const s=Q.pick==null?"":o===q.ans?"right":o===Q.pick?"wrong":"dim";const x=q.pics&&BOOK.ch(APP.book.id).items.find(y=>y.en===o);
+   return `<button class="bk-opt ${s} ${/[\u0980-\u09FF]/.test(o)?"bn":""}" style="--c:${BK_CANDY[k%BK_CANDY.length]}" data-act="bookAns" data-v="${esc(o)}" ${Q.pick!=null?"disabled":""}>${x?`<span class="bk-opic">${bkPic(x,true)}</span>`:""}<span>${esc(o)}</span></button>`;}).join("")}</div>
+  ${Q.pick!=null?`<div class="bk-cheer ${Q.pick===q.ans?"ok":"no"}">${Q.pick===q.ans?bkShuf(["🎉 দারুণ!","⭐ খুব ভালো!","🥳 একদম ঠিক!","👏 সাবাশ!"])[0]:"💪 আবার শোনো, পারবে!"}</div>`:""}</div>`;
 }
 function bkMakeGame(c){
  if(c.kind==="lesson"){const ok=c.items.filter(x=>{const n=x.en.split(" ").length;return n>=3&&n<=8;});
@@ -280,8 +308,9 @@ function bkRhyme(c){
  const R=BK_RHYME[c.id];if(!R)return bkNext("শেষ করি");
  const body=R.letters?`<div class="bk-rh">${R.letters.map((ln,li)=>`<p>${ln.map((w,wi)=>`<span class="bk-rw" id="rw${li}-${wi}">${w}</span>`).join(" ")}</p>`).join("")}${R.end.map((t,i)=>`<p class="bk-rl" id="rl${i}">${esc(t)}</p>`).join("")}</div>`
   :`<div class="bk-rh">${R.lines.map((t,i)=>`<p class="bk-rl" id="rl${i}">${esc(t)}</p>`).join("")}</div>`;
- return `<div class="bk-rhyme">${bkExtra(R.src)}<h2 class="bk-h">🎵 ${esc(R.title)}</h2>${body}
-  <div class="row center"><button class="btn" data-act="bookRhyme">▶ শোনো আর সাথে বলো</button></div>${bkNext("চ্যাপ্টার শেষ করি")}</div>`;
+  const em=(c.kind==="words"?bkDeck(c).map(x=>BK_EMO[x.en]).filter(Boolean):[]).slice(0,6);if(!em.length)em.push("🎵","⭐","🎈","🌈");
+  return `<div class="bk-rhyme">${bkExtra(R.src)}<div class="bk-stage">${em.map((e,i)=>`<i class="bk-float" style="--x:${8+i*16}%;--d:${i*.4}s">${e}</i>`).join("")}
+   <h2 class="bk-h">🎵 ${esc(R.title)}</h2>${body}<button class="bk-playbig" data-act="bookRhyme" aria-label="Play">▶</button><p class="small bn">চাপো, শোনো আর সাথে সাথে বলো! 🎤</p></div>${bkNext("চ্যাপ্টার শেষ করি")}</div>`;
 }
 function bkDone(c,st){
  const L=BOOK.levelOf(c.id),i=L.chapters.indexOf(c),nx=L.chapters[i+1];
@@ -314,6 +343,7 @@ const BOOK_ACT={
   bkGo(A.step+1);},
  bookSay(el){const t=el.dataset.l?bkLetterSay(el.dataset.l):el.dataset.t;el.classList.add("on");setTimeout(()=>el.classList.remove("on"),700);TTS.say(t);},
  async bookPlayAll(){const my=++BK_RUN,c=BOOK.ch(APP.book.id);
+  if(c.kind==="words"){const els=[...document.querySelectorAll(".bk-kgrid .bk-kc")];for(const b of els){if(my!==BK_RUN)return;b.classList.add("on");b.scrollIntoView({block:"nearest",behavior:"smooth"});await Promise.race([TTS.say(b.dataset.t),bkWait(2200)]);await bkWait(250);b.classList.remove("on");}return;}
   for(let i=0;i<c.items.length;i++){if(my!==BK_RUN)return;const b=document.querySelector(`.bk-let[data-i="${i}"]`);b&&b.classList.add("on");b&&b.scrollIntoView({block:"nearest",behavior:"smooth"});
    await Promise.race([TTS.say(bkLetterSay(c.items[i].en)),bkWait(1500)]);await bkWait(250);b&&b.classList.remove("on");}},
  bookRev(el){const A=APP.book,c=BOOK.ch(A.id);A.ri=Math.max(0,Math.min(bkRevItems(c,A).length-1,(A.ri||0)+ +el.dataset.d));render();bkEnter();},

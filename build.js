@@ -47,10 +47,11 @@ const BOOK_DATA = fs.existsSync(BOOK_FILE) ? JSON.parse(fs.readFileSync(BOOK_FIL
     const bm = {}; for (const s of bt) bm[akey(s)] = s;
     fs.writeFileSync(path.join(root, "..", "book-verify", "tts_book.json"), JSON.stringify(bm)); } }
 // ---- encrypted book bundle for the web app: docs/x/bk.bin (opened only with a key that comes from the book itself) ----
-let BOOK_V = "";
+let BOOK_V = "", BOOK_KEYHEX = "";
 if (BOOK_DATA) { const crypto = require("crypto"), zlib = require("zlib");
   const keyStr = BOOK_DATA.levels[0].chapters[0].items.map(x => x.en + ":" + x.pr).join("|");
   const key = crypto.createHash("sha256").update("bolo-book|" + keyStr).digest();
+  BOOK_KEYHEX = key.toString("hex");
   const plain = zlib.gzipSync(Buffer.from(JSON.stringify(BOOK_DATA), "utf8"));
   BOOK_V = crypto.createHash("sha1").update(plain).digest("hex").slice(0, 10);
   const iv = crypto.createHash("sha256").update("iv|" + BOOK_V).digest().subarray(0, 12);
@@ -74,7 +75,8 @@ const pageWith = (audio, emo = [], bookData = null) => src("app.html")
   .replace("/*__PA_INDEX__*/{}", () => (audio.length ? JSON.stringify(PA_INDEX) : "{}"))
   .replace("/*__WEB_URL__*/", () => WEB_URL)
   .replace("/*__BOOK_EMBED__*/null", () => (bookData ? JSON.stringify(bookData) : "null"))
-  .replace('/*__BOOK_V__*/""', () => JSON.stringify(BOOK_V));
+  .replace('/*__BOOK_V__*/""', () => JSON.stringify(BOOK_V))
+  .replace('/*__BOOK_KEY__*/""', () => JSON.stringify(BOOK_KEYHEX));
 // ---- Phonicademy sounds: packed from the licensed pack (kept outside the repo) into one encoded bundle; never served as single MP3s ----
 const PA_LETTERS = "abcdefghijklmnopqrstuvwxyz".split("");   // all 26 letter sounds (approved after A, B, C review)
 const PA_FILE = { q: "qu" };                           // letter -> file name in the pack
