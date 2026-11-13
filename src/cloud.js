@@ -53,11 +53,14 @@ const CLOUD={
   return {state:Store.lsGet("p:"+pid+":state")||null,units:Store.lsGet("p:"+pid+":units")||{},marks:Store.lsGet("p:"+pid+":marks")||{}};
  },
  async pushProfile(pid){const d=this.localPack(pid);if(!d.state)return;await this.api.fs.setDoc(this.ref("p",pid),{...d,updated:d.state.updatedAt||Date.now()});},
- async pushRoot(){await this.api.fs.setDoc(this.ref(),{profiles:clone(PROFILES),email:this.user.email||"",updated:Date.now()});},
+ async pushRoot(){let bk=null;try{bk=localStorage.getItem("aec4:bookkey");}catch(e){}
+  if(!bk&&this.bookKey)bk=this.bookKey;
+  await this.api.fs.setDoc(this.ref(),Object.assign({profiles:clone(PROFILES),email:this.user.email||"",updated:Date.now()},bk?{bookKey:bk}:{}));},
  async pull(){
   if(!this.user)return;this.busy=true;this.err=null;render();
   try{
    const {fs}=this.api,root=await fs.getDoc(this.ref()),remote=root.exists()?root.data():null;
+   if(remote&&remote.bookKey){this.bookKey=remote.bookKey;try{if(!localStorage.getItem("aec4:bookkey"))localStorage.setItem("aec4:bookkey",remote.bookKey);}catch(e){}}
    if(!remote||!(remote.profiles||[]).length){for(const p of PROFILES)await this.pushProfile(p.id);if(PROFILES.length)await this.pushRoot();}
    else{
     const byId=new Map(PROFILES.map(p=>[p.id,p]));

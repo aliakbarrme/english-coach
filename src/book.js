@@ -1,4 +1,4 @@
-/* ================= 📘 My English Book (Nirjhar Education) =================
+/* ================= 📘 My English Book =================
    The book's own text is private: it is never in this public code. It comes from
    (1) BOOK_EMBED in the private Claude artifact, or (2) the account's Firestore doc users/{uid}/p/_book
    (added once by the parent with "Import book file"), cached on this device until logout.
@@ -21,7 +21,7 @@ const BOOK={data:null,state:"idle",err:null,uid:null,
   const txt=await new Response(new Blob([plain]).stream().pipeThrough(new DecompressionStream("gzip"))).text();
   return JSON.parse(txt);},
  async saveKey(k){try{localStorage.setItem("aec4:bookkey",k);}catch(e){}
-  if(CLOUD.avail()&&CLOUD.user){try{const {fs}=await CLOUD.load();await fs.setDoc(CLOUD.ref("p","_bookkey"),{k,updated:Date.now()});}catch(e){}}},
+  if(CLOUD.avail()&&CLOUD.user&&CLOUD.bookKey!==k){CLOUD.bookKey=k;try{await CLOUD.load();await CLOUD.pushRoot();}catch(e){}}},
  async load(){
   if(BOOK_EMBED){const first=!this.data;this.data=BOOK_EMBED;this.state="ready";if(first)render();return this.data;}
   if(this.state==="loading"||(this.data&&(!BOOK_V||this.data._bv===BOOK_V)))return this.data;
@@ -29,7 +29,8 @@ const BOOK={data:null,state:"idle",err:null,uid:null,
   let cached=null;try{const c=localStorage.getItem("aec4:bookdata");if(c)cached=JSON.parse(c);}catch(e){}
   let k=null;try{k=localStorage.getItem("aec4:bookkey");}catch(e){}
   if(!k&&cached){const s=this.keyFrom(cached);if(s)k=this.hex(await this.rawKey(s));}
-  if(!k&&CLOUD.avail()&&CLOUD.user){try{const {fs}=await CLOUD.load();const d=await fs.getDoc(CLOUD.ref("p","_bookkey"));if(d.exists())k=d.data().k;}catch(e){}}
+  if(!k&&CLOUD.bookKey)k=CLOUD.bookKey;
+  if(!k&&CLOUD.avail()&&CLOUD.user){try{const {fs}=await CLOUD.load();const d=await fs.getDoc(CLOUD.ref());if(d.exists()&&d.data().bookKey)k=d.data().bookKey;}catch(e){}}
   if(k&&BOOK_V){try{this.data=await this.open(k);this.data._bv=BOOK_V;this.cache();this.saveKey(k);this.state="ready";render();return this.data;}catch(e){}}
   if(cached){this.data=cached;this.state="ready";}else this.state="none";
   render();return this.data;
@@ -126,18 +127,19 @@ function bkTop(back,label){return `<div class="bk-top"><button class="icon-btn" 
 function viewBook(){
  const A=APP.book;
  if(!BOOK.data&&BOOK.state!=="ready"){
-  if(BOOK.state==="idle"||(BOOK.state==="none"&&CLOUD.user&&BOOK.uid!==CLOUD.user.uid))setTimeout(()=>BOOK.load(),0);
+  if(BOOK.state==="idle")setTimeout(()=>BOOK.load(),0);
   return `<main class="view bookview">${bkTop("bookClose","📘 My English Book")}
    ${BOOK.state==="loading"||BOOK.state==="idle"?`<div class="bk-empty"><span class="bk-spin"></span><p>বই খোলা হচ্ছে…</p></div>`
    :`<div class="bk-empty card"><span class="bk-bigem">📘</span><h2>বইটা এখনো যোগ করা হয়নি</h2>
-    <p class="small muted">বাবা/মা একবার <b>book.json</b> ফাইলটা যোগ করলেই হবে। এটা শুধু তোমার অ্যাকাউন্টে থাকবে, অন্য কেউ দেখতে পাবে না।</p>
+    <p class="small muted">যে ডিভাইসে বইটা আছে (যেমন কম্পিউটার), সেখানে একই অ্যাকাউন্টে অ্যাপ খুলে 📘 বই একবার খোলো — তারপর এখানে নিজে থেকেই চলে আসবে। অথবা <b>book.json</b> ফাইলটা এখানে যোগ করো।</p>
+    <button class="btn wide" data-act="bookRetry">🔄 আবার দেখো</button>
     ${BOOK.err?`<p class="warnbox small">${esc(BOOK.err)}</p>`:""}
     <label class="btn good bk-import">📂 বইয়ের ফাইল যোগ করো<input type="file" id="bkFile" accept=".json,application/json" hidden></label></div>`}</main>`;}
  if(A.scr==="ch")return viewBookChapter();
  const D=BOOK.data,b=BK();
  const done=D.levels.reduce((n,l)=>n+l.chapters.filter(c=>b.c[c.id]?.done).length,0),total=D.levels.reduce((n,l)=>n+l.chapters.length,0);
  return `<main class="view bookview">${bkTop("bookClose","📘 My English Book")}
-  <div class="bk-hero"><div class="grow"><span class="bk-pub">${esc(D.publisher||"")}</span><h1>${esc(myName())}'s Book</h1><p class="bn">প্রতি চ্যাপ্টার: বই → রিভিশন → কুইজ → খেলা → ছড়া → ⭐</p>
+  <div class="bk-hero"><div class="grow"><h1>${esc(myName())}'s Book</h1><p class="bn">প্রতি চ্যাপ্টার: বই → রিভিশন → কুইজ → খেলা → ছড়া → ⭐</p>
    <div class="pbar"><i style="width:${Math.round(done/Math.max(1,total)*100)}%"></i></div><span class="tiny muted">${done}/${total} চ্যাপ্টার শেষ</span></div><span class="bk-heroem">📘</span></div>
   ${D.levels.map(l=>`<section class="bk-level"><h2>${esc(l.title)} <small>${esc(l.sub||"")}</small></h2><div class="bk-path">
    ${l.chapters.map((c,i)=>{const st=b.c[c.id],open=bkOpen(c,l),cur=open&&!st?.done;
@@ -296,7 +298,8 @@ function bkEnter(){const A=APP.book;if(!A||A.scr!=="ch")return;const c=BOOK.ch(A
  if(A.step===2||A.step===3)setTimeout(()=>ACT.bookSayQ&&(A.step===2?ACT.bookSayQ():ACT.bookSayG()),300);
  if(A.step===3&&A.g&&A.g.kind==="build"&&!A.g.rounds[0].x.bn)setTimeout(()=>ACT.bookSayB(),300);}
 const BOOK_ACT={
- bookOpen(){APP.book={scr:"home",k:Date.now()};render();window.scrollTo(0,0);if(!BOOK.data||(BOOK_V&&BOOK.data._bv!==BOOK_V))BOOK.load();},
+ bookOpen(){APP.book={scr:"home",k:Date.now()};if(BOOK.state==="none")BOOK.state="idle";render();window.scrollTo(0,0);if(!BOOK.data||(BOOK_V&&BOOK.data._bv!==BOOK_V))BOOK.load();},
+ async bookRetry(){BOOK.state="idle";try{if(CLOUD.user)await CLOUD.pull();}catch(e){}BOOK.load();},
  bookClose(){TTS.stop();BK_RUN++;APP.book=null;render();},
  bookHome(){TTS.stop();BK_RUN++;APP.book={scr:"home",k:Date.now()};render();window.scrollTo(0,0);},
  bookCh(el){const c=BOOK.ch(el.dataset.id),L=BOOK.levelOf(el.dataset.id);
