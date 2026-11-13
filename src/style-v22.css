@@ -86,3 +86,16 @@
 .bk-spin{display:inline-block;width:36px;height:36px;border-radius:50%;border:4px solid var(--line-2);border-top-color:#0d5c55;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media (max-width:420px){.bk-letters{grid-template-columns:repeat(4,1fr)}.bk-fen{font-size:2.6rem}.bk-steps span{font-size:.62rem}}
+/* word chapters: picture cards, colour swatches, numbers, Find It game */
+.bk-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin:8px 0 12px}
+.bk-cardw{display:flex;flex-direction:column;align-items:center;gap:4px;border:0;cursor:pointer;border-radius:14px;padding:10px 4px;background:#fff;box-shadow:0 3px 0 #e4dcc4;color:#1d2a26;font:600 .85rem var(--bn);transition:transform .15s,background .2s}
+.bk-cardw.on{background:#fff1c9;transform:scale(1.06)}
+.bk-emo{font-style:normal;font-size:2rem;line-height:1}.bk-emo.big{font-size:4rem}
+.bk-emo img{width:1.1em;height:1.1em}
+.bk-sw{display:inline-block;width:34px;height:34px;border-radius:50%;background:var(--c);box-shadow:inset 0 -4px 0 #0003,0 2px 4px #0003}.bk-sw.big{width:84px;height:84px}
+.bk-numpic{font-style:normal;font-weight:800;font-size:1.6rem;color:#3a7fcc}.bk-numpic.big{font-size:3.6rem}
+.bk-find{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.bk-fc{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:104px;border:0;cursor:pointer;border-radius:20px;padding:10px 4px;background:var(--nm-b);box-shadow:var(--nm-up);font:700 1rem var(--font);color:var(--ink);transition:transform .15s}
+.bk-fc .bk-emo.big{font-size:3rem}.bk-fc .bk-sw.big{width:60px;height:60px}.bk-fc .bk-numpic.big{font-size:2.6rem}
+.bk-fc.miss{animation:nudge .4s;box-shadow:0 0 0 3px #cf4429}.bk-fc.got{background:#dff6ea;transform:scale(1.08)}
+.bk-flash .bk-emo.big,.bk-flash .bk-sw.big,.bk-flash .bk-numpic.big{margin-bottom:4px}

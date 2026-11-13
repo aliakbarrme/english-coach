@@ -43,12 +43,45 @@ let BK_RUN=0;
 const bkLetterSay=c=>(typeof LETTER!=="undefined"&&LETTER[c.toLowerCase()])||c;
 const bkSoundOf=w=>{const c=w[0].toLowerCase();return c==="p"?"P":c==="t"?"T":(c==="k"||c==="c")?"K":null;};
 
+/* ✨ Extra pictures for word chapters (not from the book) */
+const BK_EMO={Potato:"🥔",Tomato:"🍅",Onion:"🧅",Carrot:"🥕",Pumpkin:"🎃",Mushroom:"🍄",Lettuce:"🥬",Cabbage:"🥬",Eggplant:"🍆",Chili:"🌶️",Broccoli:"🥦",Garlic:"🧄",Cucumber:"🥒",Pepper:"🫑",Peas:"🫛",Corn:"🌽",Spinach:"🥬",
+ Hair:"💇",Head:"🙂",Eye:"👁️",Ear:"👂",Nose:"👃",Mouth:"👄",Teeth:"🦷",Hand:"✋",Finger:"☝️",Foot:"🦶",Knee:"🦵",Shoulder:"🤷",Neck:"🧣",Stomach:"🫃",
+ "Water Lily":"🪷",Rose:"🌹",Tulip:"🌷",Lotus:"🪷",Sunflower:"🌻",Jasmine:"🌼",Marigold:"🏵️",Daisy:"🌼",Lavender:"💐",Tuberose:"💮",
+ Panda:"🐼",Gorilla:"🦍",Penguin:"🐧",Porcupine:"🦔",Sheep:"🐑",Rabbit:"🐰",Fox:"🦊",Wolf:"🐺",Bear:"🐻",Giraffe:"🦒",Zebra:"🦓",Deer:"🦌",Elephant:"🐘",Cow:"🐄",Monkey:"🐒",Dog:"🐕",Cat:"🐈",Kangaroo:"🦘",Leopard:"🐆",Jaguar:"🐆",Cheetah:"🐆",Lion:"🦁",Tiger:"🐯",
+ Crow:"🐦‍⬛",Blackbird:"🐦‍⬛",Turkey:"🦃",Sparrow:"🐦",Seabird:"🕊️",Robin:"🐦",Pigeon:"🕊️",Parrot:"🦜",Owl:"🦉",Hummingbird:"🐦",Falcon:"🦅",Duck:"🦆",Dove:"🕊️",Eagle:"🦅",Stork:"🪿",
+ Father:"👨",Mother:"👩",Brother:"👦",Sister:"👧",Daughter:"👧",Grandfather:"👴",Grandmother:"👵",Uncle:"🧔",Aunt:"👩‍🦱",
+ Bangladesh:"🇧🇩",England:"🏴",Brazil:"🇧🇷",Canada:"🇨🇦",Russia:"🇷🇺",Thailand:"🇹🇭",China:"🇨🇳",Australia:"🇦🇺","The UK":"🇬🇧",London:"🎡","New York":"🗽",Moscow:"🏰",Istanbul:"🕌",Mumbai:"🌆",
+ Coconut:"🥥",Strawberry:"🍓",Apple:"🍎",Grape:"🍇",Cherry:"🍒",Mango:"🥭",Orange:"🍊",Pineapple:"🍍",Lemon:"🍋",Watermelon:"🍉",Grapefruit:"🍊",Raspberry:"🫐",Guava:"🍐",Pomegranate:"🍎",
+ Rice:"🍚",Bread:"🍞",Chicken:"🍗",Beef:"🥩",Fish:"🐟",Salad:"🥗",Pizza:"🍕",Pasta:"🍝",Eggs:"🥚",Milk:"🥛",Yogurt:"🍶",Sandwich:"🥪",
+ Football:"⚽",Basketball:"🏀",Cricket:"🏏",Tennis:"🎾",Volleyball:"🏐",Swimming:"🏊",Running:"🏃",Athletics:"🏅",Boxing:"🥊",Golf:"⛳",Hockey:"🏑",Baseball:"⚾",Badminton:"🏸","Table Tennis":"🏓",
+ Ginger:"🫚","Black Pepper":"🧂","Bay Leaf":"🍃","Star Anise":"⭐",
+ Tuna:"🐟",Salmon:"🐟",Sardine:"🐟",Mackerel:"🐟",Seabass:"🐠",Trout:"🐟",Swordfish:"🐡",Octopus:"🐙",Lobster:"🦞",Shrimp:"🦐"};
+const BK_COL={Red:"#e53935",Yellow:"#fdd835",Green:"#43a047",Purple:"#8e24aa",Pink:"#f48fb1",Black:"#212121",Gray:"#9e9e9e",Brown:"#795548",Gold:"#d4af37",Silver:"#c0c0c0",Bronze:"#cd7f32",Violet:"#7f00ff",Maroon:"#800000",Magenta:"#ff00ff"};
+/* picture shown for a word: colour swatch, number, emoji, or nothing */
+function bkPic(x,big){if(BK_COL[x.en])return `<i class="bk-sw ${big?"big":""}" style="--c:${BK_COL[x.en]}"></i>`;if(/^\d+$/.test(x.bn||""))return `<i class="bk-numpic ${big?"big":""}">${x.bn}</i>`;const e=BK_EMO[x.en];return e?`<i class="bk-emo ${big?"big":""}">${e}</i>`:"";}
+
 /* ✨ Extra rhymes (not from the book): a traditional public-domain rhyme or an original chant */
 const BK_RHYME={
  L1C1:{title:"The Alphabet Song",src:"Traditional rhyme (public domain)",letters:[["A","B","C","D","E","F","G"],["H","I","J","K","L","M","N","O","P"],["Q","R","S","T","U","V"],["W","X","Y","and","Z"]],
   end:["Now I know my A B C,","next time won't you sing with me!"]},
  L1C2:{title:"Puff, Tap and Kick!",src:"Original chant · Bolo English",
-  lines:["Puff for P: pen, pan, potato!","Tap for T: table, tiger, tomato!","Kick for K: kite, king, cat. Hooray!","P, T, K — say them every day!"]}
+  lines:["Puff for P: pen, pan, potato!","Tap for T: table, tiger, tomato!","Kick for K: kite, king, cat. Hooray!","P, T, K — say them every day!"]},
+ L1C3:{title:"Thirty Days Has September",src:"Traditional rhyme (public domain)",lines:["Thirty days has September,","April, June and November.","All the rest have thirty-one,","but February has twenty-eight alone."]},
+ L1C4:{title:"One, Two, Buckle My Shoe",src:"Traditional rhyme (public domain)",lines:["One, two, buckle my shoe.","Three, four, knock at the door.","Five, six, pick up sticks.","Seven, eight, lay them straight.","Nine, ten, a big fat hen."]},
+ L1C5:{title:"Veggie Song",src:"Original chant · Bolo English",lines:["Carrot, onion, potato too,","green peas, corn, and pumpkin new.","Vegetables make me big and strong,","eat them up and sing along!"]},
+ L1C6:{title:"Head, Shoulders, Knees and Toes",src:"Traditional rhyme (public domain)",lines:["Head, shoulders, knees and toes, knees and toes.","Head, shoulders, knees and toes, knees and toes.","And eyes and ears and mouth and nose.","Head, shoulders, knees and toes, knees and toes."]},
+ L1C7:{title:"Little Flowers",src:"Original chant · Bolo English",lines:["Rose is red and sunflower is bright,","lotus and lily float in the light.","Jasmine, daisy, marigold too,","flowers say hello to you!"]},
+ L1C8:{title:"Colour Chant",src:"Original chant · Bolo English",lines:["Red like an apple, yellow like the sun,","green like the grass, colours are fun!","Pink and purple, black and brown,","colours all around the town!"]},
+ L1C9:{title:"Old MacDonald Had a Farm",src:"Traditional song (public domain)",lines:["Old MacDonald had a farm, E-I-E-I-O.","And on that farm he had a cow, E-I-E-I-O.","With a moo-moo here and a moo-moo there,","here a moo, there a moo, everywhere a moo-moo.","Old MacDonald had a farm, E-I-E-I-O."]},
+ L1C10:{title:"Two Little Dicky Birds",src:"Traditional rhyme (public domain)",lines:["Two little dicky birds sitting on a wall,","one named Peter, one named Paul.","Fly away, Peter! Fly away, Paul!","Come back, Peter! Come back, Paul!"]},
+ L1C11:{title:"My Family",src:"Original chant · Bolo English",lines:["Father, mother, sister, brother,","we all love one another.","Grandfather, grandmother, uncle and aunt,","a happy family, yes we can!"]},
+ L1C12:{title:"Around the World",src:"Original chant · Bolo English",lines:["Bangladesh is my home, hooray!","Canada, Brazil, far away.","China, Russia, England too,","around the world, hello to you!"]},
+ L1C13:{title:"Fruit Salad",src:"Original chant · Bolo English",lines:["Mango, apple, orange, grape,","fruits come in every shape.","Watermelon, cherry, coconut,","yummy fruit in my lunch box shut!"]},
+ L1C14:{title:"Pease Porridge Hot",src:"Traditional rhyme (public domain)",lines:["Pease porridge hot,","pease porridge cold,","pease porridge in the pot,","nine days old."]},
+ L1C15:{title:"Let's Play!",src:"Original chant · Bolo English",lines:["Kick the football, hit the ball,","cricket, tennis, fun for all.","Run and swim and jump so high,","sports are great, let's give it a try!"]},
+ L1C16:{title:"Spice Box",src:"Original chant · Bolo English",lines:["Ginger, cumin, cinnamon,","spices make the cooking fun.","A little cardamom, a bay leaf too,","Mother cooks a curry for you!"]},
+ L1C17:{title:"One, Two, Three, Four, Five",src:"Traditional rhyme (public domain)",lines:["One, two, three, four, five,","once I caught a fish alive.","Six, seven, eight, nine, ten,","then I let it go again."]},
+ L1C18:{title:"Every Day Words",src:"Original chant · Bolo English",lines:["Open the page and play the game,","talk and walk, it's not the same!","Ask a question, give your praise,","learn new words on all our days!"]}
 };
 function BOOK_TEXTS(){const out=[];for(const r of Object.values(BK_RHYME)){(r.end||[]).forEach(t=>out.push(t));(r.lines||[]).forEach(t=>out.push(t));}return out;}
 
@@ -77,7 +110,8 @@ function viewBook(){
      <span class="bk-num">${st?.done?"✓":c.no}</span><span class="grow"><b>Chapter ${c.no}</b><span class="bk-ct">${esc(c.title)}</span></span>
      <span class="bk-nstate">${st?.done?"⭐".repeat(st.stars||1):cls==="soon"?"শীঘ্রই":cls==="lock"?"🔒":`<i class="bk-go">শুরু ➜</i>`}</span></button>`;}).join("")}
   </div></section>`).join("")}
-  <p class="tiny muted center">📘 = বইয়ের লেখা · ✨ = মজার বাড়তি কাজ (বইয়ের বাইরে)</p></main>`;
+  <p class="tiny muted center">📘 = বইয়ের লেখা · ✨ = মজার বাড়তি কাজ (বইয়ের বাইরে)</p>
+  ${BOOK_EMBED?"":`<p class="center"><label class="linkbtn bk-import">🔄 নতুন বইয়ের ফাইল যোগ করো<input type="file" id="bkFile" accept=".json,application/json" hidden></label></p>`}</main>`;
 }
 function bkStepper(st,step){return `<div class="bk-steps">${BK_STEPS.map(([ic,lb],i)=>`<button class="bk-step ${i<step?"ok":i===step?"on":""}" data-act="bookStep" data-n="${i}" ${i>Math.max(st.step,step)?"disabled":""}><i>${ic}</i><span>${lb}</span></button>`).join("")}</div>`;}
 function viewBookChapter(){
@@ -99,23 +133,37 @@ function bkPage(c,st){
    <section class="bk-sec"><h3>${esc(c.mixed.title)}</h3><p class="bn">${esc(c.mixed.intro)}</p>
     <div class="bk-mix">${c.mixed.rows.flat().map(w=>`<button class="bk-w" data-act="bookSay" data-t="${esc(w)}">${esc(w)}</button>`).join("")}</div></section>
    ${(c.after||[]).map(t=>`<p class="bn small">${esc(t)}</p>`).join("")}</div>${bkNext("পরের ধাপ: রিভিশন")}`;
+  if(c.kind==="words")return `<div class="bk-paper">${bkSrc(c.pages)}<h2 class="bk-h">${esc(c.heading?c.heading.replace(/^CHAPTER-\s*/,"Chapter "):c.title)}</h2>
+   ${c.sections.map(s=>`<section class="bk-sec">${s.title?`<h3>${esc(s.title)}</h3>`:""}
+    ${(s.text||[]).map(p=>`<p class="bn">${esc(p)}</p>`).join("")}
+    ${s.cards.length?`<div class="bk-cards">${s.cards.map(cd=>{const en=cd.replace(/\s*[(\[].*$/,"").replace(/\s+[\u0980-\u09FF].*$/,"").trim();const it=c.items.find(x=>x.en.toLowerCase()===en.toLowerCase().replace(/\s+/g," "))||{en};
+      return `<button class="bk-cardw" data-act="bookSay" data-t="${esc(en)}">${bkPic(it)}<span>${esc(cd)}</span></button>`;}).join("")}</div>`:""}
+    ${s.rows.length?`<table class="bk-tb"><thead><tr>${s.cols.map(h=>`<th>${esc(h)}</th>`).join("")}<th></th></tr></thead><tbody>${s.rows.map(x=>`<tr data-act="bookSay" data-t="${esc(x.en)}">${s.cols[0]==="Number"?`<td><b>${esc(x.bn)}</b></td><td><b>${esc(x.en)}</b></td><td class="bn">${esc(x.pr)}</td>`:`<td><b>${esc(x.en)}</b></td><td class="bn">${esc(x.pr)}</td><td class="bn">${esc(x.bn)}</td>`}<td class="bk-spk">${IC.speak}</td></tr>`).join("")}</tbody></table>`:""}</section>`).join("")}
+   </div>${bkNext("পরের ধাপ: রিভিশন")}`;
  return `<p>শীঘ্রই আসছে।</p>`;
 }
+function bkRevItems(c,A){if(!A.rv)A.rv=c.items.length>15?bkShuf(c.items.map((_,i)=>i)).slice(0,15).sort((a,b)=>a-b):c.items.map((_,i)=>i);return A.rv.map(i=>c.items[i]);}
 function bkRevise(c,st,A){
- const it=c.items,i=Math.min(A.ri||0,it.length-1),x=it[i],last=i>=it.length-1;
+ const it=bkRevItems(c,A),i=Math.min(A.ri||0,it.length-1),x=it[i],last=i>=it.length-1;
  return `<div class="bk-card-wrap">${bkExtra("রিভিশন (বইয়ের শব্দ দিয়ে)")}
-  <div class="bk-flash" data-k="${i}"><span class="bk-fen">${esc(x.en)}</span><span class="bn bk-fpr">${esc(x.pr)}</span>${x.bn?`<span class="bn bk-fbn">${esc(x.bn)}</span>`:""}
+  <div class="bk-flash" data-k="${i}">${bkPic(x,true)}<span class="bk-fen">${esc(x.en)}</span><span class="bn bk-fpr">${esc(x.pr)}</span>${x.bn?`<span class="bn bk-fbn">${esc(x.bn)}</span>`:""}
    <button class="bk-round" data-act="bookSayCur" aria-label="Listen">${IC.speak}</button></div>
   <div class="dots bk-dots"><span class="tiny muted">${i+1} / ${it.length}</span></div>
   <div class="row center"><button class="btn ghost" data-act="bookRev" data-d="-1" ${i?"":"disabled"}>${IC.back} আগের</button>
    ${last?`<button class="btn good" data-act="bookNext">কুইজে যাও ➜</button>`:`<button class="btn" data-act="bookRev" data-d="1">পরেরটা ➜</button>`}</div>
-  <p class="small muted center bn">শোনো, তারপর জোরে জোরে ২ বার বলো।</p></div>`;
+  <p class="small muted center bn">শোনো, তারপর জোরে জোরে ২ বার বলো।${c.items.length>15?` (আজ ${it.length}টা শব্দ, প্রতিবার নতুন করে বাছাই হয়)`:""}</p></div>`;
 }
 function bkMakeQuiz(c){
  const it=c.items,qs=[];
  if(c.kind==="letters"){
   bkShuf(it).slice(0,4).forEach(x=>qs.push({t:"listen",say:bkLetterSay(x.en),q:"শোনো, কোন অক্ষর?",ans:x.en,opts:bkShuf([x.en,...bkShuf(it.filter(y=>y!==x)).slice(0,3).map(y=>y.en)])}));
   bkShuf(it).slice(0,4).forEach(x=>qs.push({t:"pr",q:`"${x.en}" কীভাবে বলে?`,big:x.en,ans:x.pr,opts:bkShuf([x.pr,...bkShuf(it.filter(y=>y!==x)).slice(0,3).map(y=>y.pr)])}));
+ }else if(c.kind==="words"){
+  const num=it.some(x=>/^\d+$/.test(x.bn||"")),S3=bkShuf(it),others=x=>bkShuf(it.filter(y=>y!==x)).slice(0,3);
+  S3.slice(0,3).forEach(x=>qs.push({t:"listen",say:x.en,q:"শোনো, কোনটা?",ans:x.en,opts:bkShuf([x.en,...others(x).map(y=>y.en)])}));
+  S3.slice(3,6).forEach(x=>x.bn&&qs.push({t:"mean",q:num?`"${x.en}" কোন সংখ্যা?`:`"${x.en}" মানে কী?`,big:x.en,say:x.en,ans:x.bn,opts:bkShuf([x.bn,...bkShuf(it.filter(y=>y.bn&&y.bn!==x.bn)).slice(0,3).map(y=>y.bn)])}));
+  S3.slice(6,9).forEach(x=>qs.push({t:"pr",q:`"${x.en}" কীভাবে বলে?`,big:x.en,say:x.en,ans:x.pr,opts:bkShuf([x.pr,...bkShuf(it.filter(y=>y.pr!==x.pr)).slice(0,3).map(y=>y.pr)])}));
+  return bkShuf(qs).slice(0,8).map(q=>Object.assign(q,{opts:[...new Set(q.opts)]}));
  }else{
   const S3=bkShuf(it);
   S3.slice(0,3).forEach(x=>qs.push({t:"listen",say:x.en,q:"শোনো, কোন শব্দ?",ans:x.en,opts:bkShuf([x.en,...bkShuf(it.filter(y=>y!==x)).slice(0,3).map(y=>y.en)])}));
@@ -138,6 +186,10 @@ function bkQuiz(c,st,A){
    return `<button class="bk-opt ${s} ${/[ঀ-৿]/.test(o)?"bn":""}" data-act="bookAns" data-v="${esc(o)}" ${Q.pick!=null?"disabled":""}>${esc(o)}</button>`;}).join("")}</div></div>`;
 }
 function bkMakeGame(c){
+ if(c.kind==="words"){const it=c.items,pics=it.filter(x=>bkPic(x)),pool=pics.length>=6?pics:it;
+  const usePic=pics.length>=6,key=x=>usePic?bkPic(x):x.en;   // never show two options with the same picture (e.g. two 🐟)
+  const opts=x=>{const seen=new Set([key(x)]),out=[x];for(const y of bkShuf(pool)){if(out.length>=6)break;if(y!==x&&!seen.has(key(y))){seen.add(key(y));out.push(y);}}return bkShuf(out);};
+  return {kind:"find",rounds:bkShuf(pool).slice(0,8).map(x=>({t:x.en,x,opts:opts(x)})),i:0,score:0,miss:null,pic:usePic};}
  if(c.kind==="letters"){const L=c.items.map(x=>x.en);return {kind:"pop",rounds:bkShuf(L).slice(0,8).map(t=>({t,opts:bkShuf([t,...bkShuf(L.filter(y=>y!==t)).slice(0,5)])})),i:0,score:0,miss:null};}
  const words=[...new Set([...c.mixed.rows.flat(),...c.items.map(x=>x.en)])].filter(bkSoundOf);
  return {kind:"sort",rounds:bkShuf(words).slice(0,10).map(w=>({t:w,ans:bkSoundOf(w)})),i:0,score:0,miss:null};
@@ -146,6 +198,9 @@ function bkGame(c,st,A){
  const G=A.g||(A.g=bkMakeGame(c));
  if(G.i>=G.rounds.length)return `<div class="bk-res">${bkExtra("খেলা")}<span class="bk-bigem">🏆</span><h2>${G.score} / ${G.rounds.length}</h2><p class="bn">খুব ভালো খেলেছ! এবার একটা ছড়া।</p>${bkNext("ছড়া শুনি")}</div>`;
  const r=G.rounds[G.i];
+ if(G.kind==="find")return `<div class="bk-game">${bkExtra("খেলা · Find It!")}<div class="pbar"><i style="width:${G.i/G.rounds.length*100}%"></i></div>
+  <p class="bk-q bn">শোনো আর ঠিক ছবিটা খুঁজে বের করো! <button class="bk-round sm" data-act="bookSayG" aria-label="Listen">${IC.speak}</button></p>
+  <div class="bk-find">${r.opts.map(o=>`<button class="bk-fc ${G.miss===o.en?"miss":""}" data-act="bookFind" data-v="${esc(o.en)}">${G.pic?bkPic(o,true):""}<span>${G.pic&&!BK_COL[o.en]&&!/^\d+$/.test(o.bn||"")?"":esc(o.en)}</span></button>`).join("")}</div></div>`;
  if(G.kind==="pop")return `<div class="bk-game">${bkExtra("খেলা · Letter Pop")}<div class="pbar"><i style="width:${G.i/G.rounds.length*100}%"></i></div>
   <p class="bk-q bn">শোনো আর ঠিক বেলুনটা ফাটাও! <button class="bk-round sm" data-act="bookSayG" aria-label="Listen">${IC.speak}</button></p>
   <div class="bk-pop">${r.opts.map((o,i)=>`<button class="bk-bal ${G.miss===o?"miss":""}" style="--h:${(i*57+20)%360};--d:${(i%3)*.4}s" data-act="bookPop" data-v="${esc(o)}">${esc(o)}</button>`).join("")}</div></div>`;
@@ -170,9 +225,9 @@ function bkDone(c,st){
 }
 
 /* ---------- actions ---------- */
-function bkGo(step){const A=APP.book;TTS.stop();BK_RUN++;A.step=step;A.k=Date.now();delete A.q;delete A.g;A.ri=0;const st=bkSt(A.id);st.step=Math.max(st.step,step);Store.save();render();window.scrollTo(0,0);bkEnter();}
+function bkGo(step){const A=APP.book;TTS.stop();BK_RUN++;A.step=step;A.k=Date.now();delete A.q;delete A.g;delete A.rv;A.ri=0;const st=bkSt(A.id);st.step=Math.max(st.step,step);Store.save();render();window.scrollTo(0,0);bkEnter();}
 function bkEnter(){const A=APP.book;if(!A||A.scr!=="ch")return;const c=BOOK.ch(A.id);
- if(A.step===1)setTimeout(()=>TTS.say(c.kind==="letters"?bkLetterSay(c.items[A.ri||0].en):c.items[A.ri||0].en),250);
+ if(A.step===1)setTimeout(()=>ACT.bookSayCur(),250);
  if(A.step===2||A.step===3)setTimeout(()=>ACT.bookSayQ&&(A.step===2?ACT.bookSayQ():ACT.bookSayG()),300);}
 const BOOK_ACT={
  bookOpen(){APP.book={scr:"home",k:Date.now()};render();window.scrollTo(0,0);if(!BOOK.data)BOOK.load().then(()=>render());},
@@ -192,8 +247,8 @@ const BOOK_ACT={
  async bookPlayAll(){const my=++BK_RUN,c=BOOK.ch(APP.book.id);
   for(let i=0;i<c.items.length;i++){if(my!==BK_RUN)return;const b=document.querySelector(`.bk-let[data-i="${i}"]`);b&&b.classList.add("on");b&&b.scrollIntoView({block:"nearest",behavior:"smooth"});
    await Promise.race([TTS.say(bkLetterSay(c.items[i].en)),bkWait(1500)]);await bkWait(250);b&&b.classList.remove("on");}},
- bookRev(el){const A=APP.book,c=BOOK.ch(A.id);A.ri=Math.max(0,Math.min(c.items.length-1,(A.ri||0)+ +el.dataset.d));render();bkEnter();},
- bookSayCur(){const A=APP.book,c=BOOK.ch(A.id),x=c.items[A.ri||0];TTS.say(c.kind==="letters"?bkLetterSay(x.en):x.en);},
+ bookRev(el){const A=APP.book,c=BOOK.ch(A.id);A.ri=Math.max(0,Math.min(bkRevItems(c,A).length-1,(A.ri||0)+ +el.dataset.d));render();bkEnter();},
+ bookSayCur(){const A=APP.book,c=BOOK.ch(A.id),x=bkRevItems(c,A)[A.ri||0];TTS.say(c.kind==="letters"?bkLetterSay(x.en):x.en);},
  bookSayQ(){const q=APP.book.q?.qs[APP.book.q.i];if(q&&q.say)TTS.say(q.say);},
  bookAns(el){const Q=APP.book.q,q=Q.qs[Q.i];if(Q.pick!=null)return;Q.pick=el.dataset.v;const ok=Q.pick===q.ans;
   if(ok){Q.ok++;SND.play("ok");}else{SND.play("no");if(q.t!=="pr"&&q.t!=="mean")setTimeout(()=>TTS.say(q.t==="listen"&&BOOK.ch(APP.book.id).kind==="letters"?bkLetterSay(q.ans):q.say||q.ans),300);}
@@ -202,6 +257,9 @@ const BOOK_ACT={
  bookSayG(){const G=APP.book.g,r=G&&G.rounds[G.i];if(!r)return;TTS.say(G.kind==="pop"?bkLetterSay(r.t):r.t);},
  bookPop(el){const G=APP.book.g,r=G.rounds[G.i];
   if(el.dataset.v===r.t){if(G.miss==null)G.score++;G.miss=null;SND.play("pair");el.classList.add("popped");setTimeout(()=>{G.i++;render();ACT.bookSayG();},420);}
+  else{G.miss=el.dataset.v;SND.play("no");render();setTimeout(()=>ACT.bookSayG(),250);}},
+ bookFind(el){const G=APP.book.g,r=G.rounds[G.i];
+  if(el.dataset.v===r.t){if(G.miss==null)G.score++;G.miss=null;SND.play("pair");el.classList.add("got");setTimeout(()=>{G.i++;render();ACT.bookSayG();},450);}
   else{G.miss=el.dataset.v;SND.play("no");render();setTimeout(()=>ACT.bookSayG(),250);}},
  bookSort(el){const G=APP.book.g,r=G.rounds[G.i];
   if(el.dataset.v===r.ans){if(G.miss==null)G.score++;G.miss=null;SND.play("pair");el.classList.add("got");setTimeout(()=>{G.i++;render();ACT.bookSayG();},450);}
