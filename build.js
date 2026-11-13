@@ -69,7 +69,7 @@ const emojis = fs.existsSync(emoDir) ? fs.readdirSync(emoDir).filter(f => f.ends
 const pageWith = (audio, emo = [], bookData = null) => src("app.html")
   .replace("/*__STYLE__*/", () => [src("style.css"), src("style-v6.css"), src("style-v7.css"), src("style-v8.css"), src("style-v9.css"), src("style-v10.css"), src("style-v11.css"), src("style-v12.css"), src("style-v13.css"), src("style-v14.css"), src("style-v15.css"), src("style-v16.css"), src("style-v17.css"), src("style-v18.css"), src("style-v19.css"), src("style-v20.css"), src("style-v21.css"), src("style-v22.css")].join("\n"))
   .replace("/*__VOICE__*/", () => src("voice.js").replace("/*__AUDIO__*/[]", JSON.stringify(audio)))
-  .replace("/*__EXTRAS__*/", () => [src("extras.js").replace("/*__EMOJI__*/[]", JSON.stringify(emo)).replace("/*__ART__*/false", emo.length ? "true" : "false"), src("progress.js"), src("warmart.js"), src("cloud.js"), src("login.js"), src("flow.js"), src("spell.js"), src("phonicademy.js"), src("phonics.js"), src("book.js")].join("\n"))
+  .replace("/*__EXTRAS__*/", () => [src("extras.js").replace("/*__EMOJI__*/[]", JSON.stringify(emo)).replace("/*__ART__*/false", emo.length ? "true" : "false"), src("progress.js"), src("warmart.js"), src("cloud.js"), src("login.js"), src("flow.js"), src("spell.js"), src("phonicademy.js"), src("phonics.js"), src("bookicons.js"), src("book.js")].join("\n"))
   .replace("/*__MOTION__*/", () => src("motion.js"))
   .replace("/*__CONTENT__*/", () => content)
   .replace("/*__PA_INDEX__*/{}", () => (audio.length ? JSON.stringify(PA_INDEX) : "{}"))

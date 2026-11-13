@@ -110,7 +110,8 @@ const BK_EMO={Potato:"🥔",Tomato:"🍅",Onion:"🧅",Carrot:"🥕",Pumpkin:"�
  Papaya:"🍈",Tuna:"🐟",Salmon:"🐟",Sardine:"🐟",Mackerel:"🐟",Seabass:"🐠",Trout:"🐟",Swordfish:"🐡",Octopus:"🐙",Lobster:"🦞",Shrimp:"🦐"};
 const BK_COL={Red:"#e53935",Yellow:"#fdd835",Green:"#43a047",Purple:"#8e24aa",Pink:"#f48fb1",Black:"#212121",Gray:"#9e9e9e",Brown:"#795548",Gold:"#d4af37",Silver:"#c0c0c0",Bronze:"#cd7f32",Violet:"#7f00ff",Maroon:"#800000",Magenta:"#ff00ff"};
 /* picture shown for a word: colour swatch, number, emoji, or nothing */
-function bkPic(x,big,noFallback){if(BK_COL[x.en])return `<i class="bk-sw ${big?"big":""}" style="--c:${BK_COL[x.en]}"></i>`;if(/^\d+$/.test(x.bn||""))return `<i class="bk-numpic ${big?"big":""}">${x.bn}</i>`;const e=BK_EMO[x.en]||BK_EMO[x.en.toLowerCase()]||BK_EMO[x.en[0].toUpperCase()+x.en.slice(1).toLowerCase()];if(e)return `<i class="bk-emo ${big?"big":""}">${e}</i>`;
+function bkPic(x,big,noFallback){if(BK_COL[x.en])return `<i class="bk-sw ${big?"big":""}" style="--c:${BK_COL[x.en]}"></i>`;if(/^\d+$/.test(x.bn||""))return `<i class="bk-numpic ${big?"big":""}">${x.bn}</i>`;const cap=x.en[0].toUpperCase()+x.en.slice(1).toLowerCase(),sv=typeof BK_SVG!=="undefined"&&(BK_SVG[x.en]||BK_SVG[cap]);if(sv)return `<i class="bk-emo bk-svg ${big?"big":""}">${sv}</i>`;
+ const e=BK_EMO[x.en]||BK_EMO[x.en.toLowerCase()]||BK_EMO[cap];if(e)return `<i class="bk-emo ${big?"big":""}">${e}</i>`;
  if(noFallback)return "";const h=[...x.en].reduce((a,ch)=>a+ch.charCodeAt(0),0)*47%360;return `<i class="bk-ini ${big?"big":""}" style="--h:${h}">${esc(x.en[0].toUpperCase())}</i>`;}
 /* ✨ Extra: a picture word for each letter (same words as the ABC board) */
 function bkAbcPic(L){const a=typeof ABC!=="undefined"&&ABC.find(z=>z[0]===L.toLowerCase());if(!a)return `<i class="bk-ini big" style="--h:30">${esc(L)}</i>`;

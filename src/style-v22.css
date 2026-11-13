@@ -213,3 +213,6 @@
 .bookview .row.center+p.small{padding-top:4px;margin-top:12px!important}
 .bk-opts.balloons{grid-template-columns:repeat(4,minmax(0,1fr));max-width:380px;margin:0 auto;gap:10px}
 .bk-opts.balloons .bk-opt{font-size:1.9rem;padding:0}
+/* hand-drawn 3D icons sit at emoji size */
+.bk-svg{display:inline-block;width:1.15em;height:1.15em;line-height:0;vertical-align:middle}.bk-svg svg{width:100%;height:100%;filter:drop-shadow(0 2px 2px #0002)}
+.bk-svg{width:1.35em;height:1.35em}
