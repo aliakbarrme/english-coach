@@ -46,6 +46,17 @@ const BOOK_DATA = fs.existsSync(BOOK_FILE) ? JSON.parse(fs.readFileSync(BOOK_FIL
       for (const q of c.bq || []) add(/_{3,}/.test(q.q) ? q.q.replace(/_{3,}/, q.ans) : q.ans); }
     const bm = {}; for (const s of bt) bm[akey(s)] = s;
     fs.writeFileSync(path.join(root, "..", "book-verify", "tts_book.json"), JSON.stringify(bm)); } }
+// ---- encrypted book bundle for the web app: docs/x/bk.bin (opened only with a key that comes from the book itself) ----
+let BOOK_V = "";
+if (BOOK_DATA) { const crypto = require("crypto"), zlib = require("zlib");
+  const keyStr = BOOK_DATA.levels[0].chapters[0].items.map(x => x.en + ":" + x.pr).join("|");
+  const key = crypto.createHash("sha256").update("bolo-book|" + keyStr).digest();
+  const plain = zlib.gzipSync(Buffer.from(JSON.stringify(BOOK_DATA), "utf8"));
+  BOOK_V = crypto.createHash("sha1").update(plain).digest("hex").slice(0, 10);
+  const iv = crypto.createHash("sha256").update("iv|" + BOOK_V).digest().subarray(0, 12);
+  const c = crypto.createCipheriv("aes-256-gcm", key, iv), enc = Buffer.concat([c.update(plain), c.final(), c.getAuthTag()]);
+  fs.mkdirSync(path.join(root, "docs", "x"), { recursive: true });
+  fs.writeFileSync(path.join(root, "docs", "x", "bk.bin"), Buffer.concat([iv, enc])); }
 const textMap = {}; for (const t of texts) textMap[akey(t)] = t;
 fs.writeFileSync(path.join(root, "tts_texts.json"), JSON.stringify(textMap, null, 0));
 
@@ -62,7 +73,8 @@ const pageWith = (audio, emo = [], bookData = null) => src("app.html")
   .replace("/*__CONTENT__*/", () => content)
   .replace("/*__PA_INDEX__*/{}", () => (audio.length ? JSON.stringify(PA_INDEX) : "{}"))
   .replace("/*__WEB_URL__*/", () => WEB_URL)
-  .replace("/*__BOOK_EMBED__*/null", () => (bookData ? JSON.stringify(bookData) : "null"));
+  .replace("/*__BOOK_EMBED__*/null", () => (bookData ? JSON.stringify(bookData) : "null"))
+  .replace('/*__BOOK_V__*/""', () => JSON.stringify(BOOK_V));
 // ---- Phonicademy sounds: packed from the licensed pack (kept outside the repo) into one encoded bundle; never served as single MP3s ----
 const PA_LETTERS = "abcdefghijklmnopqrstuvwxyz".split("");   // all 26 letter sounds (approved after A, B, C review)
 const PA_FILE = { q: "qu" };                           // letter -> file name in the pack

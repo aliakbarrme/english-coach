@@ -4,7 +4,7 @@
 .bookcta:active{transform:translateY(5px);box-shadow:0 1px 0 #08403b}
 .bookcta b{display:block;font-size:1.2rem}.bookcta .tiny{opacity:.9}
 .bc-em{font-size:2.2rem;filter:drop-shadow(0 4px 6px #0004)}
-.bookview{max-width:760px}
+@media (min-width:900px){.bookview{--cw:860px}.bk-opts,.bk-find,.bk-pop,.bk-baskets{max-width:640px;margin-left:auto;margin-right:auto}.bk-flash{max-width:560px;margin-left:auto;margin-right:auto}}
 .bk-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:calc(6px + env(safe-area-inset-top,0px));margin-bottom:6px}
 .bk-toplbl{font-weight:700}.bk-stars{font-weight:700;background:var(--nm-b);box-shadow:var(--nm-in-s);border-radius:99px;padding:4px 12px}
 .bk-hero{display:flex;gap:14px;align-items:center;background:linear-gradient(135deg,#fff7e6,#e9f7f2);border-radius:24px;padding:18px;margin:6px 0 18px;box-shadow:var(--nm-up-s)}
@@ -121,3 +121,6 @@
 .bk-tiles{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
 .bk-tile{border:0;cursor:pointer;border-radius:14px;padding:10px 14px;background:var(--nm-b);box-shadow:var(--nm-up-s);font:700 1.1rem var(--font);color:var(--ink)}
 .bk-tile.miss{animation:nudge .4s;box-shadow:0 0 0 3px #cf4429}
+/* desktop: chapter screens hide the sidebar, so centre them on the full width */
+@media (min-width:900px){.view.bk-run{--cw:820px;padding-left:max(32px,(100vw - var(--cw)) / 2);padding-right:max(32px,(100vw - var(--cw)) / 2)}
+ .bk-run .bk-steps{max-width:560px;margin-left:auto;margin-right:auto}.bk-letters{grid-template-columns:repeat(auto-fill,minmax(92px,1fr))}}

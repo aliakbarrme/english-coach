@@ -5,18 +5,34 @@
    Flow per chapter: 📘 Book page → 🔁 Revision → 📝 Quiz → 🎮 Game → 🎵 Rhyme → ⭐ Done → next chapter unlocks.
    Everything that is not the book is labelled "✨ Extra". */
 const BOOK_EMBED=/*__BOOK_EMBED__*/null;
-const BOOK={data:null,state:"idle",err:null,
+const BOOK_V=/*__BOOK_V__*/"";
+/* The web app ships the book only as an encrypted bundle (x/bk.bin). Its key comes from the book itself: a device that
+   already has the book (or the book.json file) makes the key, saves it to the signed-in account (users/{uid}/p/_bookkey),
+   and every other device of that account then opens the bundle by itself, including future book updates. */
+const BOOK={data:null,state:"idle",err:null,uid:null,
+ keyFrom(d){try{return d.levels[0].chapters[0].items.map(x=>x.en+":"+x.pr).join("|");}catch(e){return null;}},
+ async rawKey(str){return new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode("bolo-book|"+str)));},
+ hex:b=>[...b].map(x=>x.toString(16).padStart(2,"0")).join(""),
+ unhex:h=>new Uint8Array(h.match(/../g).map(x=>parseInt(x,16))),
+ async open(keyHex){
+  const buf=new Uint8Array(await (await fetch("x/bk.bin?v="+BOOK_V)).arrayBuffer());
+  const key=await crypto.subtle.importKey("raw",this.unhex(keyHex),"AES-GCM",false,["decrypt"]);
+  const plain=await crypto.subtle.decrypt({name:"AES-GCM",iv:buf.slice(0,12)},key,buf.slice(12));
+  const txt=await new Response(new Blob([plain]).stream().pipeThrough(new DecompressionStream("gzip"))).text();
+  return JSON.parse(txt);},
+ async saveKey(k){try{localStorage.setItem("aec4:bookkey",k);}catch(e){}
+  if(CLOUD.avail()&&CLOUD.user){try{const {fs}=await CLOUD.load();await fs.setDoc(CLOUD.ref("p","_bookkey"),{k,updated:Date.now()});}catch(e){}}},
  async load(){
-  if(this.data)return this.data;
-  if(BOOK_EMBED){this.data=BOOK_EMBED;this.state="ready";return this.data;}
-  try{const c=localStorage.getItem("aec4:bookdata");if(c){this.data=JSON.parse(c);this.state="ready";return this.data;}}catch(e){}
-  if(CLOUD.avail()&&CLOUD.user){
-   this.state="loading";render();
-   try{const {fs}=await CLOUD.load();const d=await fs.getDoc(CLOUD.ref("p","_book"));
-    if(d.exists()&&d.data().json){this.data=JSON.parse(d.data().json);this.cache();this.state="ready";}else this.state="none";}
-   catch(e){this.state="none";this.err="বই লোড হয়নি ("+((e&&e.code)||"error")+")।";}
-   render();return this.data;}
-  this.state="none";return null;
+  if(BOOK_EMBED){const first=!this.data;this.data=BOOK_EMBED;this.state="ready";if(first)render();return this.data;}
+  if(this.state==="loading"||(this.data&&(!BOOK_V||this.data._bv===BOOK_V)))return this.data;
+  this.state="loading";this.uid=CLOUD.user&&CLOUD.user.uid;
+  let cached=null;try{const c=localStorage.getItem("aec4:bookdata");if(c)cached=JSON.parse(c);}catch(e){}
+  let k=null;try{k=localStorage.getItem("aec4:bookkey");}catch(e){}
+  if(!k&&cached){const s=this.keyFrom(cached);if(s)k=this.hex(await this.rawKey(s));}
+  if(!k&&CLOUD.avail()&&CLOUD.user){try{const {fs}=await CLOUD.load();const d=await fs.getDoc(CLOUD.ref("p","_bookkey"));if(d.exists())k=d.data().k;}catch(e){}}
+  if(k&&BOOK_V){try{this.data=await this.open(k);this.data._bv=BOOK_V;this.cache();this.saveKey(k);this.state="ready";render();return this.data;}catch(e){}}
+  if(cached){this.data=cached;this.state="ready";}else this.state="none";
+  render();return this.data;
  },
  cache(){try{localStorage.setItem("aec4:bookdata",JSON.stringify(this.data));}catch(e){}},
  valid(d){return d&&Array.isArray(d.levels)&&d.levels.every(l=>Array.isArray(l.chapters));},
@@ -24,8 +40,8 @@ const BOOK={data:null,state:"idle",err:null,
   this.err=null;
   try{const d=JSON.parse(await file.text());if(!this.valid(d))throw new Error("bad");
    this.data=d;this.cache();this.state="ready";
-   if(CLOUD.avail()&&CLOUD.user){const {fs}=await CLOUD.load();await fs.setDoc(CLOUD.ref("p","_book"),{json:JSON.stringify(d),v:d.v||1,updated:Date.now()});toast("📘 বই যোগ হয়েছে, সব ডিভাইসে পাবে");}
-   else toast("📘 বই যোগ হয়েছে");
+   const s=this.keyFrom(d);if(s){const k=this.hex(await this.rawKey(s));await this.saveKey(k);try{if(BOOK_V){this.data=await this.open(k);this.data._bv=BOOK_V;this.cache();}}catch(e){}}
+   toast(CLOUD.user?"📘 বই যোগ হয়েছে, সব ডিভাইসে পাবে":"📘 বই যোগ হয়েছে");
   }catch(e){this.err=e&&e.message==="bad"?"এটা বইয়ের ফাইল না (book.json দাও)।":"বই যোগ হয়নি ("+((e&&e.code)||"error")+")।";}
   render();
  },
@@ -110,7 +126,7 @@ function bkTop(back,label){return `<div class="bk-top"><button class="icon-btn" 
 function viewBook(){
  const A=APP.book;
  if(!BOOK.data&&BOOK.state!=="ready"){
-  if(BOOK.state==="idle")setTimeout(()=>BOOK.load().then(()=>render()),0);
+  if(BOOK.state==="idle"||(BOOK.state==="none"&&CLOUD.user&&BOOK.uid!==CLOUD.user.uid))setTimeout(()=>BOOK.load(),0);
   return `<main class="view bookview">${bkTop("bookClose","📘 My English Book")}
    ${BOOK.state==="loading"||BOOK.state==="idle"?`<div class="bk-empty"><span class="bk-spin"></span><p>বই খোলা হচ্ছে…</p></div>`
    :`<div class="bk-empty card"><span class="bk-bigem">📘</span><h2>বইটা এখনো যোগ করা হয়নি</h2>
@@ -131,7 +147,7 @@ function viewBook(){
      <span class="bk-nstate">${st?.done?"⭐".repeat(st.stars||1):cls==="soon"?"শীঘ্রই":cls==="lock"?"🔒":`<i class="bk-go">শুরু ➜</i>`}</span></button>`;}).join("")}
   </div></section>`).join("")}
   <p class="tiny muted center">📘 = বইয়ের লেখা · ✨ = মজার বাড়তি কাজ (বইয়ের বাইরে)</p>
-  ${BOOK_EMBED?"":`<p class="center"><label class="linkbtn bk-import">🔄 নতুন বইয়ের ফাইল যোগ করো<input type="file" id="bkFile" accept=".json,application/json" hidden></label></p>`}</main>`;
+</main>`;
 }
 function bkStepper(st,step){return `<div class="bk-steps">${BK_STEPS.map(([ic,lb],i)=>`<button class="bk-step ${i<step?"ok":i===step?"on":""}" data-act="bookStep" data-n="${i}" ${i>Math.max(st.step,step)?"disabled":""}><i>${ic}</i><span>${lb}</span></button>`).join("")}</div>`;}
 function viewBookChapter(){
@@ -280,7 +296,7 @@ function bkEnter(){const A=APP.book;if(!A||A.scr!=="ch")return;const c=BOOK.ch(A
  if(A.step===2||A.step===3)setTimeout(()=>ACT.bookSayQ&&(A.step===2?ACT.bookSayQ():ACT.bookSayG()),300);
  if(A.step===3&&A.g&&A.g.kind==="build"&&!A.g.rounds[0].x.bn)setTimeout(()=>ACT.bookSayB(),300);}
 const BOOK_ACT={
- bookOpen(){APP.book={scr:"home",k:Date.now()};render();window.scrollTo(0,0);if(!BOOK.data)BOOK.load().then(()=>render());},
+ bookOpen(){APP.book={scr:"home",k:Date.now()};render();window.scrollTo(0,0);if(!BOOK.data||(BOOK_V&&BOOK.data._bv!==BOOK_V))BOOK.load();},
  bookClose(){TTS.stop();BK_RUN++;APP.book=null;render();},
  bookHome(){TTS.stop();BK_RUN++;APP.book={scr:"home",k:Date.now()};render();window.scrollTo(0,0);},
  bookCh(el){const c=BOOK.ch(el.dataset.id),L=BOOK.levelOf(el.dataset.id);
