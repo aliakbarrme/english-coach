@@ -96,6 +96,11 @@ const BK_RHYME={
  L2C13:{title:"Big and Small",src:"Original chant · Bolo English",lines:["A big red ball, a small blue car,","a happy face, a bright star.","He runs quickly, she walks slowly,","words that describe, holy-moly!"]},
  L2C14:{title:"Naming Words",src:"Original chant · Bolo English",lines:["Table, chair, a cup of tea,","a boy, a girl, a bird, a tree.","Every thing has got a name,","nouns are names — let's play the game!"]},
  L2C15:{title:"Short and Sweet",src:"Original chant · Bolo English",lines:["I am is I'm, you are is you're,","do not is don't — shut the door!","I'm gonna play, I wanna sing,","short words make your English swing!"]},
+ SEC1:{title:"Good Morning Song",src:"Original chant · Bolo English",lines:["Good morning, teacher! Good morning, friend!","Good afternoon, good evening, the greetings never end.","How do you do? I'm happy to see you,","stand up straight and smile — that's what we do!"]},
+ SEC2:{title:"Bye-Bye, Thank You",src:"Original chant · Bolo English",lines:["Goodbye, goodbye, see you soon,","see you in the morning, see you at noon!","Thank you, thank you, thank you so much,","kind words are magic — a friendly touch!"]},
+ SEC3:{title:"What Time Is It?",src:"Original chant · Bolo English",lines:["Tick-tock, what time is it?","Excuse me, please, can you tell me a bit?","Nice shoes! Great job! You look so fine!","Come to my party — it starts at nine!"]},
+ SEC4:{title:"May I, Please?",src:"Original chant · Bolo English",lines:["May I come in? Yes, you may!","Can I play? Sure, go and play!","I'm scared of the dark, I'm scared of the rain,","hold my hand and I'm brave again!"]},
+ SEC5:{title:"I Promise",src:"Original chant · Bolo English",lines:["I promise I will do my best,","I'm sorry, it was my mistake — I confess.","Maybe it's a cat, I think it's a bird,","good words help — have you heard?"]},
  L1C18:{title:"Every Day Words",src:"Original chant · Bolo English",lines:["Open the page and play the game,","talk and walk, it's not the same!","Ask a question, give your praise,","learn new words on all our days!"]}
 };
 function BOOK_TEXTS(){const out=[];for(const r of Object.values(BK_RHYME)){(r.end||[]).forEach(t=>out.push(t));(r.lines||[]).forEach(t=>out.push(t));}return out;}
@@ -172,7 +177,7 @@ function bkRevItems(c,A){if(!A.rv)A.rv=c.items.length>15?bkShuf(c.items.map((_,i
 function bkRevise(c,st,A){
  const it=bkRevItems(c,A),i=Math.min(A.ri||0,it.length-1),x=it[i],last=i>=it.length-1;
  return `<div class="bk-card-wrap">${bkExtra("রিভিশন (বইয়ের শব্দ দিয়ে)")}
-  <div class="bk-flash" data-k="${i}">${bkPic(x,true)}<span class="bk-fen ${x.en.length>14?"long":""}">${esc(x.en)}</span><span class="bn bk-fpr">${esc(x.pr)}</span>${x.bn?`<span class="bn bk-fbn">${esc(x.bn)}</span>`:""}
+  <div class="bk-flash ${x.bn?"":"nobn"}" data-k="${i}">${bkPic(x,true)}<span class="bk-fen ${x.en.length>14?"long":""}">${esc(x.en)}</span><span class="bn bk-fpr">${esc(x.pr)}</span>${x.bn?`<span class="bn bk-fbn">${esc(x.bn)}</span>`:""}
    <button class="bk-round" data-act="bookSayCur" aria-label="Listen">${IC.speak}</button></div>
   <div class="dots bk-dots"><span class="tiny muted">${i+1} / ${it.length}</span></div>
   <div class="row center"><button class="btn ghost" data-act="bookRev" data-d="-1" ${i?"":"disabled"}>${IC.back} আগের</button>
@@ -188,8 +193,8 @@ function bkMakeQuiz(c){
   bkShuf(c.bq||[]).slice(0,10).forEach(b=>qs.push({t:"bk",q:b.q,hint:b.hint,ans:b.ans,opts:bkShuf(b.opts),page:b.page,say:/_{3,}/.test(b.q)?null:null}));
   const S3=bkShuf(it.filter(x=>x.en.split(" ").length<=9));
   for(const x of S3){if(qs.length>=Math.max(8,Math.min(10,qs.length)))break;
-   if(qs.length%2)qs.push({t:"listen",say:x.en,q:"শোনো, কোন বাক্য?",ans:x.en,opts:bkShuf([x.en,...bkShuf(S3.filter(y=>y!==x)).slice(0,2).map(y=>y.en)])});
-   else qs.push({t:"mean",q:"এই বাক্যের মানে কী?",big:x.en,say:x.en,ans:x.bn,opts:bkShuf([x.bn,...bkShuf(S3.filter(y=>y.bn!==x.bn)).slice(0,2).map(y=>y.bn)])});}
+   if(qs.length%2||!x.bn)qs.push({t:"listen",say:x.en,q:"শোনো, কোন বাক্য?",ans:x.en,opts:bkShuf([x.en,...bkShuf(S3.filter(y=>y!==x)).slice(0,2).map(y=>y.en)])});
+   else qs.push({t:"mean",q:"এই বাক্যের মানে কী?",big:x.en,say:x.en,ans:x.bn,opts:bkShuf([x.bn,...bkShuf(S3.filter(y=>y.bn&&y.bn!==x.bn)).slice(0,2).map(y=>y.bn)])});}
   return qs.map(q=>Object.assign(q,{opts:[...new Set(q.opts)]}));
  }else if(c.kind==="words"){
   const num=it.some(x=>/^\d+$/.test(x.bn||"")),S3=bkShuf(it),others=x=>bkShuf(it.filter(y=>y!==x)).slice(0,3);
@@ -239,7 +244,7 @@ function bkGame(c,st,A){
  if(G.i>=G.rounds.length)return `<div class="bk-res">${bkExtra("খেলা")}<span class="bk-bigem">🏆</span><h2>${G.score} / ${G.rounds.length}</h2><p class="bn">খুব ভালো খেলেছ! এবার একটা ছড়া।</p>${bkNext("ছড়া শুনি")}</div>`;
  const r=G.rounds[G.i];
  if(G.kind==="build")return `<div class="bk-game">${bkExtra("খেলা · Sentence Builder")}<div class="pbar"><i style="width:${G.i/G.rounds.length*100}%"></i></div>
-  <p class="bk-q bn">${esc(r.x.bn)}</p><p class="small muted bn">শব্দগুলো ঠিক ক্রমে চাপো</p>
+  ${r.x.bn?`<p class="bk-q bn">${esc(r.x.bn)}</p>`:`<p class="bk-q bn">শোনো <button class="bk-round sm" data-act="bookSayB" aria-label="Listen">${IC.speak}</button></p>`}<p class="small muted bn">শব্দগুলো ঠিক ক্রমে চাপো</p>
   <div class="bk-line">${r.words.slice(0,r.got).map(w=>`<span class="bk-placed">${esc(w)}</span>`).join("")}<span class="bk-caret"></span></div>
   <div class="bk-tiles">${r.tiles.map(o=>o.used?"":`<button class="bk-tile ${G.miss===o.i?"miss":""}" data-act="bookTile" data-i="${o.i}">${esc(o.w)}</button>`).join("")}</div></div>`;
  if(G.kind==="find")return `<div class="bk-game">${bkExtra("খেলা · Find It!")}<div class="pbar"><i style="width:${G.i/G.rounds.length*100}%"></i></div>
@@ -272,7 +277,8 @@ function bkDone(c,st){
 function bkGo(step){const A=APP.book;TTS.stop();BK_RUN++;A.step=step;A.k=Date.now();delete A.q;delete A.g;delete A.rv;A.ri=0;const st=bkSt(A.id);st.step=Math.max(st.step,step);Store.save();render();window.scrollTo(0,0);bkEnter();}
 function bkEnter(){const A=APP.book;if(!A||A.scr!=="ch")return;const c=BOOK.ch(A.id);
  if(A.step===1)setTimeout(()=>ACT.bookSayCur(),250);
- if(A.step===2||A.step===3)setTimeout(()=>ACT.bookSayQ&&(A.step===2?ACT.bookSayQ():ACT.bookSayG()),300);}
+ if(A.step===2||A.step===3)setTimeout(()=>ACT.bookSayQ&&(A.step===2?ACT.bookSayQ():ACT.bookSayG()),300);
+ if(A.step===3&&A.g&&A.g.kind==="build"&&!A.g.rounds[0].x.bn)setTimeout(()=>ACT.bookSayB(),300);}
 const BOOK_ACT={
  bookOpen(){APP.book={scr:"home",k:Date.now()};render();window.scrollTo(0,0);if(!BOOK.data)BOOK.load().then(()=>render());},
  bookClose(){TTS.stop();BK_RUN++;APP.book=null;render();},
@@ -302,9 +308,10 @@ const BOOK_ACT={
  bookPop(el){const G=APP.book.g,r=G.rounds[G.i];
   if(el.dataset.v===r.t){if(G.miss==null)G.score++;G.miss=null;SND.play("pair");el.classList.add("popped");setTimeout(()=>{G.i++;render();ACT.bookSayG();},420);}
   else{G.miss=el.dataset.v;SND.play("no");render();setTimeout(()=>ACT.bookSayG(),250);}},
+ bookSayB(){const G=APP.book.g,r=G&&G.rounds[G.i];if(r)TTS.say(r.t);},
  bookTile(el){const G=APP.book.g,r=G.rounds[G.i],tile=r.tiles.find(o=>o.i===+el.dataset.i);
   if(tile.w===r.words[r.got]){tile.used=true;r.got++;G.miss=null;SND.play("tap");
-   if(r.got>=r.words.length){if(!r.err)G.score++;SND.play("pair");render();TTS.say(r.t);setTimeout(()=>{G.i++;render();},1500);return;}}
+   if(r.got>=r.words.length){if(!r.err)G.score++;SND.play("pair");render();TTS.say(r.t);setTimeout(()=>{G.i++;render();const n=G.rounds[G.i];if(n&&!n.x.bn)ACT.bookSayB();},1500);return;}}
   else{r.err=true;G.miss=tile.i;SND.play("no");}
   render();},
  bookFind(el){const G=APP.book.g,r=G.rounds[G.i];
