@@ -181,3 +181,35 @@
 .bk-chic{font-size:1.6rem;margin-left:-4px}
 .bk-node.cur{background:linear-gradient(135deg,#fff3e0,#ffe0ec);box-shadow:0 4px 0 #ffb98a,0 0 0 3px #ffb347}
 .bk-node.done{background:linear-gradient(135deg,#eafaf1,#fff)}
+
+/* ---- round 2: groups, ABC picture, owl quiz, song stage, phone tables, spacing ---- */
+.bk-gtitle{margin:18px 4px 4px;padding:8px 14px;border-radius:14px;background:linear-gradient(90deg,#ffe8b8,#ffd6e5);color:#7a3d00;font-size:1.05rem;display:inline-block}
+.bk-w{display:flex;align-items:center;justify-content:center;gap:6px}.bk-w .bk-emo{font-size:1.4rem}
+.bk-abc{display:flex;flex-direction:column;align-items:center;gap:2px}.bk-abc .bk-emo.big{font-size:4.2rem}
+.bk-abcw{font:700 1.05rem var(--font);color:#3b4a45;background:#fff9;border-radius:99px;padding:0 12px}.bk-abcw b{color:#e0483d}
+.bk-quiz.kid .bk-qtop{display:flex;align-items:center;justify-content:center;gap:10px;margin:2px 0 6px}
+.bk-streak{font-weight:800;color:#e05a00;background:#fff1dc;border-radius:99px;padding:2px 10px;animation:bkPopIn .3s var(--spring)}
+.bk-mascot{display:flex;align-items:center;gap:10px;justify-content:center;margin:8px 0 14px}
+.bk-owl{font-size:3.4rem;line-height:1;animation:bkBounce 1.8s ease-in-out infinite}.bk-owl.yay{animation:bkWiggle .6s}.bk-owl.hmm{animation:nudge .5s}
+.bk-bubble{position:relative;background:#fff;color:#1d2a26;border-radius:20px;padding:12px 16px;font-size:1.15rem;font-weight:800;box-shadow:0 4px 0 #e6dcc4,0 10px 20px -12px #0004;max-width:70%}
+.bk-bubble::before{content:"";position:absolute;left:-10px;top:50%;margin-top:-10px;border:10px solid transparent;border-right-color:#fff;border-left:0}
+.bk-opts.balloons .bk-opt{border:0;border-radius:50% 50% 46% 46%;aspect-ratio:1/1.1;font:900 2.4rem var(--font);color:#fff;text-shadow:0 2px 0 #0003;
+  background:radial-gradient(circle at 30% 25%,#fff8 0 12%,transparent 13%),var(--c);box-shadow:inset -8px -10px 0 #0002,0 8px 14px -8px #0006;animation:bkFloat 2.4s ease-in-out infinite}
+.bk-opts.balloons .bk-opt.right{background:radial-gradient(circle at 30% 25%,#fff8 0 12%,transparent 13%),#2fbf71;box-shadow:0 0 0 5px #fff,0 0 0 9px #2fbf71}
+.bk-opts.balloons .bk-opt.wrong{filter:grayscale(.6)}
+.bk-stage.playing{animation:bkGlow 1.2s ease-in-out infinite}
+@keyframes bkGlow{50%{box-shadow:0 0 0 4px #ffb3c7,0 18px 30px -18px #ff4f81}}
+.bk-stage.playing .bk-float{animation-duration:1.2s}
+.bk-stage.playing .bk-playbig{animation:spin 4s linear infinite}
+/* book tables fit a phone */
+.bk-book{overflow:hidden}.bk-book .bk-tb,.bk-paper>.bk-sec .bk-tb{width:100%;table-layout:fixed;font-size:.88rem}
+.bk-book .bk-tb th,.bk-book .bk-tb td{padding:6px 5px;word-break:break-word;overflow-wrap:anywhere;vertical-align:top}
+.bk-book .bk-tb th:last-child,.bk-book .bk-tb td:last-child{width:28px;padding:6px 2px}
+.bk-book .bk-tb th:first-child,.bk-book .bk-tb td:first-child{width:32%}
+.bk-tbwrap{max-width:100%;-webkit-overflow-scrolling:touch}
+@media (max-width:480px){.bk-tbwrap .bk-tb{font-size:.8rem}.bk-tbwrap .bk-tb th,.bk-tbwrap .bk-tb td{padding:5px 4px}}
+/* a little air between buttons and the help text under them */
+.bookview .row.center+p,.bookview .bk-playbig+p,.bookview .bk-next+p,.bk-under,.bookview .btn+p,.bookview .bk-stardots+.row{margin-top:10px!important}
+.bookview .row.center+p.small{padding-top:4px;margin-top:12px!important}
+.bk-opts.balloons{grid-template-columns:repeat(4,minmax(0,1fr));max-width:380px;margin:0 auto;gap:10px}
+.bk-opts.balloons .bk-opt{font-size:1.9rem;padding:0}
