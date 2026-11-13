@@ -34,7 +34,18 @@ const BOOK_FILE = path.join(root, "..", "book-verify", "book.json");
 const BOOK_DATA = fs.existsSync(BOOK_FILE) ? JSON.parse(fs.readFileSync(BOOK_FILE, "utf8")) : null;
 { const bk = fs.readFileSync(path.join(root, "src", "book.js"), "utf8").replace(/^document\.addEventListener.*$/m, "");
   new Function(bk + ";return BOOK_TEXTS();")().forEach(t => texts.add(t));
-  if (BOOK_DATA) for (const l of BOOK_DATA.levels) for (const c of l.chapters) { (c.items || []).forEach(x => x.en.length > 1 && texts.add(x.en)); if (c.mixed) c.mixed.rows.flat().forEach(w => texts.add(w)); } }
+  /* book words/sentences get clips too, but their list is written next to the private book, not into this public repo */
+  if (BOOK_DATA) { const bt = new Set(), add = s => { s = String(s || "").replace(/\s+/g, " ").trim(); if (s.length > 1) bt.add(s); };
+    const lat = s => /[A-Za-z]/.test(s) && !/[\u0980-\u09FF]/.test(s);
+    for (const l of BOOK_DATA.levels) for (const c of l.chapters) {
+      (c.items || []).forEach(x => add(x.en)); if (c.mixed) c.mixed.rows.flat().forEach(add);
+      for (const s of c.sections || []) for (const cd of s.cards || []) add(cd.replace(/\s*[(\[].*$/, "").replace(/\s+[\u0980-\u09FF].*$/, ""));
+      for (const b of c.blocks || []) {
+        if (b.t === "p" && lat(b.text) && !/_{3,}/.test(b.text)) add(b.text.replace(/^[-•*]\s*|^\d+\.\s*|^[a-h]\)\s*/, "").replace(/^"|"$/g, ""));
+        if (b.t === "table") { const ec = b.cols.findIndex(h => /english|example|v1/i.test(h)); b.rows.forEach(r => add((r[ec >= 0 ? ec : 0] || "").replace(/\s*\(.*?\)/g, ""))); } }
+      for (const q of c.bq || []) add(/_{3,}/.test(q.q) ? q.q.replace(/_{3,}/, q.ans) : q.ans); }
+    const bm = {}; for (const s of bt) bm[akey(s)] = s;
+    fs.writeFileSync(path.join(root, "..", "book-verify", "tts_book.json"), JSON.stringify(bm)); } }
 const textMap = {}; for (const t of texts) textMap[akey(t)] = t;
 fs.writeFileSync(path.join(root, "tts_texts.json"), JSON.stringify(textMap, null, 0));
 

@@ -81,6 +81,21 @@ const BK_RHYME={
  L1C15:{title:"Let's Play!",src:"Original chant · Bolo English",lines:["Kick the football, hit the ball,","cricket, tennis, fun for all.","Run and swim and jump so high,","sports are great, let's give it a try!"]},
  L1C16:{title:"Spice Box",src:"Original chant · Bolo English",lines:["Ginger, cumin, cinnamon,","spices make the cooking fun.","A little cardamom, a bay leaf too,","Mother cooks a curry for you!"]},
  L1C17:{title:"One, Two, Three, Four, Five",src:"Traditional rhyme (public domain)",lines:["One, two, three, four, five,","once I caught a fish alive.","Six, seven, eight, nine, ten,","then I let it go again."]},
+ L2C1:{title:"Am, Is, Are",src:"Original chant · Bolo English",lines:["I am, I am, I am happy!","He is, she is, it is sunny!","We are, you are, they are friends,","am, is, are — the fun never ends!"]},
+ L2C2:{title:"I Have a Book",src:"Original chant · Bolo English",lines:["I have a book, you have a pen,","he has a ball, and she has ten!","Yesterday I had a kite,","have, has, had — that's right!"]},
+ L2C3:{title:"I Can, I Can't",src:"Original chant · Bolo English",lines:["I can run and I can jump,","I can clap — clap, clap, thump!","A fish can't walk, a cat can't fly,","but I can try, I can try!"]},
+ L2C4:{title:"What Should I Do?",src:"Original chant · Bolo English",lines:["I should wash my hands today,","I should help my friends to play.","I shouldn't shout, I shouldn't fight,","should and shouldn't — do it right!"]},
+ L2C5:{title:"Rules Rap",src:"Original chant · Bolo English",lines:["I must be kind, I must be good,","I must do what a good child should.","I mustn't litter, I mustn't be late,","must and mustn't — rules are great!"]},
+ L2C6:{title:"Where Is the Cat?",src:"Original chant · Bolo English",lines:["The cat is in the box,","the cat is on the box,","the cat is under, the cat is behind,","where is the cat? Can you find?"]},
+ L2C7:{title:"Go, Went, Gone",src:"Original chant · Bolo English",lines:["Go, went, gone — off I run!","Eat, ate, eaten — lunch is done!","Write, wrote, written — on the page,","three verb forms at every age!"]},
+ L2C8:{title:"Sing, Sang, Sung",src:"Original chant · Bolo English",lines:["Sing, sang, sung — a happy song,","win, won, won — we all get along!","Draw, drew, drawn — a picture new,","give, gave, given — this is for you!"]},
+ L2C9:{title:"Every Day, Right Now",src:"Original chant · Bolo English",lines:["Every day I go to school,","right now I am reading, cool!","I have finished, look and see,","present tense is fun for me!"]},
+ L2C10:{title:"Yesterday and Tomorrow",src:"Original chant · Bolo English",lines:["Yesterday I played outside,","yesterday I went for a ride.","Tomorrow I will read a book,","tomorrow I will help Mum cook!"]},
+ L2C11:{title:"Question Time",src:"Original chant · Bolo English",lines:["Are you happy? Yes, I am!","Do you like jam? Yes, I do!","Will you play? Yes, I will!","Ask a question, it's a skill!"]},
+ L2C12:{title:"W-H Song",src:"Original chant · Bolo English",lines:["What is your name? Where do you live?","Why do you smile? What can you give?","When do you sleep? How do you play?","Ask with W-H every day!"]},
+ L2C13:{title:"Big and Small",src:"Original chant · Bolo English",lines:["A big red ball, a small blue car,","a happy face, a bright star.","He runs quickly, she walks slowly,","words that describe, holy-moly!"]},
+ L2C14:{title:"Naming Words",src:"Original chant · Bolo English",lines:["Table, chair, a cup of tea,","a boy, a girl, a bird, a tree.","Every thing has got a name,","nouns are names — let's play the game!"]},
+ L2C15:{title:"Short and Sweet",src:"Original chant · Bolo English",lines:["I am is I'm, you are is you're,","do not is don't — shut the door!","I'm gonna play, I wanna sing,","short words make your English swing!"]},
  L1C18:{title:"Every Day Words",src:"Original chant · Bolo English",lines:["Open the page and play the game,","talk and walk, it's not the same!","Ask a question, give your praise,","learn new words on all our days!"]}
 };
 function BOOK_TEXTS(){const out=[];for(const r of Object.values(BK_RHYME)){(r.end||[]).forEach(t=>out.push(t));(r.lines||[]).forEach(t=>out.push(t));}return out;}
@@ -140,13 +155,24 @@ function bkPage(c,st){
       return `<button class="bk-cardw" data-act="bookSay" data-t="${esc(en)}">${bkPic(it)}<span>${esc(cd)}</span></button>`;}).join("")}</div>`:""}
     ${s.rows.length?`<table class="bk-tb"><thead><tr>${s.cols.map(h=>`<th>${esc(h)}</th>`).join("")}<th></th></tr></thead><tbody>${s.rows.map(x=>`<tr data-act="bookSay" data-t="${esc(x.en)}">${s.cols[0]==="Number"?`<td><b>${esc(x.bn)}</b></td><td><b>${esc(x.en)}</b></td><td class="bn">${esc(x.pr)}</td>`:`<td><b>${esc(x.en)}</b></td><td class="bn">${esc(x.pr)}</td><td class="bn">${esc(x.bn)}</td>`}<td class="bk-spk">${IC.speak}</td></tr>`).join("")}</tbody></table>`:""}</section>`).join("")}
    </div>${bkNext("পরের ধাপ: রিভিশন")}`;
+ if(c.kind==="lesson"){let pg=null;const lat=s=>/[A-Za-z]/.test(s)&&!/[\u0980-\u09FF]/.test(s);
+  const html=c.blocks.map(b=>{let pre="";if(b.page!==pg){pre=pg==null?"":`<div class="bk-pgmark">পৃষ্ঠা ${b.page}</div>`;pg=b.page;}
+   if(b.t==="h2")return pre+`<h2 class="bk-h">${esc(b.text.replace(/^CHAPTER-\s*/,"Chapter "))}</h2>`;
+   if(b.t==="h3")return pre+`<h3 class="bk-lh3">${esc(b.text)}</h3>`;
+   if(b.t==="h4")return pre+`<h4 class="bk-lh4">${esc(b.text)}</h4>`;
+   if(b.t==="table"){const ec=b.cols.findIndex(h=>/english|example|v1/i.test(h));
+    return pre+`<div class="bk-tbwrap"><table class="bk-tb"><thead><tr>${b.cols.map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${b.rows.map(r=>{const say=(r[ec>=0?ec:0]||"").replace(/\s*\(.*?\)/g,"");return `<tr data-act="bookSay" data-t="${esc(say)}">${r.map(x=>`<td class="${/[\u0980-\u09FF]/.test(x)?"bn":""}">${esc(x)}</td>`).join("")}</tr>`;}).join("")}</tbody></table></div>`;}
+   const x=b.text;if(/^\(Column headings/.test(x))return pre+`<p class="bk-fixnote">⚠️ ${esc(x.replace(/^\(|\)$/g,""))}</p>`;
+   if(lat(x)&&!/_{3,}/.test(x))return pre+`<p class="bk-say" data-act="bookSay" data-t="${esc(x.replace(/^[-•*]\s*|^\d+\.\s*|^[a-h]\)\s*/,"").replace(/^"|"$/g,""))}">${esc(x)} <i class="bk-mini">${IC.speak}</i></p>`;
+   return pre+`<p class="${/[\u0980-\u09FF]/.test(x)?"bn":""}">${esc(x)}</p>`;}).join("");
+  return `<div class="bk-paper bk-lesson">${bkSrc(c.pages.length>1?[c.pages[0],c.pages[c.pages.length-1]]:c.pages)}${html}</div>${bkNext("পরের ধাপ: রিভিশন")}`;}
  return `<p>শীঘ্রই আসছে।</p>`;
 }
 function bkRevItems(c,A){if(!A.rv)A.rv=c.items.length>15?bkShuf(c.items.map((_,i)=>i)).slice(0,15).sort((a,b)=>a-b):c.items.map((_,i)=>i);return A.rv.map(i=>c.items[i]);}
 function bkRevise(c,st,A){
  const it=bkRevItems(c,A),i=Math.min(A.ri||0,it.length-1),x=it[i],last=i>=it.length-1;
  return `<div class="bk-card-wrap">${bkExtra("রিভিশন (বইয়ের শব্দ দিয়ে)")}
-  <div class="bk-flash" data-k="${i}">${bkPic(x,true)}<span class="bk-fen">${esc(x.en)}</span><span class="bn bk-fpr">${esc(x.pr)}</span>${x.bn?`<span class="bn bk-fbn">${esc(x.bn)}</span>`:""}
+  <div class="bk-flash" data-k="${i}">${bkPic(x,true)}<span class="bk-fen ${x.en.length>14?"long":""}">${esc(x.en)}</span><span class="bn bk-fpr">${esc(x.pr)}</span>${x.bn?`<span class="bn bk-fbn">${esc(x.bn)}</span>`:""}
    <button class="bk-round" data-act="bookSayCur" aria-label="Listen">${IC.speak}</button></div>
   <div class="dots bk-dots"><span class="tiny muted">${i+1} / ${it.length}</span></div>
   <div class="row center"><button class="btn ghost" data-act="bookRev" data-d="-1" ${i?"":"disabled"}>${IC.back} আগের</button>
@@ -158,6 +184,13 @@ function bkMakeQuiz(c){
  if(c.kind==="letters"){
   bkShuf(it).slice(0,4).forEach(x=>qs.push({t:"listen",say:bkLetterSay(x.en),q:"শোনো, কোন অক্ষর?",ans:x.en,opts:bkShuf([x.en,...bkShuf(it.filter(y=>y!==x)).slice(0,3).map(y=>y.en)])}));
   bkShuf(it).slice(0,4).forEach(x=>qs.push({t:"pr",q:`"${x.en}" কীভাবে বলে?`,big:x.en,ans:x.pr,opts:bkShuf([x.pr,...bkShuf(it.filter(y=>y!==x)).slice(0,3).map(y=>y.pr)])}));
+ }else if(c.kind==="lesson"){
+  bkShuf(c.bq||[]).slice(0,10).forEach(b=>qs.push({t:"bk",q:b.q,hint:b.hint,ans:b.ans,opts:bkShuf(b.opts),page:b.page,say:/_{3,}/.test(b.q)?null:null}));
+  const S3=bkShuf(it.filter(x=>x.en.split(" ").length<=9));
+  for(const x of S3){if(qs.length>=Math.max(8,Math.min(10,qs.length)))break;
+   if(qs.length%2)qs.push({t:"listen",say:x.en,q:"শোনো, কোন বাক্য?",ans:x.en,opts:bkShuf([x.en,...bkShuf(S3.filter(y=>y!==x)).slice(0,2).map(y=>y.en)])});
+   else qs.push({t:"mean",q:"এই বাক্যের মানে কী?",big:x.en,say:x.en,ans:x.bn,opts:bkShuf([x.bn,...bkShuf(S3.filter(y=>y.bn!==x.bn)).slice(0,2).map(y=>y.bn)])});}
+  return qs.map(q=>Object.assign(q,{opts:[...new Set(q.opts)]}));
  }else if(c.kind==="words"){
   const num=it.some(x=>/^\d+$/.test(x.bn||"")),S3=bkShuf(it),others=x=>bkShuf(it.filter(y=>y!==x)).slice(0,3);
   S3.slice(0,3).forEach(x=>qs.push({t:"listen",say:x.en,q:"শোনো, কোনটা?",ans:x.en,opts:bkShuf([x.en,...others(x).map(y=>y.en)])}));
@@ -179,6 +212,11 @@ function bkQuiz(c,st,A){
    <p class="bn">${pass?"দারুণ! এবার একটা খেলা!":"আরেকবার চেষ্টা করো, তুমি পারবে!"}</p>
    ${pass?`<button class="btn good wide" data-act="bookNext" data-stars="${stars}">খেলায় চলো ➜</button>`:`<button class="btn wide" data-act="bookQuizAgain">আবার কুইজ</button><button class="linkbtn" data-act="bookStep" data-n="1">আগে রিভিশন করি</button>`}</div>`;}
  const q=Q.qs[Q.i];
+ if(q.t==="bk"){const filled=Q.pick!=null?esc(q.q).replace(/_{3,}/,`<b class="bk-blank ${Q.pick===q.ans?"ok":"bad"}">${esc(q.ans)}</b>`):esc(q.q).replace(/_{3,}/,`<b class="bk-blank">?</b>`);
+  return `<div class="bk-quiz"><span class="bk-src static">📘 বইয়ের অনুশীলন · পৃষ্ঠা ${q.page}</span><div class="pbar"><i style="width:${Q.i/Q.qs.length*100}%"></i></div>
+   <p class="bk-bq">${filled}</p>${q.hint?`<p class="bn small muted">${esc(q.hint)}</p>`:""}
+   <div class="bk-opts ${q.opts.length===3?"three":""} ${q.opts.some(o=>o.length>18)?"one":""}">${q.opts.map(o=>{const s=Q.pick==null?"":o===q.ans?"right":o===Q.pick?"wrong":"dim";
+    return `<button class="bk-opt ${s}" data-act="bookAns" data-v="${esc(o)}" ${Q.pick!=null?"disabled":""}>${esc(o)}</button>`;}).join("")}</div></div>`;}
  return `<div class="bk-quiz">${bkExtra("কুইজ")}<div class="pbar"><i style="width:${Q.i/Q.qs.length*100}%"></i></div>
   <p class="bk-q bn">${esc(q.q)}</p>
   ${q.big?`<div class="bk-qbig">${esc(q.big)}${q.say?`<button class="bk-round sm" data-act="bookSayQ" aria-label="Listen">${IC.speak}</button>`:""}</div>`:`<button class="bk-bigear" data-act="bookSayQ" aria-label="Listen">${IC.speak}</button>`}
@@ -186,6 +224,8 @@ function bkQuiz(c,st,A){
    return `<button class="bk-opt ${s} ${/[ঀ-৿]/.test(o)?"bn":""}" data-act="bookAns" data-v="${esc(o)}" ${Q.pick!=null?"disabled":""}>${esc(o)}</button>`;}).join("")}</div></div>`;
 }
 function bkMakeGame(c){
+ if(c.kind==="lesson"){const ok=c.items.filter(x=>{const n=x.en.split(" ").length;return n>=3&&n<=8;});
+  return {kind:"build",rounds:bkShuf(ok).slice(0,6).map(x=>({t:x.en,x,words:x.en.split(" "),tiles:bkShuf(x.en.split(" ").map((w,i)=>({w,i}))),got:0})),i:0,score:0,miss:null};}
  if(c.kind==="words"){const it=c.items,pics=it.filter(x=>bkPic(x)),pool=pics.length>=6?pics:it;
   const usePic=pics.length>=6,key=x=>usePic?bkPic(x):x.en;   // never show two options with the same picture (e.g. two 🐟)
   const opts=x=>{const seen=new Set([key(x)]),out=[x];for(const y of bkShuf(pool)){if(out.length>=6)break;if(y!==x&&!seen.has(key(y))){seen.add(key(y));out.push(y);}}return bkShuf(out);};
@@ -198,6 +238,10 @@ function bkGame(c,st,A){
  const G=A.g||(A.g=bkMakeGame(c));
  if(G.i>=G.rounds.length)return `<div class="bk-res">${bkExtra("খেলা")}<span class="bk-bigem">🏆</span><h2>${G.score} / ${G.rounds.length}</h2><p class="bn">খুব ভালো খেলেছ! এবার একটা ছড়া।</p>${bkNext("ছড়া শুনি")}</div>`;
  const r=G.rounds[G.i];
+ if(G.kind==="build")return `<div class="bk-game">${bkExtra("খেলা · Sentence Builder")}<div class="pbar"><i style="width:${G.i/G.rounds.length*100}%"></i></div>
+  <p class="bk-q bn">${esc(r.x.bn)}</p><p class="small muted bn">শব্দগুলো ঠিক ক্রমে চাপো</p>
+  <div class="bk-line">${r.words.slice(0,r.got).map(w=>`<span class="bk-placed">${esc(w)}</span>`).join("")}<span class="bk-caret"></span></div>
+  <div class="bk-tiles">${r.tiles.map(o=>o.used?"":`<button class="bk-tile ${G.miss===o.i?"miss":""}" data-act="bookTile" data-i="${o.i}">${esc(o.w)}</button>`).join("")}</div></div>`;
  if(G.kind==="find")return `<div class="bk-game">${bkExtra("খেলা · Find It!")}<div class="pbar"><i style="width:${G.i/G.rounds.length*100}%"></i></div>
   <p class="bk-q bn">শোনো আর ঠিক ছবিটা খুঁজে বের করো! <button class="bk-round sm" data-act="bookSayG" aria-label="Listen">${IC.speak}</button></p>
   <div class="bk-find">${r.opts.map(o=>`<button class="bk-fc ${G.miss===o.en?"miss":""}" data-act="bookFind" data-v="${esc(o.en)}">${G.pic?bkPic(o,true):""}<span>${G.pic&&!BK_COL[o.en]&&!/^\d+$/.test(o.bn||"")?"":esc(o.en)}</span></button>`).join("")}</div></div>`;
@@ -251,13 +295,18 @@ const BOOK_ACT={
  bookSayCur(){const A=APP.book,c=BOOK.ch(A.id),x=bkRevItems(c,A)[A.ri||0];TTS.say(c.kind==="letters"?bkLetterSay(x.en):x.en);},
  bookSayQ(){const q=APP.book.q?.qs[APP.book.q.i];if(q&&q.say)TTS.say(q.say);},
  bookAns(el){const Q=APP.book.q,q=Q.qs[Q.i];if(Q.pick!=null)return;Q.pick=el.dataset.v;const ok=Q.pick===q.ans;
-  if(ok){Q.ok++;SND.play("ok");}else{SND.play("no");if(q.t!=="pr"&&q.t!=="mean")setTimeout(()=>TTS.say(q.t==="listen"&&BOOK.ch(APP.book.id).kind==="letters"?bkLetterSay(q.ans):q.say||q.ans),300);}
-  render();setTimeout(()=>{if(APP.book?.q!==Q)return;Q.i++;Q.pick=null;render();ACT.bookSayQ();},ok?800:1700);},
+  if(ok){Q.ok++;SND.play("ok");if(q.t==="bk"&&/_{3,}/.test(q.q))setTimeout(()=>TTS.say(q.q.replace(/_{3,}/,q.ans)),250);}else{SND.play("no");if(q.t==="bk")setTimeout(()=>TTS.say(/_{3,}/.test(q.q)?q.q.replace(/_{3,}/,q.ans):q.ans),300);else if(q.t!=="pr"&&q.t!=="mean")setTimeout(()=>TTS.say(q.t==="listen"&&BOOK.ch(APP.book.id).kind==="letters"?bkLetterSay(q.ans):q.say||q.ans),300);}
+  render();setTimeout(()=>{if(APP.book?.q!==Q)return;Q.i++;Q.pick=null;render();ACT.bookSayQ();},q.t==="bk"?(ok?1500:2600):ok?800:1700);},
  bookQuizAgain(){delete APP.book.q;APP.book.k=Date.now();render();ACT.bookSayQ();},
- bookSayG(){const G=APP.book.g,r=G&&G.rounds[G.i];if(!r)return;TTS.say(G.kind==="pop"?bkLetterSay(r.t):r.t);},
+ bookSayG(){const G=APP.book.g,r=G&&G.rounds[G.i];if(!r||G.kind==="build")return;TTS.say(G.kind==="pop"?bkLetterSay(r.t):r.t);},
  bookPop(el){const G=APP.book.g,r=G.rounds[G.i];
   if(el.dataset.v===r.t){if(G.miss==null)G.score++;G.miss=null;SND.play("pair");el.classList.add("popped");setTimeout(()=>{G.i++;render();ACT.bookSayG();},420);}
   else{G.miss=el.dataset.v;SND.play("no");render();setTimeout(()=>ACT.bookSayG(),250);}},
+ bookTile(el){const G=APP.book.g,r=G.rounds[G.i],tile=r.tiles.find(o=>o.i===+el.dataset.i);
+  if(tile.w===r.words[r.got]){tile.used=true;r.got++;G.miss=null;SND.play("tap");
+   if(r.got>=r.words.length){if(!r.err)G.score++;SND.play("pair");render();TTS.say(r.t);setTimeout(()=>{G.i++;render();},1500);return;}}
+  else{r.err=true;G.miss=tile.i;SND.play("no");}
+  render();},
  bookFind(el){const G=APP.book.g,r=G.rounds[G.i];
   if(el.dataset.v===r.t){if(G.miss==null)G.score++;G.miss=null;SND.play("pair");el.classList.add("got");setTimeout(()=>{G.i++;render();ACT.bookSayG();},450);}
   else{G.miss=el.dataset.v;SND.play("no");render();setTimeout(()=>ACT.bookSayG(),250);}},

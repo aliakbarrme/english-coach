@@ -99,3 +99,25 @@
 .bk-fc .bk-emo.big{font-size:3rem}.bk-fc .bk-sw.big{width:60px;height:60px}.bk-fc .bk-numpic.big{font-size:2.6rem}
 .bk-fc.miss{animation:nudge .4s;box-shadow:0 0 0 3px #cf4429}.bk-fc.got{background:#dff6ea;transform:scale(1.08)}
 .bk-flash .bk-emo.big,.bk-flash .bk-sw.big,.bk-flash .bk-numpic.big{margin-bottom:4px}
+/* grammar lessons */
+.bk-lesson h2.bk-h{margin-top:4px}
+.bk-lh3{margin:18px 0 6px;padding:6px 12px;border-radius:12px;background:#0d5c5512;font-size:1.05rem}
+.bk-lh4{margin:14px 0 4px;color:#b36b14;font-size:.98rem}
+.bk-lesson p{margin:3px 0;line-height:1.55}
+.bk-say{cursor:pointer;font-weight:650;border-radius:8px;padding:2px 6px;margin-left:-6px!important;transition:background .2s}
+.bk-say.on{background:#fff1c9}.bk-mini{font-style:normal;color:#0d5c55;opacity:.7}.bk-mini svg{width:14px;height:14px;vertical-align:-2px}
+.bk-pgmark{margin:18px 0 8px;text-align:center;font-size:.75rem;color:#9a8c63;border-top:1px dashed #e4dcc4;padding-top:6px}
+.bk-tbwrap{overflow-x:auto;margin:6px 0}.bk-tbwrap .bk-tb{min-width:100%;font-size:.88rem}
+.bk-fixnote{background:#fff3cd;border-left:4px solid #e08a2e;padding:6px 10px!important;border-radius:8px;font-size:.85rem}
+.bk-fen.long{font-size:1.7rem;line-height:1.3}
+.bk-src.static{position:static;display:inline-block;border-radius:99px;margin-bottom:10px}
+.bk-bq{font-size:1.35rem;font-weight:700;line-height:1.5;margin:12px 0 4px}
+.bk-blank{display:inline-block;min-width:70px;padding:0 10px;border-bottom:3px solid #3a7fcc;color:#3a7fcc}
+.bk-blank.ok{color:#1d8656;border-color:#1d8656}.bk-blank.bad{color:#1d8656;border-color:#cf4429}
+.bk-opts.one{grid-template-columns:1fr}.bk-opts.one .bk-opt{font-size:1.05rem;text-align:left;padding:12px 14px}
+.bk-line{min-height:56px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center;padding:10px;border-radius:16px;background:var(--nm-b);box-shadow:var(--nm-in);margin:10px 0 16px}
+.bk-placed{padding:6px 10px;border-radius:10px;background:#dff6ea;color:#155c3c;font-weight:700;animation:bkIn .25s var(--spring)}
+.bk-caret{width:2px;height:26px;background:#3a7fcc;animation:blink 1s steps(2) infinite}@keyframes blink{50%{opacity:0}}
+.bk-tiles{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.bk-tile{border:0;cursor:pointer;border-radius:14px;padding:10px 14px;background:var(--nm-b);box-shadow:var(--nm-up-s);font:700 1.1rem var(--font);color:var(--ink)}
+.bk-tile.miss{animation:nudge .4s;box-shadow:0 0 0 3px #cf4429}
