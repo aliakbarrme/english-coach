@@ -57,6 +57,8 @@ const bkShuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Ma
 const bkWait=ms=>new Promise(r=>setTimeout(r,ms));
 const BK_STEPS=[["📘","বই"],["🔁","রিভিশন"],["📝","কুইজ"],["🎮","খেলা"],["🎵","ছড়া"],["⭐","শেষ"]];
 let BK_RUN=0;
+/* voice for the book: kids hear every clip a little slower and clearer (0.86x, same pitch) */
+const bkSay=(s,rate)=>TTS.say(s,rate||(typeof isKid==="function"&&isKid()?.72:undefined));
 /* ✨ Extra: a small built-in band (no audio files): drums, bass, chords and a music-box melody, made with Web Audio */
 const BK_MUSIC={nodes:[],timer:null,on:false,
  ctx(){return SND.ac();},
@@ -93,19 +95,19 @@ const BK_EMO={Potato:"🥔",Tomato:"🍅",Onion:"🧅",Carrot:"🥕",Pumpkin:"�
  "Water Lily":"🪷",Rose:"🌹",Tulip:"🌷",Lotus:"🪷",Sunflower:"🌻",Jasmine:"🌼",Marigold:"🏵️",Daisy:"🌼",Lavender:"💐",Tuberose:"💮",
  Panda:"🐼",Gorilla:"🦍",Penguin:"🐧",Porcupine:"🦔",Sheep:"🐑",Rabbit:"🐰",Fox:"🦊",Wolf:"🐺",Bear:"🐻",Giraffe:"🦒",Zebra:"🦓",Deer:"🦌",Elephant:"🐘",Cow:"🐄",Monkey:"🐒",Dog:"🐕",Cat:"🐈",Kangaroo:"🦘",Leopard:"🐆",Jaguar:"🐆",Cheetah:"🐆",Lion:"🦁",Tiger:"🐯",
  Crow:"🐦‍⬛",Blackbird:"🐦‍⬛",Turkey:"🦃",Sparrow:"🐦",Seabird:"🕊️",Robin:"🐦",Pigeon:"🕊️",Parrot:"🦜",Owl:"🦉",Hummingbird:"🐦",Falcon:"🦅",Duck:"🦆",Dove:"🕊️",Eagle:"🦅",Stork:"🪿",
- Father:"👨",Mother:"👩",Brother:"👦",Sister:"👧",Daughter:"👧",Grandfather:"👴",Grandmother:"👵",Uncle:"🧔",Aunt:"👩‍🦱",
+ Father:"👨",Mother:"👩",Brother:"👦",Sister:"👩‍🦰",Daughter:"👧",Grandfather:"👴",Grandmother:"👵",Uncle:"🧔",Aunt:"👩‍🦱",
  Bangladesh:"🇧🇩",England:"🏴",Brazil:"🇧🇷",Canada:"🇨🇦",Russia:"🇷🇺",Thailand:"🇹🇭",China:"🇨🇳",Australia:"🇦🇺","The UK":"🇬🇧",London:"🎡","New York":"🗽",Moscow:"🏰",Istanbul:"🕌",Mumbai:"🌆",
  Coconut:"🥥",Strawberry:"🍓",Apple:"🍎",Grape:"🍇",Cherry:"🍒",Mango:"🥭",Orange:"🍊",Pineapple:"🍍",Lemon:"🍋",Watermelon:"🍉",Grapefruit:"🍊",Raspberry:"🫐",Guava:"🍐",Pomegranate:"🍎",
  Rice:"🍚",Bread:"🍞",Chicken:"🍗",Beef:"🥩",Fish:"🐟",Salad:"🥗",Pizza:"🍕",Pasta:"🍝",Eggs:"🥚",Milk:"🥛",Yogurt:"🍶",Sandwich:"🥪",
  Football:"⚽",Basketball:"🏀",Cricket:"🏏",Tennis:"🎾",Volleyball:"🏐",Swimming:"🏊",Running:"🏃",Athletics:"🏅",Boxing:"🥊",Golf:"⛳",Hockey:"🏑",Baseball:"⚾",Badminton:"🏸","Table Tennis":"🏓",
  Ginger:"🫚","Black Pepper":"🧂","Bay Leaf":"🍃","Star Anise":"⭐",
  Lips:"💋",Arm:"💪",Leg:"🦵",Kale:"🥬",Mustard:"🌼",Zucchini:"🥒",Asparagus:"🌱",Cauliflower:"🥦",Okra:"🌿",Lettuce:"🥬",
- Cousin:"🧒",Nephew:"👦",Niece:"👧",Litchi:"🍒",Jackfruit:"🍈",Cinnamon:"🪵",Cloves:"🌰",Turmeric:"🫚",Coriander:"🌿",Cumin:"🌾",Cardamom:"🫛",Paprika:"🌶️",Saffron:"🌸","Mustard Seeds":"🌼",
+ Cousin:"🧒",Nephew:"👦🏽",Niece:"👧🏽",Litchi:"🍒",Jackfruit:"🍈",Cinnamon:"🪵",Cloves:"🌰",Turmeric:"🫚",Coriander:"🌿",Cumin:"🌾",Cardamom:"🫛",Paprika:"🌶️",Saffron:"🌸","Mustard Seeds":"🌼",
  Saturday:"📅",Sunday:"☀️",Monday:"📅",Tuesday:"📅",Wednesday:"📅",Thursday:"📅",Friday:"🕌",
  January:"⛄",February:"💝",March:"🌸",April:"🌷",May:"🌞",June:"🌧️",July:"☔",August:"🌻",September:"🍂",October:"🎃",November:"🍁",December:"🎄",
  Pen:"🖊️",People:"👨‍👩‍👧‍👦",Pan:"🍳",Picture:"🖼️",Plan:"🗺️",Police:"👮",Power:"⚡",Table:"🪑",Time:"⏰",Talk:"🗣️",Task:"📋",Teach:"👩‍🏫",Kite:"🪁",Car:"🚗",Cold:"🥶",King:"🤴",Key:"🔑",Kitchen:"🧑‍🍳",
  cap:"🧢",cat:"🐈",cut:"✂️",top:"🔝",tap:"🚰",tick:"✔️",pack:"🎒",pick:"⛏️",tack:"📌",kit:"🧰",kick:"🥋",clock:"🕰️",put:"📥",pet:"🐶",talk:"🗣️",park:"🏞️",cup:"☕",tip:"💡",cop:"👮",trick:"🎩",pot:"🍲",pat:"🫳",luck:"🍀",lip:"💋",kite:"🪁",
- Complain:"😤",Day:"🌞",Dangerous:"⚠️",Difference:"⚖️",Different:"🔀",Education:"🎓",English:"🔤",Face:"🙂",Fail:"❌",Famous:"🌟",Gate:"🚪",Game:"🎮",Goal:"🥅",Hotel:"🏨",History:"📜",Interesting:"🤩",Language:"🗣️",Nature:"🌳",Open:"📖",Only:"☝️",Page:"📄",Pause:"⏸️",Place:"📍",Play:"🎈",Pray:"🤲",Praise:"👏",Question:"❓",Schedule:"🗓️",Student:"🧑‍🎓",Walk:"🚶",
+ Complain:"😤",Day:"🌞",Dangerous:"⚠️",Difference:"⚖️",Different:"🔀",Education:"🎓",English:"🔤",Face:"🙂",Fail:"❌",Famous:"🌟",Gate:"🚪",Game:"🎮",Goal:"🥅",Hotel:"🏨",History:"📜",Interesting:"🤩",Language:"🌐",Nature:"🌳",Open:"📖",Only:"☝️",Page:"📄",Pause:"⏸️",Place:"📍",Play:"🎈",Pray:"🤲",Praise:"👏",Question:"❓",Schedule:"🗓️",Student:"🧑‍🎓",Walk:"🚶",
  Magpie:"🐦",Finch:"🐥",Woodpecker:"🪶",Vulture:"🦅",Kingfisher:"🐦",Cuckoo:"🐤","Black Bird":"🐦‍⬛",Kangaru:"🦘",Beetroot:"🥕",Turmeric:"🫚",Jackfruit:"🍈",Raspberry:"🫐",
  Papaya:"🍈",Tuna:"🐟",Salmon:"🐟",Sardine:"🐟",Mackerel:"🐟",Seabass:"🐠",Trout:"🐟",Swordfish:"🐡",Octopus:"🐙",Lobster:"🦞",Shrimp:"🦐"};
 const BK_COL={Red:"#e53935",Yellow:"#fdd835",Green:"#43a047",Purple:"#8e24aa",Pink:"#f48fb1",Black:"#212121",Gray:"#9e9e9e",Brown:"#795548",Gold:"#d4af37",Silver:"#c0c0c0",Bronze:"#cd7f32",Violet:"#7f00ff",Maroon:"#800000",Magenta:"#ff00ff"};
@@ -225,7 +227,7 @@ const bkNext=(lbl)=>`<button class="btn good wide bk-next" data-act="bookNext">$
 function bkPage(c,st){
  if(c.kind==="letters")return `<div class="bk-paper">${bkSrc(c.pages)}<h2 class="bk-h">${esc(c.title)}</h2>
    <p class="small muted bn">অক্ষরে চাপো, শোনো আর বলো।</p>
-   <div class="bk-letters">${c.items.map((it,i)=>`<button class="bk-let" style="--c:${BK_CANDY[i%BK_CANDY.length]}" data-act="bookSay" data-l="${esc(it.en)}" data-i="${i}"><span class="bk-kspk">${IC.speak}</span><b>${esc(it.en)}</b><span class="bn">(${esc(it.pr)})</span></button>`).join("")}</div>
+   <div class="bk-letters">${c.items.map((it,i)=>`<button class="bk-let" style="--c:${BK_CANDY[i%BK_CANDY.length]}" data-act="bookSay" data-l="${esc(it.en)}" data-i="${i}"><b>${esc(it.en)}</b><span class="bn">(${esc(it.pr)})</span></button>`).join("")}</div>
    <div class="row center"><button class="btn bk-candy" data-act="bookPlayAll">▶ সব শোনো</button></div></div>${bkNext("পরের ধাপ: রিভিশন")}`;
  if(c.kind==="sounds")return `<div class="bk-paper">${bkSrc(c.pages)}<h2 class="bk-h">${esc(c.title)}</h2>
    ${c.sounds.map(s=>`<section class="bk-sec"><h3><span class="bk-snd">${s.sound}</span> ${esc(s.title)}</h3><p class="bn">${esc(s.intro)}</p>
@@ -282,6 +284,10 @@ function bkMakeQuiz(c){
   return qs.map(q=>Object.assign(q,{opts:[...new Set(q.opts)]}));
  }else if(c.kind==="words"){
   const num=it.some(x=>/^\d+$/.test(x.bn||"")),S3=bkShuf(it),others=x=>bkShuf(it.filter(y=>y!==x)).slice(0,3);
+  if(num){const dg=x=>[x.bn,...others(x).map(y=>y.bn)];
+   S3.slice(0,4).forEach(x=>qs.push({t:"num",q:"এটা কোন সংখ্যা?",big:x.en,say:x.en,ans:x.bn,opts:bkShuf(dg(x))}));
+   S3.slice(4,8).forEach(x=>qs.push({t:"numl",q:"শোনো, কোন সংখ্যা?",say:x.en,ans:x.bn,opts:bkShuf(dg(x))}));
+   return bkShuf(qs);}
   S3.slice(0,3).forEach(x=>{const pk=y=>bkPic(y,false,true)||y.en;const ot=[];for(const y of bkShuf(it))if(y!==x&&ot.length<3&&pk(y)!==pk(x)&&!ot.some(z=>pk(z)===pk(y)))ot.push(y);
    qs.push({t:"listen",pics:true,say:x.en,q:"শোনো, কোনটা?",ans:x.en,opts:bkShuf([x.en,...ot.map(y=>y.en)])});});
   S3.slice(3,6).forEach(x=>x.bn&&qs.push({t:"mean",q:num?`"${x.en}" কোন সংখ্যা?`:`"${x.en}" মানে কী?`,big:x.en,say:x.en,ans:x.bn,opts:bkShuf([x.bn,...bkShuf(it.filter(y=>y.bn&&y.bn!==x.bn)).slice(0,3).map(y=>y.bn)])}));
@@ -312,7 +318,7 @@ function bkQuiz(c,st,A){
   <div class="bk-qtop"><div class="bk-stardots">${Q.qs.map((_,k)=>`<i class="${k<Q.i?"on":k===Q.i?"cur":""}">${k<Q.i?"⭐":"•"}</i>`).join("")}</div>${(Q.streak||0)>1?`<span class="bk-streak">🔥 ${Q.streak}</span>`:""}</div>
   <div class="bk-mascot"><span class="bk-owl ${Q.pick==null?"":Q.pick===q.ans?"yay":"hmm"}">${mood}</span><div class="bk-bubble bn">${esc(q.q)}</div></div>
   ${q.big?`<div class="bk-qbig">${esc(q.big)}${q.say?`<button class="bk-round sm" data-act="bookSayQ" aria-label="Listen">${IC.speak}</button>`:""}</div>`:`<button class="bk-bigear" data-act="bookSayQ" aria-label="Listen">${IC.speak}</button>`}
-  <div class="bk-opts ${q.t==="snd"?"three":""} ${q.pics?"pics":""} ${letters&&q.t==="listen"?"balloons":""}">${q.opts.map((o,k)=>{const s=Q.pick==null?"":o===q.ans?"right":o===Q.pick?"wrong":"dim";const x=q.pics&&BOOK.ch(APP.book.id).items.find(y=>y.en===o);
+  <div class="bk-opts ${q.t==="snd"?"three":""} ${q.pics?"pics":""} ${letters&&q.t==="listen"?"balloons":""} ${q.t==="num"||q.t==="numl"?"nums":""}">${q.opts.map((o,k)=>{const s=Q.pick==null?"":o===q.ans?"right":o===Q.pick?"wrong":"dim";const x=q.pics&&BOOK.ch(APP.book.id).items.find(y=>y.en===o);
    return `<button class="bk-opt ${s} ${/[\u0980-\u09FF]/.test(o)?"bn":""}" style="--c:${BK_CANDY[k%BK_CANDY.length]}" data-act="bookAns" data-v="${esc(o)}" ${Q.pick!=null?"disabled":""}>${x?`<span class="bk-opic">${bkPic(x,true)}</span>`:""}<span>${esc(o)}</span></button>`;}).join("")}</div>
   ${Q.pick!=null?`<div class="bk-cheer ${Q.pick===q.ans?"ok":"no"}">${Q.pick===q.ans?bkShuf(["🎉 দারুণ!","⭐ খুব ভালো!","🥳 একদম ঠিক!","👏 সাবাশ!"])[0]:"💪 আবার শোনো, পারবে!"}</div>`:""}</div>`;
 }
@@ -337,7 +343,7 @@ function bkGame(c,st,A){
   <div class="bk-tiles">${r.tiles.map(o=>o.used?"":`<button class="bk-tile ${G.miss===o.i?"miss":""}" data-act="bookTile" data-i="${o.i}">${esc(o.w)}</button>`).join("")}</div></div>`;
  if(G.kind==="find")return `<div class="bk-game">${bkExtra("খেলা · Find It!")}<div class="pbar"><i style="width:${G.i/G.rounds.length*100}%"></i></div>
   <p class="bk-q bn">শোনো আর ঠিক ছবিটা খুঁজে বের করো! <button class="bk-round sm" data-act="bookSayG" aria-label="Listen">${IC.speak}</button></p>
-  <div class="bk-find">${r.opts.map(o=>`<button class="bk-fc ${G.miss===o.en?"miss":""}" data-act="bookFind" data-v="${esc(o.en)}">${G.pic?bkPic(o,true):""}<span>${G.pic&&!BK_COL[o.en]&&!/^\d+$/.test(o.bn||"")?"":esc(o.en)}</span></button>`).join("")}</div></div>`;
+  <div class="bk-find">${r.opts.map(o=>`<button class="bk-fc ${G.miss===o.en?"miss":""}" data-act="bookFind" data-v="${esc(o.en)}">${G.pic?bkPic(o,true):""}<span class="bk-fcw">${esc(o.en)}</span>${APP.book.id==="L1C3"&&o.bn?`<span class="bk-fcb bn">${esc(o.bn)}</span>`:""}</button>`).join("")}</div></div>`;
  if(G.kind==="pop")return `<div class="bk-game">${bkExtra("খেলা · Letter Pop")}<div class="pbar"><i style="width:${G.i/G.rounds.length*100}%"></i></div>
   <p class="bk-q bn">শোনো আর ঠিক বেলুনটা ফাটাও! <button class="bk-round sm" data-act="bookSayG" aria-label="Listen">${IC.speak}</button></p>
   <div class="bk-pop">${r.opts.map((o,i)=>`<button class="bk-bal ${G.miss===o?"miss":""}" style="--h:${(i*57+20)%360};--d:${(i%3)*.4}s" data-act="bookPop" data-v="${esc(o)}">${esc(o)}</button>`).join("")}</div></div>`;
@@ -383,29 +389,29 @@ const BOOK_ACT={
   if(A.step===4){const first=!st.done;st.done=true;st.at=today();if(first){BK().stars=(BK().stars||0)+(st.stars||1);addXP(15);}
    bkGo(5);SND.play("done");confetti(90);return;}
   bkGo(A.step+1);},
- bookSay(el){const t=el.dataset.l?bkLetterSay(el.dataset.l):el.dataset.t;el.classList.add("on");setTimeout(()=>el.classList.remove("on"),700);TTS.say(t);},
+ bookSay(el){const t=el.dataset.l?bkLetterSay(el.dataset.l):el.dataset.t;el.classList.add("on");setTimeout(()=>el.classList.remove("on"),700);bkSay(t);},
  async bookPlayAll(){const my=++BK_RUN,c=BOOK.ch(APP.book.id);
-  if(c.kind==="words"){const els=[...document.querySelectorAll(".bk-kgrid .bk-kc")];for(const b of els){if(my!==BK_RUN)return;b.classList.add("on");b.scrollIntoView({block:"nearest",behavior:"smooth"});await Promise.race([TTS.say(b.dataset.t),bkWait(2200)]);await bkWait(250);b.classList.remove("on");}return;}
+  if(c.kind==="words"){const els=[...document.querySelectorAll(".bk-kgrid .bk-kc")];for(const b of els){if(my!==BK_RUN)return;b.classList.add("on");b.scrollIntoView({block:"nearest",behavior:"smooth"});await Promise.race([bkSay(b.dataset.t),bkWait(2200)]);await bkWait(250);b.classList.remove("on");}return;}
   for(let i=0;i<c.items.length;i++){if(my!==BK_RUN)return;const b=document.querySelector(`.bk-let[data-i="${i}"]`);b&&b.classList.add("on");b&&b.scrollIntoView({block:"nearest",behavior:"smooth"});
-   await Promise.race([TTS.say(bkLetterSay(c.items[i].en)),bkWait(1500)]);await bkWait(250);b&&b.classList.remove("on");}},
+   await Promise.race([bkSay(bkLetterSay(c.items[i].en)),bkWait(1500)]);await bkWait(250);b&&b.classList.remove("on");}},
  bookRev(el){const A=APP.book,c=BOOK.ch(A.id);A.ri=Math.max(0,Math.min(bkRevItems(c,A).length-1,(A.ri||0)+ +el.dataset.d));render();bkEnter();},
  bookSayCur(){const A=APP.book,c=BOOK.ch(A.id),x=bkRevItems(c,A)[A.ri||0];
-  if(c.kind==="letters"){const a=typeof ABC!=="undefined"&&ABC.find(z=>z[0]===x.en.toLowerCase());TTS.say(bkLetterSay(x.en)).then(()=>{if(a&&APP.book&&APP.book.step===1)setTimeout(()=>TTS.say(a[1]),250);});return;}
-  TTS.say(x.en);},
- bookSayQ(){const q=APP.book.q?.qs[APP.book.q.i];if(q&&q.say)TTS.say(q.say);},
+  if(c.kind==="letters"){const a=typeof ABC!=="undefined"&&ABC.find(z=>z[0]===x.en.toLowerCase());bkSay(bkLetterSay(x.en)).then(()=>{if(a&&APP.book&&APP.book.step===1)setTimeout(()=>bkSay(a[1]),250);});return;}
+  bkSay(x.en);},
+ bookSayQ(){const q=APP.book.q?.qs[APP.book.q.i];if(q&&q.say)bkSay(q.say);},
  bookAns(el){const Q=APP.book.q,q=Q.qs[Q.i];if(Q.pick!=null)return;Q.pick=el.dataset.v;const ok=Q.pick===q.ans;
   Q.streak=ok?(Q.streak||0)+1:0;if(ok&&Q.streak>=3)confetti(24);
-  if(ok){Q.ok++;SND.play("ok");if(q.t==="bk"&&/_{3,}/.test(q.q))setTimeout(()=>TTS.say(q.q.replace(/_{3,}/,q.ans)),250);}else{SND.play("no");if(q.t==="bk")setTimeout(()=>TTS.say(/_{3,}/.test(q.q)?q.q.replace(/_{3,}/,q.ans):q.ans),300);else if(q.t!=="pr"&&q.t!=="mean")setTimeout(()=>TTS.say(q.t==="listen"&&BOOK.ch(APP.book.id).kind==="letters"?bkLetterSay(q.ans):q.say||q.ans),300);}
+  if(ok){Q.ok++;SND.play("ok");if(q.t==="bk"&&/_{3,}/.test(q.q))setTimeout(()=>bkSay(q.q.replace(/_{3,}/,q.ans)),250);}else{SND.play("no");if(q.t==="bk")setTimeout(()=>bkSay(/_{3,}/.test(q.q)?q.q.replace(/_{3,}/,q.ans):q.ans),300);else if(q.t!=="pr"&&q.t!=="mean")setTimeout(()=>bkSay(q.t==="listen"&&BOOK.ch(APP.book.id).kind==="letters"?bkLetterSay(q.ans):q.say||q.ans),300);}
   render();setTimeout(()=>{if(APP.book?.q!==Q)return;Q.i++;Q.pick=null;render();ACT.bookSayQ();},q.t==="bk"?(ok?1500:2600):ok?800:1700);},
  bookQuizAgain(){delete APP.book.q;APP.book.k=Date.now();render();ACT.bookSayQ();},
- bookSayG(){const G=APP.book.g,r=G&&G.rounds[G.i];if(!r||G.kind==="build")return;TTS.say(G.kind==="pop"?bkLetterSay(r.t):r.t);},
+ bookSayG(){const G=APP.book.g,r=G&&G.rounds[G.i];if(!r||G.kind==="build")return;bkSay(G.kind==="pop"?bkLetterSay(r.t):r.t);},
  bookPop(el){const G=APP.book.g,r=G.rounds[G.i];
   if(el.dataset.v===r.t){if(G.miss==null)G.score++;G.miss=null;SND.play("pair");el.classList.add("popped");setTimeout(()=>{G.i++;render();ACT.bookSayG();},420);}
   else{G.miss=el.dataset.v;SND.play("no");render();setTimeout(()=>ACT.bookSayG(),250);}},
- bookSayB(){const G=APP.book.g,r=G&&G.rounds[G.i];if(r)TTS.say(r.t);},
+ bookSayB(){const G=APP.book.g,r=G&&G.rounds[G.i];if(r)bkSay(r.t);},
  bookTile(el){const G=APP.book.g,r=G.rounds[G.i],tile=r.tiles.find(o=>o.i===+el.dataset.i);
   if(tile.w===r.words[r.got]){tile.used=true;r.got++;G.miss=null;SND.play("tap");
-   if(r.got>=r.words.length){if(!r.err)G.score++;SND.play("pair");render();TTS.say(r.t);setTimeout(()=>{G.i++;render();const n=G.rounds[G.i];if(n&&!n.x.bn)ACT.bookSayB();},1500);return;}}
+   if(r.got>=r.words.length){if(!r.err)G.score++;SND.play("pair");render();bkSay(r.t);setTimeout(()=>{G.i++;render();const n=G.rounds[G.i];if(n&&!n.x.bn)ACT.bookSayB();},1500);return;}}
   else{r.err=true;G.miss=tile.i;SND.play("no");}
   render();},
  bookFind(el){const G=APP.book.g,r=G.rounds[G.i];
@@ -419,11 +425,11 @@ const BOOK_ACT={
   if(R.letters){BK_MUSIC.band(88);await bkWait(700);
    for(let li=0;li<R.letters.length;li++){for(let wi=0;wi<R.letters[li].length;wi++){if(my!==BK_RUN)return done();const w=R.letters[li][wi],last=wi===R.letters[li].length-1;
      hi(`rw${li}-${wi}`,true);BK_MUSIC.tone(BK_ABC_TUNE[BK_ABC_NOTES[li][wi]]||392,last?1.1:.55);
-     await Promise.all([Promise.race([TTS.say(w==="and"?"and":bkLetterSay(w)),bkWait(1300)]),bkWait(last?1100:560)]);hi(`rw${li}-${wi}`,false);}await bkWait(200);}
+     await Promise.all([Promise.race([bkSay(w==="and"?"and":bkLetterSay(w)),bkWait(1300)]),bkWait(last?1100:560)]);hi(`rw${li}-${wi}`,false);}await bkWait(200);}
    for(let i=0;i<R.end.length;i++){if(my!==BK_RUN)return done();hi("rl"+i,true);const ns=BK_ABC_END[i];ns.forEach((n,k)=>setTimeout(()=>my===BK_RUN&&BK_MUSIC.tone(BK_ABC_TUNE[n],k===ns.length-1?1:.4),k*420));
-    await Promise.all([TTS.say(R.end[i]),bkWait(ns.length*420+300)]);hi("rl"+i,false);}}
+    await Promise.all([bkSay(R.end[i]),bkWait(ns.length*420+300)]);hi("rl"+i,false);}}
   else{BK_MUSIC.band(96);await bkWait(1300);
-   for(let i=0;i<R.lines.length;i++){if(my!==BK_RUN)return done();hi("rl"+i,true);await TTS.say(R.lines[i]);await bkWait(350);hi("rl"+i,false);}}
+   for(let i=0;i<R.lines.length;i++){if(my!==BK_RUN)return done();hi("rl"+i,true);await bkSay(R.lines[i]);await bkWait(350);hi("rl"+i,false);}}
   await bkWait(600);done();SND.play("done");}
 };
 document.addEventListener("change",e=>{if(e.target&&e.target.id==="bkFile"&&e.target.files[0])BOOK.importFile(e.target.files[0]);});
