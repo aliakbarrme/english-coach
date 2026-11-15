@@ -24,7 +24,6 @@
 .lp-tile.done{border-style:solid;border-color:transparent;background:linear-gradient(160deg,#fff,color-mix(in srgb,var(--c) 30%,#fff));box-shadow:0 4px 0 color-mix(in srgb,var(--c) 60%,#000 10%)}
 .lp-tpic{font-size:1.2rem;line-height:1}.lp-tpic svg{width:22px;height:22px}.lp-tst{font-size:.5rem;letter-spacing:1px}
 .lp-now{font:800 .6rem var(--font);background:#fff;color:#333;border-radius:99px;padding:1px 6px;margin-top:2px}
-.lp-run{max-width:720px}
 @media (min-width:900px){.view.lp-run{--cw:720px;padding-left:max(32px,(100vw - var(--cw)) / 2);padding-right:max(32px,(100vw - var(--cw)) / 2)}}
 .lp-meet{display:flex;align-items:center;justify-content:center;gap:16px;margin:18px 0 10px}
 .lp-meetchar{width:44%;max-width:210px;border:0;background:none;cursor:pointer;padding:0;animation:bkBounce 2s ease-in-out infinite}
