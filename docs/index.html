@@ -68,10 +68,10 @@
 .from-native .sp-logo{animation-delay:.55s}.from-native .sp-bub{animation-delay:.7s}
 @keyframes spShrink{to{width:104px;border-radius:32px;translate:-50% calc(-50% - 54px);opacity:0}}
 @media (prefers-reduced-motion:reduce){#splash *{animation-duration:.01s!important;animation-iteration-count:1!important}}
+@supports not (translate:0){.from-native .sp-native{transform:translate(-50%,-50%)}@keyframes spShrink{to{width:104px;border-radius:32px;transform:translate(-50%,calc(-50% - 54px));opacity:0}}}
 </style>
 <script>try{var t=localStorage.getItem("aec4:theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;if(localStorage.getItem("aec4:rail")==="1")document.documentElement.classList.add("rail-mini");}catch(e){}window.__t0=Date.now();try{if(matchMedia("(display-mode: standalone)").matches||document.referrer.indexOf("android-app://")===0)document.documentElement.classList.add("from-native");}catch(e){}</script>
-<style>/* Design: Tend-style soft SaaS. Geist + Hind Siliguri, teal-on-mist, soft depth, pill controls.
-   Motion vocabulary: --ease (expo-ish out), --spring (soft overshoot). */
+<style>
 :root{
   --font:"Geist","Hind Siliguri",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"Geist Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
@@ -144,11 +144,11 @@ details.card summary::-webkit-details-marker{display:none}
 .eyebrow{font:600 .74rem/1.2 var(--font);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .hello{display:flex;flex-direction:column;gap:6px;padding-top:4px}
 .hello .eyebrow{text-transform:none;letter-spacing:0;font-size:.86rem;font-weight:550}
-/* split-word headline reveal */
+
 .sw{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.08em;margin-bottom:-.08em}
 .sw>span{display:inline-block;will-change:transform}
 
-/* ---- buttons: pill, soft glow, press-scale ---- */
+
 .btn{--c:var(--primary);--on-c:var(--on-primary);position:relative;border:1px solid transparent;border-radius:999px;min-height:46px;padding:0 20px;
   display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--c);color:var(--on-c);font:650 .95rem/1.2 var(--font);white-space:nowrap;
   box-shadow:0 10px 22px -12px color-mix(in srgb,var(--c) 85%,transparent);
@@ -184,13 +184,13 @@ input[type=text],input[type=search],textarea,select{width:100%;border:1px solid 
 input[type=text]:focus,textarea:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 4px color-mix(in srgb,var(--primary) 16%,transparent)}
 textarea{min-height:96px;resize:vertical}
 label.lbl{display:flex;flex-direction:column;gap:5px;font-size:.84rem;color:var(--muted);font-weight:600}
-/* switch */
+
 .sw-row{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:.92rem;font-weight:550;cursor:pointer}
 .switch{appearance:none;-webkit-appearance:none;position:relative;flex:none;width:46px;height:26px;border-radius:999px;background:var(--line-2);margin:0;cursor:pointer;transition:background-color .3s var(--ease)}
 .switch::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0003;transition:transform .35s var(--spring)}
 .switch:checked{background:var(--primary)} .switch:checked::after{transform:translateX(20px)}
 
-/* ---- top bar ---- */
+
 .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;position:sticky;top:0;z-index:5;margin-inline:-16px;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;
   background:color-mix(in srgb,var(--bg) 72%,transparent);-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4)}
 .brand{display:flex;align-items:center;gap:9px;font-weight:700;letter-spacing:-.02em;font-size:1.05rem}
@@ -206,7 +206,7 @@ label.lbl{display:flex;flex-direction:column;gap:5px;font-size:.84rem;color:var(
 .warmchip.todo{background:var(--warm);color:#fff;box-shadow:0 8px 18px -10px var(--warm)}
 .warmchip.ok{background:var(--warm-s);color:var(--warm-d)}
 
-/* ---- track segmented control ---- */
+
 .tracks{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;border-radius:18px;background:var(--well)}
 .seg-pill{position:absolute;top:4px;left:0;height:calc(100% - 8px);border-radius:14px;background:var(--raised);box-shadow:0 2px 8px #10231f1a;transition:transform .5s var(--ease),width .5s var(--ease);pointer-events:none}
 .trackbtn{position:relative;z-index:1;border:0;background:transparent;border-radius:14px;padding:8px 6px;font:650 .9rem var(--font);display:flex;flex-direction:column;align-items:center;gap:1px;line-height:1.15;color:var(--muted);transition:color .3s,transform .3s var(--ease)}
@@ -216,7 +216,7 @@ label.lbl{display:flex;flex-direction:column;gap:5px;font-size:.84rem;color:var(
 .trackbtn[aria-pressed="true"].family b{color:var(--fam)} .trackbtn[aria-pressed="true"].client b{color:var(--cli)} .trackbtn[aria-pressed="true"].everyday b{color:var(--eve)}
 .trackbtn b{font-weight:650;transition:color .3s}
 
-/* ---- path ---- */
+
 .unitban{--c:var(--primary);position:relative;overflow:hidden;border-radius:var(--r-card);padding:16px 18px;color:#fff;display:flex;justify-content:space-between;align-items:center;gap:10px;
   background:linear-gradient(135deg,color-mix(in srgb,var(--c) 92%,#fff) 0%,var(--c) 55%,color-mix(in srgb,var(--c) 80%,#000) 100%);
   box-shadow:0 18px 34px -22px var(--c)}
@@ -244,7 +244,7 @@ label.lbl{display:flex;flex-direction:column;gap:5px;font-size:.84rem;color:var(
 .node.cur .lbl{color:var(--ink)}
 .startpop{background:var(--raised);border:1px solid var(--line);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:8px;width:min(330px,100%);text-align:left;box-shadow:var(--shadow-pop);transform-origin:50% 0}
 
-/* ---- lesson player ---- */
+
 .player{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);
   background:radial-gradient(60vmax 50vmax at 12% -10%,var(--glow-a),transparent 70%),var(--bg)}
 .player .head{display:flex;align-items:center;gap:12px;max-width:660px;width:100%;margin:0 auto;padding:12px max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px))}
@@ -295,7 +295,7 @@ label.lbl{display:flex;flex-direction:column;gap:5px;font-size:.84rem;color:var(
 .done-hero{display:grid;place-items:center;width:92px;height:92px;border-radius:50%;margin:0 auto;background:var(--good);color:#fff;box-shadow:0 20px 40px -18px var(--good)}
 .done-hero svg{width:44px;height:44px}
 
-/* ---- warm-up ---- */
+
 .timer{font:600 3.6rem/1 var(--mono);letter-spacing:-.04em;text-align:center}
 .warmstep{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:14px;border:1px solid var(--line);border-radius:var(--r-tile);background:var(--surface);box-shadow:var(--shadow)}
 .warmstep .num{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font:650 1rem var(--mono);background:var(--warm-s);color:var(--warm-d);transition:background-color .4s,color .4s}
@@ -311,7 +311,7 @@ label.lbl{display:flex;flex-direction:column;gap:5px;font-size:.84rem;color:var(
 .ringtimer .bgc{stroke:var(--well)} .ringtimer .fgc{stroke:var(--warm);stroke-linecap:round;transition:stroke-dashoffset 1s linear}
 .ringtimer .timer{font-size:2.6rem}
 
-/* ---- story, cards, metrics, lists ---- */
+
 .storytext{font:500 1.06rem/1.85 var(--font);white-space:pre-wrap}
 .kidcard{min-height:52vh;border-radius:28px;background:var(--fam-s);border:1px solid color-mix(in srgb,var(--fam) 30%,transparent);display:flex;flex-direction:column;justify-content:center;align-items:center;gap:16px;text-align:center;padding:24px;box-shadow:var(--shadow)}
 .kidcard .en{font:700 clamp(1.8rem,7vw,3rem)/1.18 var(--font);letter-spacing:-.03em}
@@ -343,7 +343,7 @@ label.lbl{display:flex;flex-direction:column;gap:5px;font-size:.84rem;color:var(
 .recbig.on{border-radius:24px}
 audio{width:100%;height:44px}
 
-/* ---- nav: floating dark bar with sliding pill (rail on desktop) ---- */
+
 nav.tabs{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:20;max-width:560px;margin:0 auto;
   background:var(--side);border-radius:24px;padding:6px;box-shadow:0 20px 40px -18px #0f2d2999,0 2px 8px #0f2d2926}
 nav.tabs .in{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:2px}
@@ -377,7 +377,7 @@ nav.tabs .navbrand{display:none}
 .view>.pbar{flex:none;width:100%}
 @media (min-width:900px){.topbar .brand{visibility:hidden}}
 
-/* ===================== v6: profiles, kids, quests, responsive dashboard ===================== */
+
 :root{--bn:"Anek Bangla","Hind Siliguri","Noto Sans Bengali",system-ui,sans-serif;--kidf:"Baloo Da 2","Anek Bangla",var(--font);--gold:#e9a23b}
 .bn,.kbn,.cbn{font-family:var(--bn);font-weight:450}
 body.kid h1,body.kid h2,body.kid .kword,body.kid .unitban h2,body.kid .hello h1{font-family:var(--kidf);letter-spacing:-.01em;font-weight:700}
@@ -392,7 +392,7 @@ body.kid h1,body.kid h2,body.kid .kword,body.kid .unitban h2,body.kid .hello h1{
   .mob-only{display:none}
   .sidecol{display:flex;flex-direction:column;gap:16px;position:sticky;top:76px}
 }
-/* avatar */
+
 .av{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--raised);box-shadow:inset 0 0 0 1px var(--line-2);font-size:19px;line-height:1;flex:none}
 .av.sm{width:28px;height:28px;font-size:15px}
 .av.xl{width:72px;height:72px;font-size:40px;box-shadow:inset 0 0 0 1px var(--line),0 12px 24px -16px #10231f66}
@@ -401,7 +401,7 @@ body.kid h1,body.kid h2,body.kid .kword,body.kid .unitban h2,body.kid .hello h1{
 @media (hover:hover){.avbtn:hover{background:var(--well)}}
 .avname{max-width:9ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media (max-width:380px){.avname{display:none}.stat{padding:4px 8px 4px 6px}.stats{gap:4px}.warmchip{padding:6px 8px}}
-/* quests */
+
 .quests{gap:12px}
 .quest{display:flex;align-items:center;gap:10px}
 .quest .grow{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
@@ -412,7 +412,7 @@ body.kid h1,body.kid h2,body.kid .kword,body.kid .unitban h2,body.kid .hello h1{
 .quest.done .qbar i{background:var(--good)}
 .btn.gold{--c:var(--gold);--on-c:#3a2400;animation:wiggle 2.4s var(--ease) infinite}
 @keyframes wiggle{0%,80%,100%{rotate:0deg}85%{rotate:-2deg}90%{rotate:2deg}95%{rotate:-1deg}}
-/* badges, league, stickers */
+
 .badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px}
 .badge{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:12px 6px;border-radius:16px;background:var(--well);opacity:.5;filter:grayscale(1)}
 .badge span{font-size:28px;line-height:1.1}
@@ -427,7 +427,7 @@ body.kid h1,body.kid h2,body.kid .kword,body.kid .unitban h2,body.kid .hello h1{
 .stickers{display:flex;flex-wrap:wrap;gap:8px}
 .stickers span{font-size:30px;width:52px;height:52px;display:grid;place-items:center;border-radius:16px;background:var(--well)}
 .confetto{position:fixed;width:9px;height:14px;border-radius:2px;z-index:80;pointer-events:none}
-/* welcome */
+
 .welcome,.onb,.picker{max-width:560px;margin:0 auto;min-height:100dvh;padding:calc(24px + env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) calc(28px + env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:20px}
 .wl-hero{position:relative;display:flex;flex-direction:column;gap:10px;padding-top:4vh}
 .wl-hero h1{font-size:clamp(2rem,8vw,2.9rem);font-family:var(--bn);font-weight:650;letter-spacing:-.01em;line-height:1.18}
@@ -443,7 +443,7 @@ body.kid h1,body.kid h2,body.kid .kword,body.kid .unitban h2,body.kid .hello h1{
 .mstep{display:flex;flex-direction:column;gap:4px;padding:14px;border-radius:var(--r-tile);background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow)}
 .mstep .mic{font-size:24px}
 .btn.xl{min-height:56px;font-size:1.05rem}
-/* onboarding */
+
 .onb-head{display:flex;align-items:center;gap:12px}
 .onb-body{flex:1;display:flex;flex-direction:column;gap:14px}
 .onb-ic{font-size:44px;line-height:1}
@@ -460,14 +460,14 @@ body.kid h1,body.kid h2,body.kid .kword,body.kid .unitban h2,body.kid .hello h1{
 .plan{gap:12px}
 .chip.trk.kids{background:color-mix(in srgb,var(--gold) 18%,transparent);color:#8a5a00}
 .chip.trk.family{background:var(--fam-s);color:var(--fam-d)} .chip.trk.client{background:var(--cli-s);color:var(--cli-d)} .chip.trk.everyday{background:var(--eve-s);color:var(--eve-d)}
-/* picker */
+
 .picker{justify-content:center;text-align:center;align-items:center}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;width:100%}
 .pcard{display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 10px;border-radius:24px;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow);transition:transform .4s var(--spring),box-shadow .3s}
 .pcard:active{transform:scale(.95)}
 @media (hover:hover){.pcard:hover{transform:translateY(-4px);box-shadow:var(--shadow-pop)}}
 .pcard.add .av{color:var(--muted);font-size:30px}
-/* kids path */
+
 .nem{font-size:30px;line-height:1;filter:drop-shadow(0 2px 2px #0002)}
 .nem.dim{filter:grayscale(1);opacity:.45}
 .unitban.kids{--c:var(--gold)}
@@ -475,7 +475,7 @@ body.kid h1,body.kid h2,body.kid .kword,body.kid .unitban h2,body.kid .hello h1{
 .trackbtn[aria-pressed="true"].kids b{color:#b77712}
 body.kid .node{width:80px;height:80px}
 body.kid .node .lbl{font-size:.8rem}
-/* kid exercises */
+
 .kidstage{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding-top:6px}
 .kemoji{font-size:clamp(96px,30vw,150px);line-height:1;border:0;background:none;padding:0;animation:bob 2.6s var(--ease) infinite}
 @keyframes bob{50%{translate:0 -8px}}
@@ -498,14 +498,14 @@ body.kid .node .lbl{font-size:.8rem}
 .kidcard{font:inherit;color:inherit}
 .cardem{font-size:clamp(80px,26vw,140px);line-height:1}
 .cbn{font-size:1.15rem}
-/* speaking */
+
 .said .ok{color:var(--good)} .said .bad{color:var(--bad);text-decoration:underline wavy color-mix(in srgb,var(--bad) 50%,transparent);text-underline-offset:4px}
 .micbig{width:84px;height:84px;border-radius:50%;border:0;margin:6px auto 0;display:grid;place-items:center;color:#fff;background:var(--primary);box-shadow:0 16px 30px -14px var(--primary),inset 0 -4px 0 #0000001f;transition:transform .4s var(--spring),background-color .3s}
 .micbig svg{width:36px;height:36px}
 .micbig:active{transform:scale(.9)}
 .micbig.on{background:var(--bad);animation:recpulse 1.4s var(--ease) infinite}
 .linkbtn{border:0;background:none;color:var(--muted);text-decoration:underline;text-underline-offset:3px;font-size:.85rem;align-self:center;padding:6px}
-/* story karaoke */
+
 .storytext p{margin:0 0 .9em}
 .storytext p:last-child{margin:0}
 .sent{cursor:pointer;border-radius:6px;padding:1px 2px;margin:0 -2px;transition:background-color .25s,color .25s;-webkit-box-decoration-break:clone;box-decoration-break:clone}
@@ -515,12 +515,12 @@ body.kid .node .lbl{font-size:.8rem}
 .listenbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;position:sticky;top:8px;z-index:4;padding:8px;margin:-8px;border-radius:20px;background:color-mix(in srgb,var(--bg) 80%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .listenbar .tiny{flex-basis:100%}
 html.is-speaking .bigspeak,html.is-speaking .kidspeak{animation:speakPulse 1s var(--ease) infinite}
-/* me */
+
 .profhead{flex-direction:row;align-items:center;gap:14px;flex-wrap:wrap}
 .profhead .grow{flex:1;min-width:160px;display:flex;flex-direction:column;gap:6px}
 .profbtns{display:flex;gap:8px}
 .lvl{font:700 2rem var(--font)}
-/* mobile polish */
+
 @media (max-width:420px){
   .view{gap:14px}
   .card{padding:15px;border-radius:20px}
@@ -538,7 +538,7 @@ nav.tabs .in{grid-template-columns:repeat(var(--n,5),1fr)}
 
 .player .body>*,.onb-body>*,.view>*,.maincol>*{flex-shrink:0}
 
-/* ===================== v7: centered desktop canvas, two-column pages, progress report, warm-up art ===================== */
+
 @media (min-width:900px){
   .view{--cw:760px;max-width:none;width:auto;margin:0;
     padding-left:calc(var(--rail) + max(32px,(100vw - var(--rail) - var(--cw)) / 2));
@@ -551,7 +551,7 @@ nav.tabs .in{grid-template-columns:repeat(var(--n,5),1fr)}
 }
 @media (min-width:900px) and (max-width:1179px){.view.wide,.view.dash{--cw:760px}}
 @media (min-width:1180px){.view.dash{--cw:1120px}}
-/* two-column pages */
+
 .cols{display:flex;flex-direction:column;gap:16px}
 .col{display:flex;flex-direction:column;gap:16px;min-width:0}
 @media (min-width:1180px){.cols{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:start;gap:20px}}
@@ -560,14 +560,14 @@ nav.tabs .in{grid-template-columns:repeat(var(--n,5),1fr)}
 .storycols{display:flex;flex-direction:column;gap:12px}
 @media (min-width:1180px){.storycols{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}.storycols>div{display:flex;flex-direction:column;gap:8px}}
 .storycols>div{display:flex;flex-direction:column;gap:8px}
-/* level chip */
+
 .hello{gap:8px}
 .lvchip{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--raised);border-radius:999px;padding:6px 12px 6px 10px;font:650 .85rem var(--font);box-shadow:0 1px 2px #10231f0a;transition:transform .3s var(--ease)}
 .lvchip:active{transform:scale(.96)}
 .lvbar{display:inline-block;width:70px;height:7px;border-radius:9px;background:var(--well);overflow:hidden;vertical-align:middle}
 .lvbar i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,var(--eve),var(--good));transition:width .9s var(--ease)}
 .lvbar.big{display:block;width:100%;height:10px;margin:6px 0 4px}
-/* progress report */
+
 .report{gap:14px}
 .lvhero{display:flex;align-items:center;gap:16px;padding:14px;border-radius:18px;background:linear-gradient(135deg,color-mix(in srgb,var(--eve) 12%,var(--surface)),color-mix(in srgb,var(--cli) 10%,var(--surface)))}
 .lvhero .grow{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
@@ -595,7 +595,7 @@ nav.tabs .in{grid-template-columns:repeat(var(--n,5),1fr)}
 .wkstats div{display:flex;flex-direction:column;align-items:center;padding:8px 4px;border-radius:12px;background:var(--well)}
 .wkstats b{font-size:1.1rem}
 .advice{display:flex;flex-direction:column;gap:6px;padding:12px 14px;border-radius:16px;background:color-mix(in srgb,var(--warm) 9%,var(--surface));border:1px solid color-mix(in srgb,var(--warm) 22%,transparent)}
-/* warm-up illustrations */
+
 .wart{width:100%;max-width:230px;height:auto;display:block;margin:0 auto}
 .w-skin{fill:#f5cfa9} .w-hair{fill:#3b2a22} .w-eye{fill:#2a1d18} .w-brow{stroke:#3b2a22;stroke-width:4;fill:none;stroke-linecap:round} .w-blush{fill:#f19a8a;opacity:.45}
 .w-mouth{fill:#7a2230} .w-tongue{fill:#ef7d8e} .w-lip{fill:#d4566b} .w-line{stroke:#a63a4a;stroke-width:3;fill:none;stroke-linecap:round} .w-thick{stroke-width:4}
@@ -628,7 +628,7 @@ nav.tabs .in{grid-template-columns:repeat(var(--n,5),1fr)}
 :root{--font:"Geist","Anek Bangla",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
 .lvhero.sm{padding:10px;gap:12px}.lvhero.sm .lvbig{min-width:52px;height:52px;border-radius:16px;font-size:1.1rem}.lvhero.kid.sm .lvbig{font-size:1.8rem}
 
-/* ===================== v8: 3D emoji images, realistic warm-up faces, roomier lesson player ===================== */
+
 .emo{width:1.2em;height:1.2em;display:inline-block;vertical-align:-.24em;object-fit:contain;user-select:none;-webkit-user-drag:none;pointer-events:none}
 .ktile .emo,.kemoji .emo,.cardem .emo,.sticker-win .emo,.pem .emo{width:1.05em;height:1.05em;vertical-align:middle;filter:drop-shadow(0 10px 14px #10231f2e)}
 .nem .emo{width:34px;height:34px;vertical-align:middle}
@@ -642,7 +642,7 @@ nav.tabs .in{grid-template-columns:repeat(var(--n,5),1fr)}
 .lvhero.kid .lvbig .emo{width:44px;height:44px}
 .floaters .emo{width:32px;height:32px}
 .mstep .mic .emo{width:30px;height:30px}
-/* realistic warm-up faces */
+
 .wface{position:relative;width:min(220px,62vw);aspect-ratio:1;margin:0 auto;display:grid;place-items:center;font-size:clamp(120px,36vw,160px);line-height:1}
 .wface>span{grid-area:1/1;display:grid;place-items:center}
 .wface .emo{width:1em;height:1em;filter:drop-shadow(0 16px 22px #10231f33)}
@@ -667,7 +667,7 @@ nav.tabs .in{grid-template-columns:repeat(var(--n,5),1fr)}
 .wthumb .wface{width:80px;font-size:56px;border-radius:22px;background:var(--surface);border:1px solid var(--line)}
 .wthumb .wface .emo{filter:none}
 .wthumb .wov .w-lbl{font-size:22px}
-/* roomier lesson player */
+
 .player .head{padding-top:18px;padding-bottom:12px}
 .player .body{padding-top:22px}
 .player .foot{padding-top:16px;padding-bottom:calc(22px + env(safe-area-inset-bottom,0px))}
@@ -675,7 +675,7 @@ nav.tabs .in{grid-template-columns:repeat(var(--n,5),1fr)}
 .kidstage{gap:14px}
 .ktile .emo{width:64%;height:64%}
 .kgrid.six .ktile .emo{width:60%;height:60%}
-/* 3D character illustrations */
+
 .art{display:block;max-width:100%;height:auto;mix-blend-mode:multiply;user-select:none;-webkit-user-drag:none}
 :root[data-theme="dark"] .art{mix-blend-mode:normal}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .art{mix-blend-mode:normal;border-radius:24px}}
@@ -690,7 +690,7 @@ nav.tabs .in{grid-template-columns:repeat(var(--n,5),1fr)}
 .wart-card.photo{padding:0;overflow:hidden;background:#ebf0ec}
 .wart-card .wimg{width:100%;mix-blend-mode:normal}
 .wthumb .wtimg{width:80px;height:80px;object-fit:cover;border-radius:20px;mix-blend-mode:normal;border:1px solid var(--line)}
-/* lesson window: floating card with breathing room on wide screens */
+
 @media (min-width:760px){
   .player{inset:28px auto 28px 50%;translate:-50% 0;width:min(780px,calc(100vw - 64px));border-radius:30px;border:1px solid var(--line);box-shadow:var(--shadow-pop);overflow:hidden;padding-top:0}
   .player .foot{position:absolute;border-radius:0 0 30px 30px}
@@ -700,8 +700,8 @@ nav.tabs .in{grid-template-columns:repeat(var(--n,5),1fr)}
   body:has(.player){background:radial-gradient(60vmax 50vmax at 12% -10%,var(--glow-a),transparent 70%),color-mix(in srgb,var(--bg) 88%,#10231f)}
 }
 
-/* ===================== v9: animated warm-up frames, flip-card deck, modern dropdown, collapsible quests ===================== */
-/* warm-up frame animation */
+
+
 .wfr{position:relative;aspect-ratio:1;width:100%;overflow:hidden;background:#ebf0ec;border-radius:inherit}
 .wfr img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .22s ease-out;user-select:none;-webkit-user-drag:none}
 .wfr img.on{opacity:1}
@@ -709,7 +709,7 @@ nav.tabs .in{grid-template-columns:repeat(var(--n,5),1fr)}
 .wfr .dotw{position:absolute;left:39%;top:42%;width:22%;height:22%;animation:spin 2.4s linear infinite}
 .wfr .dotw i{position:absolute;left:50%;top:0;width:22%;aspect-ratio:1;border-radius:50%;background:var(--warm);translate:-50% -50%;box-shadow:0 0 0 5px color-mix(in srgb,var(--warm) 35%,transparent),0 0 14px var(--warm)}
 .wart-card.photo{border-radius:28px}
-/* card bar + modern dropdown */
+
 .cardbar{display:flex;align-items:center;gap:10px}
 .cardcount{font:650 1rem var(--mono);min-width:54px}
 .dd{position:relative;flex:1;min-width:0;display:flex;justify-content:flex-end}
@@ -729,7 +729,7 @@ nav.tabs .in{grid-template-columns:repeat(var(--n,5),1fr)}
 .dditem .grow{flex:1;min-width:0;display:flex;flex-direction:column}
 .ddic{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:var(--well);font:650 .9rem var(--mono);flex:none}
 .ddic .emo{width:22px;height:22px}
-/* flip-card deck */
+
 .deck{position:relative;perspective:1400px;margin:8px 0 6px}
 .deckback{position:absolute;left:6%;right:6%;top:14px;bottom:-14px;border-radius:28px;background:var(--fam-s);border:1px solid color-mix(in srgb,var(--fam) 22%,transparent);box-shadow:var(--shadow)}
 .deckback.b1{left:3%;right:3%;top:7px;bottom:-7px;opacity:.85}
@@ -753,7 +753,7 @@ nav.tabs .in{grid-template-columns:repeat(var(--n,5),1fr)}
 .dots i{width:7px;height:7px;border-radius:9px;background:var(--line-2);transition:width .35s var(--ease),background-color .3s}
 .dots i.done{background:color-mix(in srgb,var(--fam) 45%,var(--line-2))}
 .dots i.on{width:22px;background:var(--fam)}
-/* collapsible quests */
+
 .quests{padding:0;gap:0;overflow:hidden}
 .qhead{display:flex;align-items:center;gap:12px;width:100%;border:0;background:transparent;padding:14px 16px;text-align:left;transition:background-color .2s}
 @media (hover:hover){.qhead:hover{background:var(--well)}}
@@ -772,7 +772,7 @@ nav.tabs .in{grid-template-columns:repeat(var(--n,5),1fr)}
 .bmark{background:var(--primary)!important}.bmark svg{width:70%;height:70%}.wl-mark svg{width:60%;height:60%}
 nav.tabs .navbrand i.bmark{background:#0d5c55!important}
 
-/* ===================== v10: sidebar header/footer, collapsible rail, photo avatars, theme toggle ===================== */
+
 :root{--rail:236px}
 :root.rail-mini{--rail:84px}
 .bname{display:flex;flex-direction:column;line-height:1.1;min-width:0}
@@ -804,7 +804,7 @@ nav.tabs .navbrand i.bmark{background:#0d5c55!important}
   .nf-me .tiny{opacity:.6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .nf-me>svg{width:16px;height:16px;flex:none;opacity:.7}
   .nf-me .av{width:36px;height:36px;font-size:20px;background:#ffffff1a;box-shadow:none}
-  /* collapsed rail */
+  
   .rail-mini nav.tabs{padding-left:12px;padding-right:12px}
   .rail-mini nav.tabs .navbrand{flex-direction:column;padding:0 0 16px;gap:12px}
   .rail-mini .bname,.rail-mini nav.tabs #tabs button span,.rail-mini .nf-link span,.rail-mini .nf-sw,.rail-mini .nf-goal,.rail-mini .nf-me .grow,.rail-mini .nf-me>svg{display:none}
@@ -814,7 +814,7 @@ nav.tabs .navbrand i.bmark{background:#0d5c55!important}
   .rail-mini .nf-me{justify-content:center;padding:6px;border:0;background:transparent}
   .view{transition:padding .45s var(--ease)}
 }
-/* photo avatars */
+
 .av.photo{overflow:hidden;padding:0;background:var(--well)}
 .av.photo img{width:100%;height:100%;object-fit:cover;display:block}
 .avedit{position:relative;cursor:pointer;flex:none;border-radius:50%}
@@ -824,13 +824,13 @@ nav.tabs .navbrand i.bmark{background:#0d5c55!important}
 .photobtn{align-self:flex-start;cursor:pointer}
 .photobtn svg{width:18px;height:18px}
 .onb-ic .av.xl{width:84px;height:84px}
-/* theme button */
+
 .themebtn{width:36px;height:36px}
 .themebtn svg{width:17px;height:17px}
 @media (max-width:380px){.themebtn{width:32px;height:32px}}
-/* help */
+
 .helpsteps{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:8px}
-/* dark-mode polish */
+
 :root[data-theme="dark"] .wfr,:root[data-theme="dark"] .wart-card.photo{background:#1b2a28}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .wfr,:root:not([data-theme="light"]) .wart-card.photo{background:#1b2a28}}
 :root[data-theme="dark"] .deckback{background:color-mix(in srgb,var(--fam) 20%,var(--surface))}
@@ -846,27 +846,27 @@ nav.tabs .navbrand i.bmark{background:#0d5c55!important}
 
 
 
-/* ===================== v11: Bangla shaping, sidebar button, segmented pill, dark switch ===================== */
-/* Any letter-spacing breaks Bangla conjuncts and vowel signs (e.g. "শিখবে", "অগ্রগতি") in Chrome, so headings use normal spacing */
+
+
 h1,h2,h3,.eyebrow,.wl-hero h1,.lvbig,.prompt,.fbtitle,.metric b,.cardcount,.trackbtn,.unitban h2,.hello h1,.sp-name,.bname,.tag{letter-spacing:normal}
 .eyebrow{text-transform:none;font-weight:650}
 .intro .en,.face .en,.kword,.twister{letter-spacing:-.02em}
-/* sidebar collapse button (was squeezed to 0x0 by the nav button rule) */
+
 @media (min-width:900px){
   nav.tabs .railbtn{display:grid;place-items:center;width:34px;height:34px;min-width:34px;padding:0;margin-left:auto;flex:none;flex-direction:row;gap:0;border-radius:11px;border:1px solid #ffffff24;background:#ffffff10;color:var(--on-side);font-size:0}
   nav.tabs .railbtn svg{width:18px;height:18px}
   nav.tabs .railbtn:hover{background:#ffffff22}
   .rail-mini nav.tabs .railbtn{margin:0 auto}
-  /* real toggle switch for dark mode */
+  
   .nf-sw{width:40px;height:22px;border-radius:999px;background:#ffffff26;box-shadow:inset 0 0 0 1px #ffffff1f}
   .nf-sw::after{top:3px;left:3px;width:16px;height:16px;box-shadow:0 2px 4px #0004}
   .nf-sw.on{background:#5cd0b4}.nf-sw.on::after{transform:translateX(18px)}
   .nf-link[data-act="toggleTheme"]{background:#ffffff08}
 }
-/* segmented pill sits exactly on the active button (JS adds the offset) */
+
 .seg-pill{top:0;left:0}
 
-/* ===================== v12: premium profile picker ===================== */
+
 .picker2{position:relative;min-height:100dvh;overflow:hidden;color:#eaf6f2;display:flex;flex-direction:column;align-items:center;gap:26px;
   padding:calc(28px + env(safe-area-inset-top,0px)) 20px calc(32px + env(safe-area-inset-bottom,0px));
   background:radial-gradient(90vmax 70vmax at 50% -20%,#1d7d70 0%,transparent 60%),radial-gradient(60vmax 50vmax at 100% 110%,#0f4f63 0%,transparent 60%),linear-gradient(180deg,#0c3a35,#081f1d 70%)}
@@ -904,7 +904,7 @@ h1,h2,h3,.eyebrow,.wl-hero h1,.lvbig,.prompt,.fbtitle,.metric b,.cardcount,.trac
 .pk-plus{width:78px;height:78px;border-radius:50%;display:grid;place-items:center;font-size:34px;color:#5cd0b4;background:#5cd0b41a;border:1.5px solid #5cd0b455}
 .pk-foot{position:relative;margin-top:auto;font:500 .78rem var(--bn);color:#9cc4b9;text-align:center}
 
-/* ===================== v13: premium picker refinements ===================== */
+
 .picker2{gap:22px;font-family:var(--font)}
 .pk-top{gap:10px}
 .pk-logo{width:38px;height:38px;border-radius:12px}
@@ -945,7 +945,7 @@ h1,h2,h3,.eyebrow,.wl-hero h1,.lvbig,.prompt,.fbtitle,.metric b,.cardcount,.trac
 @media (prefers-reduced-motion:reduce){.pk-ring,.pk-ring .av.xl,.pk-card::after{animation:none}}
 .pk-stats span+span{border-radius:0}
 
-/* ===================== v14: picker background, switch-profile button ===================== */
+
 html.pk-on,html.pk-on body{background:#081f1d}
 .picker2{min-height:100vh;min-height:100dvh}
 .tb-left{display:flex;align-items:center;gap:6px;min-width:0}
@@ -961,7 +961,7 @@ html.pk-on,html.pk-on body{background:#081f1d}
 .about .ab-logo svg{width:62%;height:62%}
 .about .grow{display:flex;flex-direction:column}
 
-/* ===================== v15: account / Google sign-in ===================== */
+
 .gbtn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:0 18px;border-radius:999px;border:1px solid var(--line-2);background:var(--raised);color:var(--ink);font:650 .95rem var(--font);box-shadow:0 1px 2px #10231f14,0 8px 18px -14px #10231f55;transition:transform .3s var(--spring),box-shadow .3s}
 .gbtn.wide{width:100%}
 .gbtn:active{transform:scale(.97)}
@@ -979,7 +979,7 @@ html.pk-on,html.pk-on body{background:#081f1d}
 .pk-acct.signin{padding:6px 12px 6px 8px;background:#fff;color:#1f2a28;border-color:transparent;cursor:pointer}
 .pk-acct.signin svg{width:16px;height:16px}
 
-/* ===================== v16: login page ===================== */
+
 .login{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:calc(28px + env(safe-area-inset-top,0px)) 18px calc(24px + env(safe-area-inset-bottom,0px));background:var(--raised)}
 :root[data-theme="dark"] .login{background:var(--bg)}
 .lg-brand{display:flex;align-items:center;gap:12px}
@@ -1010,13 +1010,13 @@ html.pk-on,html.pk-on body{background:#081f1d}
 .lg-ok{padding:10px 12px;border-radius:12px;background:var(--good-s);color:var(--good);font-size:.9rem}
 .lg-foot{margin-top:14px;color:var(--faint);font-size:.82rem}
 .pk-logout{position:relative;border:0;background:none;color:#9cc4b9;font:500 .78rem var(--font);text-decoration:underline;text-underline-offset:3px}
-/* topbar on phones: never overlap */
+
 .topbar{gap:8px}
 .tb-left{flex:none}
 .topbar .stats{min-width:0;flex-wrap:nowrap;justify-content:flex-end}
 @media (max-width:520px){.topbar .themebtn{display:none}}
 @media (max-width:400px){.warmchip.ok{font-size:0;gap:0;padding:7px}.warmchip.ok svg{width:14px;height:14px}.topbar .stat{padding:4px 9px 4px 6px}}
-/* kids: pictures made of several emoji (e.g. three ducks) stay inside one square tile */
+
 .kgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
 .ktile{min-width:0;overflow:hidden;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:2%}
 .ktile:has(.emo+.emo) .emo{width:30%;height:30%}
@@ -1024,7 +1024,7 @@ html.pk-on,html.pk-on body{background:#081f1d}
 .kemoji:has(.emo+.emo) .emo,.cardem:has(.emo+.emo) .emo{width:.55em;height:.55em}
 .nem:has(.emo+.emo) .emo,.ddic:has(.emo+.emo) .emo,.pem:has(.emo+.emo) .emo{width:40%;height:40%}
 
-/* v17: path flow (sticky unit header, START bubble, chest, jump button), lesson feel (tile slots, combo, cheer, waveform, dictation, result badges) */
+
 .unitsec{position:relative;margin-bottom:6px}
 .unitsec .unitban{position:sticky;top:calc(var(--tbh,62px) + 4px);z-index:4;box-shadow:0 10px 24px -18px #10231f80}
 .unitsec.locked .unitban{filter:saturate(.25) brightness(1.02);opacity:.9}
@@ -1037,7 +1037,7 @@ body.kid .nodewrap.cur::before{color:var(--warm-d,#b86a00)}
 @keyframes startbob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-6px)}}
 @keyframes startbob2{0%,100%{transform:translate(-50%,0) rotate(45deg)}50%{transform:translate(-50%,-6px) rotate(45deg)}}
 .nodewrap.cur{padding-top:42px}
-/* chest */
+
 .chestwrap{display:flex;flex-direction:column;align-items:center;margin:8px 0 4px}
 .chest{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;font:600 .8rem var(--font);color:var(--muted)}
 .chest-ic{width:74px;height:66px;display:grid;place-items:center;font-size:44px;border-radius:22px;background:var(--well);box-shadow:inset 0 -5px 0 #0000000f;transition:transform .4s var(--spring)}
@@ -1048,7 +1048,7 @@ body.kid .nodewrap.cur::before{color:var(--warm-d,#b86a00)}
 .chest.opened .chest-ic{background:var(--good-s)}
 .chest:active .chest-ic{transform:scale(.9)}
 @keyframes chestwiggle{0%,70%,100%{transform:rotate(0)}75%{transform:rotate(-7deg) scale(1.05)}82%{transform:rotate(7deg) scale(1.05)}89%{transform:rotate(-4deg)}}
-/* jump to current lesson */
+
 .jumpcur{position:fixed;right:18px;bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:30;width:52px;height:52px;border-radius:16px;border:2px solid var(--line-2);
   background:var(--raised);color:var(--primary);display:grid;place-items:center;box-shadow:0 12px 26px -12px #10231f66,inset 0 -4px 0 var(--line);cursor:pointer;animation:jumpin .45s var(--spring)}
 .jumpcur[hidden]{display:none}
@@ -1057,7 +1057,7 @@ body.kid .nodewrap.cur::before{color:var(--warm-d,#b86a00)}
 .jumpcur:active{transform:scale(.9)}
 @media (min-width:900px){.jumpcur{bottom:28px;right:calc(28px + max(0px,(100vw - 1240px)/2))}}
 @keyframes jumpin{from{opacity:0;transform:scale(.6) translateY(12px)}to{opacity:1;transform:none}}
-/* lesson head: combo */
+
 .player .head{position:relative}
 .combo{flex:none;font:800 .85rem var(--font);color:#e8590c;background:#fff1e6;border-radius:999px;padding:4px 10px;animation:combopop .5s var(--spring)}
 :root[data-theme="dark"] .combo{background:#3a2210;color:#ffa45c}
@@ -1068,10 +1068,10 @@ body.kid .nodewrap.cur::before{color:var(--warm-d,#b86a00)}
 @keyframes pshine{from{background-position:150% 0}to{background-position:-50% 0}}
 .hardtag{align-self:flex-start;font:700 .75rem var(--font);color:#b4235a;background:#ffe4ee;border-radius:999px;padding:4px 10px;margin-bottom:4px}
 :root[data-theme="dark"] .hardtag{background:#3d1424;color:#ff8fb6}
-/* tiles leave a grey slot */
+
 .bank .tile.used{opacity:1;transform:none;background:var(--well);color:transparent;border-color:transparent;box-shadow:none}
 .tile{will-change:transform}
-/* waveform inside mic / dictation */
+
 .wave{display:inline-flex;align-items:center;gap:3px;height:28px}
 .wave i{width:4px;height:8px;border-radius:4px;background:currentColor;animation:wv 1s ease-in-out infinite}
 .wave i:nth-child(2){animation-delay:.12s}.wave i:nth-child(3){animation-delay:.24s}.wave i:nth-child(4){animation-delay:.36s}.wave i:nth-child(5){animation-delay:.48s}.wave i:nth-child(6){animation-delay:.6s}.wave i:nth-child(7){animation-delay:.72s}
@@ -1083,7 +1083,7 @@ body.kid .nodewrap.cur::before{color:var(--warm-d,#b86a00)}
 @keyframes wv2{0%,100%{height:4px}50%{height:16px}}
 .dictbtn .wave i{animation-name:wv2}
 .dictbtn.on{background:var(--primary);color:#fff;border-color:transparent}
-/* mid-lesson cheer */
+
 .body.cheer{justify-content:center;align-items:center;gap:22px;text-align:center}
 .cheer-hero{position:relative;width:150px;height:150px;display:grid;place-items:center}
 .cheer-em{font-size:96px;line-height:1;animation:cheerbob 2s ease-in-out infinite;position:relative;z-index:1}
@@ -1094,7 +1094,7 @@ body.kid .nodewrap.cur::before{color:var(--warm-d,#b86a00)}
 .bubble{position:relative;max-width:340px;background:var(--raised);border:2px solid var(--line-2);border-radius:20px;padding:16px 18px;display:flex;flex-direction:column;gap:6px;animation:combopop .55s .15s var(--spring) backwards}
 .bubble::before{content:"";position:absolute;left:50%;top:-9px;width:16px;height:16px;background:var(--raised);border-left:2px solid var(--line-2);border-top:2px solid var(--line-2);transform:translateX(-50%) rotate(45deg)}
 .bubble b{font-size:1.25rem}
-/* result badges */
+
 .rbadges{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%;max-width:420px;margin:0 auto}
 .rb{--c:#f0a500;min-width:0;border:2.5px solid var(--c);border-radius:18px;overflow:hidden;background:var(--raised);display:flex;flex-direction:column;opacity:0;animation:rbin .6s var(--spring) forwards}
 .rb .rbt{background:var(--c);color:#fff;font:800 .68rem var(--font);letter-spacing:.06em;padding:5px 8px}
@@ -1105,7 +1105,7 @@ body.kid .nodewrap.cur::before{color:var(--warm-d,#b86a00)}
 @keyframes rbin{from{opacity:0;transform:translateY(18px) scale(.7)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.rb{opacity:1;animation:none}.nodewrap.cur::before,.nodewrap.cur::after,.chest.ready .chest-ic,.cheer-em,.cheer-ring{animation:none}}
 
-/* done screen: content scrolls, Continue stays in the footer */
+
 .player .body.donebody{justify-content:safe center;align-items:center;text-align:center;gap:14px;padding-top:max(28px,env(safe-area-inset-top,0px));padding-bottom:120px}
 .donebody .sticker-win{flex:none;width:104px;height:104px;border-radius:30px}
 .donebody .sticker-win span{font-size:62px}
@@ -1118,8 +1118,8 @@ body.kid .nodewrap.cur::before{color:var(--warm-d,#b86a00)}
 .revchip svg{width:16px;height:16px;color:var(--primary)}
 .revchip:active{transform:scale(.94)}
 
-/* ===== Duolingo-style tactile motion, in our look ===== */
-/* 3D pressable path nodes: a solid lip that squashes when pressed */
+
+
 .node{box-shadow:0 7px 0 color-mix(in srgb,var(--c) 70%,#000 30%),0 18px 26px -14px color-mix(in srgb,var(--c) 80%,transparent),inset 0 2px 0 #ffffff40;transition:transform .18s var(--ease),box-shadow .18s var(--ease)}
 .node:active{transform:translateY(6px);box-shadow:0 1px 0 color-mix(in srgb,var(--c) 70%,#000 30%),0 6px 12px -8px color-mix(in srgb,var(--c) 80%,transparent),inset 0 2px 0 #ffffff40;transition-duration:.06s}
 .node.lock{box-shadow:0 7px 0 var(--line-2),inset 0 0 0 1px var(--line-2)}
@@ -1132,12 +1132,12 @@ body.kid .nodewrap.cur::before{color:var(--warm-d,#b86a00)}
 .node.done svg{animation:donepop 4s ease-in-out infinite}
 .nodewrap:nth-child(3n) .node.done svg{animation-delay:1.3s}.nodewrap:nth-child(3n+1) .node.done svg{animation-delay:2.6s}
 @keyframes donepop{0%,88%,100%{transform:none}92%{transform:scale(1.25) rotate(-8deg)}96%{transform:scale(.95)}}
-/* buttons in lessons press down too */
+
 .player .foot .btn.good,.player .foot .btn.bad,.lg-go{box-shadow:0 5px 0 #0000004d;transition:transform .12s,box-shadow .12s}
 .player .foot .btn.good:active,.player .foot .btn.bad:active,.lg-go:active{transform:translateY(4px);box-shadow:0 1px 0 #0000004d}
 .tile{box-shadow:0 3px 0 var(--line-2)}
 .tile:active{transform:translateY(3px);box-shadow:0 0 0 var(--line-2)}
-/* path buddies */
+
 .path{position:relative}
 .palrow{height:0;width:100%;display:flex;justify-content:center;position:relative;z-index:1}
 .pathpal{position:relative;top:-10px;transform:translateX(var(--x));border:0;background:none;padding:0;cursor:pointer;width:96px;height:110px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
@@ -1150,16 +1150,16 @@ body.kid .nodewrap.cur::before{color:var(--warm-d,#b86a00)}
 @keyframes palshadow{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.75);opacity:.6}}
 .unitsec.locked .pathpal{filter:grayscale(.9);opacity:.6}
 @media (max-width:360px){.pathpal{width:80px}.palbody img.emo{width:66px;height:66px}}
-/* sidebar / nav icons */
 
-/* streak flame flickers when lit */
+
+
 .flame:not(.off) svg{animation:flick 1.8s ease-in-out infinite;transform-origin:50% 90%}
 @keyframes flick{0%,100%{transform:scale(1) rotate(0)}25%{transform:scale(1.08,.95) rotate(-4deg)}50%{transform:scale(.96,1.06) rotate(3deg)}75%{transform:scale(1.05,.97) rotate(-2deg)}}
 @media (prefers-reduced-motion:reduce){.node.cur,.node.done svg,.palbody,.palshadow,.flame svg{animation:none!important}}
 
-/* current node sits in a soft ring track */
+
 .node.cur::after{content:"";position:absolute;inset:-11px;border-radius:50%;border:6px solid color-mix(in srgb,var(--c) 22%,var(--well));pointer-events:none}
-/* node popover in the unit colour, arrow points at the node */
+
 .startpop{--c:var(--primary);position:relative;margin-top:22px;background:linear-gradient(160deg,color-mix(in srgb,var(--c) 88%,#fff),var(--c));color:#fff;border:0;box-shadow:0 7px 0 color-mix(in srgb,var(--c) 70%,#000 30%),0 22px 34px -18px color-mix(in srgb,var(--c) 90%,transparent);
   animation:popdrop .42s var(--spring);transform-origin:calc(50% + var(--ax,0px)) -10px}
 .startpop::before{content:"";position:absolute;top:-8px;left:calc(50% + var(--ax,0px));width:18px;height:18px;background:color-mix(in srgb,var(--c) 88%,#fff);border-radius:3px;transform:translateX(-50%) rotate(45deg)}
@@ -1173,9 +1173,9 @@ body.kid .nodewrap.cur::before{color:var(--warm-d,#b86a00)}
 :root[data-theme="dark"] .startpop{color:#fff}
 @keyframes popdrop{0%{opacity:0;transform:scale(.6) translateY(-14px)}100%{opacity:1;transform:none}}
 
-/* v18: modern playful buttons for everyone + a colourful, funny kids mode */
 
-/* ---------- buttons: chunky, tactile, a little bouncy ---------- */
+
+
 .btn{--lip:color-mix(in srgb,var(--c) 68%,#000 32%);border-radius:16px;min-height:50px;font-weight:750;letter-spacing:.01em;
   box-shadow:0 4px 0 var(--lip),0 12px 22px -14px color-mix(in srgb,var(--c) 90%,transparent),inset 0 1px 0 #ffffff38;
   background:linear-gradient(180deg,color-mix(in srgb,var(--c) 88%,#fff),var(--c) 60%);
@@ -1194,7 +1194,7 @@ body.kid .nodewrap.cur::before{color:var(--warm-d,#b86a00)}
 .icon-btn{transition:transform .25s var(--spring)}
 .icon-btn:active{transform:scale(.86)}
 
-/* ---------- kids mode ---------- */
+
 body.kid{background:
   radial-gradient(520px 360px at 8% 6%,#ffd6e866,transparent 70%),
   radial-gradient(480px 340px at 96% 18%,#c9ecff66,transparent 70%),
@@ -1203,13 +1203,13 @@ body.kid{background:
 :root[data-theme="dark"] body.kid{background:radial-gradient(520px 360px at 8% 6%,#ff6b9a1f,transparent 70%),radial-gradient(480px 340px at 96% 18%,#4cb8ff1c,transparent 70%),radial-gradient(520px 380px at 12% 92%,#ffc94a17,transparent 70%),var(--bg);background-attachment:fixed}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body.kid{background:radial-gradient(520px 360px at 8% 6%,#ff6b9a1f,transparent 70%),radial-gradient(480px 340px at 96% 18%,#4cb8ff1c,transparent 70%),radial-gradient(520px 380px at 12% 92%,#ffc94a17,transparent 70%),var(--bg);background-attachment:fixed}}
 
-/* candy-coloured buttons */
+
 body.kid .btn{font-family:var(--kidf);font-size:1.08rem;border-radius:20px;min-height:54px}
 body.kid .btn:not(.ghost):not(.good):not(.bad):not(.story):not(.warm){--c:#ff7a45}
 body.kid .btn.good{--c:#2fc36b}
 body.kid .player .foot .btn.good{--c:#2fc36b}
 
-/* rainbow path: each lesson its own candy colour */
+
 .node.kc0{--c:#ff6b9a}.node.kc1{--c:#ffa62b}.node.kc2{--c:#36c46f}.node.kc3{--c:#3aa7ff}.node.kc4{--c:#9b6bff}.node.kc5{--c:#ff5c5c}
 body.kid .node .nem{font-size:38px;line-height:1;display:block;transition:transform .35s var(--spring)}
 body.kid .node .nem img.emo{width:44px;height:44px}
@@ -1220,7 +1220,7 @@ body.kid .node.cur .nem{animation:kidwave 2.4s ease-in-out infinite}
 body.kid .node:active .nem{transform:scale(1.25) rotate(-10deg)}
 body.kid .node .lbl{font-family:var(--kidf);font-weight:700;font-size:.85rem;color:var(--ink)}
 
-/* unit banners: bright gradients with floating bubbles */
+
 .unitban.ku0{background:linear-gradient(120deg,#ff7eb0,#ff9f5a)}
 .unitban.ku1{background:linear-gradient(120deg,#4fb4ff,#7b7bff)}
 .unitban.ku2{background:linear-gradient(120deg,#34c97a,#20b2b0)}
@@ -1233,7 +1233,7 @@ body.kid .unitban::before{content:"";position:absolute;inset:0;pointer-events:no
 @keyframes bubbles{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 body.kid .startpop.kids{--c:#ff7a45}
 
-/* kid lesson: pastel picture cards that jiggle */
+
 body.kid .ktile{border:0;border-radius:26px;box-shadow:0 6px 0 color-mix(in srgb,var(--kt) 55%,#000 12%),0 14px 24px -16px #0004;background:color-mix(in srgb,var(--kt) 28%,var(--raised));transition:transform .2s var(--spring),box-shadow .15s}
 body.kid .ktile:nth-child(6n+1){--kt:#ff9ec0}body.kid .ktile:nth-child(6n+2){--kt:#ffd36b}body.kid .ktile:nth-child(6n+3){--kt:#8fe0a8}
 body.kid .ktile:nth-child(6n+4){--kt:#8fcaff}body.kid .ktile:nth-child(6n+5){--kt:#c4a8ff}body.kid .ktile:nth-child(6n+6){--kt:#ffb08a}
@@ -1259,13 +1259,13 @@ body.kid .player .pbar i{background:linear-gradient(90deg,#ff6b9a,#ffa62b,#36c46
 body.kid .player .foot.ok .fbtitle{font-family:var(--kidf);font-size:1.4rem}
 body.kid .player .foot.ok .fbtitle i{animation:combopop .5s var(--spring)}
 
-/* kid nav: the active tab bounces in a candy pill */
+
 body.kid nav.tabs .pill{background:linear-gradient(135deg,#ffd36b,#ff9ec0)!important}
 body.kid nav.tabs button[aria-current="page"]{color:#5a2a00}
 
 @media (prefers-reduced-motion:reduce){body.kid .unitban::before,body.kid .node.cur .nem,body.kid .kword{animation:none}}
 
-/* v19: hand-drawn spice/veg pictures, swipeable flash cards, Spelling Fun */
+
 .vart{width:1.05em;height:1.05em;display:inline-block;vertical-align:middle;filter:drop-shadow(0 10px 14px #10231f2e)}
 .ddic .vart,.pem .vart{width:1.1em;height:1.1em}
 .cardsview .deck{touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
@@ -1275,7 +1275,7 @@ body.kid nav.tabs button[aria-current="page"]{color:#5a2a00}
 .playcard.newdeck{border-color:color-mix(in srgb,#ff7a45 40%,var(--line))}
 .nd-tag{position:absolute;top:8px;right:8px;font:800 .6rem var(--font);letter-spacing:.06em;color:#fff;background:linear-gradient(135deg,#ff5c8a,#ff9a3c);border-radius:999px;padding:3px 7px;animation:combopop .5s var(--spring)}
 
-/* entry card on the Play page */
+
 .spellcta{display:flex;align-items:center;gap:14px;width:100%;border:0;cursor:pointer;text-align:left;border-radius:24px;padding:16px 18px;color:#fff;
   background:linear-gradient(120deg,#7b5cff,#ff5c8a 60%,#ffa62b);box-shadow:0 6px 0 #5a3fc9,0 20px 34px -18px #7b5cff;transition:transform .15s,box-shadow .15s;font-family:var(--kidf)}
 .spellcta:active{transform:translateY(5px);box-shadow:0 1px 0 #5a3fc9}
@@ -1288,7 +1288,7 @@ body.kid nav.tabs button[aria-current="page"]{color:#5a2a00}
 .sc-go{font-size:1.4rem;animation:nudgeR 1.6s ease-in-out infinite}
 @keyframes nudgeR{0%,100%{transform:none}50%{transform:translateX(5px)}}
 
-/* spelling screens */
+
 .spellview{font-family:var(--kidf);display:flex;flex-direction:column;gap:16px;padding-bottom:110px}
 .spellview.sp-run{min-height:100dvh;padding-bottom:30px}
 .sptop{display:flex;justify-content:space-between;align-items:center;padding-top:calc(10px + env(safe-area-inset-top,0px))}
@@ -1399,7 +1399,7 @@ body.kid nav.tabs button[aria-current="page"]{color:#5a2a00}
 .cardsview .deck{z-index:2}
 .cardghost{transform-style:preserve-3d;will-change:transform,opacity}
 .cardsview .deck .flip{will-change:transform}
-/* v20: phonics curriculum */
+
 .sp-letters,.sp-slots{--w:min(clamp(52px,17vw,76px),calc((min(100vw,620px) - 56px) / var(--n,4) - 8px));flex-wrap:nowrap;gap:min(8px,1.4vw)}
 .sp-letters .spl,.sp-slots .sp-slot{width:var(--w);height:calc(var(--w) * 1.16);font-size:calc(var(--w) * .66);border-radius:calc(var(--w) * .26)}
 .spl.hl{transform:translateY(-10px) scale(1.12)!important;box-shadow:0 10px 0 color-mix(in srgb,var(--lc) 65%,#000 25%),0 0 0 5px color-mix(in srgb,var(--lc) 30%,transparent)}
@@ -1453,7 +1453,7 @@ body.kid nav.tabs button[aria-current="page"]{color:#5a2a00}
 .sp-abct.hl b{color:#fff}
 .sp-newtag{white-space:nowrap}
 
-/* v20: alphabet tiles, chevron, glassy bottom navigation */
+
 .sp-abc summary .grow{display:flex;flex-direction:column;gap:1px}
 .sp-abcic{font-size:28px}.sp-abcic img.emo{width:32px;height:32px}
 .sp-abc summary::after{content:none}
@@ -1485,7 +1485,7 @@ body.kid nav.tabs button[aria-current="page"]{color:#5a2a00}
 @keyframes soundpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
 :root[data-theme="dark"] .ab-l b{text-shadow:none}
 
-/* glassy bottom navigation (phones/tablets) */
+
 @media (max-width:899px){
   nav.tabs{background:linear-gradient(180deg,color-mix(in srgb,var(--side) 60%,transparent),color-mix(in srgb,var(--side) 78%,transparent));
     -webkit-backdrop-filter:blur(22px) saturate(1.8);backdrop-filter:blur(22px) saturate(1.8);border:1px solid #ffffff2b;border-radius:28px;padding:7px;
@@ -1499,22 +1499,18 @@ body.kid nav.tabs button[aria-current="page"]{color:#5a2a00}
   nav.tabs button[aria-current="page"] svg{transform:translateY(-1px) scale(1.06)}
 }
 .sp-abct .ab-w{font-size:.7rem;line-height:1}.sp-abct .ab-l{font-size:inherit}.sp-abct .ab-pic{font-size:30px}.sp-abct .ab-l b{font-size:1.75rem}.sp-abct .ab-wave{font-size:0}
-/* flex children named .grow fill the row, so trailing icons/arrows sit at the far edge */
+
 .grow{flex:1 1 auto;min-width:0}
 .sp-chev{margin-left:auto}
 nav.tabs button,nav.tabs button svg{animation:none!important}
-/* password field with show/hide eye */
+
 .lg-pw{position:relative;display:block}
 .lg-pw input{width:100%;padding-right:54px}
 .lg-eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:42px;height:42px;border:0;border-radius:10px;background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer;transition:background .2s,color .2s}
 .lg-eye:hover{background:var(--well);color:var(--ink)}
 .lg-eye[aria-pressed="true"]{color:var(--primary)}
 .lg-eye:active{transform:translateY(-50%) scale(.9)}
-/* soft-UI (neumorphic) icon system, light from top-left. Three styles, square or .round:
-   .nm        raised   (extruded button: main actions, e.g. logout)
-   .nm.in     inset    (carved-in: pressed / selected state)
-   .nm.ring   carved ring with a raised plate inside (small or destructive actions, status icons)
-   --s sets the size; shadows, radius and glyph scale with it. Glyph is always recessed. */
+
 .nm{--nb:#153b36;--sd:#041311;--sl:#ffffff17;--s:42px;--ic:#ffb4a8;--r:calc(var(--s)*.34);width:var(--s);height:var(--s);flex:none;padding:0;border:0;border-radius:var(--r);display:grid;place-items:center;cursor:pointer;background:var(--nb);
   --raise:calc(var(--s)*.12) calc(var(--s)*.12) calc(var(--s)*.26) var(--sd),calc(var(--s)*-.08) calc(var(--s)*-.08) calc(var(--s)*.2) var(--sl);
   --sink:inset calc(var(--s)*.08) calc(var(--s)*.08) calc(var(--s)*.16) var(--sd),inset calc(var(--s)*-.06) calc(var(--s)*-.06) calc(var(--s)*.14) var(--sl);
@@ -1543,12 +1539,7 @@ nav.tabs button,nav.tabs button svg{animation:none!important}
 .pk-askic{--s:62px}
 .pk-askbtns{width:100%;gap:10px;margin-top:6px}.pk-askbtns .btn{flex:1}
 
-/* ================= soft-UI (neumorphic) layer, app-wide =================
-   One light source (top-left). Three styles, chosen by job:
-   raised  = something you can press      (icon buttons, profile switch, pills that are "on")
-   inset   = something that holds a value (inputs, toggle tracks, progress tracks, segmented-control tracks, pressed state)
-   ring    = a carved ring holding a raised plate (avatar in the top bar, the round speaker on cards)
-   Colourful candy buttons (.btn, lesson nodes, spelling actions) keep their own 3D look on purpose. */
+
 :root{--nm-d:#b3c2bc;--nm-l:#ffffff;--nm-b:var(--surface);
   --nm-up:5px 5px 12px var(--nm-d),-4px -4px 10px var(--nm-l);
   --nm-up-s:3px 3px 7px var(--nm-d),-3px -3px 7px var(--nm-l);
@@ -1560,49 +1551,49 @@ body.kid{--nm-d:#c9bfd6;--nm-l:#ffffff}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body.kid{--nm-d:#00000099;--nm-l:#ffffff14}}
 :root[data-theme="dark"] body.kid{--nm-d:#00000099;--nm-l:#ffffff14}
 
-/* raised: round icon buttons (back, close, listen…) and the profile switch button */
+
 .icon-btn,.swbtn{border:0;background:var(--nm-b);box-shadow:var(--nm-up-s);transition:box-shadow .2s ease,transform .25s var(--spring),color .2s}
 .icon-btn svg,.swbtn svg{filter:drop-shadow(1px 1px 0 color-mix(in srgb,var(--nm-d) 70%,transparent))}
 @media (hover:hover){.icon-btn:hover,.swbtn:hover{color:var(--primary)}}
 .icon-btn:active,.swbtn:active,.icon-btn[aria-pressed="true"]{box-shadow:var(--nm-in-s);transform:scale(.95)}
 
-/* inset: text fields */
+
 input[type=text],input[type=search],input[type=email],input[type=password],input[type=number],textarea,select,.lg-field input{
   border-color:transparent;background:var(--nm-b);box-shadow:var(--nm-in)}
 input[type=text]:focus,input[type=search]:focus,textarea:focus,select:focus,.lg-field input:focus{border-color:var(--primary);box-shadow:var(--nm-in),0 0 0 4px color-mix(in srgb,var(--primary) 14%,transparent)}
 .lg-pw .lg-eye{box-shadow:none}
 
-/* inset track + raised knob: switches */
+
 .switch{background:var(--nm-b);box-shadow:var(--nm-in-s)}
 .switch::after{box-shadow:2px 2px 5px var(--nm-d),-1px -1px 3px var(--nm-l)}
 .switch:checked{background:var(--primary);box-shadow:inset 2px 2px 5px #00000040,inset -1px -1px 3px #ffffff26}
 
-/* inset track + raised pill: segmented controls (tracks, login tabs, Sounds/Letters) */
+
 .tracks,.lg-seg,.sp-modes{background:var(--nm-b);border-color:transparent;box-shadow:var(--nm-in)}
 .seg-pill,.lg-pill{background:var(--nm-b);box-shadow:var(--nm-up-s)}
 .sp-modes button[aria-pressed="true"]{background:var(--nm-b);box-shadow:var(--nm-up-s)}
 
-/* inset: progress tracks (the coloured fill stays) */
+
 .pbar{background:var(--nm-b);box-shadow:var(--nm-in-s)}
 
-/* ring: top-bar avatar = raised plate inside a carved ring */
+
 .avbtn .av{position:relative;box-shadow:var(--nm-up-s)}
 .avbtn .av::before{content:"";position:absolute;inset:-5px;border-radius:50%;box-shadow:var(--nm-in-s);pointer-events:none}
 .avbtn{padding-left:6px}
 
-/* ---- picker: "Add a profile" plus = raised round, arrow = carved ring ---- */
+
 .pk-add .pk-plus{border:0;background:#123a35;color:#7fe0c7;box-shadow:5px 5px 12px #041311,-3px -3px 9px #ffffff14,inset 1px 1px 0 #ffffff12;text-shadow:1px 1px 0 #0006}
 .pk-arrow{width:40px;height:40px;flex:none;border-radius:50%;display:grid;place-items:center;background:#112f2b;box-shadow:inset 3px 3px 6px #041311,inset -2px -2px 5px #ffffff14}
 .pk-add:active .pk-plus{box-shadow:inset 3px 3px 7px #041311,inset -2px -2px 6px #ffffff14}
-/* ---- sidebar collapse button on the dark rail ---- */
+
 nav.tabs .railbtn{border:0;background:var(--side);box-shadow:3px 3px 7px #030d0c,-2px -2px 6px #ffffff12,inset 1px 1px 0 #ffffff0f}
 nav.tabs .railbtn:active{box-shadow:inset 3px 3px 6px #030d0c,inset -2px -2px 5px #ffffff12}
-/* ---- dropdown chevrons (quests, spelling ABC) = raised round, open = pressed in ---- */
+
 .qhead .ddchev{width:34px;height:34px;padding:8px;border-radius:50%;color:var(--ink);background:var(--nm-b);box-shadow:var(--nm-up-s);transition:transform .35s var(--ease),box-shadow .25s}
 .qhead[aria-expanded="true"] .ddchev{box-shadow:var(--nm-in-s)}
 .sp-chev{background:var(--nm-b);box-shadow:var(--nm-up-s);border-radius:50%}
 .sp-abc[open] .sp-chev{background:var(--nm-b);box-shadow:var(--nm-in-s)}
-/* ---- lesson result: sentences to revise, one clean list ---- */
+
 .donebody .revise{gap:10px;text-align:left}
 .donebody .revise>p{margin:0 4px;text-align:left;font-weight:600}
 .donebody .revchips{flex-direction:column;align-items:stretch;gap:10px}
@@ -1613,11 +1604,11 @@ nav.tabs .railbtn:active{box-shadow:inset 3px 3px 6px #030d0c,inset -2px -2px 5p
 .lvchip{white-space:nowrap;border:0;background:var(--nm-b);box-shadow:var(--nm-up-s)}
 .lvchip .lvbar{flex:none;width:70px;box-shadow:var(--nm-in-s);background:var(--nm-b)}
 .lvchip .tiny{flex:none}
-/* ---- match pairs: matched cards stay, faded; a wrong pick gets a red focus ring ---- */
+
 .match .opt.gone{opacity:.2;transform:none;pointer-events:none;filter:saturate(.6)}
 .match .opt.err{border-color:var(--bad);box-shadow:0 0 0 3px color-mix(in srgb,var(--bad) 28%,transparent)}
 
-/* ---- warm-up pen reading: timer bar floats at the top while the passage scrolls ---- */
+
 .wp-title{margin:4px 0 0}
 .wfloat{position:sticky;top:calc(8px + env(safe-area-inset-top,0px));z-index:6;display:flex;align-items:center;gap:10px;padding:8px 8px 8px 14px;border-radius:20px;
   background:color-mix(in srgb,var(--surface) 82%,transparent);-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);
@@ -1627,13 +1618,13 @@ nav.tabs .railbtn:active{box-shadow:inset 3px 3px 6px #030d0c,inset -2px -2px 5p
 .wfloat.run .wf-ic{animation:wfTick 1s steps(2) infinite}
 @keyframes wfTick{50%{transform:rotate(-8deg)}}
 .wfloat .btn{white-space:nowrap}
-/* add-profile icons are SVG so they sit exactly in the middle of their circles */
+
 .pk-add .pk-plus svg{width:22px;height:22px;display:block;filter:drop-shadow(1px 1px 0 #0007)}
 .pk-arrow{padding:0;line-height:0}
 .pk-arrow svg{width:20px;height:20px;display:block;color:#7fe0c7;transform:translateX(-.5px);transition:transform .3s var(--ease)}
 .pk-add:hover .pk-arrow{transform:none}.pk-add:hover .pk-arrow svg{transform:translateX(4px)}
 
-/* ================= 📘 My English Book ================= */
+
 .bookcta{display:flex;align-items:center;gap:14px;width:100%;border:0;cursor:pointer;text-align:left;border-radius:24px;padding:16px 18px;margin-bottom:14px;color:#fff;
   background:linear-gradient(135deg,#1f8f7a,#0d5c55);box-shadow:0 6px 0 #08403b,0 18px 30px -18px #0d5c55;transition:transform .15s,box-shadow .15s}
 .bookcta:active{transform:translateY(5px);box-shadow:0 1px 0 #08403b}
@@ -1723,7 +1714,7 @@ nav.tabs .railbtn:active{box-shadow:inset 3px 3px 6px #030d0c,inset -2px -2px 5p
 .bk-spin{display:inline-block;width:36px;height:36px;border-radius:50%;border:4px solid var(--line-2);border-top-color:#0d5c55;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media (max-width:420px){.bk-letters{grid-template-columns:repeat(4,1fr)}.bk-fen{font-size:2.6rem}.bk-steps span{font-size:.62rem}}
-/* word chapters: picture cards, colour swatches, numbers, Find It game */
+
 .bk-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin:8px 0 12px}
 .bk-cardw{display:flex;flex-direction:column;align-items:center;gap:4px;border:0;cursor:pointer;border-radius:14px;padding:10px 4px;background:#fff;box-shadow:0 3px 0 #e4dcc4;color:#1d2a26;font:600 .85rem var(--bn);transition:transform .15s,background .2s}
 .bk-cardw.on{background:#fff1c9;transform:scale(1.06)}
@@ -1736,7 +1727,7 @@ nav.tabs .railbtn:active{box-shadow:inset 3px 3px 6px #030d0c,inset -2px -2px 5p
 .bk-fc .bk-emo.big{font-size:3rem}.bk-fc .bk-sw.big{width:60px;height:60px}.bk-fc .bk-numpic.big{font-size:2.6rem}
 .bk-fc.miss{animation:nudge .4s;box-shadow:0 0 0 3px #cf4429}.bk-fc.got{background:#dff6ea;transform:scale(1.08)}
 .bk-flash .bk-emo.big,.bk-flash .bk-sw.big,.bk-flash .bk-numpic.big{margin-bottom:4px}
-/* grammar lessons */
+
 .bk-lesson h2.bk-h{margin-top:4px}
 .bk-lh3{margin:18px 0 6px;padding:6px 12px;border-radius:12px;background:#0d5c5512;font-size:1.05rem}
 .bk-lh4{margin:14px 0 4px;color:#b36b14;font-size:.98rem}
@@ -1758,11 +1749,11 @@ nav.tabs .railbtn:active{box-shadow:inset 3px 3px 6px #030d0c,inset -2px -2px 5p
 .bk-tiles{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
 .bk-tile{border:0;cursor:pointer;border-radius:14px;padding:10px 14px;background:var(--nm-b);box-shadow:var(--nm-up-s);font:700 1.1rem var(--font);color:var(--ink)}
 .bk-tile.miss{animation:nudge .4s;box-shadow:0 0 0 3px #cf4429}
-/* desktop: chapter screens hide the sidebar, so centre them on the full width */
+
 @media (min-width:900px){.view.bk-run{--cw:820px;padding-left:max(32px,(100vw - var(--cw)) / 2);padding-right:max(32px,(100vw - var(--cw)) / 2)}
  .bk-run .bk-steps{max-width:560px;margin-left:auto;margin-right:auto}.bk-letters{grid-template-columns:repeat(auto-fill,minmax(92px,1fr))}}
 
-/* ================= playful book (kids) ================= */
+
 .bookview{font-family:var(--kidf,var(--font))}
 .bk-hint{text-align:center;font-weight:700;color:#b36b14;margin:2px 0 10px}
 .bk-kgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:10px 0 14px}
@@ -1792,7 +1783,7 @@ nav.tabs .railbtn:active{box-shadow:inset 3px 3px 6px #030d0c,inset -2px -2px 5p
 .bk-letters .bk-let b{color:color-mix(in srgb,var(--c) 70%,#000 25%)!important}
 .bk-letters .bk-kspk{width:22px;height:22px;top:5px;right:5px}.bk-letters .bk-kspk svg{width:12px;height:12px}
 .bk-w{background:linear-gradient(160deg,#fff,color-mix(in srgb,var(--c) 25%,#fff))}
-/* revision card */
+
 .bk-flash{cursor:pointer;background:linear-gradient(160deg,#fff 10%,color-mix(in srgb,var(--c) 35%,#fff));box-shadow:0 8px 0 color-mix(in srgb,var(--c) 65%,#000 10%),0 24px 40px -24px var(--c);color:#1d2a26;padding:28px 16px 26px}
 .bk-fpic{animation:bkBounce 1.6s ease-in-out infinite}.bk-fpic .bk-emo.big{font-size:5rem}
 @keyframes bkBounce{50%{transform:translateY(-8px)}}
@@ -1800,12 +1791,12 @@ nav.tabs .railbtn:active{box-shadow:inset 3px 3px 6px #030d0c,inset -2px -2px 5p
 .bk-round.big{position:static;width:58px;height:58px;margin-top:8px;display:grid;box-shadow:0 5px 0 #285a93}.bk-round.big svg{width:26px;height:26px}
 .bk-stardots{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;margin:12px 0 8px;font-style:normal}
 .bk-stardots i{font-style:normal;font-size:.85rem;color:#c9c0a6;min-width:14px;text-align:center}.bk-stardots i.cur{color:#ff7a1a;transform:scale(1.5)}
-/* quiz */
+
 .bk-opts .bk-opt{background:linear-gradient(160deg,#fff,color-mix(in srgb,var(--c,#ccc) 22%,#fff));border-color:color-mix(in srgb,var(--c,#ccc) 60%,#fff)}
 .bk-opts.pics{grid-template-columns:1fr 1fr}.bk-opts.pics .bk-opt{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px}
 .bk-opic .bk-emo.big{font-size:3rem}.bk-opic .bk-ini.big{width:56px;height:56px;font-size:1.8rem}.bk-opic .bk-sw.big{width:56px;height:56px}.bk-opic .bk-numpic.big{font-size:2.4rem}
 .bk-cheer{margin-top:14px;font-size:1.4rem;font-weight:800;animation:bkPopIn .4s var(--spring)}.bk-cheer.ok{color:#1d8656}.bk-cheer.no{color:#c75a10}
-/* rhyme stage */
+
 .bk-stage{position:relative;overflow:hidden;border-radius:26px;padding:22px 14px 18px;margin:6px 0 12px;background:linear-gradient(180deg,#e9f5ff,#fff4e0);box-shadow:var(--nm-up-s)}
 :root[data-theme="dark"] .bk-stage{background:linear-gradient(180deg,#14283a,#2a2113)}
 .bk-float{position:absolute;top:6px;left:var(--x);font-style:normal;font-size:1.6rem;opacity:.85;animation:bkFloatUp 3.2s ease-in-out var(--d) infinite}
@@ -1814,12 +1805,12 @@ nav.tabs .railbtn:active{box-shadow:inset 3px 3px 6px #030d0c,inset -2px -2px 5p
 .bk-rl.on,.bk-rw.on{background:linear-gradient(90deg,#ffe27a,#ffb3c7);transform:scale(1.06);animation:bkWiggle .6s}
 .bk-playbig{width:84px;height:84px;border-radius:50%;border:0;cursor:pointer;font-size:2rem;color:#fff;background:linear-gradient(145deg,#ff8fab,#ff4f81);box-shadow:0 6px 0 #c23a64;animation:bkPulse 1.6s ease-in-out infinite;margin:6px auto 4px;display:grid;place-items:center}
 @keyframes bkPulse{50%{box-shadow:0 6px 0 #c23a64,0 0 0 12px #ff4f8133}}
-/* book path */
+
 .bk-chic{font-size:1.6rem;margin-left:-4px}
 .bk-node.cur{background:linear-gradient(135deg,#fff3e0,#ffe0ec);box-shadow:0 4px 0 #ffb98a,0 0 0 3px #ffb347}
 .bk-node.done{background:linear-gradient(135deg,#eafaf1,#fff)}
 
-/* ---- round 2: groups, ABC picture, owl quiz, song stage, phone tables, spacing ---- */
+
 .bk-gtitle{margin:18px 4px 4px;padding:8px 14px;border-radius:14px;background:linear-gradient(90deg,#ffe8b8,#ffd6e5);color:#7a3d00;font-size:1.05rem;display:inline-block}
 .bk-w{display:flex;align-items:center;justify-content:center;gap:6px}.bk-w .bk-emo{font-size:1.4rem}
 .bk-abc{display:flex;flex-direction:column;align-items:center;gap:2px}.bk-abc .bk-emo.big{font-size:4.2rem}
@@ -1838,27 +1829,27 @@ nav.tabs .railbtn:active{box-shadow:inset 3px 3px 6px #030d0c,inset -2px -2px 5p
 @keyframes bkGlow{50%{box-shadow:0 0 0 4px #ffb3c7,0 18px 30px -18px #ff4f81}}
 .bk-stage.playing .bk-float{animation-duration:1.2s}
 .bk-stage.playing .bk-playbig{animation:spin 4s linear infinite}
-/* book tables fit a phone */
+
 .bk-book{overflow:hidden}.bk-book .bk-tb,.bk-paper>.bk-sec .bk-tb{width:100%;table-layout:fixed;font-size:.88rem}
 .bk-book .bk-tb th,.bk-book .bk-tb td{padding:6px 5px;word-break:break-word;overflow-wrap:anywhere;vertical-align:top}
 .bk-book .bk-tb th:last-child,.bk-book .bk-tb td:last-child{width:28px;padding:6px 2px}
 .bk-book .bk-tb th:first-child,.bk-book .bk-tb td:first-child{width:32%}
 .bk-tbwrap{max-width:100%;-webkit-overflow-scrolling:touch}
 @media (max-width:480px){.bk-tbwrap .bk-tb{font-size:.8rem}.bk-tbwrap .bk-tb th,.bk-tbwrap .bk-tb td{padding:5px 4px}}
-/* a little air between buttons and the help text under them */
+
 .bookview .row.center+p,.bookview .bk-playbig+p,.bookview .bk-next+p,.bk-under,.bookview .btn+p,.bookview .bk-stardots+.row{margin-top:10px!important}
 .bookview .row.center+p.small{padding-top:4px;margin-top:12px!important}
 .bk-opts.balloons{grid-template-columns:repeat(4,minmax(0,1fr));max-width:380px;margin:0 auto;gap:10px}
 .bk-opts.balloons .bk-opt{font-size:1.9rem;padding:0}
-/* hand-drawn 3D icons sit at emoji size */
+
 .bk-svg{display:inline-block;width:1.15em;height:1.15em;line-height:0;vertical-align:middle}.bk-svg svg{width:100%;height:100%;filter:drop-shadow(0 2px 2px #0002)}
 .bk-svg{width:1.35em;height:1.35em}
-/* number answers and labelled Find It cards */
+
 .bk-opts.nums .bk-opt{font:900 2.2rem var(--font);padding:16px 6px;color:#2a5ea8}
 .bk-fcw{font:800 .95rem var(--font);color:var(--ink)}.bk-fcb{font-size:.8rem;color:var(--muted)}
 .bk-fc{min-height:118px}
 
-/* ================= 🔤 Letter Friends ================= */
+
 .palscta{display:flex;align-items:center;gap:14px;width:100%;border:0;cursor:pointer;text-align:left;border-radius:24px;padding:12px 18px;margin-bottom:14px;color:#fff;
   background:linear-gradient(135deg,#5b8def,#8a6bff);box-shadow:0 6px 0 #3f5fc0,0 18px 30px -18px #5b8def;transition:transform .15s,box-shadow .15s}
 .palscta:active{transform:translateY(5px);box-shadow:0 1px 0 #3f5fc0}
@@ -1920,8 +1911,8 @@ nav.tabs .railbtn:active{box-shadow:inset 3px 3px 6px #030d0c,inset -2px -2px 5p
 .lp-food.eaten{transform:translateX(-120%) scale(.2);opacity:0}
 .palsview .linkbtn{display:block;margin:12px auto 0}
 
-/* ================= 🔤 Letter Friends hub (v24): talking letters, Write it, Word Town, Play room, Stickers ================= */
-/* talking + blinking letters */
+
+
 .lp-char .lp-m{opacity:0}
 .lp-char[data-m="0"] .m0,.lp-char[data-m="1"] .m1,.lp-char[data-m="2"] .m2,.lp-char[data-m="3"] .m3{opacity:1}
 .lp-char .lp-eyes{transform-box:fill-box;transform-origin:center;animation:lpBlink 3.8s infinite;animation-delay:var(--bd,0s)}
@@ -1930,7 +1921,7 @@ html.is-speaking .lp-talk .lp-face{animation:lpTalk .24s ease-in-out infinite al
 @keyframes lpTalk{to{transform:translateY(-.9px) rotate(-1.5deg)}}
 @media (prefers-reduced-motion:reduce){.lp-char .lp-eyes,html.is-speaking .lp-talk .lp-face{animation:none}}
 
-/* hub: map + side panel (panel on top on phones, on the right on desktop) */
+
 .view.lp-hub{--cw:1100px}
 .lp-hubgrid{display:grid;gap:18px}
 .lp-hub .lp-map{grid-template-columns:repeat(auto-fill,minmax(66px,1fr))}
@@ -1966,7 +1957,7 @@ html.is-speaking .lp-talk .lp-face{animation:lpTalk .24s ease-in-out infinite al
 .lp-tile{animation-fill-mode:backwards}
 .lp-tile.sel{outline:3px solid var(--c);outline-offset:3px}
 
-/* speech bubble + small guide letter */
+
 .lp-meetcol{display:flex;flex-direction:column;align-items:center;gap:10px;width:46%;max-width:220px}
 .lp-meetcol .lp-meetchar{width:100%;max-width:none}
 .lp-bubble{position:relative;display:inline-block;background:#fff;color:#2a2140;border-radius:18px;padding:8px 14px;font:800 1.05rem var(--font);
@@ -1980,7 +1971,7 @@ html.is-speaking .lp-talk .lp-face{animation:lpTalk .24s ease-in-out infinite al
 .lp-round.mu{background:#ece6ff;box-shadow:0 4px 0 #b9acf0;font-size:22px}.lp-round.mu img.emo{width:26px;height:26px}
 .lp-round.mu.off{filter:grayscale(1);opacity:.5}
 
-/* Write it */
+
 .lp-ghost.faint{stroke:#eef0f4}
 .lp-ink{fill:none;stroke-width:9;stroke-linecap:round;stroke-linejoin:round}
 .lp-demo{fill:none;stroke-width:6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:100;stroke-dashoffset:100;opacity:.85;
@@ -1990,10 +1981,10 @@ html.is-speaking .lp-talk .lp-face{animation:lpTalk .24s ease-in-out infinite al
 .lp-written svg{width:100%;height:auto;display:block}
 .lp-wtitle{margin:4px 0 0;font-size:1.6rem}
 
-/* wider pages on desktop */
+
 @media (min-width:900px){.view.lp-run.lp-wide{--cw:980px}}
 
-/* Word Town */
+
 .lp-places{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 @media (min-width:640px){.lp-places{grid-template-columns:repeat(4,1fr)}}
 .lp-place{position:relative;border:0;cursor:pointer;border-radius:24px;padding:14px 8px 12px;display:flex;flex-direction:column;align-items:center;gap:2px;color:#1d2a26;
@@ -2029,7 +2020,7 @@ html.is-speaking .lp-talk .lp-face{animation:lpTalk .24s ease-in-out infinite al
 .lp-thing.miss{animation:nudge .4s;box-shadow:0 0 0 3px #cf4429}
 .lp-scene.find .lp-thing:not(.got) b{display:none}
 
-/* Play room */
+
 .lp-games{display:grid;gap:14px}
 @media (min-width:560px){.lp-games{grid-template-columns:1fr 1fr}}
 .lp-game{position:relative;border:0;cursor:pointer;border-radius:26px;padding:22px 14px 18px;display:flex;flex-direction:column;align-items:center;gap:4px;color:#1d2a26;
@@ -2066,7 +2057,7 @@ html.is-speaking .lp-talk .lp-face{animation:lpTalk .24s ease-in-out infinite al
 @keyframes lpPopOut{to{transform:scale(1.5);opacity:0}}
 .lp-bub.miss{animation:nudge .4s;box-shadow:0 0 0 3px #cf4429}
 
-/* Stickers */
+
 .lp-sticker{display:flex;flex-direction:column;align-items:center;gap:4px;border-radius:50%;background:linear-gradient(160deg,var(--a,#fff4d6),var(--b,#ffd98a));
   box-shadow:0 0 0 6px #fff,0 0 0 9px #ffd23f,0 18px 30px -16px #0006;animation:bkPopIn .6s var(--spring)}
 .lp-sticker span{font-size:4rem;line-height:1}.lp-sticker img.emo{width:80px;height:80px}
@@ -2086,9 +2077,14 @@ html.is-speaking .lp-talk .lp-face{animation:lpTalk .24s ease-in-out infinite al
 .lp-stk.town .lp-st small{font:700 .66rem var(--font);color:#55606b;text-align:center;line-height:1.1;padding:0 4px}
 .lp-stk.town .lp-st.on{filter:none;opacity:1;border:0;background:linear-gradient(160deg,var(--a,#fff4d6),var(--b,#ffd98a));box-shadow:0 0 0 4px #fff,0 0 0 6px #ffd23f,0 8px 14px -8px #0005}
 
-/* desktop: blocks inside Letter Friends pages take the full content width (the app's `.view > *` rule made them shrink) */
+
 .palsview > :is(.lp-pad,.lp-pond,.lp-tiles,.lp-scene,.lp-places,.lp-games,.lp-stk,.lp-guiderow,.lp-ask,.lp-meet,.lp-won,.lp-hubgrid,.lp-feed,.lp-slots,.lp-map){width:100%}
 @media (min-width:900px){.lp-pad{max-width:480px}.lp-guiderow{max-width:480px}}
+
+/* ===== fallbacks for older Android browsers (generated by compat-css.js) ===== */
+@supports not (color:color-mix(in srgb,red,blue)){:root{--fam-d:var(--fam);--cli-d:var(--cli);--eve-d:var(--eve);--warm-d:var(--warm);--story-d:var(--story);--fam-s:var(--surface);--cli-s:var(--surface);--eve-s:var(--surface);--warm-s:var(--surface);--story-s:var(--surface);--good-s:var(--surface);--bad-s:var(--surface)}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--fam-d:var(--fam);--cli-d:var(--cli);--eve-d:var(--eve);--warm-d:var(--warm);--story-d:var(--story)}}:root[data-theme="dark"]{--fam-d:var(--fam);--cli-d:var(--cli);--eve-d:var(--eve);--warm-d:var(--warm);--story-d:var(--story)}.btn{box-shadow:0 10px 22px -12px var(--c)}@media (hover:hover){.btn:hover{box-shadow:0 14px 26px -12px var(--c)}}.note{border:1px solid transparent}.warnbox{border:1px solid transparent}.okbox{border:1px solid transparent}input[type=text]:focus,textarea:focus,select:focus{box-shadow:0 0 0 4px transparent}.topbar{background:var(--bg)}.unitban{background:linear-gradient(135deg,var(--c) 0%,var(--c) 55%,var(--c) 100%)}.node{background:radial-gradient(circle at 32% 26%,var(--c),var(--c) 62%);box-shadow:0 14px 26px -12px var(--c),inset 0 -5px 0 #0000001f,inset 0 2px 0 #ffffff40}.node.cur::before{border:2.5px solid transparent}.player .foot{background:var(--bg)}@keyframes speakPulse{50%{box-shadow:0 0 0 8px transparent}}@media (hover:hover){.opt:hover{border-color:var(--line-2)}}.opt[aria-pressed="true"]{background:var(--raised);box-shadow:0 0 0 4px transparent}.kidcard{border:1px solid transparent}.recdot{box-shadow:0 0 0 0 var(--bad)}.badge.on{background:var(--surface);box-shadow:inset 0 0 0 1px transparent}.lrow.me{background:transparent}.avpick[aria-pressed="true"]{box-shadow:0 0 0 4px transparent}.chip.trk.kids{background:transparent}.ktile.right{box-shadow:0 0 0 6px transparent}.sticker-win{background:var(--surface)}.said .bad{text-decoration:underline wavy var(--bad)}.sent.cur{background:transparent}.listenbar{background:var(--bg)}.lvhero{background:linear-gradient(135deg,var(--surface),var(--surface))}.lvhero.kid .lvbig{background:var(--surface)}.wk span{background:var(--eve)}.advice{background:var(--surface);border:1px solid transparent}.wart-card{background:radial-gradient(circle at 50% 40%,var(--surface),var(--surface) 70%)}@media (min-width:760px){body:has(.player){background:radial-gradient(60vmax 50vmax at 12% -10%,var(--glow-a),transparent 70%),var(--bg)}}.wfr .dotw i{box-shadow:0 0 0 5px transparent,0 0 14px var(--warm)}.ddbtn[aria-expanded="true"]{box-shadow:0 0 0 4px transparent}.dditem.on{background:transparent}.deckback{border:1px solid transparent}.face.front{border:1px solid transparent}.face.back{background:linear-gradient(160deg,var(--fam),var(--fam))}.dots i.done{background:var(--line-2)}:root[data-theme="dark"] .deckback{background:var(--surface)}:root[data-theme="dark"] .face.front{background:linear-gradient(160deg,var(--raised),var(--raised))}:root[data-theme="dark"] .player .foot.ok{background:var(--bg)}:root[data-theme="dark"] .player .foot.no{background:var(--bg)}:root[data-theme="dark"] .lvhero{background:linear-gradient(135deg,var(--surface),var(--surface))}:root[data-theme="dark"] .advice{background:var(--surface)}@media (hover:hover){.swbtn:hover{box-shadow:0 0 0 4px transparent}}@media (hover:hover){.gbtn:hover{box-shadow:0 0 0 4px transparent,0 8px 18px -14px #10231f55}}.lg-field input:focus{box-shadow:0 0 0 4px transparent}.cheer-ring{background:radial-gradient(circle,transparent,transparent 68%)}.node{box-shadow:0 7px 0 var(--c),0 18px 26px -14px var(--c),inset 0 2px 0 #ffffff40}.node:active{box-shadow:0 1px 0 var(--c),0 6px 12px -8px var(--c),inset 0 2px 0 #ffffff40}.node.cur::after{border:6px solid var(--well)}.startpop{background:linear-gradient(160deg,var(--c),var(--c));box-shadow:0 7px 0 var(--c),0 22px 34px -18px var(--c)}.startpop::before{background:var(--c)}.btn{--lip:var(--c);box-shadow:0 4px 0 var(--lip),0 12px 22px -14px var(--c),inset 0 1px 0 #ffffff38;background:linear-gradient(180deg,var(--c),var(--c) 60%)}@media (hover:hover){.btn:not(:disabled):hover{box-shadow:0 5px 0 var(--lip),0 16px 26px -14px var(--c),inset 0 1px 0 #ffffff38}}.btn:not(:disabled):active{box-shadow:0 0 0 var(--lip),0 4px 10px -8px var(--c),inset 0 1px 0 #ffffff38}body.kid .ktile{box-shadow:0 6px 0 var(--kt),0 14px 24px -16px #0004;background:var(--raised)}body.kid .ktile:not(:disabled):active{box-shadow:0 1px 0 var(--kt)}body.kid .ktile.right{background:var(--raised)}.playcard.newdeck{border-color:var(--line)}.sp-level{border:2.5px solid transparent;box-shadow:0 5px 0 var(--line-2)}.sp-lvbadge{background:var(--raised)}.sp-prog i{background:linear-gradient(90deg,var(--lc),var(--lc))}.sp-card{box-shadow:0 7px 0 var(--line-2),0 24px 40px -24px #10231f55;border:3px solid transparent}.spl{background:linear-gradient(180deg,var(--lc),var(--lc));box-shadow:0 6px 0 var(--lc)}.sp-bigbadge{box-shadow:0 8px 0 #e0a92a,0 0 0 10px transparent,0 30px 50px -20px #e0a92a}.sp-opt{background:var(--raised);box-shadow:0 6px 0 var(--kt)}.sp-opt:not(:disabled):active{box-shadow:0 1px 0 var(--kt)}.sp-slot.full{background:linear-gradient(180deg,var(--lc),var(--lc));box-shadow:0 6px 0 var(--lc)}.spl.hl{box-shadow:0 10px 0 var(--lc),0 0 0 5px transparent}.sp-level.cur{box-shadow:0 5px 0 var(--line-2),0 0 0 5px transparent}.sp-abct{background:var(--raised);box-shadow:0 4px 0 var(--line-2)}.sp-abct.hl{box-shadow:0 4px 0 var(--lc)}.sp-abc[open] .sp-chev{background:var(--raised)}.sp-abct{background:linear-gradient(170deg,var(--raised),var(--raised));box-shadow:0 5px 0 var(--lc),inset 0 1px 0 #ffffff99}.ab-l i{color:var(--lc)}.sp-abct:active{box-shadow:0 1px 0 var(--lc)}.sp-abct.hl{background:linear-gradient(170deg,var(--lc),var(--lc));box-shadow:0 5px 0 var(--lc),0 0 0 5px transparent}@media (max-width:899px){nav.tabs{background:linear-gradient(180deg,var(--side),var(--side))}nav.tabs .pill{background:linear-gradient(180deg,var(--side-pill),var(--side-pill));box-shadow:0 8px 18px -8px var(--side-pill),inset 0 1px 0 #ffffffb0,inset 0 -2px 0 #0000001a}}.icon-btn svg,.swbtn svg{filter:drop-shadow(1px 1px 0 var(--nm-d))}input[type=text]:focus,input[type=search]:focus,textarea:focus,select:focus,.lg-field input:focus{box-shadow:var(--nm-in),0 0 0 4px transparent}.match .opt.err{box-shadow:0 0 0 3px transparent}.wfloat{background:var(--surface);border:1px solid var(--line)}.bk-kc{background:linear-gradient(160deg,#fff 0%,#fff 100%);box-shadow:0 5px 0 var(--c),0 14px 22px -14px var(--c)}.bk-kc:active{box-shadow:0 1px 0 var(--c)}.bk-letters .bk-let{background:linear-gradient(160deg,#fff,#fff);box-shadow:0 4px 0 var(--c)}.bk-letters .bk-let b{color:var(--c)!important}.bk-w{background:linear-gradient(160deg,#fff,#fff)}.bk-flash{background:linear-gradient(160deg,#fff 10%,#fff);box-shadow:0 8px 0 var(--c),0 24px 40px -24px var(--c)}.bk-opts .bk-opt{background:linear-gradient(160deg,#fff,#fff);border-color:var(--c,#ccc)}.lp-tile{border:2.5px dashed var(--c);background:var(--surface);color:var(--c)}.lp-tile.now{box-shadow:0 5px 0 var(--c),0 0 0 5px transparent}.lp-tile.done{background:linear-gradient(160deg,#fff,#fff);box-shadow:0 4px 0 var(--c)}.lp-panel{background:linear-gradient(165deg,#fff,#fff 72%);box-shadow:0 6px 0 #d9dde5,0 22px 34px -24px #0006}.lp-uphi{box-shadow:0 3px 0 #0001,0 0 0 2px #fff}.lp-subic{background:#fff}.lp-place{box-shadow:0 5px 0 var(--b),0 16px 24px -18px #0006}.lp-slot.on{box-shadow:0 4px 0 var(--c)}.lp-ltile{box-shadow:0 5px 0 var(--c)}.lp-ltile:active{box-shadow:0 1px 0 var(--c)}.lp-st{background:transparent;border:2.5px dashed transparent}.lp-st.on{box-shadow:0 0 0 4px #fff,0 0 0 6px var(--c,#ffd23f),0 8px 14px -8px #0005}}
+@supports not (translate:0){.toast{transform:translate(-50%,0)}@media (min-width:760px){.player{transform:translate(-50%,0)}}.wfr .dotw i{transform:translate(-50%,-50%)}.pk-acct{transform:translate(0,-50%)}}
+@supports not (height:1dvh){body{min-height:100vh}.welcome,.onb,.picker{min-height:100vh}.picker2{min-height:100vh}.picker2{min-height:100vh}.login{min-height:100vh}.spellview.sp-run{min-height:100vh}}
 </style>
 
 <div id="splash" aria-label="Bolo English loading"><img class="sp-native" src="icon-512.png" alt="" onerror="this.remove()"><div class="sp-in">
@@ -3015,8 +3011,9 @@ const AUDIO_SET=new Set(["0000b652","000484e1","000cb4db","001b1442","001fdb96",
 function h32(s){let h=0x811c9dc5;const b=unescape(encodeURIComponent(s));for(let i=0;i<b.length;i++){h^=b.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}return h.toString(16).padStart(8,"0");}
 const akey=t=>h32(String(t).replace(/\s+/g," ").trim());
 function splitSentences(t){return String(t).split(/\n+/).flatMap(p=>p.trim().split(/(?<=[.!?]["”]?)\s+/)).map(s=>s.trim()).filter(Boolean);}
+const TTS_SILENT="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQIAAACAgA==";
 const TTS={
- ok:true, el:null, run:0, onState:null,
+ ok:true, el:null, run:0, onState:null, unlocked:false, wait:null, log:[],
  dev:"speechSynthesis" in window,
  clip(t){return AUDIO_SET.has(akey(t));},
  voice(){
@@ -3024,42 +3021,68 @@ const TTS={
    const score=v=>(/natural|neural/i.test(v.name)?50:0)+(/online/i.test(v.name)?20:0)+(/ava|aria|jenny|emma|andrew|brian|samantha|google us english|google uk english female/i.test(v.name)?15:0)+(/en[-_]us/i.test(v.lang)?5:0)+(v.localService?0:3);
    return vs.sort((a,b)=>score(b)-score(a))[0]||null;}catch(e){return null;}},
  rateFor(rate){const r=rate||S?.rate||.9;return r;},
+ note(m){this.log.push(new Date().toTimeString().slice(0,8)+" "+m);if(this.log.length>14)this.log.shift();},
+ audio(){return this.el||(this.el=new Audio());},
+ /* the first tap lets this page play sound later without another tap (some Android WebViews need it);
+    if a sound was blocked, that tap plays it */
+ unlock(){if(this.wait){const f=this.wait;this.wait=null;f();return;}
+  if(this.unlocked)return;this.unlocked=true;try{SND.ac();}catch(e){}
+  const a=this.audio();if(!a.paused)return;
+  try{a.src=TTS_SILENT;const p=a.play();p&&p.catch&&p.catch(e=>{if(e&&e.name==="NotAllowedError")this.unlocked=false;});}catch(e){this.unlocked=false;}},
+ /* play one sound file. Retries once if it fails to load, waits for a tap if the browser blocks it,
+    never hangs if the phone pauses it, and falls back to the device voice as a last resort */
+ playUrl(u,{rate=1,end=0,text="",sr=.9,my}){return new Promise(res=>{
+  const a=this.audio();let done=false,tries=0,guard=null,cut=null,att=0,failedAt=0;const short=String(text).slice(0,40);
+  const alive=()=>my===this.run&&!done;
+  const fin=()=>{if(done)return;done=true;clearTimeout(guard);clearTimeout(cut);a.onended=a.onerror=a.onplaying=a.onpause=null;res();};
+  const fallback=why=>{this.note(why+": "+short);if(!alive())return fin();this.devSay(text,sr).then(fin);};
+  const failed=me=>{if(me!==att||failedAt===me)return;failedAt=me;if(!alive())return fin();if(tries++<1){this.note("retry: "+short);setTimeout(start,400);}else fallback("no sound");};
+  const start=()=>{if(!alive())return fin();let started=false;const me=++att;
+   a.onended=fin;a.onerror=()=>failed(me);
+   a.onplaying=()=>{started=true;clearTimeout(guard);
+    if(end){clearTimeout(cut);cut=setTimeout(()=>{try{if(my===this.run)a.pause();}catch(e){}fin();},end*1000-(a.currentTime*1000||0));}};
+   a.onpause=()=>{if(!alive()||a.ended||!started)return;setTimeout(()=>{if(alive()&&a.paused&&!a.ended){this.note("paused by phone: "+short);fin();}},700);};
+   a.src=u+(tries&&!/^(blob|data):/.test(u)?(u.includes("?")?"&":"?")+"r="+tries:"");
+   try{a.preservesPitch=true;}catch(e){}a.playbackRate=rate;
+   clearTimeout(guard);guard=setTimeout(()=>{if(alive()&&!started)failed(me);},9000);
+   let p;try{p=a.play();}catch(e){return failed(me);}
+   if(p&&p.catch)p.catch(err=>{if(!alive())return fin();const n=err&&err.name;
+    if(n==="NotAllowedError"){clearTimeout(guard);this.note("blocked, waiting for a tap: "+short);this.unlocked=false;
+     this.wait=()=>{if(alive())start();else fin();};if(typeof toast==="function")toast("🔊 শুনতে স্ক্রিনে একবার চাপ দাও");return;}
+    if(n==="AbortError")return;
+    failed(me);});
+  };
+  start();});},
  /* play a list of sentences; onIdx(i) fires as each starts; resolves when finished or stopped */
  play(list,rate,onIdx){
   this.stop();const my=++this.run;const r=this.rateFor(rate);
-  const one=(t)=>new Promise(res=>{
-   if(my!==this.run)return res();
-   if(/^pa:/.test(t)){
-    PA.url(t.slice(3)).then(u=>{if(my!==this.run)return res();if(!u)return this.devSay(t,r).then(res);
-     const a=this.el||(this.el=new Audio());let done=false,cut=null;const fin=()=>{if(done)return;done=true;clearTimeout(cut);a.onplaying=null;res();};
-     const end=PA.end(t.slice(3));a.src=u;a.playbackRate=1;a.onended=a.onerror=fin;
-     a.onplaying=()=>{if(end){clearTimeout(cut);cut=setTimeout(()=>{try{if(my===this.run)a.pause();}catch(e){}fin();},end*1000-(a.currentTime*1000||0));}};
-     a.play().catch(()=>{if(!done){done=true;this.devSay(t,r).then(res);}});});
-    return;
-   }
-   if(this.clip(t)){
-    const a=this.el||(this.el=new Audio());a.src=(window.AUDIO_BASE||"a/")+akey(t)+".mp3";a.preservesPitch=true;
-    a.playbackRate=r>=1?1:r<=.55?.5:r<=.65?.78:r<=.75?.86:.95;
-    a.onended=a.onerror=()=>res();a.play().catch(()=>this.devSay(t,r).then(res));
-   }else this.devSay(t,r).then(res);
-  });
+  const one=(t)=>{
+   if(my!==this.run)return Promise.resolve();
+   if(/^pa:/.test(t))return PA.url(t.slice(3)).then(u=>{if(my!==this.run)return;if(!u)return this.devSay(t,r);return this.playUrl(u,{rate:1,end:PA.end(t.slice(3)),text:t,sr:r,my});});
+   if(this.clip(t))return this.playUrl((window.AUDIO_BASE||"a/")+akey(t)+".mp3",{rate:r>=1?1:r<=.55?.5:r<=.65?.78:r<=.75?.86:.95,text:t,sr:r,my});
+   return this.devSay(t,r);
+  };
   this.speaking(true);
   return (async()=>{for(let i=0;i<list.length;i++){if(my!==this.run)break;onIdx&&onIdx(i);await one(list[i]);}
    if(my===this.run){this.speaking(false);onIdx&&onIdx(-1);}})();
  },
  devSay(t,r){if(/^p[ha]:/.test(t))t=(typeof PHFB!=="undefined"&&PHFB[t])||t.slice(3);return new Promise(res=>{
   if(!this.dev){res();return;}
-  try{const u=new SpeechSynthesisUtterance(t);const v=this.voice();if(v)u.voice=v;u.lang=v?.lang||"en-US";u.rate=r;
+  try{const all=speechSynthesis.getVoices()||[];
+   if(!all.length&&performance.now()>5000){this.note("no phone voice: "+String(t).slice(0,40));setTimeout(res,250);return;}
+   const u=new SpeechSynthesisUtterance(t);const v=this.voice();if(v)u.voice=v;u.lang=v?.lang||"en-US";u.rate=r;
    let done=false;const fin=()=>{if(!done){done=true;res();}};u.onend=fin;u.onerror=fin;
    speechSynthesis.speak(u);setTimeout(fin,Math.max(4000,t.length*160/r));}catch(e){res();}});},
  speaking(on){document.documentElement.classList.toggle("is-speaking",on);this.onState&&this.onState(on);},
  say(t,rate){return this.play([t],rate);},
  sayLong(t,rate,onEnd,onIdx){return this.play(splitSentences(t),rate,onIdx).then(()=>onEnd&&onEnd());},
- stop(){this.run++;try{if(this.el){this.el.pause();this.el.onended=null;}}catch(e){}try{if(this.dev)speechSynthesis.cancel();}catch(e){}this.speaking(false);},
+ stop(){this.run++;this.wait=null;try{if(this.el){this.el.onended=this.el.onerror=this.el.onplaying=this.el.onpause=null;this.el.pause();}}catch(e){}try{if(this.dev)speechSynthesis.cancel();}catch(e){}this.speaking(false);},
  utter(t,rate){const u=new SpeechSynthesisUtterance(t);const v=this.voice();if(v)u.voice=v;u.lang=v?.lang||"en-US";u.rate=rate||.9;return u;},
  label(){return AUDIO_SET.size?"Natural neural voice (offline clips)":(this.voice()?.name||"Device voice");}
 };
 TTS.ok=TTS.dev||AUDIO_SET.size>0;
+try{if(TTS.dev){speechSynthesis.getVoices();speechSynthesis.addEventListener&&speechSynthesis.addEventListener("voiceschanged",()=>{});}}catch(e){}
+document.addEventListener("pointerdown",()=>TTS.unlock(),true);
 
 /* ================= listening: browser speech recognition, word-level match (not a pronunciation score) ================= */
 const SRC=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -5700,6 +5723,16 @@ function markHTML(m){
 }
 
 /* ================= ME ================= */
+/* what this phone's browser can do: helps find layout and sound problems on a particular device */
+function devInfo(){const ua=navigator.userAgent,sup=(p,v)=>{try{return CSS.supports(p,v);}catch(e){return false;}};
+ const br=(ua.match(/(HuaweiBrowser|SamsungBrowser|EdgA|Firefox|OPR|Chrome)\/[\d.]+/g)||[]).filter((x,i,a)=>!(x.startsWith("Chrome")&&a.length>1&&i>0&&!a[0].startsWith("Chrome"))).join(" · ")||"?";
+ const wv=/; wv\)/.test(ua)?" (WebView)":"",twa=document.referrer.startsWith("android-app://");
+ const mode=matchMedia("(display-mode: standalone)").matches||matchMedia("(display-mode: fullscreen)").matches?"App, full screen":twa?"App (browser bar showing)":"Browser tab";
+ const os=(ua.match(/Android [^;)]*(;\s*[^;)]+)?/)||[""])[0]||(ua.match(/(iPhone|iPad|Windows NT [\d.]+|Mac OS X [\d_]+)/)||[""])[0];
+ const css=`color-mix ${sup("color","color-mix(in srgb,red,blue)")?"✓":"✗"} · translate ${sup("translate","0")?"✓":"✗"} · dvh ${sup("height","1dvh")?"✓":"✗"} · aspect-ratio ${sup("aspect-ratio","1")?"✓":"✗"} · gap ${sup("gap","1px")?"✓":"✗"}`;
+ const pv=(()=>{try{return (speechSynthesis.getVoices()||[]).length;}catch(e){return 0;}})();
+ const rows=[["Browser",br+wv],["Phone",os||"-"],["Mode",mode],["Screen",`${screen.width}×${screen.height}, page ${innerWidth}×${innerHeight}, x${(devicePixelRatio||1).toFixed(2)}`],["New CSS",css],["Voice",`clips ${AUDIO_SET.size}, phone voices ${pv}, sound unlocked ${TTS.unlocked?"yes":"no"}`]];
+ return {rows,short:`${br.split(" · ")[0]}${wv} · ${mode} · ${innerWidth}×${innerHeight}`};}
 function viewMe(){
   const P=prof(), st=streak(), last=[];for(let i=13;i>=0;i--){const k=addDays(-i);const r=S.days[k];last.push({k,c:r?((r.lessons+r.practice)>0?"f":(r.warm?"w":"")):""});}
   const lessonsBy=t=>Object.keys(S.done).filter(k=>unitById(k.split(":")[0])?.track===t).length;
@@ -5735,6 +5768,7 @@ function viewMe(){
     <button class="btn" data-act="saveSettings">সেভ করো</button></div>`;
   const device=`<div class="card"><h3>ডিভাইস চেক</h3><div class="list">
     <div class="item"><div class="grow"><b>আওয়াজ</b><span class="tiny muted">${esc(APP.check.tts||TTS.label())}</span></div><button class="btn sm ghost" data-act="checkTts">টেস্ট</button></div>
+    <div class="item"><div class="grow"><b>ব্রাউজার ও স্ক্রিন</b><span class="tiny muted">${esc(devInfo().short)}</span></div><button class="btn sm ghost" data-act="devInfo">বিস্তারিত</button></div>
     <div class="item"><div class="grow"><b>বলার যাচাই</b><span class="tiny muted">${HEAR.avail()?"আছে: ব্রাউজারের speech recognition (Chrome/Edge/Safari), ইন্টারনেট লাগে":ENV.claude?"এই ভার্সনে নেই, web app-এ কাজ করে":"এই ব্রাউজারে নেই (Chrome বা Edge ব্যবহার করো)"}</span></div></div>
     <div class="item"><div class="grow"><b>মাইক্রোফোনে রেকর্ড</b><span class="tiny muted">${ENV.micOk?"আছে (অ্যাপের ভেতরে রেকর্ড হবে)":ENV.claude?"এই ভার্সনে নেই, web app-এ কাজ করে":"এই ব্রাউজার/ঠিকানায় নেই (https লিংকে খোলো)"}</span></div></div>
     <div class="item"><div class="grow"><b>সেভ হচ্ছে</b><span class="tiny muted">${esc(APP.check.db||(Store.mode==="cloud"?"Cloud (claude.ai প্রাইভেট ডেটাবেস)":"এই ডিভাইসের ব্রাউজারে। Backup ডাউনলোড করে রাখো"))}</span></div><button class="btn sm ghost" data-act="checkDb">টেস্ট</button></div>
@@ -5876,6 +5910,12 @@ const ACT={
  retrySave(){Store.flush();},
  saveSettings(){if($("#s-d1")){S.names.d1=$("#s-d1").value.trim();S.names.d2=$("#s-d2").value.trim();}S.goal=+$("#s-goal").value;S.rate=+$("#s-rate").value;if($("#s-warm")){S.warmReq=$("#s-warm").checked;S.warmMode=$("#s-wmode").value;}S.autoplay=$("#s-auto").checked;S.sound=$("#s-sound").checked;Store.save();toast("Saved");render();},
  async checkDb(){APP.check.db="Testing…";render();try{if(Store.mode==="cloud"){const ref=Store.db.doc(`data/users/${Store.uid}/probe`);const t=Date.now();await ref.set({t});const s=await ref.get();await ref.delete();APP.check.db=s.exists&&s.data().t===t?"কাজ করছে: cloud-এ লিখে, পড়ে, মুছে পরীক্ষা করেছি।":"Read-back mile ni.";}else{Store.lsSet("probe",{t:1});APP.check.db=Store.lsGet("probe")?"Works (shudhu ei browser e).":"ব্রাউজার স্টোরেজ বন্ধ, অগ্রগতি সেভ হবে না।";}}catch(e){APP.check.db="Failed: "+(e.code||e.name||"error");}render();},
+ devInfo(){const NL=String.fromCharCode(10),d=devInfo(),txt=d.rows.map(r=>r[0]+": "+r[1]).join(NL)+(TTS.log.length?NL+"Voice log:"+NL+TTS.log.join(NL):"");
+   APP.modal=`<div class="modal" data-act="closeModal"><div class="card devinfo" style="max-height:85vh;overflow:auto"><h3>ব্রাউজার ও স্ক্রিন</h3><p class="tiny muted bn">কোনো ফোনে সমস্যা হলে এই পাতার স্ক্রিনশট পাঠাও।</p>
+    <div class="list">${d.rows.map(r=>`<div class="item"><div class="grow"><b>${esc(r[0])}</b><span class="tiny muted">${esc(r[1])}</span></div></div>`).join("")}</div>
+    ${TTS.log.length?`<p class="tiny"><b>Voice log</b></p><pre id="devlog" class="tiny muted" style="white-space:pre-wrap;margin:0 0 10px">${esc(TTS.log.join(NL))}</pre>`:""}
+    <pre id="devtxt" hidden>${esc(txt)}</pre><div class="row"><button class="btn" data-act="devCopy">কপি করো</button><button class="btn ghost" data-act="closeModal">Close</button></div></div></div>`;render();},
+ devCopy(){const t=$("#devtxt")?.textContent||"";navigator.clipboard?.writeText(t).then(()=>toast("কপি হয়েছে"),()=>toast("স্ক্রিনশট নাও"));},
  checkTts(){APP.check.tts="বলছে… শুনতে পেলে কাজ করছে। ("+TTS.label()+")";render();TTS.say("Hello! Let's practice English together.").then(()=>{APP.check.tts="Works: "+TTS.label();render();});},
  async exportData(){const data=JSON.stringify({app:"ali-english-coach-duo",v:3,at:new Date().toISOString(),S,CUSTOM},null,1);const name=`english-coach-backup-${today()}.json`;
    if(ENV.claude){const dl=await claude.use("downloads");if(!dl){toast("এই ভিউতে ডাউনলোড নেই");return;}try{await dl.save({filename:name,data});}catch(e){if(e.code!=="declined")toast("ডাউনলোড হয়নি");}}else downloadBlob(new Blob([data],{type:"application/json"}),name);},

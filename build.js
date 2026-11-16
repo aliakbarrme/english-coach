@@ -4,6 +4,7 @@
 //  - docs/                           : GitHub Pages PWA (index.html + manifest + service worker + icons + neural voice clips in docs/a/)
 // Also writes tts_texts.json (clip id -> sentence) for tools/kokoro/gen_audio.py.
 const fs = require("fs"), path = require("path");
+const { compatCSS } = require("./compat-css.js");
 const root = __dirname, src = p => fs.readFileSync(path.join(root, "src", p), "utf8");
 const cfg = fs.existsSync(path.join(root, "config.json")) ? JSON.parse(fs.readFileSync(path.join(root, "config.json"), "utf8")) : {};
 const WEB_URL = cfg.webUrl || "";
@@ -69,7 +70,7 @@ const clips = fs.existsSync(audioDir) ? fs.readdirSync(audioDir).filter(f => f.e
 const emoDir = path.join(root, "docs", "e");
 const emojis = fs.existsSync(emoDir) ? fs.readdirSync(emoDir).filter(f => f.endsWith(".webp")).map(f => f.slice(0, -5)) : [];
 const pageWith = (audio, emo = [], bookData = null) => src("app.html")
-  .replace("/*__STYLE__*/", () => [src("style.css"), src("style-v6.css"), src("style-v7.css"), src("style-v8.css"), src("style-v9.css"), src("style-v10.css"), src("style-v11.css"), src("style-v12.css"), src("style-v13.css"), src("style-v14.css"), src("style-v15.css"), src("style-v16.css"), src("style-v17.css"), src("style-v18.css"), src("style-v19.css"), src("style-v20.css"), src("style-v21.css"), src("style-v22.css"), src("style-v23.css"), src("style-v24.css")].join("\n"))
+  .replace("/*__STYLE__*/", () => compatCSS([src("style.css"), src("style-v6.css"), src("style-v7.css"), src("style-v8.css"), src("style-v9.css"), src("style-v10.css"), src("style-v11.css"), src("style-v12.css"), src("style-v13.css"), src("style-v14.css"), src("style-v15.css"), src("style-v16.css"), src("style-v17.css"), src("style-v18.css"), src("style-v19.css"), src("style-v20.css"), src("style-v21.css"), src("style-v22.css"), src("style-v23.css"), src("style-v24.css")].join("\n")))
   .replace("/*__VOICE__*/", () => src("voice.js").replace("/*__AUDIO__*/[]", JSON.stringify(audio)))
   .replace("/*__EXTRAS__*/", () => [src("extras.js").replace("/*__EMOJI__*/[]", JSON.stringify(emo)).replace("/*__ART__*/false", emo.length ? "true" : "false"), src("progress.js"), src("warmart.js"), src("cloud.js"), src("login.js"), src("flow.js"), src("spell.js"), src("phonicademy.js"), src("phonics.js"), src("bookicons.js"), src("bookicons2.js"), src("book.js"), src("pals.js")].join("\n"))
   .replace("/*__MOTION__*/", () => src("motion.js"))
@@ -159,6 +160,9 @@ const C="coach-${ver}",A="coach-audio-v1";
 self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(["./","./index.html","./manifest.webmanifest","./icon-192.png"])).then(()=>self.skipWaiting()));});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C&&k!==A).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
 self.addEventListener("fetch",e=>{const r=e.request;if(r.method!=="GET")return;const u=new URL(r.url);
+  /* voice clips: keep the whole file (not a partial range) so it plays offline and on weak networks */
+  if(u.origin===location.origin&&u.pathname.includes("/a/")&&u.pathname.endsWith(".mp3")){const key=u.origin+u.pathname;
+    e.respondWith(caches.open(A).then(c=>c.match(key).then(m=>m||fetch(u.href).then(res=>{if(res.status===200)c.put(key,res.clone()).catch(()=>{});return res;}).catch(()=>fetch(r)))));return;}
   if(u.origin===location.origin&&((u.pathname.includes("/a/")||u.pathname.includes("/e/")||u.pathname.includes("/i/")||u.pathname.includes("/x/"))||r.url.includes("gstatic.com/firebasejs"))){e.respondWith(caches.open(A).then(c=>c.match(r).then(m=>m||fetch(r).then(res=>{if(res.ok)c.put(r,res.clone());return res;}))));return;}
   if(r.mode==="navigate"){e.respondWith((async()=>{
     const cached=()=>caches.match(r,{ignoreSearch:true}).then(m=>m||caches.match("./index.html")||caches.match("./"));

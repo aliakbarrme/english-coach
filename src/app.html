@@ -36,6 +36,7 @@
 .from-native .sp-logo{animation-delay:.55s}.from-native .sp-bub{animation-delay:.7s}
 @keyframes spShrink{to{width:104px;border-radius:32px;translate:-50% calc(-50% - 54px);opacity:0}}
 @media (prefers-reduced-motion:reduce){#splash *{animation-duration:.01s!important;animation-iteration-count:1!important}}
+@supports not (translate:0){.from-native .sp-native{transform:translate(-50%,-50%)}@keyframes spShrink{to{width:104px;border-radius:32px;transform:translate(-50%,calc(-50% - 54px));opacity:0}}}
 </style>
 <script>try{var t=localStorage.getItem("aec4:theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;if(localStorage.getItem("aec4:rail")==="1")document.documentElement.classList.add("rail-mini");}catch(e){}window.__t0=Date.now();try{if(matchMedia("(display-mode: standalone)").matches||document.referrer.indexOf("android-app://")===0)document.documentElement.classList.add("from-native");}catch(e){}</script>
 <style>/*__STYLE__*/</style>
@@ -735,6 +736,16 @@ function markHTML(m){
 }
 
 /* ================= ME ================= */
+/* what this phone's browser can do: helps find layout and sound problems on a particular device */
+function devInfo(){const ua=navigator.userAgent,sup=(p,v)=>{try{return CSS.supports(p,v);}catch(e){return false;}};
+ const br=(ua.match(/(HuaweiBrowser|SamsungBrowser|EdgA|Firefox|OPR|Chrome)\/[\d.]+/g)||[]).filter((x,i,a)=>!(x.startsWith("Chrome")&&a.length>1&&i>0&&!a[0].startsWith("Chrome"))).join(" · ")||"?";
+ const wv=/; wv\)/.test(ua)?" (WebView)":"",twa=document.referrer.startsWith("android-app://");
+ const mode=matchMedia("(display-mode: standalone)").matches||matchMedia("(display-mode: fullscreen)").matches?"App, full screen":twa?"App (browser bar showing)":"Browser tab";
+ const os=(ua.match(/Android [^;)]*(;\s*[^;)]+)?/)||[""])[0]||(ua.match(/(iPhone|iPad|Windows NT [\d.]+|Mac OS X [\d_]+)/)||[""])[0];
+ const css=`color-mix ${sup("color","color-mix(in srgb,red,blue)")?"✓":"✗"} · translate ${sup("translate","0")?"✓":"✗"} · dvh ${sup("height","1dvh")?"✓":"✗"} · aspect-ratio ${sup("aspect-ratio","1")?"✓":"✗"} · gap ${sup("gap","1px")?"✓":"✗"}`;
+ const pv=(()=>{try{return (speechSynthesis.getVoices()||[]).length;}catch(e){return 0;}})();
+ const rows=[["Browser",br+wv],["Phone",os||"-"],["Mode",mode],["Screen",`${screen.width}×${screen.height}, page ${innerWidth}×${innerHeight}, x${(devicePixelRatio||1).toFixed(2)}`],["New CSS",css],["Voice",`clips ${AUDIO_SET.size}, phone voices ${pv}, sound unlocked ${TTS.unlocked?"yes":"no"}`]];
+ return {rows,short:`${br.split(" · ")[0]}${wv} · ${mode} · ${innerWidth}×${innerHeight}`};}
 function viewMe(){
   const P=prof(), st=streak(), last=[];for(let i=13;i>=0;i--){const k=addDays(-i);const r=S.days[k];last.push({k,c:r?((r.lessons+r.practice)>0?"f":(r.warm?"w":"")):""});}
   const lessonsBy=t=>Object.keys(S.done).filter(k=>unitById(k.split(":")[0])?.track===t).length;
@@ -770,6 +781,7 @@ function viewMe(){
     <button class="btn" data-act="saveSettings">সেভ করো</button></div>`;
   const device=`<div class="card"><h3>ডিভাইস চেক</h3><div class="list">
     <div class="item"><div class="grow"><b>আওয়াজ</b><span class="tiny muted">${esc(APP.check.tts||TTS.label())}</span></div><button class="btn sm ghost" data-act="checkTts">টেস্ট</button></div>
+    <div class="item"><div class="grow"><b>ব্রাউজার ও স্ক্রিন</b><span class="tiny muted">${esc(devInfo().short)}</span></div><button class="btn sm ghost" data-act="devInfo">বিস্তারিত</button></div>
     <div class="item"><div class="grow"><b>বলার যাচাই</b><span class="tiny muted">${HEAR.avail()?"আছে: ব্রাউজারের speech recognition (Chrome/Edge/Safari), ইন্টারনেট লাগে":ENV.claude?"এই ভার্সনে নেই, web app-এ কাজ করে":"এই ব্রাউজারে নেই (Chrome বা Edge ব্যবহার করো)"}</span></div></div>
     <div class="item"><div class="grow"><b>মাইক্রোফোনে রেকর্ড</b><span class="tiny muted">${ENV.micOk?"আছে (অ্যাপের ভেতরে রেকর্ড হবে)":ENV.claude?"এই ভার্সনে নেই, web app-এ কাজ করে":"এই ব্রাউজার/ঠিকানায় নেই (https লিংকে খোলো)"}</span></div></div>
     <div class="item"><div class="grow"><b>সেভ হচ্ছে</b><span class="tiny muted">${esc(APP.check.db||(Store.mode==="cloud"?"Cloud (claude.ai প্রাইভেট ডেটাবেস)":"এই ডিভাইসের ব্রাউজারে। Backup ডাউনলোড করে রাখো"))}</span></div><button class="btn sm ghost" data-act="checkDb">টেস্ট</button></div>
@@ -911,6 +923,12 @@ const ACT={
  retrySave(){Store.flush();},
  saveSettings(){if($("#s-d1")){S.names.d1=$("#s-d1").value.trim();S.names.d2=$("#s-d2").value.trim();}S.goal=+$("#s-goal").value;S.rate=+$("#s-rate").value;if($("#s-warm")){S.warmReq=$("#s-warm").checked;S.warmMode=$("#s-wmode").value;}S.autoplay=$("#s-auto").checked;S.sound=$("#s-sound").checked;Store.save();toast("Saved");render();},
  async checkDb(){APP.check.db="Testing…";render();try{if(Store.mode==="cloud"){const ref=Store.db.doc(`data/users/${Store.uid}/probe`);const t=Date.now();await ref.set({t});const s=await ref.get();await ref.delete();APP.check.db=s.exists&&s.data().t===t?"কাজ করছে: cloud-এ লিখে, পড়ে, মুছে পরীক্ষা করেছি।":"Read-back mile ni.";}else{Store.lsSet("probe",{t:1});APP.check.db=Store.lsGet("probe")?"Works (shudhu ei browser e).":"ব্রাউজার স্টোরেজ বন্ধ, অগ্রগতি সেভ হবে না।";}}catch(e){APP.check.db="Failed: "+(e.code||e.name||"error");}render();},
+ devInfo(){const NL=String.fromCharCode(10),d=devInfo(),txt=d.rows.map(r=>r[0]+": "+r[1]).join(NL)+(TTS.log.length?NL+"Voice log:"+NL+TTS.log.join(NL):"");
+   APP.modal=`<div class="modal" data-act="closeModal"><div class="card devinfo" style="max-height:85vh;overflow:auto"><h3>ব্রাউজার ও স্ক্রিন</h3><p class="tiny muted bn">কোনো ফোনে সমস্যা হলে এই পাতার স্ক্রিনশট পাঠাও।</p>
+    <div class="list">${d.rows.map(r=>`<div class="item"><div class="grow"><b>${esc(r[0])}</b><span class="tiny muted">${esc(r[1])}</span></div></div>`).join("")}</div>
+    ${TTS.log.length?`<p class="tiny"><b>Voice log</b></p><pre id="devlog" class="tiny muted" style="white-space:pre-wrap;margin:0 0 10px">${esc(TTS.log.join(NL))}</pre>`:""}
+    <pre id="devtxt" hidden>${esc(txt)}</pre><div class="row"><button class="btn" data-act="devCopy">কপি করো</button><button class="btn ghost" data-act="closeModal">Close</button></div></div></div>`;render();},
+ devCopy(){const t=$("#devtxt")?.textContent||"";navigator.clipboard?.writeText(t).then(()=>toast("কপি হয়েছে"),()=>toast("স্ক্রিনশট নাও"));},
  checkTts(){APP.check.tts="বলছে… শুনতে পেলে কাজ করছে। ("+TTS.label()+")";render();TTS.say("Hello! Let's practice English together.").then(()=>{APP.check.tts="Works: "+TTS.label();render();});},
  async exportData(){const data=JSON.stringify({app:"ali-english-coach-duo",v:3,at:new Date().toISOString(),S,CUSTOM},null,1);const name=`english-coach-backup-${today()}.json`;
    if(ENV.claude){const dl=await claude.use("downloads");if(!dl){toast("এই ভিউতে ডাউনলোড নেই");return;}try{await dl.save({filename:name,data});}catch(e){if(e.code!=="declined")toast("ডাউনলোড হয়নি");}}else downloadBlob(new Blob([data],{type:"application/json"}),name);},
