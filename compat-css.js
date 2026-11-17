@@ -75,8 +75,12 @@ function gen(nodes, fix) {
    grid columns written as "1fr" may shrink to fit (minmax(0,1fr)), and any box with an aspect-ratio may be
    narrower than its height-based size (min-width:0). Layout in current browsers stays the same. */
 function harden(css) {
+  /* small-tile grids keep at least 2 columns on very narrow phones (large "display size" gives ~290px):
+     repeat(auto-fill,minmax(140px,1fr)) -> the tile may shrink to half the row. The old value stays first for old engines. */
+  css = css.replace(/(grid-template-columns\s*:\s*)(repeat\(\s*(auto-(?:fill|fit))\s*,\s*minmax\(\s*(\d+)px\s*,\s*1fr\s*\)\s*\))/g,
+    (m, p, v, kw, n) => (+n <= 150 ? `${p}${v};${p}repeat(${kw},minmax(min(${n}px,calc(50% - 10px)),1fr))` : m));
   css = css.replace(/(grid-template-columns\s*:\s*)([^;{}]*)/g, (m, p, v) => {
-    const keep = []; v = v.replace(/minmax\([^()]*\)/g, x => `\u0000${keep.push(x) - 1}\u0000`);
+    const keep = []; v = v.replace(/minmax\((?:[^()]|\([^()]*(?:\([^()]*\))?[^()]*\))*\)/g, x => `\u0000${keep.push(x) - 1}\u0000`);
     v = v.replace(/(^|[\s,(])(\d*\.?\d+fr)\b/g, "$1minmax(0,$2)");
     return p + v.replace(/\u0000(\d+)\u0000/g, (_, i) => keep[+i]);
   });

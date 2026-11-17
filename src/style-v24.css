@@ -167,3 +167,8 @@ html.is-speaking .lp-talk .lp-face{animation:lpTalk .24s ease-in-out infinite al
 /* desktop: blocks inside Letter Friends pages take the full content width (the app's `.view > *` rule made them shrink) */
 .palsview > :is(.lp-pad,.lp-pond,.lp-tiles,.lp-scene,.lp-places,.lp-games,.lp-stk,.lp-guiderow,.lp-ask,.lp-meet,.lp-won,.lp-hubgrid,.lp-feed,.lp-slots,.lp-map){width:100%}
 @media (min-width:900px){.lp-pad{max-width:480px}.lp-guiderow{max-width:480px}}
+
+/* short phones (big "display size", ~640px tall): the picture card shrinks a little so its buttons and tips fit above the menu */
+@media (max-height:760px){.cardsview .flip{min-height:min(40vh,460px)}}
+/* very narrow phones: the path buddy steps in a little so it isn't cut at the screen edge */
+@media (max-width:340px){.pathpal{width:72px;transform:translateX(calc(var(--x) * .72))}}
