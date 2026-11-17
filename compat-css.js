@@ -70,8 +70,20 @@ function gen(nodes, fix) {
   }
   return out;
 }
+/* Some older engines (seen on a Huawei Y9) size a square tile from its height and then refuse to let the
+   grid column shrink it, so 3-4 tiles in a row spill past the right edge. Two small rules stop that everywhere:
+   grid columns written as "1fr" may shrink to fit (minmax(0,1fr)), and any box with an aspect-ratio may be
+   narrower than its height-based size (min-width:0). Layout in current browsers stays the same. */
+function harden(css) {
+  css = css.replace(/(grid-template-columns\s*:\s*)([^;{}]*)/g, (m, p, v) => {
+    const keep = []; v = v.replace(/minmax\([^()]*\)/g, x => `\u0000${keep.push(x) - 1}\u0000`);
+    v = v.replace(/(^|[\s,(])(\d*\.?\d+fr)\b/g, "$1minmax(0,$2)");
+    return p + v.replace(/\u0000(\d+)\u0000/g, (_, i) => keep[+i]);
+  });
+  return css.replace(/\{([^{}]*\baspect-ratio\s*:[^{}]*)\}/g, (m, body) => (/(^|;)\s*min-width\s*:/.test(body) ? m : `{min-width:0;${body}}`));
+}
 function compatCSS(css) {
-  css = css.replace(/\/\*[\s\S]*?\*\//g, "");
+  css = harden(css.replace(/\/\*[\s\S]*?\*\//g, ""));
   const [tree] = parse(css);
   const mix = gen(tree, {
     rule: (sel, ds) => ds.filter(([p, v]) => v.includes("color-mix(")).map(([p, v]) => `${p}:${noMix(v)}`).join(";"),
