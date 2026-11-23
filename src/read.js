@@ -76,8 +76,20 @@ const rdLesson=k=>RD_L.find(l=>l.key===k);
 const rdUnitWords=L=>RD_L.filter(x=>!x.rev&&(L.all?["a","i","o","u","e"].includes(x.u.id):x.u===L.u)).flatMap(x=>x.words);
 const rdWordsOf=L=>L.rev?rdUnitWords(L):L.words;
 const rdLabel=L=>L.rev?"★":L.dg?L.dg:"-"+L.rime;
+/* onset + rime: "c" + "at" = "cat" (the way teachers read a word family aloud) */
+const RD_VIPA={a:"æ",e:"ɛ",i:"ɪ",o:"ɑ",u:"ʌ"};
+const RD_CIPA={b:"b",c:"k",k:"k",ck:"k",d:"d",f:"f",g:"ɡ",h:"h",j:"ʤ",l:"l",ll:"l",m:"m",n:"n",p:"p",r:"ɹ",s:"s",ss:"s",t:"t",v:"v",w:"w",x:"ks",y:"j",z:"z",sh:"ʃ",ch:"ʧ",th:"θ",ng:"ŋ"};
+const rdLessonOf=x=>RD_L.find(l=>!l.rev&&l.words.includes(x));
+function rdOnsetRime(x,L){const ps=rdSplit(x.w,L);let i=ps.findIndex(p=>p.chunk||/^[aeiou]/.test(p.g));if(i<0)i=ps.length;return {on:ps.slice(0,i),rm:ps.slice(i)};}
+function rdRimeSay(rm){if(!rm.length)return null;if(rm.length===1&&rm[0].chunk)return RD_RSAY[rm[0].g]||null;const g=rm.map(p=>p.g).join("");if(RD_RSAY[g])return RD_RSAY[g];
+ const v=RD_VIPA[rm[0].g],cs=rm.slice(1).map(p=>RD_CIPA[p.g]);return v&&!cs.some(c=>c==null)?"ph:ˈ"+v+cs.join(""):null;}
+function rdEq(x,L){L=L&&!L.rev?L:rdLessonOf(x)||L;const {on,rm}=rdOnsetRime(x,L),rs=rdRimeSay(rm);
+ if(!on.length||!rs)return {eq:false,list:[...rdSplit(x.w,L).map(p=>rdSound(p,L)),x.w],n:rdSplit(x.w,L).length};
+ return {eq:true,on:on.map(p=>p.g).join(""),rm:rm.map(p=>p.g).join(""),list:[...on.map(p=>rdSound(p,L)),rs,x.w],n:on.length};}
+/* which part to light while the list plays: onset sounds, then the rime, then the whole word */
+const rdPartAt=(e,j)=>j===e.list.length-1?"w":e.eq?(j<e.n?"on":"rm"):"on";
 function READ_TEXTS(){const out=[...Object.values(RD_SAY),"Yay! You did it!"];
- RD_L.forEach(L=>{L.words.forEach(x=>out.push(x.w));if(L.rime&&RD_RSAY[L.rime])out.push(RD_RSAY[L.rime]);if(L.ex)out.push(L.ex);out.push(L.s);rdSentWords(L.s).forEach(w=>out.push(rdWordSay(w)));});
+ RD_L.forEach(L=>{L.words.forEach(x=>{out.push(x.w);const e=rdEq(x,L);if(e.eq)out.push(e.list[e.list.length-2]);});if(L.rime&&RD_RSAY[L.rime])out.push(RD_RSAY[L.rime]);if(L.ex)out.push(L.ex);out.push(L.s);rdSentWords(L.s).forEach(w=>out.push(rdWordSay(w)));});
  return [...new Set(out)];}
 const rdSentWords=s=>s.split(/\s+/).map(w=>w.replace(/[^A-Za-z']/g,"")).filter(Boolean);
 const rdWordSay=w=>w.toLowerCase()==="a"?"ph:ə":w;
@@ -145,9 +157,10 @@ function viewRead(A,P){
    <button class="rd-slide ${Q.blended?"on":""}" data-act="rdBlend" aria-label="Blend"><i></i><span>➜</span></button>
    <div class="rd-reveal ${Q.blended?"on":""}">${Q.blended?`<span class="rd-rpic">${x.p||"⭐"}</span><b>${rdWordHTML(x,L)}</b>`:""}</div>
    <div class="row center lp-ctl">${Q.blended?`<button class="btn good" data-act="rdBlendNext">${Q.i+1<Q.bw.length?"Next word ➜":"Next ➜"}</button>`:`<button class="btn ghost" data-act="rdBlend">👀 Show me</button>`}</div></main>`;}
- if(step==="read"){const ws=L.rev?Q.rw:L.words;
+ if(step==="read"){const ws=L.rev?Q.rw:L.words,cw=ws[Q.cw||0],e=rdEq(cw,L);
   return `<main class="view palsview lp-run rd-l">${top}<p class="rd-cap">Read the words! <small class="bn">নিজে পড়ো, তারপর চাপ দিয়ে মিলিয়ে নাও</small></p>
-   <div class="rd-list" style="--c:${L.u.col}">${ws.map((x,i)=>`<button class="rd-w ${Q.heard.includes(i)?"heard":""} ${Q.hl===i?"hl":""}" data-act="rdSayW" data-i="${i}"><span class="rd-wp">${x.p||""}</span><b>${rdWordHTML(x,rdLesson(Q.k).rev?RD_L.find(l=>l.words.includes(x)):L)}</b></button>`).join("")}</div>
+   <div class="rd-eqbar" style="--c:${L.u.col}">${e.eq?`<span class="rd-eqt on ${Q.part==="on"?"lit":""}">${esc(e.on)}</span><i>+</i><span class="rd-eqt rm ${Q.part==="rm"?"lit":""}">${esc(e.rm)}</span><i>=</i>`:""}<span class="rd-eqw ${Q.part==="w"?"lit":""}"><b>${rdWordHTML(cw,rdLessonOf(cw)||L)}</b>${cw.p?`<em>${cw.p}</em>`:""}</span></div>
+   <div class="rd-list" style="--c:${L.u.col}">${ws.map((x,i)=>`<button class="rd-w ${Q.heard.includes(i)?"heard":""} ${(Q.cw||0)===i&&Q.part?"hl":""}" data-act="rdSayW" data-i="${i}"><span class="rd-wp">${x.p||""}</span><b>${rdWordHTML(x,rdLesson(Q.k).rev?RD_L.find(l=>l.words.includes(x)):L)}</b></button>`).join("")}</div>
    <div class="row center lp-ctl"><button class="btn bk-candy" data-act="rdReadAll">🔊 Read all</button><button class="btn good" data-act="rdNext" ${Q.heard.length>=ws.length||Q.all?"":"disabled"}>Next ➜</button></div></main>`;}
  if(step==="play"){const r=Q.rounds[Math.min(Q.i,Q.rounds.length-1)];
   if(r.t==="pick")return `<main class="view palsview lp-run rd-l">${top}<p class="rd-cap">Read it. Which picture? <small class="bn">পড়ো, তারপর ঠিক ছবি বাছো</small></p>${rdPickHTML(r,Q)}</main>`;
@@ -217,9 +230,11 @@ const RD_ACT={
  rdBlend(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),x=Q.bw[Q.i],parts=rdSplit(x.w,L);Q.lit=[];Q.blended=false;render();
   TTS.play([...parts.map(p=>rdSound(p,L)),x.w],lpRate(),i=>{if(APP.pals?.q!==Q)return;if(i>=0&&i<parts.length){Q.lit=[...Array(i+1).keys()];render();}else if(i===parts.length){Q.blended=true;render();SND.play("pair");}});},
  rdBlendNext(){const A=APP.pals,Q=A.q;if(Q.i+1<Q.bw.length){Q.i++;Q.blended=false;Q.lit=[];A.k=Date.now();render();lpSay(RD_SAY.blend);}else rdStep();},
- rdSayW(el){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),ws=L.rev?Q.rw:L.words,i=+el.dataset.i;if(!Q.heard.includes(i))Q.heard.push(i);Q.hl=i;render();lpSay(ws[i].w);},
- async rdReadAll(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),ws=L.rev?Q.rw:L.words;Q.all=true;
-  TTS.play(ws.map(x=>x.w),lpRate(),i=>{if(APP.pals?.q!==Q)return;Q.hl=i;if(i>=0&&!Q.heard.includes(i))Q.heard.push(i);render();});},
+ rdSayW(el){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),ws=L.rev?Q.rw:L.words,i=+el.dataset.i,e=rdEq(ws[i],L);if(!Q.heard.includes(i))Q.heard.push(i);Q.cw=i;Q.part="";render();
+  TTS.play(e.list,lpRate(),j=>{if(APP.pals?.q!==Q||Q.cw!==i)return;Q.part=j<0?(Q.part==="w"?"w":""):rdPartAt(e,j);render();if(j===e.list.length-1)SND.play("pair");});},
+ rdReadAll(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),ws=L.rev?Q.rw:L.words;Q.all=true;const map=[],all=[];
+  ws.forEach((x,i)=>{const e=rdEq(x,L);e.list.forEach((s,j)=>{all.push(s);map.push([i,rdPartAt(e,j)]);});});
+  TTS.play(all,lpRate(),j=>{if(APP.pals?.q!==Q)return;if(j<0){Q.part="";render();return;}const [i,p]=map[j];Q.cw=i;Q.part=p;if(!Q.heard.includes(i))Q.heard.push(i);render();});},
  rdSayX(){const Q=APP.pals.q,r=Q.rounds[Math.min(Q.i,Q.rounds.length-1)];lpSay(r.x.w);},
  rdPick(el){const A=APP.pals,Q=A.q,r=Q.rounds[Q.i];if(!r||Q.got)return;const w=el.dataset.w,first=Q.miss===null;
   if(w===r.x.w){Q.got=true;SND.play("ok");render();lpSay(r.x.w);const st=A.scr==="rdl"?Q.steps[Q.s]:"rdv";

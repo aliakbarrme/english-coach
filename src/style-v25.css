@@ -77,3 +77,16 @@
 .rd-sw.hl{background:#ffc93c;transform:translateY(-3px)}
 @media (max-width:340px){.rd-tile b{font-size:1.8rem}.rd-tiles.big .rd-tile{min-width:52px;height:68px}.rd-word b,.rd-alien b{font-size:2.4rem}.rd-w b{font-size:1.25rem}.rd-sw{font-size:1.35rem}}
 .palsview > :is(.rd-tiles,.rd-list,.rd-pics,.rd-opts,.rd-sent,.rd-scene,.rd-meet,.rd-reveal,.rd-word,.rd-alien,.rd-unit,.rd-hero,.rd-daily){width:100%}
+
+/* Read the words: "c + at = cat 🐱" banner that lights each part as it is said */
+.rd-eqbar{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;margin:0 auto 14px;padding:12px 14px;border-radius:22px;background:linear-gradient(170deg,color-mix(in srgb,var(--c) 12%,#fff),#fff);box-shadow:0 4px 0 color-mix(in srgb,var(--c) 25%,#e3e6ee);color:#2a2140;max-width:440px}
+.rd-eqbar>i{font:900 1.6rem var(--font);font-style:normal;color:#8a94a3}
+.rd-eqt{min-width:52px;height:56px;padding:0 10px;border-radius:16px;display:grid;place-items:center;font:900 1.9rem var(--kidf,var(--font));background:#fff;box-shadow:0 4px 0 #dfe3ea;transition:transform .2s,background .2s,color .2s}
+.rd-eqt.rm{color:var(--c)}
+.rd-eqt.lit{background:var(--c);color:#fff;transform:translateY(-4px) scale(1.06)}
+.rd-eqw{display:flex;align-items:center;gap:6px;padding:4px 12px;border-radius:16px;transition:transform .25s,background .2s}
+.rd-eqw b{font:900 2rem var(--kidf,var(--font))}.rd-eqw b .rm{color:var(--c)}
+.rd-eqw em{font-style:normal;font-size:2rem;line-height:1}.rd-eqw em img.emo{width:42px;height:42px}
+.rd-eqw.lit{background:#fff4d1;transform:scale(1.08)}
+@media (max-width:340px){.rd-eqt{min-width:44px;height:50px;font-size:1.6rem}.rd-eqw b{font-size:1.7rem}.rd-eqbar>i{font-size:1.3rem}}
+.palsview > .rd-eqbar{width:100%}
