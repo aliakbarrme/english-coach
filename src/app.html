@@ -604,7 +604,7 @@ function viewWarmRun(){
 function viewPractice(){
   const due=dueItems(), learned=Object.keys(S.srs).length;
   if(isKid())return `<h1>Play</h1><p class="muted">ছবির কার্ড দেখো, আওয়াজ শোনো, একসাথে বলো!</p>
-   ${bookCTA()}${palsCTA()}<button class="spellcta" data-act="spellOpen"><span class="sc-abc"><i style="--c:#ff5c8a">A</i><i style="--c:#ffa62b">B</i><i style="--c:#2fbf71">C</i></span><span class="grow"><b>${esc(myName())}'s Spelling</b><span class="tiny bn">শব্দ বানান শেখার মজার খেলা · ⭐ ${SP().stars}</span></span><span class="sc-go">➜</span></button>
+   ${bookCTA()}${palsCTA()}
    <div class="playgrid">${cardUnits("kids").map(u=>`<button class="playcard ${u.deck?"newdeck":""}" data-act="openCards" data-u="${esc(u.id)}">${u.deck?`<span class="nd-tag">NEW</span>`:""}<span class="pem">${u.lessons[0].items[0][2]}</span><b>${esc(u.title)}</b><span class="tiny bn muted">${esc(u.bn)}</span></button>`).join("")}</div>
    <div class="card"><div class="row between"><div><span class="eyebrow">রিভিশন</span><h3>${due.length}টা শব্দ আবার দেখো</h3></div><button class="btn" data-act="practiceDue" ${learned?"":"disabled"}>Khelo</button></div></div>`;
   const cardTrack=myTracks().some(t=>t[0]==="family")?"family":myTracks().some(t=>t[0]==="kids")?"kids":null;

@@ -213,7 +213,6 @@ function viewSpell(){
       <div class="sp-statrow four"><div><b>${learned}</b><span>শেখা শব্দ</span></div><div><b>${ok}</b><span>ঠিক উত্তর</span></div><div><b>${s.said}</b><span>🎤 বলেছে</span></div><div><b>${doneLv}/${SPELL.length}</b><span>লেভেল শেষ</span></div></div>
       ${rev?`<button class="sp-daily ${s.dailyAt===today()?"done":""}" data-act="spellDaily"><span class="sp-dem">${s.dailyAt===today()?"✅":"🔁"}</span><span class="grow"><b>Daily review</b><span class="tiny bn">${s.dailyAt===today()?"আজকের রিভিশন শেষ! চাইলে আবার খেলো":"আগে শেখা ৮টা শব্দ আবার খেলো"}</span></span><span>➜</span></button>`:""}
       <div class="sp-badges">${SPELL.map(L=>`<span class="sp-badge ${s.badges.includes(L.lv)?"got":""}" title="${esc(L.name)}">${L.badge}</span>`).join("")}</div>
-      ${typeof palsCTA==="function"?palsCTA():""}
       ${lv}
       ${tricky.length?`<div class="card"><h3 class="bn">আরেকটু অনুশীলন</h3><div class="revchips">${tricky.map(([w])=>`<button class="revchip" data-act="say" data-t="${esc(w)}">${IC.speak}<span>${esc(w)}</span></button>`).join("")}</div></div>`:""}
       <p class="tiny muted center bn">লেভেল শেষ হলে পরেরটা খুলবে। নতুন লেভেল আসতেই থাকবে!</p></main>`;
@@ -263,7 +262,7 @@ function viewSpell(){
 /* ---- actions ---- */
 const SPELL_ACT={
  spellOpen(){SP();APP.spell={scr:"home",k:Date.now()};render();window.scrollTo(0,0);setTimeout(()=>{const c=document.getElementById("sp-cur");if(c&&SP().lv[1].learned.length)c.scrollIntoView({block:"center",behavior:"smooth"});},450);},
- spellClose(){TTS.stop();HEAR.stop();APP.spell=null;render();},
+ spellClose(){TTS.stop();HEAR.stop();const from=APP.spell&&APP.spell.from;APP.spell=null;if(from&&from.pals){APP.pals={scr:"home",c:from.c,k:Date.now()};}render();window.scrollTo(0,0);},
  spellHome(){TTS.stop();HEAR.stop();APP.spell={scr:"home",k:Date.now()};render();window.scrollTo(0,0);setTimeout(()=>{const c=document.getElementById("sp-cur");c&&c.scrollIntoView({block:"center",behavior:"smooth"});},300);},
  spellLevel(el){const n=+el.dataset.n;if(!spLevel(n))return;if(!spUnlocked(n)){toast("আগের লেভেল শেষ করো 🔒");return;}const nx=spNext(n);if(nx.t==="done"){spStartGame(n,"revise",spShuffle(spLevel(n).words).slice(0,10));return;}spGo(n);},
  spellRevise(el){const n=+el.dataset.n,s=SP(),ws=s.lv[n].learned.map(spWordRec).filter(Boolean);const pick=ws.filter(w=>(s.w[w[0]]||{}).bad).concat(spShuffle(ws)).filter((w,i,a)=>a.indexOf(w)===i).slice(0,8);spStartGame(n,"revise",pick);},

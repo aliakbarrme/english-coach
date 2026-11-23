@@ -1,5 +1,6 @@
 /* ================= 🔤 Letter Friends: one hub, five sections (original feature) =================
-   Hub: A → Z map + "Up next" talking letter + sections: Meet & trace · Write it · Word Town · Play room · Stickers.
+   Hub: A → Z map + "Up next" talking letter. Learn step by step: Meet & trace · Write it · Read words · Spell words.
+   Play & collect: Word Town · Letter Pop · Stickers.
    The letters talk: the mouth moves while the voice plays and the eyes blink. Letter sounds come from the licensed
    Phonicademy pack (LSOUND "pa:"). Music, art and games here are our own (Web Audio, SVG, Fluent 3D emoji).
    Letters are drawn from the stroke paths below (viewBox 0 0 100 120), so the same data makes the friend and the tracing guide. */
@@ -50,11 +51,9 @@ const LP_SHAPES={circle:'<circle cx="32" cy="33" r="22"/>',square:'<rect x="11" 
 function lpPic(p){if(!p)return "";if(p[0]==="#")return `<svg class="lp-shape" viewBox="0 0 64 64" aria-hidden="true"><g transform="rotate(-38 32 32)"><path d="M6 25h38l13 7-13 7H6a3 3 0 0 1-3-3V28a3 3 0 0 1 3-3z" fill="${p}"/><path d="M44 25l13 7-13 7z" fill="#000" opacity=".2"/><rect x="12" y="25" width="22" height="14" fill="#fff" opacity=".32"/><path d="M12 25v14M34 25v14" stroke="#0003" stroke-width="1.5"/><path d="M7 28.5h37" stroke="#fff" stroke-opacity=".55" stroke-width="2.5" stroke-linecap="round"/></g></svg>`;
  if(LP_SHAPES[p])return `<svg class="lp-shape" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lpsg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#cdd6e4"/></linearGradient></defs><g fill="url(#lpsg)" stroke="#55657d" stroke-width="3.2">${LP_SHAPES[p]}</g></svg>`;
  return p;}
-/* ---------- Play room ---------- */
-const LP_BUILD=[["cat","🐱"],["dog","🐶"],["sun","☀️"],["bus","🚌"],["hen","🐔"],["pig","🐷"],["cup","☕"],["bed","🛏️"],["fox","🦊"],["box","📦"],["hat","🎩"],["van","🚐"],["egg","🥚"],["ant","🐜"],["bat","🦇"],["pen","🖊️"],["bag","👜"],["map","🗺️"],["frog","🐸"],["drum","🥁"],["crab","🦀"],["nest","🪺"],["web","🕸️"]];
 function PALS_TEXTS(){const out=["Start at the dot.","Yay! You did it!","Now write it by yourself!","Pop the letter",...LP_PRAISE];
  LP_LETTERS.forEach(c=>{out.push(LP_HI(c),LP_IS(c),LETTER[c],lpWord(c)[1]);LP_STROKES[c].forEach((_,i)=>out.push(lpDir(c,i)));});
- LP_TOWN.forEach(t=>t.it.forEach(x=>out.push(x[0],lpFindText(t,x))));LP_BUILD.forEach(w=>out.push(w[0]));
+ LP_TOWN.forEach(t=>t.it.forEach(x=>out.push(x[0],lpFindText(t,x))));
  return [...new Set(out)];}
 /* ---------- the letter as a friendly character: blinking eyes, a mouth that moves while it talks ---------- */
 function lpChar(c,mood,talk){const col=lpCol(c),[fx,fy]=LP_FACE[c]||[50,62],d=LP_STROKES[c],b=mood==="open"?2:mood==="yum"?3:0,bd=(LP_LETTERS.indexOf(c)*.73%3.6).toFixed(2);
@@ -84,22 +83,27 @@ const LP_MUSIC={on:false,timer:null,
 function lpTop(back,title,right){return `<div class="lp-top"><button class="icon-btn" data-act="${back}" aria-label="Back">${back==="palsClose"?IC.close:IC.back}</button><b class="lp-title">${title}</b><span class="lp-right">${right||""}</span></div>`;}
 const lpDots=(n,i)=>`<span class="lp-step">${Array.from({length:n},(_,k)=>`<i class="${k<i?"on":k===i?"cur":""}"></i>`).join("")}</span>`;
 const lpMuBtn=()=>`<button class="lp-round mu ${LPST().mu===false?"off":""}" data-act="palsMusic" aria-label="Music">🎵</button>`;
-function lpStickerCount(){const P=LPST();return LP_LETTERS.filter(c=>P.l[c]).length+LP_LETTERS.filter(c=>P.w[c]).length+LP_TOWN.filter(t=>P.t[t.id]).length+(P.g.build?1:0)+(P.g.pop?1:0);}
+function lpStickerCount(){const P=LPST();return LP_LETTERS.filter(c=>P.l[c]).length+LP_LETTERS.filter(c=>P.w[c]).length+LP_TOWN.filter(t=>P.t[t.id]).length+(P.g.pop?1:0)+(typeof rdUnitStickers==="function"?rdUnitStickers():0);}
 function viewPals(){
  const A=APP.pals,P=LPST();LP_LIP.start();
  if(A.scr==="home"){const next=lpNext(),c=A.c||next,a=lpWord(c),U=c.toUpperCase(),traced=!!P.l[c],met=LP_LETTERS.filter(x=>P.l[x]).length,nSt=lpStickerCount(),places=LP_TOWN.filter(t=>P.t[t.id]).length;
-  const subs=[["palsMeet","✏️","Meet & trace","দেখা করো, আঙুলে লেখো",P.l[c]?"⭐".repeat(P.l[c]):"",false],
+  const rdN=typeof RD_L!=="undefined"?RD_L.filter(L=>rdStars(L)).length:0,rdT=typeof RD_L!=="undefined"?RD_L.length:0,sp=typeof SP==="function"?SP():null;
+  const learn=[["palsMeet","✏️","Meet & trace","অক্ষরের সাথে দেখা, আঙুলে লেখা",P.l[c]?"⭐".repeat(P.l[c]):"",false],
    ["palsWrite","✍️","Write it",traced?"দাগ ছাড়া নিজে লেখো":"আগে Trace করো, তারপর খুলবে",P.w[c]?"⭐".repeat(P.w[c]):"",!traced],
-   ["palsTown","🏘️","Word Town","৮টা জায়গায় ছবি দেখো, শব্দ খোঁজো",`${places}/8`,false],
-   ["palsPlay","🧸","Play room","শব্দ বানাও, অক্ষরের বাবল ফাটাও","",false],
+   ["palsRead","📖","Read words","আওয়াজ জোড়া দিয়ে শব্দ পড়া: cat, map, ship",`${rdN}/${rdT}`,false],
+   ["palsSpell","🔡","Spell words","শুনে শুনে বানান লেখা",sp?`⭐ ${sp.stars}`:"",false]];
+  const play=[["palsTown","🏘️","Word Town","৮টা জায়গায় ছবি দেখো, শব্দ খোঁজো",`${places}/8`,false],
+   ["palsPop","🫧","Letter Pop","ঠিক অক্ষরের বাবল ফাটাও",P.g.pop?`🏅 ${P.g.pop}`:"",false],
    ["palsStickers","🌟","Stickers","তোমার স্টিকার বই",String(nSt),false]];
+  const subBtn=([act,ic,t,s,badge,lock],i,n)=>`<button class="lp-sub ${lock?"lock":""}" style="--d:${i*.05}s" data-act="${act}">${n?`<span class="lp-subn">${n}</span>`:""}<span class="lp-subic">${ic}</span><span class="grow"><b>${t}</b><span class="tiny bn">${s}</span></span>${lock?`<span class="lp-lock">🔒</span>`:badge?`<span class="lp-badge">${badge}</span>`:`<span class="lp-chev">➜</span>`}</button>`;
   return `<main class="view palsview lp-hub">${lpTop("palsClose","🔤 Letter Friends",`<span class="lp-stars">🌟 <b>${nSt}</b></span>`)}
    <div class="lp-hubgrid"><section class="lp-panel" id="lp-panel" style="--c:${lpCol(c)}">
     <div class="lp-up"><span class="lp-uplab">${c===next?"UP NEXT":"YOUR LETTER"}</span>
      <div class="lp-uprow"><button class="lp-upchar" data-act="palsHello" aria-label="Say hello">${lpChar(c,"",true)}</button>
       <button class="lp-upcard" data-act="palsWord"><span class="lp-uppic">${a[2]}</span><b><i>${esc(a[1][0])}</i>${esc(a[1].slice(1))}</b></button></div>
      <button class="lp-uphi" data-act="palsHello"><i>${IC.speak}</i>Hi! I am ${U}.</button></div>
-    <div class="lp-subs">${subs.map(([act,ic,t,s,badge,lock],i)=>`<button class="lp-sub ${lock?"lock":""}" style="--d:${i*.05}s" data-act="${act}"><span class="lp-subic">${ic}</span><span class="grow"><b>${t}</b><span class="tiny bn">${s}</span></span>${lock?`<span class="lp-lock">🔒</span>`:badge?`<span class="lp-badge">${badge}</span>`:`<span class="lp-chev">➜</span>`}</button>`).join("")}</div>
+    <div class="lp-subs"><p class="lp-subh">Learn step by step <span class="bn">ধাপে ধাপে শেখো</span></p>${learn.map((x,i)=>subBtn(x,i,i+1)).join("")}
+     <p class="lp-subh">Play &amp; collect <span class="bn">খেলো আর জমাও</span></p>${play.map((x,i)=>subBtn(x,i+4,0)).join("")}</div>
    </section>
    <section class="lp-mapwrap"><h3 class="lp-h3">A → Z <span class="tiny muted bn">${met}/26 বন্ধু · অক্ষরে চাপো</span></h3>
     <div class="lp-map">${LP_LETTERS.map((x,i)=>{const s=P.l[x],w=lpWord(x);return `<button class="lp-tile ${s?"done":x===next?"now":""} ${x===c?"sel":""}" style="--c:${lpCol(x)};--d:${i*.02}s" data-act="palsPick" data-c="${x}">
@@ -155,31 +159,25 @@ function viewPals(){
  if(A.scr==="placewon"){const T=lpPlace(A.pl);return `<main class="view palsview lp-run">${lpTop("palsTown","🏘️ Word Town")}
    <div class="lp-won"><h1 class="lp-wtitle">You found them all! 🎉</h1><div class="lp-sticker big" style="--a:${T.bg[0]};--b:${T.bg[1]}"><span>${T.ic}</span><b>${esc(T.n)}</b></div><p class="bn">নতুন স্টিকার পেয়েছ! 🌟</p></div>
    <button class="btn good wide" data-act="palsTown">🏘️ আরেকটা জায়গা</button><button class="linkbtn" data-act="palsPlace" data-p="${T.id}">আবার খেলো</button></main>`;}
- if(A.scr==="play")return `<main class="view palsview lp-run">${lpTop("palsHome","🧸 Play room")}
-   <div class="lp-games"><button class="lp-game g1" data-act="palsBuild"><span class="lp-gic">🧩</span><b>Build a word</b><span class="tiny bn">ছবির নাম শুনে অক্ষর সাজাও</span>${P.g.build?`<span class="lp-badge">🏅 ${P.g.build}</span>`:""}</button>
-    <button class="lp-game g2" data-act="palsPop"><span class="lp-gic">🫧</span><b>Letter Pop</b><span class="tiny bn">ঠিক অক্ষরের বাবল ফাটাও</span>${P.g.pop?`<span class="lp-badge">🏅 ${P.g.pop}</span>`:""}</button></div></main>`;
- if(A.scr==="build"){const B=A.b,w=B.words[Math.min(B.i,B.words.length-1)],word=w[0];
-  return `<main class="view palsview lp-run">${lpTop("palsPlay","🧩 Build a word",lpDots(B.words.length,B.i))}
-   <button class="lp-bpic ${B.win?"win":""}" data-act="palsBSay" aria-label="Listen"><span>${w[1]}</span><i>${IC.speak}</i></button>
-   <div class="lp-slots ${B.win?"win":""}">${[...word].map((ch,k)=>`<span class="lp-slot ${k<B.got?"on":""} ${k===B.got&&!B.win?"cur":""}" style="--c:${lpCol(ch)}">${k<B.got?ch:""}</span>`).join("")}</div>
-   <div class="lp-tiles">${B.tiles.map((t,j)=>`<button class="lp-ltile ${t.used?"used":""} ${B.miss===j?"miss":""}" style="--c:${lpCol(t.ch)}" data-act="palsBTap" data-j="${j}">${t.ch}</button>`).join("")}</div>
-   <p class="lp-hint bn">ছবিতে চাপলে নাম শুনবে, তারপর অক্ষরগুলো সাজাও 🔤</p></main>`;}
  if(A.scr==="pop"){const Q=A.p,T=Q.t[Math.min(Q.r,Q.t.length-1)];
-  return `<main class="view palsview lp-run">${lpTop("palsPlay","🫧 Letter Pop",lpDots(Q.t.length,Q.r))}
+  return `<main class="view palsview lp-run">${lpTop("palsHome","🫧 Letter Pop",lpDots(Q.t.length,Q.r))}
    <div class="lp-ask"><span class="lp-minichar">${lpChar(T,"",true)}</span><button class="lp-askb" data-act="palsPSay">Pop <b style="color:${lpCol(T)}">${T.toUpperCase()} ${T}</b>! <i>${IC.speak}</i></button></div>
    <div class="lp-pond">${Q.bub.map((b,j)=>`<button class="lp-bub ${b.pop?"pop":""} ${Q.miss===j?"miss":""}" style="--h:${b.h};--fd:${b.fd}s;--dl:${b.dl}s" data-act="palsPTap" data-j="${j}" ${b.pop?"disabled":""}>${b.up?b.ch.toUpperCase():b.ch}</button>`).join("")}</div>
    <p class="lp-hint bn">বড় হাতের আর ছোট হাতের দুটোই ফাটাও! 🫧</p></main>`;}
- if(A.scr==="playwon"){const g=A.gm;return `<main class="view palsview lp-run">${lpTop("palsPlay","🧸 Play room")}
-   <div class="lp-won"><h1 class="lp-wtitle">${g==="build"?"Word builder! 🧩":"Bubble popper! 🫧"}</h1><div class="lp-sticker big g-${g}"><span>${g==="build"?"🧩":"🫧"}</span><b>🏅 ${P.g[g]||1}</b></div><p class="bn">দারুণ খেলেছ! 🎉</p></div>
-   <button class="btn good wide" data-act="${g==="build"?"palsBuild":"palsPop"}">আবার খেলো</button><button class="linkbtn" data-act="palsPlay">Play room</button></main>`;}
+ if(A.scr==="playwon")return `<main class="view palsview lp-run">${lpTop("palsHome","🫧 Letter Pop")}
+   <div class="lp-won"><h1 class="lp-wtitle">Bubble popper! 🫧</h1><div class="lp-sticker big g-pop"><span>🫧</span><b>🏅 ${P.g.pop||1}</b></div><p class="bn">দারুণ খেলেছ! 🎉</p></div>
+   <button class="btn good wide" data-act="palsPop">আবার খেলো</button><button class="linkbtn" data-act="palsHome">Letter Friends</button></main>`;
  if(A.scr==="stickers"){const n=lpStickerCount();
   return `<main class="view palsview lp-run lp-wide">${lpTop("palsHome","🌟 Stickers",`<span class="lp-stars">🌟 <b>${n}</b></span>`)}
    <h3 class="lp-h3">Letter friends <span class="tiny muted bn">Trace করলে স্টিকার, লিখলে ✍️</span></h3>
    <div class="lp-stk">${LP_LETTERS.map(x=>P.l[x]?`<div class="lp-st on" style="--c:${lpCol(x)}">${lpChar(x)}${P.w[x]?`<i>✍️</i>`:""}</div>`:`<div class="lp-st"><b>${x.toUpperCase()}</b></div>`).join("")}</div>
    <h3 class="lp-h3">Word Town</h3>
    <div class="lp-stk town">${LP_TOWN.map(t=>`<div class="lp-st ${P.t[t.id]?"on":""}" style="--a:${t.bg[0]};--b:${t.bg[1]}"><span>${t.ic}</span><small>${esc(t.n)}</small></div>`).join("")}</div>
-   <h3 class="lp-h3">Play room</h3>
-   <div class="lp-stk town"><div class="lp-st ${P.g.build?"on":""}"><span>🧩</span><small>Word builder</small></div><div class="lp-st ${P.g.pop?"on":""}"><span>🫧</span><small>Bubble popper</small></div></div></main>`;}
+   ${typeof RD_UNITS!=="undefined"?`<h3 class="lp-h3">Reading <span class="tiny muted bn">একটা ইউনিট শেষ হলে স্টিকার</span></h3>
+   <div class="lp-stk town">${RD_UNITS.map(u=>`<div class="lp-st ${rdUnitDone(u)?"on":""}" style="--a:#fff;--b:${u.col}55"><span>📖</span><small>${esc(u.name)}</small></div>`).join("")}</div>`:""}
+   <h3 class="lp-h3">Games</h3>
+   <div class="lp-stk town"><div class="lp-st ${P.g.pop?"on":""}"><span>🫧</span><small>Bubble popper</small></div></div></main>`;}
+ if(A.scr&&A.scr.startsWith("rd")&&typeof viewRead==="function")return viewRead(A,P);
  return "";
 }
 /* ---------- tracing and free writing with the finger ---------- */
@@ -217,7 +215,6 @@ const lpPlay=list=>TTS.play(list,lpRate());
 function lpGo(scr,extra){const A=APP.pals;TTS.stop();Object.assign(A,{scr,k:Date.now()},extra||{});if(scr==="trace"||scr==="write")LP_MUSIC.start();else LP_MUSIC.stop();render();window.scrollTo(0,0);}
 function lpFeedRounds(c){const others=()=>{const o=[];for(const a of lpShuffle(ABC)){if(a[0]!==c&&a[1][0]!==c&&o.length<2)o.push(a);}return o;};
  return [0,1].map(()=>({opts:lpShuffle([lpWord(c),...others()])}));}
-function lpBuildTiles(word){const extra=lpShuffle(LP_LETTERS.filter(x=>!word.includes(x))).slice(0,2);return lpShuffle([...word,...extra]).map(ch=>({ch,used:false}));}
 function lpPopRound(T){const others=lpShuffle(LP_LETTERS.filter(x=>x!==T)).slice(0,8),hues=[200,330,40,150,270,10,180,300];
  return lpShuffle([{ch:T,up:true},{ch:T,up:false},{ch:T,up:true},{ch:T,up:false},...others.map(ch=>({ch,up:T==="l"&&ch==="i"?false:T==="i"&&ch==="l"?true:Math.random()<.5}))]).map((b,i)=>Object.assign(b,{pop:false,h:hues[i%8],fd:(2.4+Math.random()*1.6).toFixed(2),dl:(-Math.random()*2).toFixed(2)}));}
 const PALS_ACT={
@@ -257,17 +254,6 @@ const PALS_ACT={
    if(F.i>=F.order.length){const P=LPST();P.t[T.id]=1;addXP(5);Store.save();setTimeout(()=>{if(APP.pals?.tf!==F)return;A.scr="placewon";A.k=Date.now();render();SND.play("done");confetti(80);lpSay("Yay! You did it!");},1300);}
    else setTimeout(()=>{if(APP.pals?.tf===F)PALS_ACT.palsAsk();},1200);}
   else{F.miss=j;SND.play("no");render();lpSay(x[0]);setTimeout(()=>{if(APP.pals?.tf===F&&F.miss===j){F.miss=-1;render();}},700);}},
- /* Play room */
- palsPlay(){lpGo("play");},
- palsBuild(){const words=lpShuffle(LP_BUILD).slice(0,5);lpGo("build",{gm:"build",b:{words,i:0,got:0,tiles:lpBuildTiles(words[0][0]),miss:-1,win:false}});setTimeout(()=>PALS_ACT.palsBSay(),300);},
- palsBSay(){const B=APP.pals.b;lpSay(B.words[Math.min(B.i,B.words.length-1)][0]);},
- palsBTap(el){const A=APP.pals,B=A.b,j=+el.dataset.j,t=B.tiles[j],word=B.words[B.i][0];if(t.used||B.win)return;
-  if(t.ch===word[B.got]){t.used=true;B.got++;B.miss=-1;
-   if(B.got>=word.length){B.win=true;SND.play("ok");render();confetti(25);lpPlay([LSOUND[t.ch],word]);
-    setTimeout(()=>{if(APP.pals?.b!==B)return;B.i++;if(B.i>=B.words.length){const P=LPST();P.g.build=(P.g.build||0)+1;addXP(5);Store.save();A.scr="playwon";A.k=Date.now();render();SND.play("done");confetti(80);lpSay("Yay! You did it!");return;}
-     B.got=0;B.win=false;B.tiles=lpBuildTiles(B.words[B.i][0]);A.k=Date.now();render();PALS_ACT.palsBSay();},1900);}
-   else{SND.play("pair");render();lpSay(LSOUND[t.ch]);}}
-  else{B.miss=j;SND.play("no");render();lpSay(LSOUND[t.ch]);setTimeout(()=>{if(APP.pals?.b===B&&B.miss===j){B.miss=-1;render();}},600);}},
  palsPop(){const t=lpShuffle(LP_LETTERS).slice(0,3);lpGo("pop",{gm:"pop",p:{t,r:0,bub:lpPopRound(t[0]),miss:-1}});setTimeout(()=>PALS_ACT.palsPSay(),300);},
  palsPSay(){const Q=APP.pals.p,T=Q.t[Math.min(Q.r,Q.t.length-1)];lpPlay(["Pop the letter",LETTER[T],LSOUND[T]]);},
  palsPTap(el){const A=APP.pals,Q=A.p,j=+el.dataset.j,b=Q.bub[j],T=Q.t[Q.r];if(!b||b.pop)return;
@@ -276,6 +262,8 @@ const PALS_ACT={
     setTimeout(()=>{if(APP.pals?.p!==Q)return;Q.r++;if(Q.r>=Q.t.length){const P=LPST();P.g.pop=(P.g.pop||0)+1;addXP(5);Store.save();A.scr="playwon";A.k=Date.now();render();SND.play("done");confetti(80);lpSay("Yay! You did it!");return;}
      Q.bub=lpPopRound(Q.t[Q.r]);A.k=Date.now();render();PALS_ACT.palsPSay();},1100);}}
   else{Q.miss=j;SND.play("no");render();lpPlay([LETTER[b.ch]]);setTimeout(()=>{if(APP.pals?.p===Q&&Q.miss===j){Q.miss=-1;render();}},600);}},
- palsStickers(){lpGo("stickers");}
+ palsStickers(){lpGo("stickers");},
+ /* Spell words: the Spelling game, opened from here and back to here */
+ palsSpell(){const c=APP.pals?.c;TTS.stop();LP_MUSIC.stop();APP.pals=null;SPELL_ACT.spellOpen();if(APP.spell)APP.spell.from={pals:1,c};}
 };
-function palsCTA(){const n=LP_LETTERS.filter(c=>LPST().l[c]).length;return `<button class="palscta" data-act="palsOpen"><span class="pc-char">${lpChar("a","",false)}</span><span class="grow"><b>Letter Friends</b><span class="tiny bn">ABC শোনা, আঙুলে লেখা, Word Town আর Play room · ${n}/26</span></span><span class="sc-go">➜</span></button>`;}
+function palsCTA(){const n=LP_LETTERS.filter(c=>LPST().l[c]).length;return `<button class="palscta" data-act="palsOpen"><span class="pc-char">${lpChar("a","",false)}</span><span class="grow"><b>Letter Friends</b><span class="tiny bn">ABC → আওয়াজ → শব্দ পড়া → বানান · ${n}/26</span></span><span class="sc-go">➜</span></button>`;}

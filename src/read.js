@@ -1,0 +1,242 @@
+/* ================= 📖 Read words: a phonics reading course inside Letter Friends (original feature) =================
+   Order follows how good phonics teachers build reading (systematic synthetic phonics, e.g. UFLI / Jolly Phonics routines):
+   short a → i → o → u → e word families (onset + rime blending) → all-vowel review → two letters, one sound (sh ch th ck ng)
+   → special families (ill ell all ind old ost).
+   Every lesson is short: quick review → meet the family → blend sound by sound → read the family list
+   → a check game (read the word, pick the picture / hear it, build it) → read a sentence. Words go into a spaced
+   review (1, 2, 4, 7, 14, 30 days) so they are not forgotten. Letter sounds use the licensed Phonicademy pack. */
+const RD_UNITS=[
+ {id:"a",v:"a",name:"Short a",bn:"ছোট a: /a/ আওয়াজ",col:"#ff6b6b",lessons:[
+  {id:"at",rime:"at",w:"cat🐱 hat🎩 bat🦇 rat🐀 mat sat fat pat",s:"The cat sat on a mat.",sp:"🐱"},
+  {id:"an",rime:"an",w:"can🥫 fan🪭 man👨 pan🍳 van🚐 ran tan",s:"A man ran to the van.",sp:"👨🚐"},
+  {id:"ap",rime:"ap",w:"cap🧢 map🗺️ tap🚰 nap😴 lap gap sap",s:"Dad has a cap and a map.",sp:"🧢🗺️"},
+  {id:"ad",rime:"ad",w:"dad👨‍👧 sad😢 mad😠 bad had pad lad",s:"Dad is sad.",sp:"👨‍👧😢"},
+  {id:"ag",rime:"ag",w:"bag👜 tag🏷️ wag rag nag sag",s:"The bag has a tag.",sp:"👜🏷️"},
+  {id:"am",rime:"am",w:"ham🍖 ram🐏 yam🍠 jam🫙 dam",s:"Sam has ham and jam.",sp:"🍖🫙"},
+  {id:"rev",rev:1,alien:"zat vap jad kag yan pab",s:"The fat cat has a map in a bag.",sp:"🐱🗺️👜"}]},
+ {id:"i",v:"i",name:"Short i",bn:"ছোট i: /i/ আওয়াজ",col:"#4f86f7",lessons:[
+  {id:"it",rime:"it",w:"kit🧰 pit🕳️ sit hit bit fit lit",s:"I can sit in it.",sp:"🧰"},
+  {id:"in",rime:"in",w:"pin📌 bin🗑️ win🏆 fin🦈 tin kin",s:"Put the pin in the bin.",sp:"📌🗑️"},
+  {id:"ip",rime:"ip",w:"lip👄 sip🥤 dip hip rip tip",s:"I sip and dip.",sp:"🥤"},
+  {id:"ig",rime:"ig",w:"pig🐷 dig⛏️ big wig fig jig",s:"The big pig can dig.",sp:"🐷⛏️"},
+  {id:"ix",rime:"ix",w:"six6️⃣ mix🥣 fix🔧",s:"I can mix and fix.",sp:"🥣🔧"},
+  {id:"id",rime:"id",w:"kid🧒 hid🙈 lid did bid",s:"The kid hid the lid.",sp:"🧒🙈"},
+  {id:"rev",rev:1,alien:"zib vit zid nim fip jix",s:"The big pig hid in a bin.",sp:"🐷🗑️"}]},
+ {id:"o",v:"o",name:"Short o",bn:"ছোট o: /o/ আওয়াজ",col:"#ffa62b",lessons:[
+  {id:"ot",rime:"ot",w:"hot🔥 pot🍲 dot cot got not lot",s:"The pot is hot.",sp:"🍲🔥"},
+  {id:"op",rime:"op",w:"mop🧹 hop🐇 pop🎈 top🔝 cop",s:"Hop on top, Bob!",sp:"🐇🔝"},
+  {id:"og",rime:"og",w:"dog🐶 log🪵 fog🌫️ hog🐗 jog bog",s:"The dog sat on a log.",sp:"🐶🪵"},
+  {id:"ox",rime:"ox",w:"box📦 fox🦊 ox🐂",s:"A fox is in a box.",sp:"🦊📦"},
+  {id:"ob",rime:"ob",w:"job💼 cob🌽 sob rob mob",s:"Bob has a job.",sp:"💼"},
+  {id:"rev",rev:1,alien:"zot vop yog kob jox lom",s:"The dog and the fox hop on a log.",sp:"🐶🦊🪵"}]},
+ {id:"u",v:"u",name:"Short u",bn:"ছোট u: /u/ আওয়াজ",col:"#2fbf8f",lessons:[
+  {id:"ug",rime:"ug",w:"bug🐛 hug🤗 jug🏺 rug dug tug",s:"A bug is on the jug.",sp:"🐛🏺"},
+  {id:"un",rime:"un",w:"sun☀️ run🏃 fun🎉 bun nun",s:"Run in the sun.",sp:"🏃☀️"},
+  {id:"ut",rime:"ut",w:"cut✂️ hut🛖 nut🥜 but gut",s:"Cut the nut.",sp:"✂️🥜"},
+  {id:"ub",rime:"ub",w:"tub🛁 cub🐻 rub sub",s:"The cub is in the tub.",sp:"🐻🛁"},
+  {id:"up",rime:"up",w:"cup☕ up⬆️ pup",s:"The pup has a cup.",sp:"☕"},
+  {id:"ud",rime:"ud",w:"bud🌱 mud dud",s:"The bud is in the mud.",sp:"🌱"},
+  {id:"rev",rev:1,alien:"zug vun yut kub fup lud",s:"The pup and the cub run in the sun.",sp:"🐻☀️"}]},
+ {id:"e",v:"e",name:"Short e",bn:"ছোট e: /e/ আওয়াজ",col:"#9b6bff",lessons:[
+  {id:"et",rime:"et",w:"net🥅 jet✈️ wet💧 pet🐾 get set let",s:"My pet got wet.",sp:"🐾💧"},
+  {id:"en",rime:"en",w:"hen🐔 pen🖊️ ten🔟 men den",s:"The hen has ten eggs.",sp:"🐔🔟"},
+  {id:"ed",rime:"ed",w:"bed🛏️ red🔴 fed led wed",s:"The bed is red.",sp:"🛏️🔴"},
+  {id:"eg",rime:"eg",w:"leg🦵 peg beg keg",s:"The hen has a red leg.",sp:"🐔🦵"},
+  {id:"rev",rev:1,alien:"zet ven yed jeg bep lem",s:"Ten red hens get in a big net.",sp:"🐔🥅"}]},
+ {id:"mix",v:"a",name:"All short vowels",bn:"সব ছোট স্বর একসাথে",col:"#ff7a3d",lessons:[
+  {id:"rev",rev:1,all:1,alien:"zat vip yog kub jet fen",s:"A cat, a pig, a dog, a bug and a hen sit in the sun.",sp:"🐱🐷🐶🐛🐔"}]},
+ {id:"dg",name:"Two letters, one sound",bn:"দুই অক্ষর, এক আওয়াজ",col:"#00a6c8",lessons:[
+  {id:"sh",dg:"sh",ex:"ship",w:"ship🚢 shop🏪 fish🐟 dish🍽️ cash💵 wish🌠 shed",s:"A fish is on the ship.",sp:"🐟🚢"},
+  {id:"ch",dg:"ch",ex:"chip",w:"chip🍟 chick🐥 chop🪓 chat💬 chin rich much",s:"The chick has a chip.",sp:"🐥🍟"},
+  {id:"th",dg:"th",ex:"bath",w:"bath🛀 math➕ thin path with",s:"Beth is in the bath.",sp:"🛀"},
+  {id:"ck",dg:"ck",ex:"duck",w:"duck🦆 sock🧦 rock🪨 lock🔒 back neck",s:"The duck has a sock.",sp:"🦆🧦"},
+  {id:"ng",dg:"ng",ex:"ring",w:"ring💍 king👑 sing🎤 song🎵 bang💥 long",s:"The king has a ring.",sp:"👑💍"},
+  {id:"rev",rev:1,alien:"shap chim thog zick yong shub",s:"The duck and the fish sing on the ship.",sp:"🦆🐟🚢"}]},
+ {id:"sp",name:"Special families",bn:"বিশেষ ফ্যামিলি",col:"#e0489a",lessons:[
+  {id:"ill",rime:"ill",chunk:1,w:"hill⛰️ pill💊 fill will mill",s:"Jill ran up the hill.",sp:"⛰️"},
+  {id:"ell",rime:"ell",chunk:1,w:"bell🔔 shell🐚 yell📣 well tell sell",s:"The bell fell in the well.",sp:"🔔"},
+  {id:"all",rime:"all",chunk:1,note:"Here a says /aw/!",w:"ball⚽ wall🧱 tall🦒 fall🍂 call📞 hall",s:"The ball is on the wall.",sp:"⚽🧱"},
+  {id:"ind",rime:"ind",chunk:1,note:"Here i says its name!",w:"find🔍 mind🧠 kind💖 blind🦯 bind",s:"Find the kind cat.",sp:"🔍🐱"},
+  {id:"old",rime:"old",chunk:1,note:"Here o says its name!",w:"cold🥶 gold🥇 hold🤲 told sold bold fold",s:"The gold is cold.",sp:"🥇🥶"},
+  {id:"ost",rime:"ost",chunk:1,note:"Here o says its name!",w:"post📮 ghost👻 most host",s:"The ghost is at the post.",sp:"👻📮"},
+  {id:"rev",rev:1,alien:"zill vell nall jind vold zost",s:"The kind ghost has a cold gold ball.",sp:"👻🥇⚽"}]}];
+/* how a rime sounds when blended: real words where they exist, otherwise IPA for the neural voice ("ph:") */
+/* every rime is voiced from IPA so it keeps its full, stressed vowel (a word like "an" or "am" is otherwise read weakly, /ən/) */
+const RD_RSAY={at:"ph:ˈæt",an:"ph:ˈæn",am:"ph:ˈæm",ap:"ph:ˈæp",ad:"ph:ˈæd",ag:"ph:ˈæɡ",it:"ph:ˈɪt",in:"ph:ˈɪn",ip:"ph:ˈɪp",ig:"ph:ˈɪɡ",ix:"ph:ˈɪks",id:"ph:ˈɪd",
+ ot:"ph:ˈɑt",op:"ph:ˈɑp",og:"ph:ˈɑɡ",ox:"ph:ˈɑks",ob:"ph:ˈɑb",ug:"ph:ˈʌɡ",un:"ph:ˈʌn",ut:"ph:ˈʌt",ub:"ph:ˈʌb",up:"ph:ˈʌp",ud:"ph:ˈʌd",
+ et:"ph:ˈɛt",en:"ph:ˈɛn",ed:"ph:ˈɛd",eg:"ph:ˈɛɡ",ill:"ph:ˈɪl",ell:"ph:ˈɛl",all:"ph:ˈɔl",ind:"ph:ˈaɪnd",old:"ph:ˈoʊld",ost:"ph:ˈoʊst"};
+const RD_SAY={meet:"Meet the family!",dg:"Two letters, one sound!",blend:"Let's blend!",read:"Read the words.",pick:"Read it. Which picture?",build:"Build the word.",
+ alien:"Real word or alien word?",sent:"Read the sentence.",done:"Great reading!",review:"Let's review!",again:"Let's try again!"};
+const RD_TEAMS=["sh","ch","th","ck","ng","ll","ss","gh","wh"];
+/* lessons as one list, with the words parsed: "cat🐱" -> {w:"cat", p:"🐱"} */
+const RD_L=[];RD_UNITS.forEach((u,ui)=>u.lessons.forEach((l,li)=>{
+ const words=(l.w||"").split(/\s+/).filter(Boolean).map(t=>{const m=t.match(/^([A-Za-z]+)(.*)$/);return {w:m[1].toLowerCase(),name:m[1],p:m[2]||""};});
+ RD_L.push(Object.assign({},l,{u,ui,li,key:u.id+"-"+l.id,words,idx:RD_L.length}));}));
+const rdLesson=k=>RD_L.find(l=>l.key===k);
+const rdUnitWords=L=>RD_L.filter(x=>!x.rev&&(L.all?["a","i","o","u","e"].includes(x.u.id):x.u===L.u)).flatMap(x=>x.words);
+const rdWordsOf=L=>L.rev?rdUnitWords(L):L.words;
+const rdLabel=L=>L.rev?"★":L.dg?L.dg:"-"+L.rime;
+function READ_TEXTS(){const out=[...Object.values(RD_SAY),"Yay! You did it!"];
+ RD_L.forEach(L=>{L.words.forEach(x=>out.push(x.w));if(L.rime&&RD_RSAY[L.rime])out.push(RD_RSAY[L.rime]);if(L.ex)out.push(L.ex);out.push(L.s);rdSentWords(L.s).forEach(w=>out.push(rdWordSay(w)));});
+ return [...new Set(out)];}
+const rdSentWords=s=>s.split(/\s+/).map(w=>w.replace(/[^A-Za-z']/g,"")).filter(Boolean);
+const rdWordSay=w=>w.toLowerCase()==="a"?"ph:ə":w;
+/* letters / letter teams of a word, with the sound each one makes */
+function rdSplit(w,L){
+ const plain=s=>{const out=[];for(let i=0;i<s.length;){const two=s.slice(i,i+2);if(RD_TEAMS.includes(two)){out.push({g:two});i+=2;}else{out.push({g:s[i]});i++;}}return out;};
+ if(L&&L.chunk&&L.rime&&w.endsWith(L.rime))return [...plain(w.slice(0,-L.rime.length)),{g:L.rime,chunk:1}];
+ const parts=plain(w);if(L&&L.rime&&!L.chunk&&w.endsWith(L.rime)){let n=0;for(let i=parts.length-1;i>=0;i--){n+=parts[i].g.length;parts[i].rime=1;if(n>=L.rime.length)break;}}
+ return parts;}
+function rdSound(p,L){if(p.chunk)return RD_RSAY[p.g]||p.g;if(p.g.length===1)return LSOUND[p.g]||p.g;if(p.g==="gh")return LSOUND.g;return (typeof DIG!=="undefined"&&DIG[p.g])||LSOUND[p.g[0]];}
+/* progress + spaced review (Leitner boxes) */
+const RD_GAP=[1,2,4,7,14,30];
+const rdDay=()=>Math.floor(Date.now()/864e5);
+function RDST(){const P=LPST();const r=P.rd||(P.rd={});r.l=r.l||{};r.w=r.w||{};return r;}
+const rdStars=L=>RDST().l[L.key]||0;
+const rdUnitDone=u=>RD_L.filter(L=>L.u===u).every(L=>rdStars(L)>0);
+const rdUnitStickers=()=>RD_UNITS.filter(rdUnitDone).length;
+const rdOpen=L=>L.idx===0||rdStars(RD_L[L.idx-1])>=2;
+const rdNextL=()=>RD_L.find(L=>!rdStars(L))||RD_L[RD_L.length-1];
+const rdPics=()=>{const R=RDST();return RD_L.filter(L=>rdStars(L)).flatMap(L=>L.words).filter(x=>x.p);};
+function rdDue(){const R=RDST(),d=rdDay(),pic={};RD_L.forEach(L=>L.words.forEach(x=>{if(x.p)pic[x.w]=x;}));return Object.keys(R.w).filter(w=>R.w[w].d<=d&&pic[w]).map(w=>pic[w]);}
+function rdMark(w,ok){const R=RDST(),c=R.w[w]||{b:0,d:0};c.b=ok?Math.min(RD_GAP.length-1,c.b+1):0;c.d=rdDay()+RD_GAP[ok?c.b:0];R.w[w]=c;}
+/* ---------- the check games ---------- */
+function rdPickRound(x,pool){const others=lpShuffle(pool.filter(y=>y.p&&y.w!==x.w&&y.p!==x.p)).slice(0,2);return {t:"pick",x,opts:lpShuffle([x,...others])};}
+function rdBuildRound(x,L,pool){const parts=rdSplit(x.w,L);let mi=0;
+ if(L.dg)mi=Math.max(0,parts.findIndex(p=>p.g===L.dg));else if(L.chunk)mi=parts.findIndex(p=>p.chunk);
+ const miss=parts[mi].g;let alt;
+ if(L.dg)alt=["sh","ch","th","ck","ng"].filter(g=>g!==miss);else if(L.chunk)alt=["ill","ell","all","ind","old","ost"].filter(g=>g!==miss);
+ else alt=[...new Set(pool.map(y=>rdSplit(y.w,L)[0].g).filter(g=>g!==miss&&g.length===1).concat(["b","c","d","f","h","m","p","s","t"]))].filter(g=>g!==miss);
+ return {t:"build",x,parts,mi,opts:lpShuffle([miss,...lpShuffle(alt).slice(0,2)])};}
+function rdMakePlay(L){const pics=L.words.filter(x=>x.p),pool=[...pics,...rdPics()],uniq=[];pool.forEach(y=>{if(!uniq.find(z=>z.w===y.w))uniq.push(y);});
+ const src=pics.length>=2?pics:[...pics,...lpShuffle(uniq.filter(y=>!pics.includes(y)))].slice(0,3);const fill=uniq.length>=3?uniq:[...uniq,...RD_L.flatMap(l=>l.words).filter(y=>y.p)];
+ const t=lpShuffle(src),bt=lpShuffle(L.words.filter(x=>x.p&&x.w!==L.rime)),rounds=[];
+ for(let i=0;i<4;i++){const x=t[i%t.length];rounds.push(i%2===1&&bt.length?rdBuildRound(bt[(i>>1)%bt.length],L,fill):rdPickRound(x,fill));}return rounds;}
+function rdMakeReview(words,n){const pool=RD_L.flatMap(l=>l.words).filter(y=>y.p);return lpShuffle(words.filter(x=>x.p)).slice(0,n).map(x=>rdPickRound(x,pool));}
+function rdMakeAlien(L){const real=lpShuffle(rdWordsOf(L).map(x=>x.w)).slice(0,3),al=lpShuffle(L.alien.split(" ")).slice(0,3);return lpShuffle([...real.map(w=>({w,real:true})),...al.map(w=>({w,real:false}))]);}
+/* ---------- screens ---------- */
+const rdTiles=(parts,L,cls,lit)=>`<div class="rd-tiles ${cls||""}">${parts.map((p,i)=>`<button class="rd-tile ${p.rime||p.chunk?"rm":""} ${p.g.length>1?"team":""} ${lit&&lit.includes(i)?"lit":""}" data-act="rdTile" data-i="${i}" style="--c:${L.u.col}"><b>${esc(p.g)}</b><i class="rd-sb ${p.g.length>1?"dash":"dot"}"></i></button>`).join("")}</div>`;
+const rdWordHTML=(x,L)=>{const ps=rdSplit(x.w,L);return ps.map(p=>`<span class="${p.rime||p.chunk||(L.dg&&p.g===L.dg)?"rm":""}">${esc(p.g)}</span>`).join("");};
+function viewRead(A,P){
+ if(A.scr==="rd"){const R=RDST(),due=rdDue().length,next=rdNextL(),tot=RD_L.length,done=RD_L.filter(L=>rdStars(L)).length;
+  return `<main class="view palsview lp-run lp-wide rd-home">${lpTop("palsHome","📖 Read words",`<span class="lp-stars">⭐ <b>${RD_L.reduce((a,L)=>a+rdStars(L),0)}</b></span>`)}
+   <div class="rd-hero"><span class="rd-herochar">${lpChar(next.u.v||"a","",true)}</span><div class="grow"><b>${done}/${tot} lessons</b><span class="tiny bn">শব্দ ভেঙে আওয়াজ বলো, জোড়া দাও, তারপর পড়ো!</span>
+    <button class="btn bk-candy" data-act="rdOpen" data-k="${next.key}">▶ ${next.rev?"Review "+esc(next.u.name):esc(next.u.name)+" · "+esc(rdLabel(next))}</button></div></div>
+   ${due?`<button class="rd-daily" data-act="rdDaily"><span>🔁</span><span class="grow"><b>Review ${due} word${due>1?"s":""}</b><span class="tiny bn">আগের শব্দ আবার পড়ো, যাতে ভুলে না যাও</span></span><span class="sc-go">➜</span></button>`:""}
+   ${RD_UNITS.map(u=>{const ls=RD_L.filter(L=>L.u===u),n=ls.filter(L=>rdStars(L)).length,open=rdOpen(ls[0]);
+    return `<section class="rd-unit ${open?"":"locked"}" style="--c:${u.col}"><div class="rd-uhead"><span class="rd-uic">${u.v&&u.id!=="mix"?lpChar(u.v):u.id==="dg"?"<b>sh</b>":u.id==="mix"?"<b>a e i o u</b>":"<b>✨</b>"}</span><div class="grow"><b>${esc(u.name)}</b><span class="tiny bn">${u.bn}</span></div><span class="rd-uprog">${n}/${ls.length}</span></div>
+     <div class="rd-path">${ls.map(L=>{const s=rdStars(L),o=rdOpen(L),cur=L===next;return `<button class="rd-node ${s?"done":cur?"now":o?"open":"lock"} ${L.rev?"rev":""}" data-act="rdOpen" data-k="${L.key}" ${o?"":"aria-disabled=\"true\""}><b>${esc(rdLabel(L))}</b><i>${s?"⭐".repeat(s):o?"":"🔒"}</i></button>`;}).join("")}</div></section>`;}).join("")}</main>`;}
+ if(A.scr==="rdv"){const Q=A.q,r=Q.rounds[Math.min(Q.i,Q.rounds.length-1)];
+  if(Q.i>=Q.rounds.length)return `<main class="view palsview lp-run">${lpTop("palsRead","🔁 Review")}<div class="lp-won"><h1 class="lp-wtitle">Well done! 🎉</h1><p class="lp-bigstars">${"⭐".repeat(Math.max(1,Math.round(3*Q.ok/Q.rounds.length)))}</p><p class="bn">${Q.ok}/${Q.rounds.length} ঠিক। কঠিন শব্দগুলো কাল আবার আসবে।</p></div><button class="btn good wide" data-act="palsRead">📖 Read words</button></main>`;
+  return `<main class="view palsview lp-run">${lpTop("palsRead","🔁 Review",lpDots(Q.rounds.length,Q.i))}${rdPickHTML(r,Q)}</main>`;}
+ if(A.scr!=="rdl")return "";
+ const Q=A.q,L=rdLesson(Q.k),step=Q.steps[Q.s],title=L.rev?`★ ${L.u.name}`:L.dg?`${L.dg} · one sound`:`-${L.rime} family`;
+ const top=lpTop("palsRead",esc(title),lpDots(Q.steps.length,Q.s));
+ if(step==="warm"||step==="mix"){const r=Q.rounds[Math.min(Q.i,Q.rounds.length-1)];return `<main class="view palsview lp-run rd-l">${top}<p class="rd-cap">${step==="warm"?"🔁 Quick review":"Read and pick"}</p>${rdPickHTML(r,Q)}</main>`;}
+ if(step==="meet"){const note=L.note||(L.dg?`${L.dg}: two letters, one sound!`:`${L.u.v} says /${L.u.v}/`);
+  return `<main class="view palsview lp-run rd-l">${top}
+   <div class="rd-meet"><span class="rd-friend">${lpChar(rdFriend(L),"",true)}</span><span class="lp-bubble left">${esc(note)}</span></div>
+   ${rdTiles(rdMeetParts(L),L,"big"+(Q.blended?" blended":""),Q.lit)}
+   <p class="rd-fam" style="--c:${L.u.col}">${L.dg?`<b>${L.dg}</b> as in <b>${esc(L.ex)}</b>`:`the <b>-${L.rime}</b> family`}</p>
+   <div class="row center lp-ctl"><button class="btn bk-candy" data-act="rdMeetPlay">🔊 Blend it</button><button class="btn good" data-act="rdNext">Next ➜</button></div></main>`;}
+ if(step==="blend"){const x=Q.bw[Q.i],parts=rdSplit(x.w,L);
+  return `<main class="view palsview lp-run rd-l">${top}<p class="rd-cap">Tap each sound, then blend! <small class="bn">প্রতিটা আওয়াজে চাপো, তারপর জোড়া দাও</small></p>
+   ${rdTiles(parts,L,"big"+(Q.blended?" blended":""),Q.lit)}
+   <button class="rd-slide ${Q.blended?"on":""}" data-act="rdBlend" aria-label="Blend"><i></i><span>➜</span></button>
+   <div class="rd-reveal ${Q.blended?"on":""}">${Q.blended?`<span class="rd-rpic">${x.p||"⭐"}</span><b>${rdWordHTML(x,L)}</b>`:""}</div>
+   <div class="row center lp-ctl">${Q.blended?`<button class="btn good" data-act="rdBlendNext">${Q.i+1<Q.bw.length?"Next word ➜":"Next ➜"}</button>`:`<button class="btn ghost" data-act="rdBlend">👀 Show me</button>`}</div></main>`;}
+ if(step==="read"){const ws=L.rev?Q.rw:L.words;
+  return `<main class="view palsview lp-run rd-l">${top}<p class="rd-cap">Read the words! <small class="bn">নিজে পড়ো, তারপর চাপ দিয়ে মিলিয়ে নাও</small></p>
+   <div class="rd-list" style="--c:${L.u.col}">${ws.map((x,i)=>`<button class="rd-w ${Q.heard.includes(i)?"heard":""} ${Q.hl===i?"hl":""}" data-act="rdSayW" data-i="${i}"><span class="rd-wp">${x.p||""}</span><b>${rdWordHTML(x,rdLesson(Q.k).rev?RD_L.find(l=>l.words.includes(x)):L)}</b></button>`).join("")}</div>
+   <div class="row center lp-ctl"><button class="btn bk-candy" data-act="rdReadAll">🔊 Read all</button><button class="btn good" data-act="rdNext" ${Q.heard.length>=ws.length||Q.all?"":"disabled"}>Next ➜</button></div></main>`;}
+ if(step==="play"){const r=Q.rounds[Math.min(Q.i,Q.rounds.length-1)];
+  if(r.t==="pick")return `<main class="view palsview lp-run rd-l">${top}<p class="rd-cap">Read it. Which picture? <small class="bn">পড়ো, তারপর ঠিক ছবি বাছো</small></p>${rdPickHTML(r,Q)}</main>`;
+  return `<main class="view palsview lp-run rd-l">${top}<p class="rd-cap">Build the word! <small class="bn">শোনো, তারপর ফাঁকা ঘর পূরণ করো</small></p>
+   <button class="lp-bpic ${Q.got?"win":""}" data-act="rdSayX"><span>${r.x.p}</span><i>${IC.speak}</i></button>
+   <div class="rd-tiles big">${r.parts.map((p,i)=>`<span class="rd-tile ${i===r.mi&&!Q.got?"gap":""} ${p.rime||p.chunk?"rm":""}" style="--c:${L.u.col}"><b>${i===r.mi&&!Q.got?"?":esc(p.g)}</b></span>`).join("")}</div>
+   <div class="rd-opts">${r.opts.map(g=>`<button class="rd-opt ${Q.miss===g?"miss":""} ${Q.got&&g===r.parts[r.mi].g?"ok":""}" data-act="rdBuild" data-g="${esc(g)}">${esc(g)}</button>`).join("")}</div></main>`;}
+ if(step==="alien"){const r=Q.al[Math.min(Q.i,Q.al.length-1)];
+  return `<main class="view palsview lp-run rd-l">${top}<p class="rd-cap">Real word or alien word? <small class="bn">আসল শব্দ, না কি এলিয়েনের বানানো শব্দ?</small></p>
+   <div class="rd-alien ${Q.res||""}"><b>${esc(r.w)}</b></div>
+   <div class="rd-opts two"><button class="rd-opt big ${Q.pickd==="real"?Q.res:""}" data-act="rdAlien" data-v="real">🏠<span>Real</span></button><button class="rd-opt big ${Q.pickd==="alien"?Q.res:""}" data-act="rdAlien" data-v="alien">👽<span>Alien</span></button></div></main>`;}
+ if(step==="sent"){const ws=rdSentWords(L.s);
+  return `<main class="view palsview lp-run rd-l">${top}<p class="rd-cap">Read the sentence! <small class="bn">নিজে পড়ো, তারপর শুনে মিলিয়ে নাও</small></p>
+   <div class="rd-scene" style="--c:${L.u.col}"><span>${L.sp}</span></div>
+   <div class="rd-sent">${L.s.split(/\s+/).map((w,i)=>`<button class="rd-sw ${Q.hl===i?"hl":""}" data-act="rdSayS" data-i="${i}">${esc(w)}</button>`).join(" ")}</div>
+   <div class="row center lp-ctl"><button class="btn bk-candy" data-act="rdReadS">🔊 Read to me</button><button class="btn good" data-act="rdNext">Finish ➜</button></div></main>`;}
+ if(step==="done"){const s=Q.stars,nx=RD_L[L.idx+1];
+  return `<main class="view palsview lp-run rd-l">${lpTop("palsRead",esc(title))}
+   <div class="lp-won"><h1 class="lp-wtitle">${s>=2?"Great reading! 🎉":"Good try! 💪"}</h1><div class="rd-friend big">${lpChar(L.u.v||"a","yum",true)}</div><p class="lp-bigstars">${"⭐".repeat(s)}${"☆".repeat(3-s)}</p>
+    <p class="bn">${s>=2?`তুমি ${rdWordsOf(L).length}টা শব্দ পড়তে পারো!`:"আরেকবার খেললে ⭐⭐ পাবে, তারপর পরের লেসন খুলবে।"}</p></div>
+   ${s>=2&&nx?`<button class="btn good wide" data-act="rdOpen" data-k="${nx.key}">Next: ${esc(nx.rev?"Review "+nx.u.name:rdLabel(nx))} ➜</button>`:""}
+   ${s<2?`<button class="btn good wide" data-act="rdOpen" data-k="${L.key}">${RD_SAY.again.replace("!","")} ↺</button>`:""}
+   <button class="linkbtn" data-act="palsRead">📖 All lessons</button></main>`;}
+ return "";
+}
+function rdPickHTML(r,Q){return `<div class="rd-word big"><b>${esc(r.x.w)}</b>${Q.got?`<button class="lp-round sm" data-act="rdSayX" aria-label="Listen">${IC.speak}</button>`:""}</div>
+ <div class="rd-pics">${r.opts.map(o=>`<button class="rd-pic ${Q.miss===o.w?"miss":""} ${Q.got&&o.w===r.x.w?"ok":""}" data-act="rdPick" data-w="${esc(o.w)}"><span>${o.p}</span></button>`).join("")}</div>`;}
+/* ---------- actions ---------- */
+function rdStart(L){const R=RDST(),due=rdDue().filter(x=>!L.words.find(y=>y.w===x.w));
+ const steps=L.rev?["mix","read","alien","sent","done"]:[...(due.length>=2&&!L.rev?["warm"]:[]),"meet","blend","read","play","sent","done"];
+ const Q={k:L.key,steps,s:0,i:0,ok:0,tries:0,heard:[],lit:[],miss:null,got:false,blended:false};
+ if(steps[0]==="warm")Q.rounds=rdMakeReview(due,3);
+ Q.bw=L.words.slice().sort((a,b)=>(b.p?1:0)-(a.p?1:0)).slice(0,L.rev?0:3);
+ if(L.rev){Q.rounds=rdMakeReview(rdUnitWords(L),5);Q.rw=lpShuffle(rdUnitWords(L)).slice(0,8);Q.al=rdMakeAlien(L);}
+ else Q.play=rdMakePlay(L);
+ return Q;}
+function rdEnter(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),st=Q.steps[Q.s];Q.i=0;Q.miss=null;Q.got=false;Q.blended=false;Q.lit=[];Q.hl=-1;Q.res="";Q.pickd="";
+ if(st==="play")Q.rounds=Q.play;
+ if(st==="mix")Q.rounds=rdMakeReview(rdUnitWords(L),5);
+ A.k=Date.now();render();window.scrollTo(0,0);
+ const say={warm:RD_SAY.review,mix:RD_SAY.pick,meet:L.dg?RD_SAY.dg:RD_SAY.meet,blend:RD_SAY.blend,read:RD_SAY.read,alien:RD_SAY.alien,sent:RD_SAY.sent}[st];
+ if(st==="play"){setTimeout(()=>rdRoundSay(),300);return;}
+ if(say)setTimeout(()=>{if(APP.pals?.q===Q){if(st==="meet")lpPlay([say,...rdMeetList(L)]);else lpSay(say);}},300);}
+const rdMeetParts=L=>L.dg?[{g:L.dg}]:L.chunk?[{g:L.rime,chunk:1}]:rdSplit(L.rime).map(p=>Object.assign(p,{rime:1}));
+const rdFriend=L=>L.u.v&&L.u.id!=="mix"?L.u.v:L.dg?L.dg[0]:L.rime?L.rime[0]:"a";
+function rdMeetList(L){if(L.dg)return [DIG[L.dg]||LSOUND[L.dg[0]],L.ex];if(L.chunk)return [RD_RSAY[L.rime],L.words[0].w];return [...rdSplit(L.rime).map(p=>rdSound(p,L)),RD_RSAY[L.rime]||L.rime];}
+function rdRoundSay(){const A=APP.pals,Q=A.q,r=Q.rounds&&Q.rounds[Q.i];if(!r)return;if(r.t==="pick")lpSay(RD_SAY.pick);else lpPlay([RD_SAY.build,r.x.w]);}
+function rdAfterRound(ok){const A=APP.pals,Q=A.q;if(ok)Q.ok++;Q.tries++;
+ setTimeout(()=>{if(APP.pals?.q!==Q)return;Q.i++;Q.miss=null;Q.got=false;
+  if(Q.i>=Q.rounds.length){if(A.scr==="rdv"){A.k=Date.now();render();SND.play("done");confetti(50);lpSay(RD_SAY.done);return;}rdStep();return;}
+  A.k=Date.now();render();rdRoundSay();},1200);}
+function rdStep(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k);Q.s++;
+ if(Q.steps[Q.s]==="done"){const n=Q.playN||1,okN=Q.playOk||0;let s=L.rev?(Q.alOk>=5&&Q.mixOk>=4?3:Q.alOk>=4&&Q.mixOk>=3?2:1):(okN>=4?3:okN>=3?2:1);
+  Q.stars=s;const R=RDST();R.l[L.key]=Math.max(R.l[L.key]||0,s);if(!L.rev)L.words.forEach(x=>{if(x.p&&!R.w[x.w])R.w[x.w]={b:0,d:rdDay()+1};});
+  addXP(s*2);Store.save();SND.play(s>=2?"done":"ok");if(s>=2)confetti(80);setTimeout(()=>APP.pals?.q===Q&&lpPlay(s>=2?[RD_SAY.done]:[RD_SAY.again]),400);}
+ rdEnter();}
+const RD_ACT={
+ palsRead(){lpGo("rd");},
+ rdOpen(el){const L=rdLesson(el.dataset.k);if(!L)return;if(!rdOpen(L)){SND.play("no");toast("আগের লেসনে ⭐⭐ পেলে এটা খুলবে 🔒");return;}APP.pals.q=rdStart(L);APP.pals.scr="rdl";TTS.stop();LP_MUSIC.stop();rdEnter();},
+ rdDaily(){const due=rdDue();if(!due.length)return;const pool=RD_L.flatMap(l=>l.words).filter(y=>y.p);APP.pals.q={rounds:lpShuffle(due).slice(0,6).map(x=>rdPickRound(x,pool)),i:0,ok:0,daily:1};lpGo("rdv");setTimeout(()=>lpSay(RD_SAY.review),300);},
+ rdNext(){rdStep();},
+ rdTile(el){const A=APP.pals,Q=A.q;if(!Q||A.scr!=="rdl")return;const L=rdLesson(Q.k),st=Q.steps[Q.s];if(st!=="meet"&&st!=="blend")return;
+  const parts=st==="meet"?rdMeetParts(L):rdSplit(Q.bw[Q.i].w,L);const i=+el.dataset.i,p=parts[i];if(!p)return;
+  if(!Q.lit.includes(i))Q.lit.push(i);render();lpPlay([rdSound(p,L)]);},
+ rdMeetPlay(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),n=rdMeetParts(L).length;Q.blended=false;Q.lit=[];render();
+  TTS.play(rdMeetList(L),lpRate(),i=>{if(APP.pals?.q!==Q||i<0)return;if(i<n)Q.lit=[...Array(i+1).keys()];else Q.blended=true;render();});},
+ rdBlend(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),x=Q.bw[Q.i],parts=rdSplit(x.w,L);Q.lit=[];Q.blended=false;render();
+  TTS.play([...parts.map(p=>rdSound(p,L)),x.w],lpRate(),i=>{if(APP.pals?.q!==Q)return;if(i>=0&&i<parts.length){Q.lit=[...Array(i+1).keys()];render();}else if(i===parts.length){Q.blended=true;render();SND.play("pair");}});},
+ rdBlendNext(){const A=APP.pals,Q=A.q;if(Q.i+1<Q.bw.length){Q.i++;Q.blended=false;Q.lit=[];A.k=Date.now();render();lpSay(RD_SAY.blend);}else rdStep();},
+ rdSayW(el){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),ws=L.rev?Q.rw:L.words,i=+el.dataset.i;if(!Q.heard.includes(i))Q.heard.push(i);Q.hl=i;render();lpSay(ws[i].w);},
+ async rdReadAll(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),ws=L.rev?Q.rw:L.words;Q.all=true;
+  TTS.play(ws.map(x=>x.w),lpRate(),i=>{if(APP.pals?.q!==Q)return;Q.hl=i;if(i>=0&&!Q.heard.includes(i))Q.heard.push(i);render();});},
+ rdSayX(){const Q=APP.pals.q,r=Q.rounds[Math.min(Q.i,Q.rounds.length-1)];lpSay(r.x.w);},
+ rdPick(el){const A=APP.pals,Q=A.q,r=Q.rounds[Q.i];if(!r||Q.got)return;const w=el.dataset.w,first=Q.miss===null;
+  if(w===r.x.w){Q.got=true;SND.play("ok");render();lpSay(r.x.w);const st=A.scr==="rdl"?Q.steps[Q.s]:"rdv";
+   if(st==="play"){Q.playN=(Q.playN||0)+1;if(first)Q.playOk=(Q.playOk||0)+1;}if(st==="mix"&&first)Q.mixOk=(Q.mixOk||0)+1;
+   if(st==="warm"||st==="mix"||st==="rdv")rdMark(r.x.w,first);rdAfterRound(first);}
+  else{Q.miss=w;SND.play("no");render();if(A.scr==="rdv"||Q.steps[Q.s]==="warm")rdMark(r.x.w,false);}},
+ rdBuild(el){const A=APP.pals,Q=A.q,r=Q.rounds[Q.i];if(!r||Q.got)return;const g=el.dataset.g,first=Q.miss===null;
+  if(g===r.parts[r.mi].g){Q.got=true;SND.play("ok");render();lpSay(r.x.w);Q.playN=(Q.playN||0)+1;if(first)Q.playOk=(Q.playOk||0)+1;rdAfterRound(first);}
+  else{Q.miss=g;SND.play("no");render();lpPlay([rdSound({g},rdLesson(Q.k))]);}},
+ rdAlien(el){const A=APP.pals,Q=A.q,r=Q.al[Q.i];if(!r||Q.res)return;const v=el.dataset.v,ok=(v==="real")===r.real;Q.pickd=v;Q.res=ok?"ok":"miss";if(ok)Q.alOk=(Q.alOk||0)+1;
+  SND.play(ok?"ok":"no");render();if(r.real)lpSay(r.w);
+  setTimeout(()=>{if(APP.pals?.q!==Q)return;Q.i++;Q.res="";Q.pickd="";if(Q.i>=Q.al.length){rdStep();return;}A.k=Date.now();render();},1100);},
+ rdSayS(el){const Q=APP.pals.q,L=rdLesson(Q.k),w=L.s.split(/\s+/)[+el.dataset.i]||"";Q.hl=+el.dataset.i;render();lpSay(rdWordSay(w.replace(/[^A-Za-z']/g,"")));},
+ rdReadS(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),words=L.s.split(/\s+/);const lens=words.map(w=>w.length+1),tot=lens.reduce((a,b)=>a+b,0);
+  lpSay(L.s);const tick=()=>{if(APP.pals?.q!==Q||A.scr!=="rdl")return;const a=TTS.el,on=document.documentElement.classList.contains("is-speaking");
+   if(!on){if(Q.hl!==-1){Q.hl=-1;render();}return;}
+   if(a&&a.duration&&isFinite(a.duration)){const f=a.currentTime/a.duration*tot;let c=0,i=0;for(;i<lens.length;i++){c+=lens[i];if(c>=f)break;}if(Q.hl!==i){Q.hl=Math.min(i,words.length-1);render();}}
+   requestAnimationFrame(tick);};setTimeout(tick,150);}
+};
+Object.assign(PALS_ACT,RD_ACT);
