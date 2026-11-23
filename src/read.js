@@ -5,72 +5,81 @@
    Every lesson is short: quick review → meet the family → blend sound by sound → read the family list
    → a check game (read the word, pick the picture / hear it, build it) → read a sentence. Words go into a spaced
    review (1, 2, 4, 7, 14, 30 days) so they are not forgotten. Letter sounds use the licensed Phonicademy pack. */
+/* hand-drawn 3D icons for words that have no emoji */
+const RD_SVG={
+ mat:'<svg class="rd-svg" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="rdgm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9965a"/><stop offset="1" stop-color="#a5683a"/></linearGradient></defs><ellipse cx="32" cy="53" rx="27" ry="4" fill="#000" opacity=".15"/><path d="M10 20h44l6 28H4z" fill="url(#rdgm)"/><path d="M9 27h46M7.5 34h49M6 41h52" stroke="#7d4a22" stroke-width="2.4" opacity=".55"/><path d="M10 20h44" stroke="#f0c28c" stroke-width="2.5" stroke-linecap="round"/><path d="M8 48v5M14 48v5M20 48v5M26 48v5M32 48v5M38 48v5M44 48v5M50 48v5M56 48v5" stroke="#c48a52" stroke-width="2.2" stroke-linecap="round"/><rect x="22" y="26" width="20" height="14" rx="3" fill="#fff" opacity=".18"/></svg>',
+ rug:'<svg class="rd-svg" viewBox="0 0 64 64" aria-hidden="true"><defs><radialGradient id="rdgr" cx=".45" cy=".4" r=".7"><stop offset="0" stop-color="#ff8a7a"/><stop offset="1" stop-color="#d9433a"/></radialGradient></defs><ellipse cx="32" cy="50" rx="28" ry="5" fill="#000" opacity=".15"/><ellipse cx="32" cy="38" rx="28" ry="13" fill="url(#rdgr)"/><ellipse cx="32" cy="38" rx="20" ry="9" fill="none" stroke="#ffd36b" stroke-width="2.6"/><ellipse cx="32" cy="38" rx="11" ry="5" fill="#ffd36b" opacity=".9"/><ellipse cx="32" cy="38" rx="5" ry="2.2" fill="#d9433a"/><path d="M10 31q22-9 44 0" stroke="#fff" stroke-width="2" opacity=".35" fill="none" stroke-linecap="round"/></svg>',
+ fig:'<svg class="rd-svg" viewBox="0 0 64 64" aria-hidden="true"><defs><radialGradient id="rdgf" cx=".38" cy=".4" r=".75"><stop offset="0" stop-color="#b57ad6"/><stop offset="1" stop-color="#5b2b7a"/></radialGradient></defs><ellipse cx="32" cy="57" rx="16" ry="3" fill="#000" opacity=".15"/><path d="M32 12c4 0 5 6 9 12 6 8 9 13 9 19 0 9-8 14-18 14s-18-5-18-14c0-6 3-11 9-19 4-6 5-12 9-12z" fill="url(#rdgf)"/><path d="M32 13V7" stroke="#6b8e23" stroke-width="3" stroke-linecap="round"/><path d="M33 9c4-5 11-5 14-2-4 3-10 4-14 2z" fill="#7cc242"/><ellipse cx="25" cy="34" rx="4" ry="7" fill="#fff" opacity=".28"/></svg>',
+ lid:'<svg class="rd-svg" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="rdgl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef2f6"/><stop offset="1" stop-color="#9aa6b4"/></linearGradient></defs><ellipse cx="32" cy="50" rx="27" ry="5" fill="#000" opacity=".15"/><path d="M6 44c0-13 12-22 26-22s26 9 26 22z" fill="url(#rdgl)"/><ellipse cx="32" cy="44" rx="27" ry="4.5" fill="#8a96a5"/><rect x="26" y="13" width="12" height="9" rx="4" fill="#3b3f4a"/><path d="M14 36c3-6 9-9 15-10" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7" fill="none"/></svg>',
+ mud:'<svg class="rd-svg" viewBox="0 0 64 64" aria-hidden="true"><defs><radialGradient id="rdgd" cx=".45" cy=".35" r=".8"><stop offset="0" stop-color="#9b6a42"/><stop offset="1" stop-color="#5a3a1f"/></radialGradient></defs><path d="M8 44c-4-6 4-12 10-11 2-7 12-9 16-4 6-5 16-2 16 5 7 0 10 7 5 11-3 4-11 5-18 5H19c-6 0-9-2-11-6z" fill="url(#rdgd)"/><ellipse cx="26" cy="36" rx="6" ry="2.5" fill="#fff" opacity=".25"/><ellipse cx="42" cy="40" rx="4" ry="1.8" fill="#fff" opacity=".2"/><circle cx="14" cy="24" r="3" fill="#7a5130"/><circle cx="50" cy="22" r="2.4" fill="#7a5130"/><circle cx="33" cy="17" r="2" fill="#7a5130"/></svg>'};
 const RD_UNITS=[
  {id:"a",v:"a",name:"Short a",bn:"ছোট a: /a/ আওয়াজ",col:"#ff6b6b",lessons:[
-  {id:"at",rime:"at",w:"cat🐱 hat🎩 bat🦇 rat🐀 mat sat fat pat",s:"The cat sat on a mat.",sp:"🐱"},
-  {id:"an",rime:"an",w:"can🥫 fan🪭 man👨 pan🍳 van🚐 ran tan",s:"A man ran to the van.",sp:"👨🚐"},
-  {id:"ap",rime:"ap",w:"cap🧢 map🗺️ tap🚰 nap😴 lap gap sap",s:"Dad has a cap and a map.",sp:"🧢🗺️"},
-  {id:"ad",rime:"ad",w:"dad👨‍👧 sad😢 mad😠 bad had pad lad",s:"Dad is sad.",sp:"👨‍👧😢"},
-  {id:"ag",rime:"ag",w:"bag👜 tag🏷️ wag rag nag sag",s:"The bag has a tag.",sp:"👜🏷️"},
-  {id:"am",rime:"am",w:"ham🍖 ram🐏 yam🍠 jam🫙 dam",s:"Sam has ham and jam.",sp:"🍖🫙"},
+  {id:"at",rime:"at",w:"cat🐱 hat🎩 bat🦇 rat🐀 mat@mat sat~🧘 fat~🐡 pat~🫳",s:"The cat sat on a mat.",sp:"🐱"},
+  {id:"an",rime:"an",w:"can🥫 fan🪭 man👨 pan🍳 van🚐 ran~🏃‍♀️ tan~🟫",s:"A man ran to the van.",sp:"👨🚐"},
+  {id:"ap",rime:"ap",w:"cap🧢 map🗺️ tap🚰 nap😴 lap~🧑‍💻 gap~↔️ sap~🌲",s:"Dad has a cap and a map.",sp:"🧢🗺️"},
+  {id:"ad",rime:"ad",w:"dad👨‍👧 sad😢 mad😠 pad🗒️ lad👦 bad~👎",s:"Dad is sad.",sp:"👨‍👧😢"},
+  {id:"ag",rime:"ag",w:"bag👜 tag🏷️ rag🧻 wag~🐕 sag~📉",s:"The bag has a tag.",sp:"👜🏷️"},
+  {id:"am",rime:"am",w:"ham🍖 ram🐏 yam🍠 jam🫙 dam~🦫",s:"Sam has ham and jam.",sp:"🍖🫙"},
   {id:"rev",rev:1,alien:"zat vap jad kag yan pab",s:"The fat cat has a map in a bag.",sp:"🐱🗺️👜"}]},
  {id:"i",v:"i",name:"Short i",bn:"ছোট i: /i/ আওয়াজ",col:"#4f86f7",lessons:[
-  {id:"it",rime:"it",w:"kit🧰 pit🕳️ sit hit bit fit lit",s:"I can sit in it.",sp:"🧰"},
-  {id:"in",rime:"in",w:"pin📌 bin🗑️ win🏆 fin🦈 tin kin",s:"Put the pin in the bin.",sp:"📌🗑️"},
-  {id:"ip",rime:"ip",w:"lip👄 sip🥤 dip hip rip tip",s:"I sip and dip.",sp:"🥤"},
-  {id:"ig",rime:"ig",w:"pig🐷 dig⛏️ big wig fig jig",s:"The big pig can dig.",sp:"🐷⛏️"},
+  {id:"it",rime:"it",w:"kit🧰 pit🕳️ sit🪑 hit~🥊 bit~🍪 fit~💪 lit~🕯️",s:"I can sit in it.",sp:"🧰"},
+  {id:"in",rime:"in",w:"pin📌 bin🗑️ win🏆 fin🦈 kin~👨‍👩‍👧",s:"Put the pin in the bin.",sp:"📌🗑️"},
+  {id:"ip",rime:"ip",w:"lip👄 sip🥤 dip🫕 rip~👖 hip~🕺 tip~💁",s:"I sip and dip.",sp:"🥤"},
+  {id:"ig",rime:"ig",w:"pig🐷 dig⛏️ wig👩‍🦱 fig@fig big~🐘 jig~💃",s:"The big pig can dig.",sp:"🐷⛏️"},
   {id:"ix",rime:"ix",w:"six6️⃣ mix🥣 fix🔧",s:"I can mix and fix.",sp:"🥣🔧"},
-  {id:"id",rime:"id",w:"kid🧒 hid🙈 lid did bid",s:"The kid hid the lid.",sp:"🧒🙈"},
+  {id:"id",rime:"id",w:"kid🧒 hid🙈 lid@lid bid~🔨 did~✅",s:"The kid hid the lid.",sp:"🧒🙈"},
   {id:"rev",rev:1,alien:"zib vit zid nim fip jix",s:"The big pig hid in a bin.",sp:"🐷🗑️"}]},
  {id:"o",v:"o",name:"Short o",bn:"ছোট o: /o/ আওয়াজ",col:"#ffa62b",lessons:[
-  {id:"ot",rime:"ot",w:"hot🔥 pot🍲 dot cot got not lot",s:"The pot is hot.",sp:"🍲🔥"},
-  {id:"op",rime:"op",w:"mop🧹 hop🐇 pop🎈 top🔝 cop",s:"Hop on top, Bob!",sp:"🐇🔝"},
-  {id:"og",rime:"og",w:"dog🐶 log🪵 fog🌫️ hog🐗 jog bog",s:"The dog sat on a log.",sp:"🐶🪵"},
+  {id:"ot",rime:"ot",w:"hot🔥 pot🍲 dot⚫ cot🛌 got~🎁 not~🚫 lot~🅿️",s:"The pot is hot.",sp:"🍲🔥"},
+  {id:"op",rime:"op",w:"mop🧹 hop🐇 pop🎈 top🔝 cop👮",s:"Hop on top, Bob!",sp:"🐇🔝"},
+  {id:"og",rime:"og",w:"dog🐶 log🪵 fog🌫️ hog🐗 jog~👟",s:"The dog sat on a log.",sp:"🐶🪵"},
   {id:"ox",rime:"ox",w:"box📦 fox🦊 ox🐂",s:"A fox is in a box.",sp:"🦊📦"},
-  {id:"ob",rime:"ob",w:"job💼 cob🌽 sob rob mob",s:"Bob has a job.",sp:"💼"},
+  {id:"ob",rime:"ob",w:"job💼 cob🌽 rob🦹 sob~😭 mob~👥",s:"Bob has a job.",sp:"💼"},
   {id:"rev",rev:1,alien:"zot vop yog kob jox lom",s:"The dog and the fox hop on a log.",sp:"🐶🦊🪵"}]},
  {id:"u",v:"u",name:"Short u",bn:"ছোট u: /u/ আওয়াজ",col:"#2fbf8f",lessons:[
-  {id:"ug",rime:"ug",w:"bug🐛 hug🤗 jug🏺 rug dug tug",s:"A bug is on the jug.",sp:"🐛🏺"},
-  {id:"un",rime:"un",w:"sun☀️ run🏃 fun🎉 bun nun",s:"Run in the sun.",sp:"🏃☀️"},
-  {id:"ut",rime:"ut",w:"cut✂️ hut🛖 nut🥜 but gut",s:"Cut the nut.",sp:"✂️🥜"},
-  {id:"ub",rime:"ub",w:"tub🛁 cub🐻 rub sub",s:"The cub is in the tub.",sp:"🐻🛁"},
-  {id:"up",rime:"up",w:"cup☕ up⬆️ pup",s:"The pup has a cup.",sp:"☕"},
-  {id:"ud",rime:"ud",w:"bud🌱 mud dud",s:"The bud is in the mud.",sp:"🌱"},
+  {id:"ug",rime:"ug",w:"bug🐛 hug🤗 jug🏺 rug@rug tug~🪢 dug~⛏️",s:"A bug is on the jug.",sp:"🐛🏺"},
+  {id:"un",rime:"un",w:"sun☀️ run🏃 fun🎉 bun🥯",s:"Run in the sun.",sp:"🏃☀️"},
+  {id:"ut",rime:"ut",w:"cut✂️ hut🛖 nut🥜",s:"Cut the nut.",sp:"✂️🥜"},
+  {id:"ub",rime:"ub",w:"tub🛁 cub🐻 sub🥪 rub~🧼",s:"The cub is in the tub.",sp:"🐻🛁"},
+  {id:"up",rime:"up",w:"cup☕ up⬆️ pup🐩",s:"The pup has a cup.",sp:"☕"},
+  {id:"ud",rime:"ud",w:"bud🌱 mud@mud dud~💣",s:"The bud is in the mud.",sp:"🌱"},
   {id:"rev",rev:1,alien:"zug vun yut kub fup lud",s:"The pup and the cub run in the sun.",sp:"🐻☀️"}]},
  {id:"e",v:"e",name:"Short e",bn:"ছোট e: /e/ আওয়াজ",col:"#9b6bff",lessons:[
-  {id:"et",rime:"et",w:"net🥅 jet✈️ wet💧 pet🐾 get set let",s:"My pet got wet.",sp:"🐾💧"},
-  {id:"en",rime:"en",w:"hen🐔 pen🖊️ ten🔟 men den",s:"The hen has ten eggs.",sp:"🐔🔟"},
-  {id:"ed",rime:"ed",w:"bed🛏️ red🔴 fed led wed",s:"The bed is red.",sp:"🛏️🔴"},
-  {id:"eg",rime:"eg",w:"leg🦵 peg beg keg",s:"The hen has a red leg.",sp:"🐔🦵"},
+  {id:"et",rime:"et",w:"net🥅 jet✈️ wet💧 pet🐾 vet🩺 get~🫴",s:"My pet got wet.",sp:"🐾💧"},
+  {id:"en",rime:"en",w:"hen🐔 pen🖊️ ten🔟 men👬",s:"The hen has ten eggs.",sp:"🐔🔟"},
+  {id:"ed",rime:"ed",w:"bed🛏️ red🔴 fed~🍼 led~💡 wed~💒",s:"The bed is red.",sp:"🛏️🔴"},
+  {id:"eg",rime:"eg",w:"leg🦵 peg🧷 keg🛢️ beg~🙏",s:"The hen has a red leg.",sp:"🐔🦵"},
   {id:"rev",rev:1,alien:"zet ven yed jeg bep lem",s:"Ten red hens get in a big net.",sp:"🐔🥅"}]},
  {id:"mix",v:"a",name:"All short vowels",bn:"সব ছোট স্বর একসাথে",col:"#ff7a3d",lessons:[
   {id:"rev",rev:1,all:1,alien:"zat vip yog kub jet fen",s:"A cat, a pig, a dog, a bug and a hen sit in the sun.",sp:"🐱🐷🐶🐛🐔"}]},
  {id:"dg",name:"Two letters, one sound",bn:"দুই অক্ষর, এক আওয়াজ",col:"#00a6c8",lessons:[
-  {id:"sh",dg:"sh",ex:"ship",w:"ship🚢 shop🏪 fish🐟 dish🍽️ cash💵 wish🌠 shed",s:"A fish is on the ship.",sp:"🐟🚢"},
-  {id:"ch",dg:"ch",ex:"chip",w:"chip🍟 chick🐥 chop🪓 chat💬 chin rich much",s:"The chick has a chip.",sp:"🐥🍟"},
-  {id:"th",dg:"th",ex:"bath",w:"bath🛀 math➕ thin path with",s:"Beth is in the bath.",sp:"🛀"},
-  {id:"ck",dg:"ck",ex:"duck",w:"duck🦆 sock🧦 rock🪨 lock🔒 back neck",s:"The duck has a sock.",sp:"🦆🧦"},
-  {id:"ng",dg:"ng",ex:"ring",w:"ring💍 king👑 sing🎤 song🎵 bang💥 long",s:"The king has a ring.",sp:"👑💍"},
+  {id:"sh",dg:"sh",ex:"ship",w:"ship🚢 shop🏪 fish🐟 dish🍽️ cash💵 shed🏚️ wish~🌠",s:"A fish is on the ship.",sp:"🐟🚢"},
+  {id:"ch",dg:"ch",ex:"chip",w:"chip🍟 chick🐥 chop🪓 chat~💬 rich~💰",s:"The chick has a chip.",sp:"🐥🍟"},
+  {id:"th",dg:"th",ex:"bath",w:"bath🛀 math➕ path🛤️ thin~🥢 with~🤝",s:"Beth is in the bath.",sp:"🛀"},
+  {id:"ck",dg:"ck",ex:"duck",w:"duck🦆 sock🧦 rock🪨 lock🔒 neck🧣 back~🔙",s:"The duck has a sock.",sp:"🦆🧦"},
+  {id:"ng",dg:"ng",ex:"ring",w:"ring💍 king👑 sing🎤 song🎵 bang💥 long~📏",s:"The king has a ring.",sp:"👑💍"},
   {id:"rev",rev:1,alien:"shap chim thog zick yong shub",s:"The duck and the fish sing on the ship.",sp:"🦆🐟🚢"}]},
  {id:"sp",name:"Special families",bn:"বিশেষ ফ্যামিলি",col:"#e0489a",lessons:[
-  {id:"ill",rime:"ill",chunk:1,w:"hill⛰️ pill💊 fill will mill",s:"Jill ran up the hill.",sp:"⛰️"},
-  {id:"ell",rime:"ell",chunk:1,w:"bell🔔 shell🐚 yell📣 well tell sell",s:"The bell fell in the well.",sp:"🔔"},
-  {id:"all",rime:"all",chunk:1,note:"Here a says /aw/!",w:"ball⚽ wall🧱 tall🦒 fall🍂 call📞 hall",s:"The ball is on the wall.",sp:"⚽🧱"},
-  {id:"ind",rime:"ind",chunk:1,note:"Here i says its name!",w:"find🔍 mind🧠 kind💖 blind🦯 bind",s:"Find the kind cat.",sp:"🔍🐱"},
-  {id:"old",rime:"old",chunk:1,note:"Here o says its name!",w:"cold🥶 gold🥇 hold🤲 told sold bold fold",s:"The gold is cold.",sp:"🥇🥶"},
-  {id:"ost",rime:"ost",chunk:1,note:"Here o says its name!",w:"post📮 ghost👻 most host",s:"The ghost is at the post.",sp:"👻📮"},
+  {id:"ill",rime:"ill",chunk:1,w:"hill⛰️ pill💊 mill🏭 fill~🫗 will~📜",s:"Jill ran up the hill.",sp:"⛰️"},
+  {id:"ell",rime:"ell",chunk:1,w:"bell🔔 shell🐚 well🪣 yell📣 tell~🗣️ sell~🛒",s:"The bell fell in the well.",sp:"🔔"},
+  {id:"all",rime:"all",chunk:1,note:"Here a says /aw/!",w:"ball⚽ wall🧱 tall🦒 fall🍂 call📞 hall🏛️",s:"The ball is on the wall.",sp:"⚽🧱"},
+  {id:"ind",rime:"ind",chunk:1,note:"Here i says its name!",w:"find🔍 blind🦯 mind~🧠 kind~💖 bind~📎",s:"Find the kind cat.",sp:"🔍🐱"},
+  {id:"old",rime:"old",chunk:1,note:"Here o says its name!",w:"cold🥶 gold🥇 fold🗞️ hold~🤲 sold~🧾 bold~🅱️",s:"The gold is cold.",sp:"🥇🥶"},
+  {id:"ost",rime:"ost",chunk:1,note:"Here o says its name!",w:"post📮 ghost👻 host🤵 most~💯",s:"The ghost is at the post.",sp:"👻📮"},
   {id:"rev",rev:1,alien:"zill vell nall jind vold zost",s:"The kind ghost has a cold gold ball.",sp:"👻🥇⚽"}]}];
 /* how a rime sounds when blended: real words where they exist, otherwise IPA for the neural voice ("ph:") */
 /* every rime is voiced from IPA so it keeps its full, stressed vowel (a word like "an" or "am" is otherwise read weakly, /ən/) */
-const RD_RSAY={at:"ph:ˈæt",an:"ph:ˈæn",am:"ph:ˈæm",ap:"ph:ˈæp",ad:"ph:ˈæd",ag:"ph:ˈæɡ",it:"ph:ˈɪt",in:"ph:ˈɪn",ip:"ph:ˈɪp",ig:"ph:ˈɪɡ",ix:"ph:ˈɪks",id:"ph:ˈɪd",
- ot:"ph:ˈɑt",op:"ph:ˈɑp",og:"ph:ˈɑɡ",ox:"ph:ˈɑks",ob:"ph:ˈɑb",ug:"ph:ˈʌɡ",un:"ph:ˈʌn",ut:"ph:ˈʌt",ub:"ph:ˈʌb",up:"ph:ˈʌp",ud:"ph:ˈʌd",
- et:"ph:ˈɛt",en:"ph:ˈɛn",ed:"ph:ˈɛd",eg:"ph:ˈɛɡ",ill:"ph:ˈɪl",ell:"ph:ˈɛl",all:"ph:ˈɔl",ind:"ph:ˈaɪnd",old:"ph:ˈoʊld",ost:"ph:ˈoʊst"};
+const RD_RSAY={at:"pw:ˈæt",an:"pw:ˈæn",am:"pw:ˈæm",ap:"pw:ˈæp",ad:"pw:ˈæd",ag:"pw:ˈæɡ",it:"pw:ˈɪt",in:"pw:ˈɪn",ip:"pw:ˈɪp",ig:"pw:ˈɪɡ",ix:"pw:ˈɪks",id:"pw:ˈɪd",
+ ot:"pw:ˈɑt",op:"pw:ˈɑp",og:"pw:ˈɑɡ",ox:"pw:ˈɑks",ob:"pw:ˈɑb",ug:"pw:ˈʌɡ",un:"pw:ˈʌn",ut:"pw:ˈʌt",ub:"pw:ˈʌb",up:"pw:ˈʌp",ud:"pw:ˈʌd",
+ et:"pw:ˈɛt",en:"pw:ˈɛn",ed:"pw:ˈɛd",eg:"pw:ˈɛɡ",ill:"pw:ˈɪl",ell:"pw:ˈɛl",all:"pw:ˈɔl",ind:"pw:ˈaɪnd",old:"pw:ˈoʊld",ost:"pw:ˈoʊst"};
+/* what a device voice says if a chunk clip is missing */
+if(typeof PHFB!=="undefined")Object.entries(RD_RSAY).forEach(([k,v])=>{PHFB[v]=k;});
 const RD_SAY={meet:"Meet the family!",dg:"Two letters, one sound!",blend:"Let's blend!",read:"Read the words.",pick:"Read it. Which picture?",build:"Build the word.",
  alien:"Real word or alien word?",sent:"Read the sentence.",done:"Great reading!",review:"Let's review!",again:"Let's try again!"};
 const RD_TEAMS=["sh","ch","th","ck","ng","ll","ss","gh","wh"];
 /* lessons as one list, with the words parsed: "cat🐱" -> {w:"cat", p:"🐱"} */
 const RD_L=[];RD_UNITS.forEach((u,ui)=>u.lessons.forEach((l,li)=>{
- const words=(l.w||"").split(/\s+/).filter(Boolean).map(t=>{const m=t.match(/^([A-Za-z]+)(.*)$/);return {w:m[1].toLowerCase(),name:m[1],p:m[2]||""};});
+ const words=(l.w||"").split(/\s+/).filter(Boolean).map(t=>{const m=t.match(/^([A-Za-z]+)(~?)(@?)(.*)$/);return {w:m[1].toLowerCase(),name:m[1],abs:!!m[2],p:m[3]?RD_SVG[m[4]]||"":m[4]||""};});
  RD_L.push(Object.assign({},l,{u,ui,li,key:u.id+"-"+l.id,words,idx:RD_L.length}));}));
 const rdLesson=k=>RD_L.find(l=>l.key===k);
 const rdUnitWords=L=>RD_L.filter(x=>!x.rev&&(L.all?["a","i","o","u","e"].includes(x.u.id):x.u===L.u)).flatMap(x=>x.words);
@@ -82,7 +91,7 @@ const RD_CIPA={b:"b",c:"k",k:"k",ck:"k",d:"d",f:"f",g:"ɡ",h:"h",j:"ʤ",l:"l",ll
 const rdLessonOf=x=>RD_L.find(l=>!l.rev&&l.words.includes(x));
 function rdOnsetRime(x,L){const ps=rdSplit(x.w,L);let i=ps.findIndex(p=>p.chunk||/^[aeiou]/.test(p.g));if(i<0)i=ps.length;return {on:ps.slice(0,i),rm:ps.slice(i)};}
 function rdRimeSay(rm){if(!rm.length)return null;if(rm.length===1&&rm[0].chunk)return RD_RSAY[rm[0].g]||null;const g=rm.map(p=>p.g).join("");if(RD_RSAY[g])return RD_RSAY[g];
- const v=RD_VIPA[rm[0].g],cs=rm.slice(1).map(p=>RD_CIPA[p.g]);return v&&!cs.some(c=>c==null)?"ph:ˈ"+v+cs.join(""):null;}
+ const v=RD_VIPA[rm[0].g],cs=rm.slice(1).map(p=>RD_CIPA[p.g]);return v&&!cs.some(c=>c==null)?"pw:ˈ"+v+cs.join(""):null;}
 function rdEq(x,L){L=L&&!L.rev?L:rdLessonOf(x)||L;const {on,rm}=rdOnsetRime(x,L),rs=rdRimeSay(rm);
  if(!on.length||!rs)return {eq:false,list:[...rdSplit(x.w,L).map(p=>rdSound(p,L)),x.w],n:rdSplit(x.w,L).length};
  return {eq:true,on:on.map(p=>p.g).join(""),rm:rm.map(p=>p.g).join(""),list:[...on.map(p=>rdSound(p,L)),rs,x.w],n:on.length};}
@@ -91,6 +100,7 @@ const rdPartAt=(e,j)=>j===e.list.length-1?"w":e.eq?(j<e.n?"on":"rm"):"on";
 function READ_TEXTS(){const out=[...Object.values(RD_SAY),"Yay! You did it!"];
  RD_L.forEach(L=>{L.words.forEach(x=>{out.push(x.w);const e=rdEq(x,L);if(e.eq)out.push(e.list[e.list.length-2]);});if(L.rime&&RD_RSAY[L.rime])out.push(RD_RSAY[L.rime]);if(L.ex)out.push(L.ex);out.push(L.s);rdSentWords(L.s).forEach(w=>out.push(rdWordSay(w)));});
  return [...new Set(out)];}
+const rdPic=x=>x.p&&!x.abs;
 const rdSentWords=s=>s.split(/\s+/).map(w=>w.replace(/[^A-Za-z']/g,"")).filter(Boolean);
 const rdWordSay=w=>w.toLowerCase()==="a"?"ph:ə":w;
 /* letters / letter teams of a word, with the sound each one makes */
@@ -109,22 +119,22 @@ const rdUnitDone=u=>RD_L.filter(L=>L.u===u).every(L=>rdStars(L)>0);
 const rdUnitStickers=()=>RD_UNITS.filter(rdUnitDone).length;
 const rdOpen=L=>L.idx===0||rdStars(RD_L[L.idx-1])>=2;
 const rdNextL=()=>RD_L.find(L=>!rdStars(L))||RD_L[RD_L.length-1];
-const rdPics=()=>{const R=RDST();return RD_L.filter(L=>rdStars(L)).flatMap(L=>L.words).filter(x=>x.p);};
-function rdDue(){const R=RDST(),d=rdDay(),pic={};RD_L.forEach(L=>L.words.forEach(x=>{if(x.p)pic[x.w]=x;}));return Object.keys(R.w).filter(w=>R.w[w].d<=d&&pic[w]).map(w=>pic[w]);}
+const rdPics=()=>RD_L.filter(L=>rdStars(L)).flatMap(L=>L.words).filter(rdPic);
+function rdDue(){const R=RDST(),d=rdDay(),pic={};RD_L.forEach(L=>L.words.forEach(x=>{if(rdPic(x))pic[x.w]=x;}));return Object.keys(R.w).filter(w=>R.w[w].d<=d&&pic[w]).map(w=>pic[w]);}
 function rdMark(w,ok){const R=RDST(),c=R.w[w]||{b:0,d:0};c.b=ok?Math.min(RD_GAP.length-1,c.b+1):0;c.d=rdDay()+RD_GAP[ok?c.b:0];R.w[w]=c;}
 /* ---------- the check games ---------- */
-function rdPickRound(x,pool){const others=lpShuffle(pool.filter(y=>y.p&&y.w!==x.w&&y.p!==x.p)).slice(0,2);return {t:"pick",x,opts:lpShuffle([x,...others])};}
+function rdPickRound(x,pool){const others=lpShuffle(pool.filter(y=>rdPic(y)&&y.w!==x.w&&y.p!==x.p)).slice(0,2);return {t:"pick",x,opts:lpShuffle([x,...others])};}
 function rdBuildRound(x,L,pool){const parts=rdSplit(x.w,L);let mi=0;
  if(L.dg)mi=Math.max(0,parts.findIndex(p=>p.g===L.dg));else if(L.chunk)mi=parts.findIndex(p=>p.chunk);
  const miss=parts[mi].g;let alt;
  if(L.dg)alt=["sh","ch","th","ck","ng"].filter(g=>g!==miss);else if(L.chunk)alt=["ill","ell","all","ind","old","ost"].filter(g=>g!==miss);
  else alt=[...new Set(pool.map(y=>rdSplit(y.w,L)[0].g).filter(g=>g!==miss&&g.length===1).concat(["b","c","d","f","h","m","p","s","t"]))].filter(g=>g!==miss);
  return {t:"build",x,parts,mi,opts:lpShuffle([miss,...lpShuffle(alt).slice(0,2)])};}
-function rdMakePlay(L){const pics=L.words.filter(x=>x.p),pool=[...pics,...rdPics()],uniq=[];pool.forEach(y=>{if(!uniq.find(z=>z.w===y.w))uniq.push(y);});
- const src=pics.length>=2?pics:[...pics,...lpShuffle(uniq.filter(y=>!pics.includes(y)))].slice(0,3);const fill=uniq.length>=3?uniq:[...uniq,...RD_L.flatMap(l=>l.words).filter(y=>y.p)];
- const t=lpShuffle(src),bt=lpShuffle(L.words.filter(x=>x.p&&x.w!==L.rime)),rounds=[];
+function rdMakePlay(L){const pics=L.words.filter(rdPic),pool=[...pics,...rdPics()],uniq=[];pool.forEach(y=>{if(!uniq.find(z=>z.w===y.w))uniq.push(y);});
+ const src=pics.length>=2?pics:[...pics,...lpShuffle(uniq.filter(y=>!pics.includes(y)))].slice(0,3);const fill=uniq.length>=3?uniq:[...uniq,...RD_L.flatMap(l=>l.words).filter(rdPic)];
+ const t=lpShuffle(src),bt=lpShuffle(L.words.filter(x=>rdPic(x)&&x.w!==L.rime)),rounds=[];
  for(let i=0;i<4;i++){const x=t[i%t.length];rounds.push(i%2===1&&bt.length?rdBuildRound(bt[(i>>1)%bt.length],L,fill):rdPickRound(x,fill));}return rounds;}
-function rdMakeReview(words,n){const pool=RD_L.flatMap(l=>l.words).filter(y=>y.p);return lpShuffle(words.filter(x=>x.p)).slice(0,n).map(x=>rdPickRound(x,pool));}
+function rdMakeReview(words,n){const pool=RD_L.flatMap(l=>l.words).filter(rdPic);return lpShuffle(words.filter(rdPic)).slice(0,n).map(x=>rdPickRound(x,pool));}
 function rdMakeAlien(L){const real=lpShuffle(rdWordsOf(L).map(x=>x.w)).slice(0,3),al=lpShuffle(L.alien.split(" ")).slice(0,3);return lpShuffle([...real.map(w=>({w,real:true})),...al.map(w=>({w,real:false}))]);}
 /* ---------- screens ---------- */
 const rdTiles=(parts,L,cls,lit)=>`<div class="rd-tiles ${cls||""}">${parts.map((p,i)=>`<button class="rd-tile ${p.rime||p.chunk?"rm":""} ${p.g.length>1?"team":""} ${lit&&lit.includes(i)?"lit":""}" data-act="rdTile" data-i="${i}" style="--c:${L.u.col}"><b>${esc(p.g)}</b><i class="rd-sb ${p.g.length>1?"dash":"dot"}"></i></button>`).join("")}</div>`;
@@ -193,11 +203,13 @@ function rdStart(L){const R=RDST(),due=rdDue().filter(x=>!L.words.find(y=>y.w===
  const steps=L.rev?["mix","read","alien","sent","done"]:[...(due.length>=2&&!L.rev?["warm"]:[]),"meet","blend","read","play","sent","done"];
  const Q={k:L.key,steps,s:0,i:0,ok:0,tries:0,heard:[],lit:[],miss:null,got:false,blended:false};
  if(steps[0]==="warm")Q.rounds=rdMakeReview(due,3);
- Q.bw=L.words.slice().sort((a,b)=>(b.p?1:0)-(a.p?1:0)).slice(0,L.rev?0:3);
+ Q.bw=L.words.slice().sort((a,b)=>(rdPic(b)?1:0)-(rdPic(a)?1:0)).slice(0,L.rev?0:3);
  if(L.rev){Q.rounds=rdMakeReview(rdUnitWords(L),5);Q.rw=lpShuffle(rdUnitWords(L)).slice(0,8);Q.al=rdMakeAlien(L);}
  else Q.play=rdMakePlay(L);
  return Q;}
-function rdEnter(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),st=Q.steps[Q.s];Q.i=0;Q.miss=null;Q.got=false;Q.blended=false;Q.lit=[];Q.hl=-1;Q.res="";Q.pickd="";
+function rdWarm(L){try{const ws=L.rev?rdUnitWords(L):L.words,set=new Set();ws.forEach(x=>{set.add(x.w);const e=rdEq(x,L);if(e.eq)set.add(e.list[e.list.length-2]);});set.add(L.s);
+ if(L.rime&&RD_RSAY[L.rime])set.add(RD_RSAY[L.rime]);set.forEach(s=>{if(TTS.clip(s))fetch((window.AUDIO_BASE||"a/")+akey(s)+".mp3").catch(()=>{});});}catch(e){}}
+function rdEnter(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),st=Q.steps[Q.s];if(Q.s===0)rdWarm(L);Q.i=0;Q.miss=null;Q.got=false;Q.blended=false;Q.lit=[];Q.hl=-1;Q.res="";Q.pickd="";
  if(st==="play")Q.rounds=Q.play;
  if(st==="mix")Q.rounds=rdMakeReview(rdUnitWords(L),5);
  A.k=Date.now();render();window.scrollTo(0,0);
@@ -214,27 +226,27 @@ function rdAfterRound(ok){const A=APP.pals,Q=A.q;if(ok)Q.ok++;Q.tries++;
   A.k=Date.now();render();rdRoundSay();},1200);}
 function rdStep(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k);Q.s++;
  if(Q.steps[Q.s]==="done"){const n=Q.playN||1,okN=Q.playOk||0;let s=L.rev?(Q.alOk>=5&&Q.mixOk>=4?3:Q.alOk>=4&&Q.mixOk>=3?2:1):(okN>=4?3:okN>=3?2:1);
-  Q.stars=s;const R=RDST();R.l[L.key]=Math.max(R.l[L.key]||0,s);if(!L.rev)L.words.forEach(x=>{if(x.p&&!R.w[x.w])R.w[x.w]={b:0,d:rdDay()+1};});
+  Q.stars=s;const R=RDST();R.l[L.key]=Math.max(R.l[L.key]||0,s);if(!L.rev)L.words.forEach(x=>{if(rdPic(x)&&!R.w[x.w])R.w[x.w]={b:0,d:rdDay()+1};});
   addXP(s*2);Store.save();SND.play(s>=2?"done":"ok");if(s>=2)confetti(80);setTimeout(()=>APP.pals?.q===Q&&lpPlay(s>=2?[RD_SAY.done]:[RD_SAY.again]),400);}
  rdEnter();}
 const RD_ACT={
  palsRead(){lpGo("rd");},
  rdOpen(el){const L=rdLesson(el.dataset.k);if(!L)return;if(!rdOpen(L)){SND.play("no");toast("আগের লেসনে ⭐⭐ পেলে এটা খুলবে 🔒");return;}APP.pals.q=rdStart(L);APP.pals.scr="rdl";TTS.stop();LP_MUSIC.stop();rdEnter();},
- rdDaily(){const due=rdDue();if(!due.length)return;const pool=RD_L.flatMap(l=>l.words).filter(y=>y.p);APP.pals.q={rounds:lpShuffle(due).slice(0,6).map(x=>rdPickRound(x,pool)),i:0,ok:0,daily:1};lpGo("rdv");setTimeout(()=>lpSay(RD_SAY.review),300);},
+ rdDaily(){const due=rdDue();if(!due.length)return;const pool=RD_L.flatMap(l=>l.words).filter(rdPic);APP.pals.q={rounds:lpShuffle(due).slice(0,6).map(x=>rdPickRound(x,pool)),i:0,ok:0,daily:1};lpGo("rdv");setTimeout(()=>lpSay(RD_SAY.review),300);},
  rdNext(){rdStep();},
  rdTile(el){const A=APP.pals,Q=A.q;if(!Q||A.scr!=="rdl")return;const L=rdLesson(Q.k),st=Q.steps[Q.s];if(st!=="meet"&&st!=="blend")return;
   const parts=st==="meet"?rdMeetParts(L):rdSplit(Q.bw[Q.i].w,L);const i=+el.dataset.i,p=parts[i];if(!p)return;
   if(!Q.lit.includes(i))Q.lit.push(i);render();lpPlay([rdSound(p,L)]);},
  rdMeetPlay(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),n=rdMeetParts(L).length;Q.blended=false;Q.lit=[];render();
-  TTS.play(rdMeetList(L),lpRate(),i=>{if(APP.pals?.q!==Q||i<0)return;if(i<n)Q.lit=[...Array(i+1).keys()];else Q.blended=true;render();});},
+  TTS.play(rdMeetList(L),1,i=>{if(APP.pals?.q!==Q||i<0)return;if(i<n)Q.lit=[...Array(i+1).keys()];else Q.blended=true;render();});},
  rdBlend(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),x=Q.bw[Q.i],parts=rdSplit(x.w,L);Q.lit=[];Q.blended=false;render();
-  TTS.play([...parts.map(p=>rdSound(p,L)),x.w],lpRate(),i=>{if(APP.pals?.q!==Q)return;if(i>=0&&i<parts.length){Q.lit=[...Array(i+1).keys()];render();}else if(i===parts.length){Q.blended=true;render();SND.play("pair");}});},
+  TTS.play([...parts.map(p=>rdSound(p,L)),x.w],1,i=>{if(APP.pals?.q!==Q)return;if(i>=0&&i<parts.length){Q.lit=[...Array(i+1).keys()];render();}else if(i===parts.length){Q.blended=true;render();SND.play("pair");}});},
  rdBlendNext(){const A=APP.pals,Q=A.q;if(Q.i+1<Q.bw.length){Q.i++;Q.blended=false;Q.lit=[];A.k=Date.now();render();lpSay(RD_SAY.blend);}else rdStep();},
  rdSayW(el){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),ws=L.rev?Q.rw:L.words,i=+el.dataset.i,e=rdEq(ws[i],L);if(!Q.heard.includes(i))Q.heard.push(i);Q.cw=i;Q.part="";render();
-  TTS.play(e.list,lpRate(),j=>{if(APP.pals?.q!==Q||Q.cw!==i)return;Q.part=j<0?(Q.part==="w"?"w":""):rdPartAt(e,j);render();if(j===e.list.length-1)SND.play("pair");});},
+  TTS.play(e.list,1,j=>{if(APP.pals?.q!==Q||Q.cw!==i)return;Q.part=j<0?(Q.part==="w"?"w":""):rdPartAt(e,j);render();if(j===e.list.length-1)SND.play("pair");});},
  rdReadAll(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),ws=L.rev?Q.rw:L.words;Q.all=true;const map=[],all=[];
   ws.forEach((x,i)=>{const e=rdEq(x,L);e.list.forEach((s,j)=>{all.push(s);map.push([i,rdPartAt(e,j)]);});});
-  TTS.play(all,lpRate(),j=>{if(APP.pals?.q!==Q)return;if(j<0){Q.part="";render();return;}const [i,p]=map[j];Q.cw=i;Q.part=p;if(!Q.heard.includes(i))Q.heard.push(i);render();});},
+  TTS.play(all,1,j=>{if(APP.pals?.q!==Q)return;if(j<0){Q.part="";render();return;}const [i,p]=map[j];Q.cw=i;Q.part=p;if(!Q.heard.includes(i))Q.heard.push(i);render();});},
  rdSayX(){const Q=APP.pals.q,r=Q.rounds[Math.min(Q.i,Q.rounds.length-1)];lpSay(r.x.w);},
  rdPick(el){const A=APP.pals,Q=A.q,r=Q.rounds[Q.i];if(!r||Q.got)return;const w=el.dataset.w,first=Q.miss===null;
   if(w===r.x.w){Q.got=true;SND.play("ok");render();lpSay(r.x.w);const st=A.scr==="rdl"?Q.steps[Q.s]:"rdv";

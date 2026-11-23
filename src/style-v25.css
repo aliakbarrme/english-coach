@@ -90,3 +90,7 @@
 .rd-eqw.lit{background:#fff4d1;transform:scale(1.08)}
 @media (max-width:340px){.rd-eqt{min-width:44px;height:50px;font-size:1.6rem}.rd-eqw b{font-size:1.7rem}.rd-eqbar>i{font-size:1.3rem}}
 .palsview > .rd-eqbar{width:100%}
+/* our own 3D word icons sit like the emoji pictures */
+.rd-svg{display:block;width:1.1em;height:1.1em}
+.rd-wp .rd-svg{width:32px;height:32px}.rd-eqw em .rd-svg{width:42px;height:42px}.rd-rpic .rd-svg{width:84px;height:84px}
+.rd-pic .rd-svg{width:62px;height:62px}.lp-bpic .rd-svg{width:104px;height:104px}.rd-scene .rd-svg{width:clamp(40px,13vw,64px);height:clamp(40px,13vw,64px)}
