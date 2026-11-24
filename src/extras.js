@@ -188,3 +188,6 @@ function viewPicker(){
       <span class="pk-stats"><span><em>${p.streak||0}</em>Streak</span><span><em>${p.xp||0}</em>XP</span></span></button></div>`).join("")}</div>
    <button class="pk-add" data-act="addProfile"><span class="pk-plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span><span class="grow"><b>Add a profile</b><small>Partner, kids, anyone</small></span><span class="pk-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 7l5 5-5 5"/></svg></span></button><p class="pk-copy">© 2026 Ali Akbar · BD Webhut</p></main>`;
 }
+/* on phones and tablets: no long-press menu (save image, Google Lens, translate) except in text fields */
+if(typeof document!=="undefined"&&window.matchMedia&&matchMedia("(pointer:coarse)").matches)
+ document.addEventListener("contextmenu",e=>{if(!(e.target.closest&&e.target.closest("input,textarea,select,[contenteditable],.selectable")))e.preventDefault();});

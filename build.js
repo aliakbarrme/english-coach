@@ -105,10 +105,11 @@ const page = pageWith([], [], BOOK_DATA);   // private artifact + local standalo
 fs.writeFileSync(path.join(root, "..", "projects", "ali-english-coach.html"), page);
 
 const head = (body, extra) => `<!doctype html>
-<html lang="en">
+<html lang="en" translate="no" class="notranslate">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="google" content="notranslate">
 <meta name="author" content="Ali Akbar, BD Webhut">
 <meta name="copyright" content="© 2026 Ali Akbar · BD Webhut. All rights reserved.">
 <meta name="description" content="Bolo English: speak English every day, for the whole family. Kids learn with pictures and sound, adults practise work, family and everyday English.">

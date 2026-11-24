@@ -153,3 +153,10 @@
 .lp-subsp .lp-subs{margin-top:0}
 @media (min-width:1180px){.lp-hubgrid{grid-template-columns:minmax(0,1.5fr) minmax(340px,1fr);grid-template-areas:"map up" "map subs";align-items:start}
  .lp-hubgrid .lp-panel{order:0;position:static}.lp-uppanel{grid-area:up}.lp-subsp{grid-area:subs}.lp-mapwrap{grid-area:map;order:0}}
+
+/* feel like an app, not a web page: no pinch or double-tap zoom, no text selection (and so no
+   Google Translate / Touch to Search popups), no long-press callouts; text fields still work */
+html{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+img{-webkit-user-drag:none;-webkit-touch-callout:none}
+input,textarea,select,[contenteditable="true"],.selectable{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
