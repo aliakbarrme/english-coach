@@ -74,7 +74,7 @@ const RD_RSAY={at:"pw:ˈæt",an:"pw:ˈæn",am:"pw:ˈæm",ap:"pw:ˈæp",ad:"pw:ˈ
  et:"pw:ˈɛt",en:"pw:ˈɛn",ed:"pw:ˈɛd",eg:"pw:ˈɛɡ",ill:"pw:ˈɪl",ell:"pw:ˈɛl",all:"pw:ˈɔl",ind:"pw:ˈaɪnd",old:"pw:ˈoʊld",ost:"pw:ˈoʊst"};
 /* what a device voice says if a chunk clip is missing */
 if(typeof PHFB!=="undefined")Object.entries(RD_RSAY).forEach(([k,v])=>{PHFB[v]=k;});
-const RD_SAY={meet:"Meet the family!",dg:"Two letters, one sound!",blend:"Let's blend!",read:"Read the words.",pick:"Read it. Which picture?",build:"Build the word.",
+const RD_SAY={slide:"Slide to sound it out!",newWord:"Now, sound out this new word!",meet:"Meet the family!",dg:"Two letters, one sound!",blend:"Let's blend!",read:"Read the words.",pick:"Read it. Which picture?",build:"Build the word.",
  alien:"Real word or alien word?",sent:"Read the sentence.",done:"Great reading!",review:"Let's review!",again:"Let's try again!"};
 const RD_TEAMS=["sh","ch","th","ck","ng","ll","ss","gh","wh"];
 /* lessons as one list, with the words parsed: "cat🐱" -> {w:"cat", p:"🐱"} */
@@ -98,7 +98,7 @@ function rdEq(x,L){L=L&&!L.rev?L:rdLessonOf(x)||L;const {on,rm}=rdOnsetRime(x,L)
 /* which part to light while the list plays: onset sounds, then the rime, then the whole word */
 const rdPartAt=(e,j)=>j===e.list.length-1?"w":e.eq?(j<e.n?"on":"rm"):"on";
 function READ_TEXTS(){const out=[...Object.values(RD_SAY),"Yay! You did it!"];
- RD_L.forEach(L=>{L.words.forEach(x=>{out.push(x.w);const e=rdEq(x,L);if(e.eq)out.push(e.list[e.list.length-2]);});if(L.rime&&RD_RSAY[L.rime])out.push(RD_RSAY[L.rime]);if(L.ex)out.push(L.ex);out.push(L.s);rdSentWords(L.s).forEach(w=>out.push(rdWordSay(w)));});
+ RD_L.forEach(L=>{L.words.forEach(x=>{out.push(x.w,"sl:"+x.w);const e=rdEq(x,L);if(e.eq)out.push(e.list[e.list.length-2]);});if(L.rime&&RD_RSAY[L.rime])out.push(RD_RSAY[L.rime]);if(L.ex)out.push(L.ex);out.push(L.s);rdSentWords(L.s).forEach(w=>out.push(rdWordSay(w)));});
  return [...new Set(out)];}
 const rdPic=x=>x.p&&!x.abs;
 const rdSentWords=s=>s.split(/\s+/).map(w=>w.replace(/[^A-Za-z']/g,"")).filter(Boolean);
@@ -161,12 +161,14 @@ function viewRead(A,P){
    ${rdTiles(rdMeetParts(L),L,"big"+(Q.blended?" blended":""),Q.lit)}
    <p class="rd-fam" style="--c:${L.u.col}">${L.dg?`<b>${L.dg}</b> as in <b>${esc(L.ex)}</b>`:`the <b>-${L.rime}</b> family`}</p>
    <div class="row center lp-ctl"><button class="btn bk-candy" data-act="rdMeetPlay">🔊 Blend it</button><button class="btn good" data-act="rdNext">Next ➜</button></div></main>`;}
- if(step==="blend"){const x=Q.bw[Q.i],parts=rdSplit(x.w,L);
-  return `<main class="view palsview lp-run rd-l">${top}<p class="rd-cap">Tap each sound, then blend! <small class="bn">প্রতিটা আওয়াজে চাপো, তারপর জোড়া দাও</small></p>
-   ${rdTiles(parts,L,"big"+(Q.blended?" blended":""),Q.lit)}
-   <button class="rd-slide ${Q.blended?"on":""}" data-act="rdBlend" aria-label="Blend"><i></i><span>➜</span></button>
-   <div class="rd-reveal ${Q.blended?"on":""}">${Q.blended?`<span class="rd-rpic">${x.p||"⭐"}</span><b>${rdWordHTML(x,L)}</b>`:""}</div>
-   <div class="row center lp-ctl">${Q.blended?`<button class="btn good" data-act="rdBlendNext">${Q.i+1<Q.bw.length?"Next word ➜":"Next ➜"}</button>`:`<button class="btn ghost" data-act="rdBlend">👀 Show me</button>`}</div></main>`;}
+ if(step==="blend"){const x=Q.bw[Q.i],parts=rdSplit(x.w,L),prev=Q.i?rdSplit(Q.bw[Q.i-1].w,L):null,lit=Q.lit||[];
+  return `<main class="view palsview lp-run rd-l">${top}<p class="rd-cap">${Q.i?"Now, sound out this new word!":"Slide to sound it out!"} <small class="bn">${Q.i?"নতুন অক্ষরটা দেখো, তারপর আবার টেনে পড়ো":"বোতামটা টেনে নাও, প্রতিটা আওয়াজ শোনো"}</small></p>
+   <div class="rd-sl ${Q.blended?"done":""}" style="--c:${L.u.col};--n:${parts.length}">
+    <div class="rd-slw">${parts.map((p,i)=>`<span class="rd-sll ${lit.includes(i)?"lit":""} ${prev&&(!prev[i]||prev[i].g!==p.g)?"new":""} ${p.rime||p.chunk?"rm":""}" data-i="${i}">${esc(p.g)}</span>`).join("")}</div>
+    <div class="rd-trk" id="rd-trk">${parts.map((p,i)=>`<span class="rd-cell"><i class="rd-bead ${rdLong(p)?"long":"dot"} ${/^[aeiou]/.test(p.g)?"vw":""} ${lit.includes(i)?"lit":""}" data-i="${i}"></i></span>`).join("")}
+     <button class="rd-knob ${Q.blended?"end":""}" id="rd-knob" style="left:${Q.blended?100:Q.kx||0}%" aria-label="Slide">${lpChar(rdFriend(L),"",true)}</button></div></div>
+   <div class="rd-reveal ${Q.blended?"on":""}">${Q.blended?`<span class="rd-rpic">${x.p||"⭐"}</span><b>${rdWordHTML(x,L)}</b>`:`<span class="rd-hint">👆 ➜</span>`}</div>
+   <div class="row center lp-ctl">${Q.blended?`<button class="btn ghost" data-act="rdSlideAgain">↺ Again</button><button class="btn good" data-act="rdBlendNext">${Q.i+1<Q.bw.length?"Next word ➜":"Next ➜"}</button>`:`<button class="btn ghost" data-act="rdBlend">👀 Show me</button>`}</div></main>`;}
  if(step==="read"){const ws=L.rev?Q.rw:L.words,cw=ws[Q.cw||0],e=rdEq(cw,L);
   return `<main class="view palsview lp-run rd-l">${top}<p class="rd-cap">Read the words! <small class="bn">নিজে পড়ো, তারপর চাপ দিয়ে মিলিয়ে নাও</small></p>
    <div class="rd-eqbar" style="--c:${L.u.col}">${e.eq?`<span class="rd-eqt on ${Q.part==="on"?"lit":""}">${esc(e.on)}</span><i>+</i><span class="rd-eqt rm ${Q.part==="rm"?"lit":""}">${esc(e.rm)}</span><i>=</i>`:""}<span class="rd-eqw ${Q.part==="w"?"lit":""}"><b>${rdWordHTML(cw,rdLessonOf(cw)||L)}</b>${cw.p?`<em>${cw.p}</em>`:""}</span></div>
@@ -203,17 +205,17 @@ function rdStart(L){const R=RDST(),due=rdDue().filter(x=>!L.words.find(y=>y.w===
  const steps=L.rev?["mix","read","alien","sent","done"]:[...(due.length>=2&&!L.rev?["warm"]:[]),"meet","blend","read","play","sent","done"];
  const Q={k:L.key,steps,s:0,i:0,ok:0,tries:0,heard:[],lit:[],miss:null,got:false,blended:false};
  if(steps[0]==="warm")Q.rounds=rdMakeReview(due,3);
- Q.bw=L.words.slice().sort((a,b)=>(rdPic(b)?1:0)-(rdPic(a)?1:0)).slice(0,L.rev?0:3);
+ Q.bw=L.words.slice().sort((a,b)=>(rdPic(b)?1:0)-(rdPic(a)?1:0)).slice(0,L.rev?0:4);
  if(L.rev){Q.rounds=rdMakeReview(rdUnitWords(L),5);Q.rw=lpShuffle(rdUnitWords(L)).slice(0,8);Q.al=rdMakeAlien(L);}
  else Q.play=rdMakePlay(L);
  return Q;}
 function rdWarm(L){try{const ws=L.rev?rdUnitWords(L):L.words,set=new Set();ws.forEach(x=>{set.add(x.w);const e=rdEq(x,L);if(e.eq)set.add(e.list[e.list.length-2]);});set.add(L.s);
  if(L.rime&&RD_RSAY[L.rime])set.add(RD_RSAY[L.rime]);set.forEach(s=>{if(TTS.clip(s))fetch((window.AUDIO_BASE||"a/")+akey(s)+".mp3").catch(()=>{});});}catch(e){}}
-function rdEnter(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),st=Q.steps[Q.s];if(Q.s===0)rdWarm(L);Q.i=0;Q.miss=null;Q.got=false;Q.blended=false;Q.lit=[];Q.hl=-1;Q.res="";Q.pickd="";
+function rdEnter(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),st=Q.steps[Q.s];if(Q.s===0)rdWarm(L);if(st==="blend")rdSlideReset();Q.i=0;Q.miss=null;Q.got=false;Q.blended=false;Q.lit=[];Q.hl=-1;Q.res="";Q.pickd="";
  if(st==="play")Q.rounds=Q.play;
  if(st==="mix")Q.rounds=rdMakeReview(rdUnitWords(L),5);
  A.k=Date.now();render();window.scrollTo(0,0);
- const say={warm:RD_SAY.review,mix:RD_SAY.pick,meet:L.dg?RD_SAY.dg:RD_SAY.meet,blend:RD_SAY.blend,read:RD_SAY.read,alien:RD_SAY.alien,sent:RD_SAY.sent}[st];
+ const say={warm:RD_SAY.review,mix:RD_SAY.pick,meet:L.dg?RD_SAY.dg:RD_SAY.meet,blend:RD_SAY.slide,read:RD_SAY.read,alien:RD_SAY.alien,sent:RD_SAY.sent}[st];
  if(st==="play"){setTimeout(()=>rdRoundSay(),300);return;}
  if(say)setTimeout(()=>{if(APP.pals?.q===Q){if(st==="meet")lpPlay([say,...rdMeetList(L)]);else lpSay(say);}},300);}
 const rdMeetParts=L=>L.dg?[{g:L.dg}]:L.chunk?[{g:L.rime,chunk:1}]:rdSplit(L.rime).map(p=>Object.assign(p,{rime:1}));
@@ -229,6 +231,28 @@ function rdStep(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k);Q.s++;
   Q.stars=s;const R=RDST();R.l[L.key]=Math.max(R.l[L.key]||0,s);if(!L.rev)L.words.forEach(x=>{if(rdPic(x)&&!R.w[x.w])R.w[x.w]={b:0,d:rdDay()+1};});
   addXP(s*2);Store.save();SND.play(s>=2?"done":"ok");if(s>=2)confetti(80);setTimeout(()=>APP.pals?.q===Q&&lpPlay(s>=2?[RD_SAY.done]:[RD_SAY.again]),400);}
  rdEnter();}
+/* ---------- the sound slide: drag the friend under the word; each sound plays as it is reached,
+   then the word is said slowly and then normally (continuous blending) ---------- */
+const RD_CONT=new Set(["a","e","i","o","u","m","n","s","f","l","r","v","z","w","y","sh","th","ng","ll","ss","ff","h"]);
+const rdLong=p=>p.chunk||RD_CONT.has(p.g);
+const RDS={drag:false,done:false,played:[],q:[],busy:false,auto:0};
+function rdSlideReset(){const Q=APP.pals&&APP.pals.q;cancelAnimationFrame(RDS.auto);Object.assign(RDS,{drag:false,done:false,played:[],q:[],busy:false,auto:0});if(Q){Q.kx=0;Q.lit=[];Q.blended=false;}}
+function rdSlideCur(){const A=APP.pals;if(!A||A.scr!=="rdl"||!A.q)return null;const Q=A.q;if(Q.steps[Q.s]!=="blend")return null;const L=rdLesson(Q.k),x=Q.bw[Q.i];return {Q,L,x,parts:rdSplit(x.w,L)};}
+function rdDrain(){if(RDS.busy)return;const s=RDS.q.shift();if(!s){if(RDS.done)rdSlideFinish();return;}RDS.busy=true;TTS.play([s],1).then(()=>{RDS.busy=false;rdDrain();});}
+function rdSlideTo(pct){const c=rdSlideCur();if(!c||RDS.done)return;const trk=document.getElementById("rd-trk"),kb=document.getElementById("rd-knob");if(!trk||!kb)return;
+ pct=Math.max(c.Q.kx||0,Math.min(100,pct));c.Q.kx=pct;kb.style.left=pct+"%";const r=trk.getBoundingClientRect(),x=r.left+r.width*pct/100;
+ trk.querySelectorAll(".rd-bead").forEach(b=>{const i=+b.dataset.i,br=b.getBoundingClientRect();if(x>=br.left+Math.min(br.width*.4,10)&&!RDS.played.includes(i)){RDS.played.push(i);c.Q.lit=RDS.played.slice();
+  b.classList.add("lit");const l=document.querySelector(`.rd-sll[data-i="${i}"]`);l&&l.classList.add("lit");RDS.q.push(rdSound(c.parts[i],c.L));rdDrain();}});
+ if(pct>=97&&RDS.played.length>=c.parts.length){RDS.done=true;RDS.drag=false;kb.style.left="100%";rdDrain();}}
+function rdSlideFinish(){const c=rdSlideCur();if(!c||RDS.fin===c.x)return;RDS.fin=c.x;const Q=c.Q;
+ setTimeout(()=>{if(rdSlideCur()?.x!==c.x)return;TTS.play(["sl:"+c.x.w,c.x.w],1,i=>{if(i===1&&rdSlideCur()?.x===c.x){Q.blended=true;render();SND.play("pair");}});RDS.fin=null;},150);}
+function rdSlideAuto(){const t0=performance.now(),dur=2600;const step=now=>{const p=Math.min(100,(now-t0)/dur*100);rdSlideTo(p);if(p<100&&!RDS.done)RDS.auto=requestAnimationFrame(step);};RDS.auto=requestAnimationFrame(step);}
+function rdSlidePt(e){const trk=document.getElementById("rd-trk");if(!trk)return 0;const r=trk.getBoundingClientRect();return (e.clientX-r.left)/r.width*100;}
+if(typeof document!=="undefined"){
+ document.addEventListener("pointerdown",e=>{if(!e.target.closest||!e.target.closest("#rd-trk"))return;const c=rdSlideCur();if(!c||RDS.done)return;const p=rdSlidePt(e);if(Math.abs(p-(c.Q.kx||0))>22&&!e.target.closest("#rd-knob"))return;
+  e.preventDefault();cancelAnimationFrame(RDS.auto);RDS.drag=true;rdSlideTo(p);},{passive:false});
+ document.addEventListener("pointermove",e=>{if(RDS.drag)rdSlideTo(rdSlidePt(e));});
+ document.addEventListener("pointerup",()=>{RDS.drag=false;});document.addEventListener("pointercancel",()=>{RDS.drag=false;});}
 const RD_ACT={
  palsRead(){lpGo("rd");},
  rdOpen(el){const L=rdLesson(el.dataset.k);if(!L)return;if(!rdOpen(L)){SND.play("no");toast("আগের লেসনে ⭐⭐ পেলে এটা খুলবে 🔒");return;}APP.pals.q=rdStart(L);APP.pals.scr="rdl";TTS.stop();LP_MUSIC.stop();rdEnter();},
@@ -239,9 +263,9 @@ const RD_ACT={
   if(!Q.lit.includes(i))Q.lit.push(i);render();lpPlay([rdSound(p,L)]);},
  rdMeetPlay(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),n=rdMeetParts(L).length;Q.blended=false;Q.lit=[];render();
   TTS.play(rdMeetList(L),1,i=>{if(APP.pals?.q!==Q||i<0)return;if(i<n)Q.lit=[...Array(i+1).keys()];else Q.blended=true;render();});},
- rdBlend(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),x=Q.bw[Q.i],parts=rdSplit(x.w,L);Q.lit=[];Q.blended=false;render();
-  TTS.play([...parts.map(p=>rdSound(p,L)),x.w],1,i=>{if(APP.pals?.q!==Q)return;if(i>=0&&i<parts.length){Q.lit=[...Array(i+1).keys()];render();}else if(i===parts.length){Q.blended=true;render();SND.play("pair");}});},
- rdBlendNext(){const A=APP.pals,Q=A.q;if(Q.i+1<Q.bw.length){Q.i++;Q.blended=false;Q.lit=[];A.k=Date.now();render();lpSay(RD_SAY.blend);}else rdStep();},
+ rdBlend(){rdSlideReset();render();rdSlideAuto();},
+ rdSlideAgain(){rdSlideReset();render();},
+ rdBlendNext(){const A=APP.pals,Q=A.q;if(Q.i+1<Q.bw.length){Q.i++;rdSlideReset();A.k=Date.now();render();lpSay(RD_SAY.newWord);}else rdStep();},
  rdSayW(el){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),ws=L.rev?Q.rw:L.words,i=+el.dataset.i,e=rdEq(ws[i],L);if(!Q.heard.includes(i))Q.heard.push(i);Q.cw=i;Q.part="";render();
   TTS.play(e.list,1,j=>{if(APP.pals?.q!==Q||Q.cw!==i)return;Q.part=j<0?(Q.part==="w"?"w":""):rdPartAt(e,j);render();if(j===e.list.length-1)SND.play("pair");});},
  rdReadAll(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),ws=L.rev?Q.rw:L.words;Q.all=true;const map=[],all=[];
