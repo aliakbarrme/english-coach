@@ -98,7 +98,7 @@ function rdEq(x,L){L=L&&!L.rev?L:rdLessonOf(x)||L;const {on,rm}=rdOnsetRime(x,L)
 /* which part to light while the list plays: onset sounds, then the rime, then the whole word */
 const rdPartAt=(e,j)=>j===e.list.length-1?"w":e.eq?(j<e.n?"on":"rm"):"on";
 function READ_TEXTS(){const out=[...Object.values(RD_SAY),"Yay! You did it!"];
- RD_L.forEach(L=>{L.words.forEach(x=>{out.push(x.w,"sl:"+x.w);const e=rdEq(x,L);if(e.eq)out.push(e.list[e.list.length-2]);});if(L.rime&&RD_RSAY[L.rime])out.push(RD_RSAY[L.rime]);if(L.ex)out.push(L.ex);out.push(L.s);rdSentWords(L.s).forEach(w=>out.push(rdWordSay(w)));});
+ RD_L.forEach(L=>{L.words.forEach(x=>{out.push(x.w,"st:"+x.w);const e=rdEq(x,L);if(e.eq)out.push(e.list[e.list.length-2]);});if(L.rime&&RD_RSAY[L.rime])out.push(RD_RSAY[L.rime]);if(L.ex)out.push(L.ex);out.push(L.s);rdSentWords(L.s).forEach(w=>out.push(rdWordSay(w)));});
  return [...new Set(out)];}
 const rdPic=x=>x.p&&!x.abs;
 const rdSentWords=s=>s.split(/\s+/).map(w=>w.replace(/[^A-Za-z']/g,"")).filter(Boolean);
@@ -231,26 +231,36 @@ function rdStep(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k);Q.s++;
   Q.stars=s;const R=RDST();R.l[L.key]=Math.max(R.l[L.key]||0,s);if(!L.rev)L.words.forEach(x=>{if(rdPic(x)&&!R.w[x.w])R.w[x.w]={b:0,d:rdDay()+1};});
   addXP(s*2);Store.save();SND.play(s>=2?"done":"ok");if(s>=2)confetti(80);setTimeout(()=>APP.pals?.q===Q&&lpPlay(s>=2?[RD_SAY.done]:[RD_SAY.again]),400);}
  rdEnter();}
-/* ---------- the sound slide: drag the friend under the word; each sound plays as it is reached,
-   then the word is said slowly and then normally (continuous blending) ---------- */
+/* ---------- the sound slide: continuous blending ("mmmaaat" in one breath, then "mat").
+   Dragging the friend starts one stretched clip of the word; the finger sets its pace (playback speed follows the finger),
+   letters light up as their sound is reached, and at the end the word is said normally. ---------- */
 const RD_CONT=new Set(["a","e","i","o","u","m","n","s","f","l","r","v","z","w","y","sh","th","ng","ll","ss","ff","h"]);
 const rdLong=p=>p.chunk||RD_CONT.has(p.g);
-const RDS={drag:false,done:false,played:[],q:[],busy:false,auto:0};
-function rdSlideReset(){const Q=APP.pals&&APP.pals.q;cancelAnimationFrame(RDS.auto);Object.assign(RDS,{drag:false,done:false,played:[],q:[],busy:false,auto:0});if(Q){Q.kx=0;Q.lit=[];Q.blended=false;}}
+const RDS={drag:false,started:false,ended:false,fingerEnd:false,done:false,auto:false,raf:0,x:null};
+function rdSlideReset(){const Q=APP.pals&&APP.pals.q;cancelAnimationFrame(RDS.raf);Object.assign(RDS,{drag:false,started:false,ended:false,fingerEnd:false,done:false,auto:false,raf:0,x:null});if(Q){Q.kx=0;Q.lit=[];Q.blended=false;}}
 function rdSlideCur(){const A=APP.pals;if(!A||A.scr!=="rdl"||!A.q)return null;const Q=A.q;if(Q.steps[Q.s]!=="blend")return null;const L=rdLesson(Q.k),x=Q.bw[Q.i];return {Q,L,x,parts:rdSplit(x.w,L)};}
-function rdDrain(){if(RDS.busy)return;const s=RDS.q.shift();if(!s){if(RDS.done)rdSlideFinish();return;}RDS.busy=true;TTS.play([s],1).then(()=>{RDS.busy=false;rdDrain();});}
-function rdSlideTo(pct){const c=rdSlideCur();if(!c||RDS.done)return;const trk=document.getElementById("rd-trk"),kb=document.getElementById("rd-knob");if(!trk||!kb)return;
- pct=Math.max(c.Q.kx||0,Math.min(100,pct));c.Q.kx=pct;kb.style.left=pct+"%";const r=trk.getBoundingClientRect(),x=r.left+r.width*pct/100;
- trk.querySelectorAll(".rd-bead").forEach(b=>{const i=+b.dataset.i,br=b.getBoundingClientRect();if(x>=br.left+Math.min(br.width*.4,10)&&!RDS.played.includes(i)){RDS.played.push(i);c.Q.lit=RDS.played.slice();
-  b.classList.add("lit");const l=document.querySelector(`.rd-sll[data-i="${i}"]`);l&&l.classList.add("lit");RDS.q.push(rdSound(c.parts[i],c.L));rdDrain();}});
- if(pct>=97&&RDS.played.length>=c.parts.length){RDS.done=true;RDS.drag=false;kb.style.left="100%";rdDrain();}}
-function rdSlideFinish(){const c=rdSlideCur();if(!c||RDS.fin===c.x)return;RDS.fin=c.x;const Q=c.Q;
- setTimeout(()=>{if(rdSlideCur()?.x!==c.x)return;TTS.play(["sl:"+c.x.w,c.x.w],1,i=>{if(i===1&&rdSlideCur()?.x===c.x){Q.blended=true;render();SND.play("pair");}});RDS.fin=null;},150);}
-function rdSlideAuto(){const t0=performance.now(),dur=2600;const step=now=>{const p=Math.min(100,(now-t0)/dur*100);rdSlideTo(p);if(p<100&&!RDS.done)RDS.auto=requestAnimationFrame(step);};RDS.auto=requestAnimationFrame(step);}
+/* where each letter's sound starts in the stretched clip (vowels and long sounds take more time than short stops) */
+function rdMarks(parts){const w=parts.map(p=>p.chunk?2.2:/^[aeiou]/.test(p.g)?1.6:rdLong(p)?1.25:.55),tot=w.reduce((a,b)=>a+b,0);let c=0;return w.map(v=>{const s=c/tot;c+=v;return s;});}
+function rdKnob(pct){const c=rdSlideCur();if(!c)return;pct=Math.max(c.Q.kx||0,Math.min(100,pct));c.Q.kx=pct;const kb=document.getElementById("rd-knob");if(kb)kb.style.left=pct+"%";if(pct>=97)RDS.fingerEnd=true;}
+function rdLight(frac){const c=rdSlideCur();if(!c)return;const m=rdMarks(c.parts);m.forEach((s,i)=>{if(frac+0.02>=s&&!c.Q.lit.includes(i)){c.Q.lit.push(i);
+ const b=document.querySelector(`.rd-bead[data-i="${i}"]`),l=document.querySelector(`.rd-sll[data-i="${i}"]`);b&&b.classList.add("lit");l&&l.classList.add("lit");}});}
+function rdSlideStart(){const c=rdSlideCur();if(!c||RDS.started)return;RDS.started=true;RDS.x=c.x;c.Q.lit=c.Q.lit||[];
+ TTS.play(["st:"+c.x.w],1).then(()=>{if(RDS.x!==c.x)return;RDS.ended=true;});cancelAnimationFrame(RDS.raf);RDS.raf=requestAnimationFrame(rdSlideTick);}
+function rdSlideTick(){const c=rdSlideCur();if(!c||RDS.x!==c.x||RDS.done)return;const a=TTS.el;let ap=RDS.ended?1:0;
+ if(!RDS.ended&&a&&a.duration&&isFinite(a.duration))ap=Math.min(1,a.currentTime/a.duration);
+ if(RDS.auto)rdKnob(ap*100);
+ else if(a&&!RDS.ended&&!a.paused){const fp=(c.Q.kx||0)/100;a.playbackRate=Math.max(.7,Math.min(1.35,1+(fp-ap)*2.2));}
+ rdLight(Math.min(ap,RDS.auto?1:Math.max(ap,(c.Q.kx||0)/100-.05)));
+ if(RDS.ended){if(RDS.fingerEnd||RDS.auto||!RDS.drag){RDS.auto=true;rdKnob(Math.min(100,(c.Q.kx||0)+6));if((c.Q.kx||0)>=100){rdSlideFinish();return;}}}
+ RDS.raf=requestAnimationFrame(rdSlideTick);}
+function rdSlideFinish(){const c=rdSlideCur();if(!c||RDS.done)return;RDS.done=true;rdLight(1);
+ TTS.play([c.x.w],1,i=>{if(i===0&&rdSlideCur()?.x===c.x){c.Q.blended=true;render();SND.play("pair");}});}
+function rdSlideAuto(){const c=rdSlideCur();if(!c||RDS.started)return;RDS.auto=true;rdSlideStart();}
 function rdSlidePt(e){const trk=document.getElementById("rd-trk");if(!trk)return 0;const r=trk.getBoundingClientRect();return (e.clientX-r.left)/r.width*100;}
+function rdSlideTo(pct){const c=rdSlideCur();if(!c||RDS.done||RDS.auto)return;rdKnob(pct);if(!RDS.started&&(c.Q.kx||0)>1)rdSlideStart();}
 if(typeof document!=="undefined"){
- document.addEventListener("pointerdown",e=>{if(!e.target.closest||!e.target.closest("#rd-trk"))return;const c=rdSlideCur();if(!c||RDS.done)return;const p=rdSlidePt(e);if(Math.abs(p-(c.Q.kx||0))>22&&!e.target.closest("#rd-knob"))return;
-  e.preventDefault();cancelAnimationFrame(RDS.auto);RDS.drag=true;rdSlideTo(p);},{passive:false});
+ document.addEventListener("pointerdown",e=>{if(!e.target.closest||!e.target.closest("#rd-trk"))return;const c=rdSlideCur();if(!c||RDS.done||RDS.auto)return;const p=rdSlidePt(e);if(Math.abs(p-(c.Q.kx||0))>22&&!e.target.closest("#rd-knob"))return;
+  e.preventDefault();RDS.drag=true;rdSlideTo(p);},{passive:false});
  document.addEventListener("pointermove",e=>{if(RDS.drag)rdSlideTo(rdSlidePt(e));});
  document.addEventListener("pointerup",()=>{RDS.drag=false;});document.addEventListener("pointercancel",()=>{RDS.drag=false;});}
 const RD_ACT={
