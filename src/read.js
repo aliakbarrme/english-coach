@@ -88,6 +88,11 @@ const rdLabel=L=>L.rev?"★":L.dg?L.dg:"-"+L.rime;
 /* onset + rime: "c" + "at" = "cat" (the way teachers read a word family aloud) */
 const RD_VIPA={a:"æ",e:"ɛ",i:"ɪ",o:"ɑ",u:"ʌ"};
 const RD_CIPA={b:"b",c:"k",k:"k",ck:"k",d:"d",f:"f",g:"ɡ",h:"h",j:"ʤ",l:"l",ll:"l",m:"m",n:"n",p:"p",r:"ɹ",s:"s",ss:"s",t:"t",v:"v",w:"w",x:"ks",y:"j",z:"z",sh:"ʃ",ch:"ʧ",th:"θ",ng:"ŋ"};
+/* cumulative blending, slow and in one breath: m... -> mmmaaa -> mmmaaat -> mat (each step adds the next sound) */
+const RD_CHIPA={ind:"aɪnd",old:"oʊld",ost:"oʊst",all:"ɔl",ill:"ɪl",ell:"ɛl"};
+function rdIPA(ps){let s="";ps.forEach(p=>{const g=p.g;if(p.chunk)s+="ˈ"+(RD_CHIPA[g]||g);else if(RD_VIPA[g])s+="ˈ"+RD_VIPA[g];else if(g==="gh")s+="ɡ";else s+=RD_CIPA[g]||g;});return s;}
+/* the sound for each step of the slide: first letter (natural recording), the growing word (stretched), the whole word (stretched) */
+function rdCum(x,L){const ps=rdSplit(x.w,L);return ps.map((p,i)=>i===ps.length-1?"sb:"+x.w:i===0?rdSound(p,L):"sq:"+rdIPA(ps.slice(0,i+1)));}
 const rdLessonOf=x=>RD_L.find(l=>!l.rev&&l.words.includes(x));
 function rdOnsetRime(x,L){const ps=rdSplit(x.w,L);let i=ps.findIndex(p=>p.chunk||/^[aeiou]/.test(p.g));if(i<0)i=ps.length;return {on:ps.slice(0,i),rm:ps.slice(i)};}
 function rdRimeSay(rm){if(!rm.length)return null;if(rm.length===1&&rm[0].chunk)return RD_RSAY[rm[0].g]||null;const g=rm.map(p=>p.g).join("");if(RD_RSAY[g])return RD_RSAY[g];
@@ -98,7 +103,7 @@ function rdEq(x,L){L=L&&!L.rev?L:rdLessonOf(x)||L;const {on,rm}=rdOnsetRime(x,L)
 /* which part to light while the list plays: onset sounds, then the rime, then the whole word */
 const rdPartAt=(e,j)=>j===e.list.length-1?"w":e.eq?(j<e.n?"on":"rm"):"on";
 function READ_TEXTS(){const out=[...Object.values(RD_SAY),"Yay! You did it!"];
- RD_L.forEach(L=>{L.words.forEach(x=>{out.push(x.w,"sb:"+x.w);const e=rdEq(x,L);if(e.eq)out.push(e.list[e.list.length-2]);});if(L.rime&&RD_RSAY[L.rime])out.push(RD_RSAY[L.rime]);if(L.ex)out.push(L.ex);out.push(L.s);rdSentWords(L.s).forEach(w=>out.push(rdWordSay(w)));});
+ RD_L.forEach(L=>{if(L.rime&&!L.dg)out.push(...rdMeetList(L).filter(s=>/^(sq|pw):/.test(s)));L.words.forEach(x=>{out.push(x.w,"sb:"+x.w,...rdCum(x,L).filter(s=>s.startsWith("sq:")));const e=rdEq(x,L);if(e.eq)out.push(e.list[e.list.length-2]);});if(L.rime&&RD_RSAY[L.rime])out.push(RD_RSAY[L.rime]);if(L.ex)out.push(L.ex);out.push(L.s);rdSentWords(L.s).forEach(w=>out.push(rdWordSay(w)));});
  return [...new Set(out)];}
 const rdPic=x=>x.p&&!x.abs;
 const rdSentWords=s=>s.split(/\s+/).map(w=>w.replace(/[^A-Za-z']/g,"")).filter(Boolean);
@@ -220,7 +225,8 @@ function rdEnter(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),st=Q.steps[Q.s];if(Q.s
  if(say)setTimeout(()=>{if(APP.pals?.q===Q){if(st==="meet")lpPlay([say,...rdMeetList(L)]);else lpSay(say);}},300);}
 const rdMeetParts=L=>L.dg?[{g:L.dg}]:L.chunk?[{g:L.rime,chunk:1}]:rdSplit(L.rime).map(p=>Object.assign(p,{rime:1}));
 const rdFriend=L=>L.u.v&&L.u.id!=="mix"?L.u.v:L.dg?L.dg[0]:L.rime?L.rime[0]:"a";
-function rdMeetList(L){if(L.dg)return [DIG[L.dg]||LSOUND[L.dg[0]],L.ex];if(L.chunk)return [RD_RSAY[L.rime],L.words[0].w];return [...rdSplit(L.rime).map(p=>rdSound(p,L)),RD_RSAY[L.rime]||L.rime];}
+function rdMeetList(L){if(L.dg)return [DIG[L.dg]||LSOUND[L.dg[0]],L.ex];if(L.chunk)return ["sq:"+rdIPA([{g:L.rime,chunk:1}]),RD_RSAY[L.rime],L.words[0].w];
+ const ps=rdSplit(L.rime);return [...ps.map((p,i)=>i===0?rdSound(p,L):"sq:"+rdIPA(ps.slice(0,i+1))),RD_RSAY[L.rime]||L.rime];}
 function rdRoundSay(){const A=APP.pals,Q=A.q,r=Q.rounds&&Q.rounds[Q.i];if(!r)return;if(r.t==="pick")lpSay(RD_SAY.pick);else lpPlay([RD_SAY.build,r.x.w]);}
 function rdAfterRound(ok){const A=APP.pals,Q=A.q;if(ok)Q.ok++;Q.tries++;
  setTimeout(()=>{if(APP.pals?.q!==Q)return;Q.i++;Q.miss=null;Q.got=false;
@@ -244,34 +250,34 @@ const RD_CAR='<svg class="rd-car" viewBox="0 0 76 54" aria-hidden="true"><defs><
  +'<g class="rd-wheel"><circle cx="59" cy="43" r="7.5" fill="#2b2b35"/><circle cx="59" cy="43" r="3.2" fill="#cfd6e0"/><path d="M59 36.5v13M52.5 43h13" stroke="#2b2b35" stroke-width="1.6"/></g></svg>';
 const RD_CONT=new Set(["a","e","i","o","u","m","n","s","f","l","r","v","z","w","y","sh","th","ng","ll","ss","ff","h"]);
 const rdLong=p=>p.chunk||RD_CONT.has(p.g);
-const RDS={drag:false,started:false,ended:false,fingerEnd:false,done:false,auto:false,raf:0,x:null};
-function rdSlideReset(){const Q=APP.pals&&APP.pals.q;cancelAnimationFrame(RDS.raf);Object.assign(RDS,{drag:false,started:false,ended:false,fingerEnd:false,done:false,auto:false,raf:0,x:null});if(Q){Q.kx=0;Q.lit=[];Q.blended=false;}}
+const RDS={drag:false,done:false,auto:false,step:-1,playing:-1,lastDone:false,fingerEnd:false,x:null,gt:0};
+function rdSlideReset(){const Q=APP.pals&&APP.pals.q;RDS.auto=false;Object.assign(RDS,{drag:false,done:false,step:-1,playing:-1,lastDone:false,fingerEnd:false,x:null});if(Q){Q.kx=0;Q.lit=[];Q.blended=false;}}
 function rdSlideCur(){const A=APP.pals;if(!A||A.scr!=="rdl"||!A.q)return null;const Q=A.q;if(Q.steps[Q.s]!=="blend")return null;const L=rdLesson(Q.k),x=Q.bw[Q.i];return {Q,L,x,parts:rdSplit(x.w,L)};}
-/* where each letter's sound starts in the stretched clip (vowels and long sounds take more time than short stops) */
-function rdMarks(parts){const w=parts.map(p=>p.chunk?2.2:/^[aeiou]/.test(p.g)?1.6:rdLong(p)?1.25:.55),tot=w.reduce((a,b)=>a+b,0);let c=0;return w.map(v=>{const s=c/tot;c+=v;return s;});}
 function rdKnob(pct){const c=rdSlideCur();if(!c)return;const old=c.Q.kx||0;pct=Math.max(old,Math.min(100,pct));c.Q.kx=pct;const kb=document.getElementById("rd-knob");
  if(kb){kb.style.left=pct+"%";kb.classList.remove("idle");if(pct>old){kb.classList.add("go");clearTimeout(RDS.gt);RDS.gt=setTimeout(()=>kb.classList.remove("go"),160);}}if(pct>=97)RDS.fingerEnd=true;}
-function rdLight(frac){const c=rdSlideCur();if(!c)return;const m=rdMarks(c.parts);m.forEach((s,i)=>{if(frac+0.02>=s&&!c.Q.lit.includes(i)){c.Q.lit.push(i);
- const b=document.querySelector(`.rd-bead[data-i="${i}"]`),l=document.querySelector(`.rd-sll[data-i="${i}"]`);b&&b.classList.add("lit");l&&l.classList.add("lit");}});}
-function rdSlideStart(){const c=rdSlideCur();if(!c||RDS.started)return;RDS.started=true;RDS.x=c.x;c.Q.lit=c.Q.lit||[];
- TTS.play(["sb:"+c.x.w],1).then(()=>{if(RDS.x!==c.x)return;RDS.ended=true;});cancelAnimationFrame(RDS.raf);RDS.raf=requestAnimationFrame(rdSlideTick);}
-function rdSlideTick(){const c=rdSlideCur();if(!c||RDS.x!==c.x||RDS.done)return;const a=TTS.el;let ap=RDS.ended?1:0;
- if(!RDS.ended&&a&&a.duration&&isFinite(a.duration))ap=Math.min(1,a.currentTime/a.duration);
- if(RDS.auto)rdKnob(ap*100);
- else if(a&&!RDS.ended&&!a.paused){const fp=(c.Q.kx||0)/100;a.playbackRate=Math.max(.7,Math.min(1.35,1+(fp-ap)*2.2));}
- rdLight(Math.min(ap,RDS.auto?1:Math.max(ap,(c.Q.kx||0)/100-.05)));
- if(RDS.ended){if(RDS.fingerEnd||RDS.auto||!RDS.drag){RDS.auto=true;rdKnob(Math.min(100,(c.Q.kx||0)+6));if((c.Q.kx||0)>=100){rdSlideFinish();return;}}}
- RDS.raf=requestAnimationFrame(rdSlideTick);}
-function rdSlideFinish(){const c=rdSlideCur();if(!c||RDS.done)return;RDS.done=true;rdLight(1);
+/* light letters 0..i and say the word so far (slowly, in one breath); a longer word goes a little slower */
+function rdSlideStep(i){const c=rdSlideCur();if(!c||i<=RDS.step)return;RDS.step=i;RDS.x=c.x;
+ for(let j=0;j<=i;j++){if(!c.Q.lit.includes(j))c.Q.lit.push(j);const b=document.querySelector(`.rd-bead[data-i="${j}"]`),l=document.querySelector(`.rd-sll[data-i="${j}"]`);b&&b.classList.add("lit");l&&l.classList.add("lit");}
+ const cum=rdCum(c.x,c.L),rate=c.x.w.length>=4?.85:1;RDS.playing=i;
+ return TTS.play([cum[i]],rate).then(()=>{if(RDS.x!==c.x||RDS.playing!==i)return;if(i===c.parts.length-1){RDS.lastDone=true;rdSlideMaybeEnd();}});}
+function rdSlideMaybeEnd(){const c=rdSlideCur();if(!c||RDS.done||!RDS.lastDone)return;if(!RDS.fingerEnd&&!RDS.auto){if(RDS.drag)return;rdKnob(100);}RDS.done=true;rdKnob(100);
  TTS.play([c.x.w],1,i=>{if(i===0&&rdSlideCur()?.x===c.x){c.Q.blended=true;render();SND.play("pair");}});}
-function rdSlideAuto(){const c=rdSlideCur();if(!c||RDS.started)return;RDS.auto=true;rdSlideStart();}
+/* which letter has the car reached? */
+function rdSlideTo(pct){const c=rdSlideCur();if(!c||RDS.done||RDS.auto)return;rdKnob(pct);const trk=document.getElementById("rd-trk");if(!trk)return;const r=trk.getBoundingClientRect(),x=r.left+r.width*(c.Q.kx||0)/100;let reach=-1;
+ trk.querySelectorAll(".rd-bead").forEach(b=>{const br=b.getBoundingClientRect();if(x>=br.left+Math.min(br.width*.4,10))reach=Math.max(reach,+b.dataset.i);});
+ if(reach>RDS.step)rdSlideStep(reach);if(RDS.fingerEnd)rdSlideMaybeEnd();}
+/* Show me: the car drives letter by letter, saying each growing part, then the word */
+async function rdSlideAuto(){const c=rdSlideCur();if(!c||RDS.step>=0)return;RDS.auto=true;const n=c.parts.length,x=c.x;
+ for(let i=0;i<n;i++){if(rdSlideCur()?.x!==x||!RDS.auto)return;const target=(i+.5)/n*100,from=c.Q.kx||0,t0=performance.now();
+  await new Promise(res=>{const mv=now=>{const p=Math.min(1,(now-t0)/350);rdKnob(from+(target-from)*p);p<1?requestAnimationFrame(mv):res();};requestAnimationFrame(mv);});
+  await rdSlideStep(i);}
+ if(rdSlideCur()?.x!==x)return;RDS.fingerEnd=true;rdSlideMaybeEnd();}
 function rdSlidePt(e){const trk=document.getElementById("rd-trk");if(!trk)return 0;const r=trk.getBoundingClientRect();return (e.clientX-r.left)/r.width*100;}
-function rdSlideTo(pct){const c=rdSlideCur();if(!c||RDS.done||RDS.auto)return;rdKnob(pct);if(!RDS.started&&(c.Q.kx||0)>1)rdSlideStart();}
 if(typeof document!=="undefined"){
  document.addEventListener("pointerdown",e=>{if(!e.target.closest||!e.target.closest("#rd-trk"))return;const c=rdSlideCur();if(!c||RDS.done||RDS.auto)return;const p=rdSlidePt(e);if(Math.abs(p-(c.Q.kx||0))>22&&!e.target.closest("#rd-knob"))return;
   e.preventDefault();RDS.drag=true;rdSlideTo(p);},{passive:false});
  document.addEventListener("pointermove",e=>{if(RDS.drag)rdSlideTo(rdSlidePt(e));});
- document.addEventListener("pointerup",()=>{RDS.drag=false;});document.addEventListener("pointercancel",()=>{RDS.drag=false;});}
+ document.addEventListener("pointerup",()=>{if(RDS.drag){RDS.drag=false;rdSlideMaybeEnd();}});document.addEventListener("pointercancel",()=>{RDS.drag=false;});}
 const RD_ACT={
  palsRead(){lpGo("rd");},
  rdOpen(el){const L=rdLesson(el.dataset.k);if(!L)return;if(!rdOpen(L)){SND.play("no");toast("আগের লেসনে ⭐⭐ পেলে এটা খুলবে 🔒");return;}APP.pals.q=rdStart(L);APP.pals.scr="rdl";TTS.stop();LP_MUSIC.stop();rdEnter();},
@@ -304,7 +310,7 @@ const RD_ACT={
   setTimeout(()=>{if(APP.pals?.q!==Q)return;Q.i++;Q.res="";Q.pickd="";if(Q.i>=Q.al.length){rdStep();return;}A.k=Date.now();render();},1100);},
  rdSayS(el){const Q=APP.pals.q,L=rdLesson(Q.k),w=L.s.split(/\s+/)[+el.dataset.i]||"";Q.hl=+el.dataset.i;render();lpSay(rdWordSay(w.replace(/[^A-Za-z']/g,"")));},
  rdReadS(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),words=L.s.split(/\s+/);const lens=words.map(w=>w.length+1),tot=lens.reduce((a,b)=>a+b,0);
-  lpSay(L.s);const tick=()=>{if(APP.pals?.q!==Q||A.scr!=="rdl")return;const a=TTS.el,on=document.documentElement.classList.contains("is-speaking");
+  TTS.say(L.s,words.length>=6?.6:lpRate());const tick=()=>{if(APP.pals?.q!==Q||A.scr!=="rdl")return;const a=TTS.el,on=document.documentElement.classList.contains("is-speaking");
    if(!on){if(Q.hl!==-1){Q.hl=-1;render();}return;}
    if(a&&a.duration&&isFinite(a.duration)){const f=a.currentTime/a.duration*tot;let c=0,i=0;for(;i<lens.length;i++){c+=lens[i];if(c>=f)break;}if(Q.hl!==i){Q.hl=Math.min(i,words.length-1);render();}}
    requestAnimationFrame(tick);};setTimeout(tick,150);}
