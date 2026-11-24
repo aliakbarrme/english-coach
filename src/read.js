@@ -258,7 +258,7 @@ function rdSlideStart(){const c=rdSlideCur();if(!c||RDS.started)return;RDS.start
 function rdSlideTick(){const c=rdSlideCur();if(!c||RDS.x!==c.x||RDS.done)return;const a=TTS.el;let ap=RDS.ended?1:0;
  if(!RDS.ended&&a&&a.duration&&isFinite(a.duration))ap=Math.min(1,a.currentTime/a.duration);
  if(RDS.auto)rdKnob(ap*100);
- else if(a&&!RDS.ended&&!a.paused){const fp=(c.Q.kx||0)/100;a.playbackRate=Math.max(.85,Math.min(1.2,1+(fp-ap)*1.8));}
+ else if(a&&!RDS.ended&&!a.paused){const fp=(c.Q.kx||0)/100;a.playbackRate=Math.max(.7,Math.min(1.35,1+(fp-ap)*2.2));}
  rdLight(Math.min(ap,RDS.auto?1:Math.max(ap,(c.Q.kx||0)/100-.05)));
  if(RDS.ended){if(RDS.fingerEnd||RDS.auto||!RDS.drag){RDS.auto=true;rdKnob(Math.min(100,(c.Q.kx||0)+6));if((c.Q.kx||0)>=100){rdSlideFinish();return;}}}
  RDS.raf=requestAnimationFrame(rdSlideTick);}
