@@ -165,8 +165,8 @@ function viewRead(A,P){
   return `<main class="view palsview lp-run rd-l">${top}<p class="rd-cap">${Q.i?"Now, sound out this new word!":"Slide to sound it out!"} <small class="bn">${Q.i?"নতুন অক্ষরটা দেখো, তারপর আবার টেনে পড়ো":"বোতামটা টেনে নাও, প্রতিটা আওয়াজ শোনো"}</small></p>
    <div class="rd-sl ${Q.blended?"done":""}" style="--c:${L.u.col};--n:${parts.length}">
     <div class="rd-slw">${parts.map((p,i)=>`<span class="rd-sll ${lit.includes(i)?"lit":""} ${prev&&(!prev[i]||prev[i].g!==p.g)?"new":""} ${p.rime||p.chunk?"rm":""}" data-i="${i}">${esc(p.g)}</span>`).join("")}</div>
-    <div class="rd-trk" id="rd-trk">${parts.map((p,i)=>`<span class="rd-cell"><i class="rd-bead ${rdLong(p)?"long":"dot"} ${/^[aeiou]/.test(p.g)?"vw":""} ${lit.includes(i)?"lit":""}" data-i="${i}"></i></span>`).join("")}
-     <button class="rd-knob ${Q.blended?"end":""}" id="rd-knob" style="left:${Q.blended?100:Q.kx||0}%" aria-label="Slide">${lpChar(rdFriend(L),"",true)}</button></div></div>
+    <div class="rd-road"><div class="rd-trk" id="rd-trk">${parts.map((p,i)=>`<span class="rd-cell"><i class="rd-bead ${rdLong(p)?"long":"dot"} ${/^[aeiou]/.test(p.g)?"vw":""} ${lit.includes(i)?"lit":""}" data-i="${i}"></i></span>`).join("")}
+     <button class="rd-knob ${Q.blended?"end":""} ${Q.kx?"":"idle"}" id="rd-knob" style="left:${Q.blended?100:Q.kx||0}%" aria-label="Drive the car">${RD_CAR}</button></div><span class="rd-flag" aria-hidden="true">🏁</span></div></div>
    <div class="rd-reveal ${Q.blended?"on":""}">${Q.blended?`<span class="rd-rpic">${x.p||"⭐"}</span><b>${rdWordHTML(x,L)}</b>`:`<span class="rd-hint">👆 ➜</span>`}</div>
    <div class="row center lp-ctl">${Q.blended?`<button class="btn ghost" data-act="rdSlideAgain">↺ Again</button><button class="btn good" data-act="rdBlendNext">${Q.i+1<Q.bw.length?"Next word ➜":"Next ➜"}</button>`:`<button class="btn ghost" data-act="rdBlend">👀 Show me</button>`}</div></main>`;}
  if(step==="read"){const ws=L.rev?Q.rw:L.words,cw=ws[Q.cw||0],e=rdEq(cw,L);
@@ -234,6 +234,14 @@ function rdStep(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k);Q.s++;
 /* ---------- the sound slide: continuous blending ("mmmaaat" in one breath, then "mat").
    Dragging the friend starts one stretched clip of the word; the finger sets its pace (playback speed follows the finger),
    letters light up as their sound is reached, and at the end the word is said normally. ---------- */
+/* the slide button: a little car that drives along the road under the word (wheels spin while it moves) */
+const RD_CAR='<svg class="rd-car" viewBox="0 0 76 54" aria-hidden="true"><defs><linearGradient id="rdcb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff8a6b"/><stop offset="1" stop-color="#e5362f"/></linearGradient><linearGradient id="rdcw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2fbff"/><stop offset="1" stop-color="#9ad3f7"/></linearGradient></defs>'
+ +'<g class="rd-speed" stroke="#aab4c3" stroke-width="3" stroke-linecap="round"><path d="M2 24h8M0 31h11M3 38h7"/></g><ellipse cx="42" cy="49" rx="27" ry="3.5" fill="#000" opacity=".16"/>'
+ +'<path d="M15 36c0-6 3-9 9-10l6-11c2-3 4-4 8-4h13c4 0 6 2 8 5l6 10c5 1 8 4 8 9v4c0 2-1 3-3 3H18c-2 0-3-1-3-3z" fill="url(#rdcb)"/>'
+ +'<path d="M32 15c1-2 3-3 5-3h7v12H27z" fill="url(#rdcw)"/><path d="M47 12h4c3 0 4 1 5 3l5 9H47z" fill="url(#rdcw)"/>'
+ +'<path d="M19 30h47" stroke="#fff" stroke-opacity=".4" stroke-width="2.4" stroke-linecap="round"/><circle cx="67" cy="33" r="2.4" fill="#ffe27a"/><circle cx="53" cy="18" r="1.6" fill="#2a2140"/><path d="M51 21q2 1.6 4 0" stroke="#2a2140" stroke-width="1.2" fill="none" stroke-linecap="round"/>'
+ +'<g class="rd-wheel"><circle cx="28" cy="43" r="7.5" fill="#2b2b35"/><circle cx="28" cy="43" r="3.2" fill="#cfd6e0"/><path d="M28 36.5v13M21.5 43h13" stroke="#2b2b35" stroke-width="1.6"/></g>'
+ +'<g class="rd-wheel"><circle cx="59" cy="43" r="7.5" fill="#2b2b35"/><circle cx="59" cy="43" r="3.2" fill="#cfd6e0"/><path d="M59 36.5v13M52.5 43h13" stroke="#2b2b35" stroke-width="1.6"/></g></svg>';
 const RD_CONT=new Set(["a","e","i","o","u","m","n","s","f","l","r","v","z","w","y","sh","th","ng","ll","ss","ff","h"]);
 const rdLong=p=>p.chunk||RD_CONT.has(p.g);
 const RDS={drag:false,started:false,ended:false,fingerEnd:false,done:false,auto:false,raf:0,x:null};
@@ -241,7 +249,8 @@ function rdSlideReset(){const Q=APP.pals&&APP.pals.q;cancelAnimationFrame(RDS.ra
 function rdSlideCur(){const A=APP.pals;if(!A||A.scr!=="rdl"||!A.q)return null;const Q=A.q;if(Q.steps[Q.s]!=="blend")return null;const L=rdLesson(Q.k),x=Q.bw[Q.i];return {Q,L,x,parts:rdSplit(x.w,L)};}
 /* where each letter's sound starts in the stretched clip (vowels and long sounds take more time than short stops) */
 function rdMarks(parts){const w=parts.map(p=>p.chunk?2.2:/^[aeiou]/.test(p.g)?1.6:rdLong(p)?1.25:.55),tot=w.reduce((a,b)=>a+b,0);let c=0;return w.map(v=>{const s=c/tot;c+=v;return s;});}
-function rdKnob(pct){const c=rdSlideCur();if(!c)return;pct=Math.max(c.Q.kx||0,Math.min(100,pct));c.Q.kx=pct;const kb=document.getElementById("rd-knob");if(kb)kb.style.left=pct+"%";if(pct>=97)RDS.fingerEnd=true;}
+function rdKnob(pct){const c=rdSlideCur();if(!c)return;const old=c.Q.kx||0;pct=Math.max(old,Math.min(100,pct));c.Q.kx=pct;const kb=document.getElementById("rd-knob");
+ if(kb){kb.style.left=pct+"%";kb.classList.remove("idle");if(pct>old){kb.classList.add("go");clearTimeout(RDS.gt);RDS.gt=setTimeout(()=>kb.classList.remove("go"),160);}}if(pct>=97)RDS.fingerEnd=true;}
 function rdLight(frac){const c=rdSlideCur();if(!c)return;const m=rdMarks(c.parts);m.forEach((s,i)=>{if(frac+0.02>=s&&!c.Q.lit.includes(i)){c.Q.lit.push(i);
  const b=document.querySelector(`.rd-bead[data-i="${i}"]`),l=document.querySelector(`.rd-sll[data-i="${i}"]`);b&&b.classList.add("lit");l&&l.classList.add("lit");}});}
 function rdSlideStart(){const c=rdSlideCur();if(!c||RDS.started)return;RDS.started=true;RDS.x=c.x;c.Q.lit=c.Q.lit||[];
@@ -249,7 +258,7 @@ function rdSlideStart(){const c=rdSlideCur();if(!c||RDS.started)return;RDS.start
 function rdSlideTick(){const c=rdSlideCur();if(!c||RDS.x!==c.x||RDS.done)return;const a=TTS.el;let ap=RDS.ended?1:0;
  if(!RDS.ended&&a&&a.duration&&isFinite(a.duration))ap=Math.min(1,a.currentTime/a.duration);
  if(RDS.auto)rdKnob(ap*100);
- else if(a&&!RDS.ended&&!a.paused){const fp=(c.Q.kx||0)/100;a.playbackRate=Math.max(.7,Math.min(1.35,1+(fp-ap)*2.2));}
+ else if(a&&!RDS.ended&&!a.paused){const fp=(c.Q.kx||0)/100;a.playbackRate=Math.max(.85,Math.min(1.2,1+(fp-ap)*1.8));}
  rdLight(Math.min(ap,RDS.auto?1:Math.max(ap,(c.Q.kx||0)/100-.05)));
  if(RDS.ended){if(RDS.fingerEnd||RDS.auto||!RDS.drag){RDS.auto=true;rdKnob(Math.min(100,(c.Q.kx||0)+6));if((c.Q.kx||0)>=100){rdSlideFinish();return;}}}
  RDS.raf=requestAnimationFrame(rdSlideTick);}
