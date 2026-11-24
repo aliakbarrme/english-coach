@@ -98,7 +98,7 @@ function rdEq(x,L){L=L&&!L.rev?L:rdLessonOf(x)||L;const {on,rm}=rdOnsetRime(x,L)
 /* which part to light while the list plays: onset sounds, then the rime, then the whole word */
 const rdPartAt=(e,j)=>j===e.list.length-1?"w":e.eq?(j<e.n?"on":"rm"):"on";
 function READ_TEXTS(){const out=[...Object.values(RD_SAY),"Yay! You did it!"];
- RD_L.forEach(L=>{L.words.forEach(x=>{out.push(x.w,"st:"+x.w);const e=rdEq(x,L);if(e.eq)out.push(e.list[e.list.length-2]);});if(L.rime&&RD_RSAY[L.rime])out.push(RD_RSAY[L.rime]);if(L.ex)out.push(L.ex);out.push(L.s);rdSentWords(L.s).forEach(w=>out.push(rdWordSay(w)));});
+ RD_L.forEach(L=>{L.words.forEach(x=>{out.push(x.w,"sb:"+x.w);const e=rdEq(x,L);if(e.eq)out.push(e.list[e.list.length-2]);});if(L.rime&&RD_RSAY[L.rime])out.push(RD_RSAY[L.rime]);if(L.ex)out.push(L.ex);out.push(L.s);rdSentWords(L.s).forEach(w=>out.push(rdWordSay(w)));});
  return [...new Set(out)];}
 const rdPic=x=>x.p&&!x.abs;
 const rdSentWords=s=>s.split(/\s+/).map(w=>w.replace(/[^A-Za-z']/g,"")).filter(Boolean);
@@ -254,7 +254,7 @@ function rdKnob(pct){const c=rdSlideCur();if(!c)return;const old=c.Q.kx||0;pct=M
 function rdLight(frac){const c=rdSlideCur();if(!c)return;const m=rdMarks(c.parts);m.forEach((s,i)=>{if(frac+0.02>=s&&!c.Q.lit.includes(i)){c.Q.lit.push(i);
  const b=document.querySelector(`.rd-bead[data-i="${i}"]`),l=document.querySelector(`.rd-sll[data-i="${i}"]`);b&&b.classList.add("lit");l&&l.classList.add("lit");}});}
 function rdSlideStart(){const c=rdSlideCur();if(!c||RDS.started)return;RDS.started=true;RDS.x=c.x;c.Q.lit=c.Q.lit||[];
- TTS.play(["st:"+c.x.w],1).then(()=>{if(RDS.x!==c.x)return;RDS.ended=true;});cancelAnimationFrame(RDS.raf);RDS.raf=requestAnimationFrame(rdSlideTick);}
+ TTS.play(["sb:"+c.x.w],1).then(()=>{if(RDS.x!==c.x)return;RDS.ended=true;});cancelAnimationFrame(RDS.raf);RDS.raf=requestAnimationFrame(rdSlideTick);}
 function rdSlideTick(){const c=rdSlideCur();if(!c||RDS.x!==c.x||RDS.done)return;const a=TTS.el;let ap=RDS.ended?1:0;
  if(!RDS.ended&&a&&a.duration&&isFinite(a.duration))ap=Math.min(1,a.currentTime/a.duration);
  if(RDS.auto)rdKnob(ap*100);

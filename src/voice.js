@@ -51,14 +51,14 @@ const TTS={
   const one=(t)=>{
    if(my!==this.run)return Promise.resolve();
    if(/^pa:/.test(t))return PA.url(t.slice(3)).then(u=>{if(my!==this.run)return;if(!u)return this.devSay(t,r);return this.playUrl(u,{rate:1,end:PA.end(t.slice(3)),text:t,sr:r,my});});
-   if(this.clip(t))return this.playUrl((window.AUDIO_BASE||"a/")+akey(t)+".mp3",{rate:/^(p[hw]|sl|st):/.test(t)||r>=1?1:r<=.55?.5:r<=.65?.78:r<=.75?.86:.95,text:t,sr:r,my});
+   if(this.clip(t))return this.playUrl((window.AUDIO_BASE||"a/")+akey(t)+".mp3",{rate:/^(p[hw]|s[ltb]):/.test(t)||r>=1?1:r<=.55?.5:r<=.65?.78:r<=.75?.86:.95,text:t,sr:r,my});
    return this.devSay(t,r);
   };
   this.speaking(true);
   return (async()=>{for(let i=0;i<list.length;i++){if(my!==this.run)break;onIdx&&onIdx(i);await one(list[i]);}
    if(my===this.run){this.speaking(false);onIdx&&onIdx(-1);}})();
  },
- devSay(t,r){if(/^s[lt]:/.test(t)){t=t.slice(3);r=r*.5;}if(/^p[haw]:/.test(t))t=(typeof PHFB!=="undefined"&&PHFB[t])||t.slice(3);return new Promise(res=>{
+ devSay(t,r){if(/^s[ltb]:/.test(t)){t=t.slice(3);r=r*.5;}if(/^p[haw]:/.test(t))t=(typeof PHFB!=="undefined"&&PHFB[t])||t.slice(3);return new Promise(res=>{
   if(!this.dev){res();return;}
   try{const all=speechSynthesis.getVoices()||[];
    if(!all.length&&performance.now()>5000){this.note("no phone voice: "+String(t).slice(0,40));setTimeout(res,250);return;}
