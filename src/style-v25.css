@@ -94,3 +94,25 @@
 .rd-svg{display:block;width:1.1em;height:1.1em}
 .rd-wp .rd-svg{width:32px;height:32px}.rd-eqw em .rd-svg{width:42px;height:42px}.rd-rpic .rd-svg{width:84px;height:84px}
 .rd-pic .rd-svg{width:62px;height:62px}.lp-bpic .rd-svg{width:104px;height:104px}.rd-scene .rd-svg{width:clamp(40px,13vw,64px);height:clamp(40px,13vw,64px)}
+
+/* fly the plane: drag it under the letters to hear each sound, reach the star to hear the word */
+.rd-fly{display:flex;flex-direction:column;align-items:center;gap:6px;margin:4px auto 10px;width:100%}
+.rd-sky{position:relative;width:min(calc(var(--n) * 74px + 76px),94%);height:62px;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+.rd-sky::before{content:"";position:absolute;left:0;right:0;top:50%;height:6px;margin-top:-3px;border-radius:99px;background:repeating-linear-gradient(90deg,#d3dbe7 0 10px,transparent 10px 18px)}
+.rd-trail{position:absolute;left:0;top:50%;height:6px;margin-top:-3px;border-radius:99px;background:linear-gradient(90deg,#ffd84a,#ff8a3d);width:calc(37px + (100% - 74px) * var(--k,0) / 100)}
+.rd-goal{position:absolute;right:0;top:50%;transform:translate(0,-50%);font-size:1.7rem;line-height:1;animation:rdTwinkle 1.4s ease-in-out infinite}.rd-goal img.emo{width:32px;height:32px}
+@keyframes rdTwinkle{50%{transform:translate(0,-50%) scale(1.18) rotate(12deg)}}
+.rd-fly.done .rd-goal{animation:bkPopIn .5s var(--spring)}
+.rd-plane{position:absolute;top:50%;left:calc(37px + (100% - 74px) * var(--k,0) / 100);width:74px;height:52px;padding:0;border:0;background:none;transform:translate(-50%,-56%);cursor:grab;touch-action:none;filter:drop-shadow(0 5px 5px #0002);z-index:2}
+.rd-plane.idle{animation:rdHover 1.4s ease-in-out infinite}
+@keyframes rdHover{0%,100%{transform:translate(-50%,-56%) rotate(0)}50%{transform:translate(-44%,-66%) rotate(-4deg)}}
+.rd-plane.go{transform:translate(-50%,-60%) rotate(-5deg)}
+.rd-plane.end{animation:rdLoop .9s ease-in-out}
+@keyframes rdLoop{40%{transform:translate(-50%,-110%) rotate(-25deg)}100%{transform:translate(-50%,-56%) rotate(0)}}
+.rd-plsvg{width:100%;height:100%;display:block;overflow:visible}
+.rd-plsvg .rd-prop{transform-box:fill-box;transform-origin:center;animation:rdProp .25s linear infinite}
+@keyframes rdProp{50%{transform:scaleY(.15)}}
+.rd-plane.go .rd-prop{animation-duration:.08s}
+.rd-flyhint{margin:0;font-size:.82rem;color:var(--muted);font-weight:700;animation:rdHint 1.4s ease-in-out infinite}
+.palsview > .rd-fly{width:100%}
+@keyframes rdHint{50%{transform:translateX(8px)}}

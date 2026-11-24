@@ -162,11 +162,13 @@ function viewRead(A,P){
    <p class="rd-fam" style="--c:${L.u.col}">${L.dg?`<b>${L.dg}</b> as in <b>${esc(L.ex)}</b>`:`the <b>-${L.rime}</b> family`}</p>
    <div class="row center lp-ctl"><button class="btn bk-candy" data-act="rdMeetPlay">🔊 Blend it</button><button class="btn good" data-act="rdNext">Next ➜</button></div></main>`;}
  if(step==="blend"){const x=Q.bw[Q.i],parts=rdSplit(x.w,L);
-  return `<main class="view palsview lp-run rd-l">${top}<p class="rd-cap">Tap each sound, then blend! <small class="bn">প্রতিটা আওয়াজে চাপো, তারপর জোড়া দাও</small></p>
+  return `<main class="view palsview lp-run rd-l">${top}<p class="rd-cap">Fly the plane to the star! <small class="bn">প্লেনটা টেনে নাও: প্রতিটা আওয়াজ শোনো, ⭐-তে পুরো শব্দ</small></p>
    ${rdTiles(parts,L,"big"+(Q.blended?" blended":""),Q.lit)}
-   <button class="rd-slide ${Q.blended?"on":""}" data-act="rdBlend" aria-label="Blend"><i></i><span>➜</span></button>
+   <div class="rd-fly ${Q.blended?"done":""}" style="--n:${parts.length}"><div class="rd-sky" id="rd-sky"><i class="rd-trail" id="rd-trail" style="--k:${Q.blended?100:Q.kx||0}"></i><span class="rd-goal" aria-hidden="true">⭐</span>
+    <button class="rd-plane ${Q.blended?"end":""} ${Q.kx||Q.blended?"":"idle"}" id="rd-plane" style="--k:${Q.blended?100:Q.kx||0}" aria-label="Fly the plane">${RD_PLANE}</button></div>
+</div>
    <div class="rd-reveal ${Q.blended?"on":""}">${Q.blended?`<span class="rd-rpic">${x.p||"⭐"}</span><b>${rdWordHTML(x,L)}</b>`:""}</div>
-   <div class="row center lp-ctl">${Q.blended?`<button class="btn good" data-act="rdBlendNext">${Q.i+1<Q.bw.length?"Next word ➜":"Next ➜"}</button>`:`<button class="btn ghost" data-act="rdBlend">👀 Show me</button>`}</div></main>`;}
+   <div class="row center lp-ctl">${Q.blended?`<button class="btn ghost" data-act="rdFlyAgain">↺ Again</button><button class="btn good" data-act="rdBlendNext">${Q.i+1<Q.bw.length?"Next word ➜":"Next ➜"}</button>`:`<button class="btn ghost" data-act="rdBlend">👀 Show me</button>`}</div></main>`;}
  if(step==="read"){const ws=L.rev?Q.rw:L.words,cw=ws[Q.cw||0],e=rdEq(cw,L);
   return `<main class="view palsview lp-run rd-l">${top}<p class="rd-cap">Read the words! <small class="bn">নিজে পড়ো, তারপর চাপ দিয়ে মিলিয়ে নাও</small></p>
    <div class="rd-eqbar" style="--c:${L.u.col}">${e.eq?`<span class="rd-eqt on ${Q.part==="on"?"lit":""}">${esc(e.on)}</span><i>+</i><span class="rd-eqt rm ${Q.part==="rm"?"lit":""}">${esc(e.rm)}</span><i>=</i>`:""}<span class="rd-eqw ${Q.part==="w"?"lit":""}"><b>${rdWordHTML(cw,rdLessonOf(cw)||L)}</b>${cw.p?`<em>${cw.p}</em>`:""}</span></div>
@@ -209,7 +211,7 @@ function rdStart(L){const R=RDST(),due=rdDue().filter(x=>!L.words.find(y=>y.w===
  return Q;}
 function rdWarm(L){try{const ws=L.rev?rdUnitWords(L):L.words,set=new Set();ws.forEach(x=>{set.add(x.w);const e=rdEq(x,L);if(e.eq)set.add(e.list[e.list.length-2]);});set.add(L.s);
  if(L.rime&&RD_RSAY[L.rime])set.add(RD_RSAY[L.rime]);set.forEach(s=>{if(TTS.clip(s))fetch((window.AUDIO_BASE||"a/")+akey(s)+".mp3").catch(()=>{});});}catch(e){}}
-function rdEnter(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),st=Q.steps[Q.s];if(Q.s===0)rdWarm(L);Q.i=0;Q.miss=null;Q.got=false;Q.blended=false;Q.lit=[];Q.hl=-1;Q.res="";Q.pickd="";
+function rdEnter(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),st=Q.steps[Q.s];if(st==="blend")rdFlyReset();if(Q.s===0)rdWarm(L);Q.i=0;Q.miss=null;Q.got=false;Q.blended=false;Q.lit=[];Q.hl=-1;Q.res="";Q.pickd="";
  if(st==="play")Q.rounds=Q.play;
  if(st==="mix")Q.rounds=rdMakeReview(rdUnitWords(L),5);
  A.k=Date.now();render();window.scrollTo(0,0);
@@ -229,6 +231,34 @@ function rdStep(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k);Q.s++;
   Q.stars=s;const R=RDST();R.l[L.key]=Math.max(R.l[L.key]||0,s);if(!L.rev)L.words.forEach(x=>{if(rdPic(x)&&!R.w[x.w])R.w[x.w]={b:0,d:rdDay()+1};});
   addXP(s*2);Store.save();SND.play(s>=2?"done":"ok");if(s>=2)confetti(80);setTimeout(()=>APP.pals?.q===Q&&lpPlay(s>=2?[RD_SAY.done]:[RD_SAY.again]),400);}
  rdEnter();}
+/* ---------- fly the plane: drag it under the letters; each letter's sound plays as the plane reaches it,
+   and at the star the word is said with its picture (the same sounds as tapping the tiles) ---------- */
+const RD_PLANE='<svg class="rd-plsvg" viewBox="0 0 84 58" aria-hidden="true"><defs><linearGradient id="rdpb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7cc0ff"/><stop offset="1" stop-color="#2d74dc"/></linearGradient><linearGradient id="rdpw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe066"/><stop offset="1" stop-color="#f2a900"/></linearGradient></defs>'
+ +'<ellipse cx="42" cy="54" rx="22" ry="3" fill="#000" opacity=".12"/><path d="M16 22 8 8h9l13 14z" fill="url(#rdpw)"/><path d="M38 26 30 13h9l12 13z" fill="#e8a400"/>'
+ +'<path d="M10 30c0-6 6-10 14-10h32c8 0 14 5 14 10s-6 10-14 10H24c-8 0-14-4-14-10z" fill="url(#rdpb)"/><path d="M36 32 27 49h11l15-17z" fill="url(#rdpw)"/>'
+ +'<path d="M18 26h36" stroke="#fff" stroke-opacity=".5" stroke-width="2.6" stroke-linecap="round"/><circle cx="50" cy="28" r="3.6" fill="#eaf7ff" stroke="#fff" stroke-width="1.2"/><circle cx="40" cy="28" r="3.6" fill="#eaf7ff" stroke="#fff" stroke-width="1.2"/>'
+ +'<path d="M68 23a8 8 0 0 1 0 14z" fill="#ff5a4e"/><g class="rd-prop"><ellipse cx="74" cy="30" rx="2" ry="12" fill="#5b6576" opacity=".7"/></g></svg>';
+const RDP={drag:false,auto:false,q:[],busy:false,reach:-1,done:false,x:null,gt:0};
+function rdFlyReset(){const Q=APP.pals&&APP.pals.q;Object.assign(RDP,{drag:false,auto:false,q:[],busy:false,reach:-1,done:false,x:null});if(Q){Q.kx=0;Q.lit=[];Q.blended=false;}}
+function rdFlyCur(){const A=APP.pals;if(!A||A.scr!=="rdl"||!A.q)return null;const Q=A.q;if(Q.steps[Q.s]!=="blend"||Q.blended)return null;const L=rdLesson(Q.k),x=Q.bw[Q.i];return {Q,L,x,parts:rdSplit(x.w,L)};}
+function rdFlyDrain(){if(RDP.busy)return;const c=rdFlyCur();const s=RDP.q.shift();if(!s){if(RDP.done&&c)rdFlyFinish();return;}RDP.busy=true;TTS.play([s],1).then(()=>{RDP.busy=false;rdFlyDrain();});}
+function rdFlyTo(pct){const c=rdFlyCur();if(!c||RDP.done)return;if(RDP.x!==c.x){RDP.x=c.x;RDP.reach=-1;}const old=c.Q.kx||0;pct=Math.max(old,Math.min(100,pct));c.Q.kx=pct;
+ const pl=document.getElementById("rd-plane"),tr=document.getElementById("rd-trail");if(tr)tr.style.setProperty("--k",pct);
+ if(pl){pl.style.setProperty("--k",pct);pl.classList.remove("idle");if(pct>old){pl.classList.add("go");clearTimeout(RDP.gt);RDP.gt=setTimeout(()=>pl.classList.remove("go"),180);}const h=document.querySelector(".rd-flyhint");h&&h.remove();
+  /* the plane's nose reaches a letter -> light it and queue its sound */
+  const nose=pl.getBoundingClientRect().left+pl.getBoundingClientRect().width*.78;
+  document.querySelectorAll(".rd-l .rd-tile").forEach((tl,i)=>{const r=tl.getBoundingClientRect();if(i>RDP.reach&&nose>=r.left+r.width*.5){RDP.reach=i;if(!c.Q.lit.includes(i))c.Q.lit.push(i);tl.classList.add("lit");RDP.q.push(rdSound(c.parts[i],c.L));rdFlyDrain();}});}
+ if(pct>=97&&RDP.reach>=c.parts.length-1){RDP.done=true;RDP.drag=false;if(pl)pl.style.setProperty("--k",100);if(tr)tr.style.setProperty("--k",100);rdFlyDrain();}}
+function rdFlyFinish(){const c=rdFlyCur();if(!c||RDP.fin===c.x)return;RDP.fin=c.x;
+ TTS.play([c.x.w],1,i=>{if(i===0&&rdFlyCur()?.x===c.x){c.Q.blended=true;render();SND.play("pair");confetti(20);}}).then(()=>{RDP.fin=null;});}
+function rdFlyAuto(){const c=rdFlyCur();if(!c)return;RDP.auto=true;const t0=performance.now(),dur=2600,x=c.x;
+ const step=now=>{if(rdFlyCur()?.x!==x||RDP.done)return;rdFlyTo(Math.min(100,(now-t0)/dur*100));requestAnimationFrame(step);};requestAnimationFrame(step);}
+function rdFlyPt(e){const s=document.getElementById("rd-sky");if(!s)return 0;const r=s.getBoundingClientRect();return (e.clientX-r.left-37)/Math.max(1,r.width-74)*100;}
+if(typeof document!=="undefined"){
+ document.addEventListener("pointerdown",e=>{if(!e.target.closest||!e.target.closest("#rd-sky"))return;const c=rdFlyCur();if(!c||RDP.done)return;const p=rdFlyPt(e);if(Math.abs(p-(c.Q.kx||0))>25&&!e.target.closest("#rd-plane"))return;
+  e.preventDefault();RDP.drag=true;rdFlyTo(p);},{passive:false});
+ document.addEventListener("pointermove",e=>{if(RDP.drag)rdFlyTo(rdFlyPt(e));});
+ document.addEventListener("pointerup",()=>{RDP.drag=false;});document.addEventListener("pointercancel",()=>{RDP.drag=false;});}
 const RD_ACT={
  palsRead(){lpGo("rd");},
  rdOpen(el){const L=rdLesson(el.dataset.k);if(!L)return;if(!rdOpen(L)){SND.play("no");toast("আগের লেসনে ⭐⭐ পেলে এটা খুলবে 🔒");return;}APP.pals.q=rdStart(L);APP.pals.scr="rdl";TTS.stop();LP_MUSIC.stop();rdEnter();},
@@ -239,9 +269,11 @@ const RD_ACT={
   if(!Q.lit.includes(i))Q.lit.push(i);render();lpPlay([rdSound(p,L)]);},
  rdMeetPlay(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),n=rdMeetParts(L).length;Q.blended=false;Q.lit=[];render();
   TTS.play(rdMeetList(L),1,i=>{if(APP.pals?.q!==Q||i<0)return;if(i<n)Q.lit=[...Array(i+1).keys()];else Q.blended=true;render();});},
- rdBlend(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),x=Q.bw[Q.i],parts=rdSplit(x.w,L);Q.lit=[];Q.blended=false;render();
+ rdFlyAgain(){rdFlyReset();render();},
+ rdBlend(){rdFlyReset();render();rdFlyAuto();},
+ rdBlendOld(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),x=Q.bw[Q.i],parts=rdSplit(x.w,L);Q.lit=[];Q.blended=false;render();
   TTS.play([...parts.map(p=>rdSound(p,L)),x.w],1,i=>{if(APP.pals?.q!==Q)return;if(i>=0&&i<parts.length){Q.lit=[...Array(i+1).keys()];render();}else if(i===parts.length){Q.blended=true;render();SND.play("pair");}});},
- rdBlendNext(){const A=APP.pals,Q=A.q;if(Q.i+1<Q.bw.length){Q.i++;Q.blended=false;Q.lit=[];A.k=Date.now();render();lpSay(RD_SAY.blend);}else rdStep();},
+ rdBlendNext(){const A=APP.pals,Q=A.q;if(Q.i+1<Q.bw.length){Q.i++;rdFlyReset();A.k=Date.now();render();lpSay(RD_SAY.blend);}else rdStep();},
  rdSayW(el){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),ws=L.rev?Q.rw:L.words,i=+el.dataset.i,e=rdEq(ws[i],L);if(!Q.heard.includes(i))Q.heard.push(i);Q.cw=i;Q.part="";render();
   TTS.play(e.list,1,j=>{if(APP.pals?.q!==Q||Q.cw!==i)return;Q.part=j<0?(Q.part==="w"?"w":""):rdPartAt(e,j);render();if(j===e.list.length-1)SND.play("pair");});},
  rdReadAll(){const A=APP.pals,Q=A.q,L=rdLesson(Q.k),ws=L.rev?Q.rw:L.words;Q.all=true;const map=[],all=[];
