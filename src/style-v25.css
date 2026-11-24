@@ -116,3 +116,40 @@
 .rd-flyhint{margin:0;font-size:.82rem;color:var(--muted);font-weight:700;animation:rdHint 1.4s ease-in-out infinite}
 .palsview > .rd-fly{width:100%}
 @keyframes rdHint{50%{transform:translateX(8px)}}
+
+/* ===== letter steps: progress bar Meet -> Trace -> Write -> Play -> Done ===== */
+.lp-flow{display:flex;align-items:flex-start;justify-content:center;gap:0;margin:2px auto 12px;max-width:460px;width:100%}
+.lp-fl{display:flex;flex-direction:column;align-items:center;gap:3px;flex:none;width:52px}
+.lp-fl i{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:1rem;font-weight:900;background:#eef1f6;color:#9aa4b2;box-shadow:inset 0 -3px 0 #0000000f;transition:transform .3s}
+.lp-fl i img.emo{width:20px;height:20px;filter:grayscale(1);opacity:.55}
+.lp-fl b{font:800 .66rem var(--font);color:#9aa4b2;letter-spacing:.2px}
+.lp-fl.on i{background:#2fbf71;color:#fff;box-shadow:0 3px 0 #1f9255}.lp-fl.on b{color:#1f9255}
+.lp-fl.cur i{background:#fff;box-shadow:0 0 0 3px #ffa62b,0 4px 10px -2px #ffa62b80;transform:scale(1.15);animation:lpFlPulse 1.4s ease-in-out infinite}
+.lp-fl.cur i img.emo{filter:none;opacity:1}.lp-fl.cur b{color:#c46f00}
+@keyframes lpFlPulse{50%{box-shadow:0 0 0 6px #ffa62b55,0 4px 10px -2px #ffa62b80}}
+.lp-flk{flex:1;height:5px;margin-top:15px;border-radius:99px;background:#e3e7ee;min-width:8px}
+.lp-flk.on{background:linear-gradient(90deg,#2fbf71,#5fd394)}
+@media (max-width:340px){.lp-fl{width:44px}.lp-fl i{width:30px;height:30px}.lp-fl b{font-size:.6rem}}
+.palsview > .lp-flow{width:100%}
+
+/* small step dots become a clearer segmented bar */
+.lp-step{gap:4px;padding:5px 7px;border-radius:99px;background:#fff;box-shadow:0 2px 0 #e3e6ee}
+.lp-step i{width:14px;height:8px;border-radius:99px;border:0;background:#dfe4ec;transition:width .3s,background .3s}
+.lp-step i.on{background:#2fbf71}
+.lp-step i.cur{width:24px;background:linear-gradient(90deg,#ffc93c,#ffa62b)}
+
+/* celebration screens a little bigger */
+.lp-won.big .lp-is{font-size:1.8rem;padding:10px 22px}
+.lp-won.big .lp-wonrow{gap:24px;margin:20px 0 6px}
+.lp-won.big .lp-wonchar{width:44%;max-width:240px}
+.lp-won.big .lp-wonpic{font-size:7.5rem}.lp-won.big .lp-wonpic img.emo,.lp-won.big .lp-wonpic svg{width:150px;height:150px}
+.lp-won.big .lp-written{width:44%;max-width:230px}
+.lp-won.big .lp-bigstars{font-size:2.8rem}.lp-won.big .lp-bigstars img.emo{width:48px;height:48px}
+.lp-won.big .lp-wtitle{font-size:1.9rem}
+.lp-next{font-size:1.15rem;padding-top:14px;padding-bottom:14px}
+
+/* hub: Your Letter, then A -> Z, then the lists (phone); map on the left, panels on the right (desktop) */
+@media (min-width:640px) and (max-width:1179px){.lp-panel{display:block}}
+.lp-subsp .lp-subs{margin-top:0}
+@media (min-width:1180px){.lp-hubgrid{grid-template-columns:minmax(0,1.5fr) minmax(340px,1fr);grid-template-areas:"map up" "map subs";align-items:start}
+ .lp-hubgrid .lp-panel{order:0;position:static}.lp-uppanel{grid-area:up}.lp-subsp{grid-area:subs}.lp-mapwrap{grid-area:map;order:0}}

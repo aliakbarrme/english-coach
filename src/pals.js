@@ -81,6 +81,8 @@ const LP_MUSIC={on:false,timer:null,
    if(BK_MUSIC.nodes.length>300)BK_MUSIC.nodes.splice(0,200);this.timer=setTimeout(sched,250);};sched();},
  stop(){this.on=false;clearTimeout(this.timer);BK_MUSIC.stop();}};
 function lpTop(back,title,right){return `<div class="lp-top"><button class="icon-btn" data-act="${back}" aria-label="Back">${back==="palsClose"?IC.close:IC.back}</button><b class="lp-title">${title}</b><span class="lp-right">${right||""}</span></div>`;}
+const LP_FLOW=[["Meet","👋"],["Trace","✏️"],["Write","✍️"],["Play","🍎"],["Done","🏆"]];
+const lpFlow=i=>`<div class="lp-flow" role="progressbar" aria-valuemin="0" aria-valuemax="5" aria-valuenow="${i}">${LP_FLOW.map(([t,ic],k)=>`${k?`<span class="lp-flk ${k<=i?"on":""}"></span>`:""}<span class="lp-fl ${k<i?"on":k===i?"cur":""}"><i>${k<i?"✓":ic}</i><b>${t}</b></span>`).join("")}</div>`;
 const lpDots=(n,i)=>`<span class="lp-step">${Array.from({length:n},(_,k)=>`<i class="${k<i?"on":k===i?"cur":""}"></i>`).join("")}</span>`;
 const lpMuBtn=()=>`<button class="lp-round mu ${LPST().mu===false?"off":""}" data-act="palsMusic" aria-label="Music">🎵</button>`;
 function lpStickerCount(){const P=LPST();return LP_LETTERS.filter(c=>P.l[c]).length+LP_LETTERS.filter(c=>P.w[c]).length+LP_TOWN.filter(t=>P.t[t.id]).length+(P.g.pop?1:0)+(typeof rdUnitStickers==="function"?rdUnitStickers():0);}
@@ -97,25 +99,27 @@ function viewPals(){
    ["palsStickers","🌟","Stickers","তোমার স্টিকার বই",String(nSt),false]];
   const subBtn=([act,ic,t,s,badge,lock],i,n)=>`<button class="lp-sub ${lock?"lock":""}" style="--d:${i*.05}s" data-act="${act}">${n?`<span class="lp-subn">${n}</span>`:""}<span class="lp-subic">${ic}</span><span class="grow"><b>${t}</b><span class="tiny bn">${s}</span></span>${lock?`<span class="lp-lock">🔒</span>`:badge?`<span class="lp-badge">${badge}</span>`:`<span class="lp-chev">➜</span>`}</button>`;
   return `<main class="view palsview lp-hub">${lpTop("palsClose","🔤 Letter Friends",`<span class="lp-stars">🌟 <b>${nSt}</b></span>`)}
-   <div class="lp-hubgrid"><section class="lp-panel" id="lp-panel" style="--c:${lpCol(c)}">
+   <div class="lp-hubgrid"><section class="lp-panel lp-uppanel" id="lp-panel" style="--c:${lpCol(c)}">
     <div class="lp-up"><span class="lp-uplab">${c===next?"UP NEXT":"YOUR LETTER"}</span>
      <div class="lp-uprow"><button class="lp-upchar" data-act="palsHello" aria-label="Say hello">${lpChar(c,"",true)}</button>
       <button class="lp-upcard" data-act="palsWord"><span class="lp-uppic">${a[2]}</span><b><i>${esc(a[1][0])}</i>${esc(a[1].slice(1))}</b></button></div>
      <button class="lp-uphi" data-act="palsHello"><i>${IC.speak}</i>Hi! I am ${U}.</button></div>
-    <div class="lp-subs"><p class="lp-subh">Learn step by step <span class="bn">ধাপে ধাপে শেখো</span></p>${learn.map((x,i)=>subBtn(x,i,i+1)).join("")}
-     <p class="lp-subh">Play &amp; collect <span class="bn">খেলো আর জমাও</span></p>${play.map((x,i)=>subBtn(x,i+4,0)).join("")}</div>
    </section>
    <section class="lp-mapwrap"><h3 class="lp-h3">A → Z <span class="tiny muted bn">${met}/26 বন্ধু · অক্ষরে চাপো</span></h3>
     <div class="lp-map">${LP_LETTERS.map((x,i)=>{const s=P.l[x],w=lpWord(x);return `<button class="lp-tile ${s?"done":x===next?"now":""} ${x===c?"sel":""}" style="--c:${lpCol(x)};--d:${i*.02}s" data-act="palsPick" data-c="${x}">
-     <b>${x.toUpperCase()}</b>${s?`<span class="lp-tpic">${w[2]}</span><span class="lp-tst">${"⭐".repeat(s)}${P.w[x]?"✍️":""}</span>`:x===next?`<span class="lp-now">✏️ NOW</span>`:""}</button>`;}).join("")}</div></section></div></main>`;}
+     <b>${x.toUpperCase()}</b>${s?`<span class="lp-tpic">${w[2]}</span><span class="lp-tst">${"⭐".repeat(s)}${P.w[x]?"✍️":""}</span>`:x===next?`<span class="lp-now">✏️ NOW</span>`:""}</button>`;}).join("")}</div></section>
+   <section class="lp-panel lp-subsp" style="--c:${lpCol(c)}">
+    <div class="lp-subs"><p class="lp-subh">Learn step by step <span class="bn">ধাপে ধাপে শেখো</span></p>${learn.map((x,i)=>subBtn(x,i,i+1)).join("")}
+     <p class="lp-subh">Play &amp; collect <span class="bn">খেলো আর জমাও</span></p>${play.map((x,i)=>subBtn(x,i+4,0)).join("")}</div>
+   </section></div></main>`;}
  const c=A.c||"a",U=c.toUpperCase(),a=lpWord(c),strokes=LP_STROKES[c];
- if(A.scr==="meet")return `<main class="view palsview lp-run">${lpTop("palsHome","Meet "+U)}
+ if(A.scr==="meet")return `<main class="view palsview lp-run">${lpTop("palsHome","Meet "+U)}${lpFlow(0)}
    <div class="lp-meet"><div class="lp-meetcol"><span class="lp-bubble">Hi! I am <b style="color:${lpCol(c)}">${U}</b>.</span><button class="lp-meetchar" data-act="palsHello" aria-label="Say hello">${lpChar(c,"",true)}</button></div>
     <button class="lp-card" data-act="palsWord"><span class="lp-cpic">${a[2]}</span><span class="lp-cw"><i>${esc(a[1][0])}</i>${esc(a[1].slice(1))}</span></button></div>
    <p class="lp-hint bn">অক্ষর বা ছবিতে চাপলে শোনা যায় 🔊</p>
    <button class="btn good wide lp-go" data-act="palsTrace">✏️ Let's trace!</button></main>`;
  if(A.scr==="trace"){const si=A.si||0,cur=strokes[si],m=cur.match(/M\s*([\d.]+)\s+([\d.]+)/),col=LP_STROKE_COL[si%LP_STROKE_COL.length];
-  return `<main class="view palsview lp-run">${lpTop("palsMeet","Trace "+U,lpDots(strokes.length,si))}
+  return `<main class="view palsview lp-run">${lpTop("palsMeet","Trace "+U,lpDots(strokes.length,si))}${lpFlow(1)}
    <div class="lp-guiderow"><span class="lp-minichar">${lpChar(c,"",true)}</span><span class="lp-bubble left">${si===0?"Start at the dot. ":""}<b>${lpDir(c,si)}</b><small class="bn">গোল বিন্দু থেকে দাগ ধরে আঙুল টানো 👆</small></span></div>
    <div class="lp-pad"><svg viewBox="-6 -4 112 128">
      ${strokes.map(p=>`<path d="${p}" class="lp-ghost"/>`).join("")}
@@ -124,27 +128,28 @@ function viewPals(){
      <circle class="lp-dot" cx="${m[1]}" cy="${m[2]}" r="7" fill="${col}"/><text class="lp-num" x="${m[1]}" y="${+m[2]+3.6}" text-anchor="middle">${si+1}</text>
      <circle id="lp-finger" class="lp-finger" cx="${m[1]}" cy="${m[2]}" r="9" stroke="${col}"/></svg></div>
    <div class="row center lp-ctl"><button class="btn ghost" data-act="palsRedo">↺ আবার</button><button class="lp-round" data-act="palsDirSay" aria-label="Listen">${IC.speak}</button>${lpMuBtn()}</div></main>`;}
- if(A.scr==="won")return `<main class="view palsview lp-run">${lpTop("palsHome","Trace "+U)}
-   <div class="lp-won"><button class="lp-is" data-act="palsIsFor"><b style="color:${lpCol(c)}">${U}</b> is for ${esc(a[1][0].toUpperCase()+a[1].slice(1))} <i>${IC.speak}</i></button>
+ if(A.scr==="won")return `<main class="view palsview lp-run">${lpTop("palsHome","Trace "+U)}${lpFlow(2)}
+   <div class="lp-won big"><button class="lp-is" data-act="palsIsFor"><b style="color:${lpCol(c)}">${U}</b> is for ${esc(a[1][0].toUpperCase()+a[1].slice(1))} <i>${IC.speak}</i></button>
     <div class="lp-wonrow"><div class="lp-wonchar">${lpChar(c,"yum",true)}</div><span class="lp-wonpic">${a[2]}</span></div><p class="lp-bigstars">⭐⭐⭐</p></div>
-   <button class="btn good wide" data-act="palsWrite">✍️ Now write it!</button>
-   <div class="row center lp-ctl"><button class="btn bk-candy" data-act="palsFeed">🍎 Feed me!</button><button class="btn ghost" data-act="palsNext">পরের অক্ষর ➜</button></div></main>`;
+   <button class="btn good wide lp-next" data-act="palsWrite">Next: ✍️ Write it ➜</button>
+   <button class="linkbtn" data-act="palsTrace">↺ আবার Trace করো</button></main>`;
  if(A.scr==="write"){const ink=A.ink||[];
-  return `<main class="view palsview lp-run">${lpTop("palsHome","Write "+U,P.w[c]?`<span class="lp-stars">${"⭐".repeat(P.w[c])}</span>`:"")}
+  return `<main class="view palsview lp-run">${lpTop("palsHome","Write "+U,P.w[c]?`<span class="lp-stars">${"⭐".repeat(P.w[c])}</span>`:"")}${lpFlow(2)}
    <div class="lp-guiderow"><span class="lp-minichar">${lpChar(c,"",true)}</span><span class="lp-bubble left"><b>Now write it by yourself!</b><small class="bn">দাগ ছাড়া নিজে নিজে ${U} লেখো ✍️</small></span></div>
    <div class="lp-pad wr"><svg viewBox="-6 -4 112 128">
      ${strokes.map(p=>`<path d="${p}" class="lp-ghost faint"/>`).join("")}
      ${A.demo?strokes.map((p,k)=>`<path d="${p}" pathLength="100" class="lp-demo" style="--i:${k}" stroke="${LP_STROKE_COL[k%LP_STROKE_COL.length]}"/>`).join(""):""}
      <g id="lp-ink">${ink.map((s,k)=>`<path d="${lpInkD(s)}" class="lp-ink" stroke="${LP_STROKE_COL[k%LP_STROKE_COL.length]}"/>`).join("")}</g></svg></div>
    <div class="row center lp-ctl"><button class="btn ghost" data-act="palsClear">↺ মুছে ফেলো</button><button class="btn ghost" data-act="palsShow">👀 দেখাও</button>${lpMuBtn()}</div></main>`;}
- if(A.scr==="wwon")return `<main class="view palsview lp-run">${lpTop("palsHome","Write "+U)}
-   <div class="lp-won"><h1 class="lp-wtitle">Super writer! ✍️</h1><div class="lp-wonrow"><div class="lp-wonchar">${lpChar(c,"yum",true)}</div><div class="lp-written"><svg viewBox="-6 -4 112 128">${(A.ink||[]).map((s,k)=>`<path d="${lpInkD(s)}" class="lp-ink" stroke="${LP_STROKE_COL[k%LP_STROKE_COL.length]}"/>`).join("")}</svg></div></div><p class="lp-bigstars">⭐⭐⭐</p></div>
-   <button class="btn good wide" data-act="palsNext">পরের অক্ষর ➜</button><button class="linkbtn" data-act="palsHome">সব অক্ষর</button></main>`;
+ if(A.scr==="wwon")return `<main class="view palsview lp-run">${lpTop("palsHome","Write "+U)}${lpFlow(3)}
+   <div class="lp-won big"><h1 class="lp-wtitle">Super writer! ✍️</h1><div class="lp-wonrow"><div class="lp-wonchar">${lpChar(c,"yum",true)}</div><div class="lp-written"><svg viewBox="-6 -4 112 128">${(A.ink||[]).map((s,k)=>`<path d="${lpInkD(s)}" class="lp-ink" stroke="${LP_STROKE_COL[k%LP_STROKE_COL.length]}"/>`).join("")}</svg></div></div><p class="lp-bigstars">⭐⭐⭐</p></div>
+   <button class="btn good wide lp-next" data-act="palsFeed">Next: 🍎 Feed me ➜</button><button class="linkbtn" data-act="palsWrite">↺ আবার লেখো</button></main>`;
  if(A.scr==="feed"){const F=A.f,done=F.round>=F.rounds.length,r=F.rounds[Math.min(F.round,F.rounds.length-1)];
-  if(done){const nx=LP_LETTERS[(LP_LETTERS.indexOf(c)+1)%26];return `<main class="view palsview lp-run">${lpTop("palsHome","Feed me!")}
-   <div class="lp-won"><div class="lp-wonchar big">${lpChar(c,"yum",true)}</div><h1>Yummy! 🎉</h1><p class="bn">${U} খুব খুশি! তুমি দারুণ খেলেছ।</p><p class="lp-bigstars">⭐⭐⭐</p></div>
-   <button class="btn good wide" data-act="palsGo" data-c="${nx}">পরের বন্ধু: ${nx.toUpperCase()} ➜</button><button class="linkbtn" data-act="palsHome">সব অক্ষর</button></main>`;}
-  return `<main class="view palsview lp-run">${lpTop("palsHome","Feed me!",lpDots(F.rounds.length,F.round))}
+  if(done){const nx=LP_LETTERS[(LP_LETTERS.indexOf(c)+1)%26];return `<main class="view palsview lp-run">${lpTop("palsHome","🏆 "+U+" finished!")}${lpFlow(5)}
+   <div class="lp-won big"><h1 class="lp-wtitle">You finished ${U}! 🎉</h1><div class="lp-wonrow"><div class="lp-wonchar">${lpChar(c,"yum",true)}</div><span class="lp-wonpic">${a[2]}</span></div>
+    <p class="lp-bigstars">⭐⭐⭐</p><p class="bn">দেখা, লেখা আর খেলা: সব শেষ! নতুন স্টিকার পেয়েছ 🌟</p></div>
+   <button class="btn good wide lp-next" data-act="palsGo" data-c="${nx}">Next letter: ${nx.toUpperCase()} ➜</button><button class="linkbtn" data-act="palsHome">সব অক্ষর</button></main>`;}
+  return `<main class="view palsview lp-run">${lpTop("palsHome","Feed me!",lpDots(F.rounds.length,F.round))}${lpFlow(3)}
    <p class="lp-hint bn">${U} কী খেতে চায়? "${U}" দিয়ে শুরু ছবিটা দাও! <button class="lp-round sm" data-act="palsFeedSay" aria-label="Listen">${IC.speak}</button></p>
    <div class="lp-feed"><div class="lp-feedchar ${F.yum?"yum":""}">${lpChar(c,F.yum?"yum":"open",true)}</div>
     <div class="lp-foods">${r.opts.map(o=>`<button class="lp-food ${F.miss===o[1]?"miss":""} ${F.yum&&o[0]===c?"eaten":""}" data-act="palsEat" data-w="${esc(o[1])}"><span>${o[2]}</span><b>${esc(o[1])}</b></button>`).join("")}</div></div></main>`;}
@@ -193,10 +198,14 @@ function lpDown(e){const A=APP.pals;if(!A||!e.target.closest||!e.target.closest(
 function lpMove(e){const A=APP.pals;if(!A)return;
  if(LPW.drag&&A.scr==="write"){const pt=lpPt(e);if(!pt)return;const l=LPW.cur[LPW.cur.length-1];if(Math.hypot(pt.x-l[0],pt.y-l[1])>1.2){LPW.cur.push([pt.x,pt.y]);LPW.el&&LPW.el.setAttribute("d",lpInkD(LPW.cur));}return;}
  if(!LP.drag||A.scr!=="trace")return;const g=document.getElementById("lp-cur"),pt=lpPt(e);if(!g||!pt)return;const total=g.getTotalLength();
- let adv=true;while(adv&&LP.len<total){adv=false;const q=g.getPointAtLength(Math.min(total,LP.len+3));if(Math.hypot(q.x-pt.x,q.y-pt.y)<17){LP.len=Math.min(total,LP.len+3);adv=true;}}
+ const before=LP.len;let adv=true;while(adv&&LP.len<total){adv=false;const q=g.getPointAtLength(Math.min(total,LP.len+3));if(Math.hypot(q.x-pt.x,q.y-pt.y)<17){LP.len=Math.min(total,LP.len+3);adv=true;}}
+ if(LP.len>before){LPS.last=Date.now();lpTraceSound();}
  lpPaint();if(LP.len>=total-.5)lpStrokeDone();}
-function lpUp(){LP.drag=false;if(LPW.drag){LPW.drag=false;LPW.el=null;lpWCheck();}}
-function lpStrokeDone(){const A=APP.pals,n=LP_STROKES[A.c].length;LP.drag=false;LP.len=0;A.si=(A.si||0)+1;
+const LPS={busy:false,last:0};
+function lpTraceSound(){const A=APP.pals;if(!A||A.scr!=="trace"||LPS.busy||!LP.drag)return;LPS.busy=true;const my=A.k;
+ TTS.play([LSOUND[A.c]],1).then(()=>{LPS.busy=false;if(LP.drag&&APP.pals?.k===my&&Date.now()-LPS.last<600)lpTraceSound();});}
+function lpUp(){const tracing=LP.drag;LP.drag=false;if(tracing&&LPS.busy){TTS.stop();LPS.busy=false;}if(LPW.drag){LPW.drag=false;LPW.el=null;lpWCheck();}}
+function lpStrokeDone(){const A=APP.pals,n=LP_STROKES[A.c].length;LP.drag=false;LPS.busy=false;LP.len=0;A.si=(A.si||0)+1;
  if(A.si>=n){const P=LPST();P.l[A.c]=3;addXP(5);Store.save();LP_MUSIC.stop();A.scr="won";A.k=Date.now();render();SND.play("done");confetti(60);setTimeout(()=>APP.pals?.scr==="won"&&lpPlay(["Yay! You did it!",LP_IS(A.c)]),450);}
  else{SND.play("pair");render();lpPlay([LP_PRAISE[(A.si-1)%LP_PRAISE.length],lpDir(A.c,A.si)]);}}
 /* free writing passes when every stroke of the letter is mostly covered and most of the ink sits on the letter */
@@ -227,9 +236,9 @@ const PALS_ACT={
  palsMeet(){const A=APP.pals,fromHub=A.scr==="home";lpGo("meet");if(fromHub)setTimeout(()=>PALS_ACT.palsHello(),350);},
  palsHello(){const A=APP.pals;if(!A||!A.c)return;const c=A.c;lpPlay([LP_HI(c),LSOUND[c],LSOUND[c],LP_IS(c)]);},
  palsWord(){lpSay(lpWord(APP.pals.c)[1]);},
- palsTrace(){LP.len=0;LP.drag=false;lpGo("trace",{si:0});lpPlay(["Start at the dot.",lpDir(APP.pals.c,0)]);},
+ palsTrace(){LP.len=0;LP.drag=false;LPS.busy=false;lpGo("trace",{si:0});lpPlay(["Start at the dot.",lpDir(APP.pals.c,0)]);},
  palsDirSay(){const A=APP.pals;lpPlay([(A.si||0)===0?"Start at the dot.":LP_PRAISE[0],lpDir(A.c,A.si||0)]);},
- palsRedo(){const A=APP.pals;A.si=0;LP.len=0;LP.drag=false;A.k=Date.now();render();lpPlay(["Start at the dot.",lpDir(A.c,0)]);},
+ palsRedo(){const A=APP.pals;A.si=0;LP.len=0;LP.drag=false;LPS.busy=false;A.k=Date.now();render();lpPlay(["Start at the dot.",lpDir(A.c,0)]);},
  palsIsFor(){lpSay(LP_IS(APP.pals.c));},
  palsWrite(){const A=APP.pals,c=A.c;if(!LPST().l[c]){toast("আগে "+c.toUpperCase()+" Trace করো ✏️, তারপর Write it খুলবে");SND.play("no");return;}
   LPW.drag=false;lpGo("write",{ink:[],demo:0});lpSay("Now write it by yourself!");},
