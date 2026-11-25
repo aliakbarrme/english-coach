@@ -19,11 +19,8 @@
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <script>if("serviceWorker" in navigator){
-  /* always look for a new version on open and when the app comes back to the front; when it arrives, refresh once (never in the middle of a lesson or game) */
-  const had=!!navigator.serviceWorker.controller;let ready=false;
-  navigator.serviceWorker.addEventListener("controllerchange",()=>{if(had)ready=true;});
-  const busy=()=>{try{return (typeof L!=="undefined"&&L)||(typeof APP!=="undefined"&&APP.spell&&APP.spell.scr==="game")||(typeof APP!=="undefined"&&APP.book&&APP.book.scr==="ch")||(typeof APP!=="undefined"&&APP.pals&&APP.pals.scr!=="home")||(typeof APP!=="undefined"&&APP.warm);}catch(e){return false;}};
-  setInterval(()=>{if(ready&&!busy()){ready=false;location.reload();}},1500);
+  /* the app loads once when it opens and never reloads itself after that. The page is network-first in sw.js,
+     so every open already gets the newest version; a version that arrives while the app is in use waits for the next open */
   addEventListener("load",()=>navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(reg=>{
     const check=()=>reg.update().catch(()=>{});check();
     document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")check();});
@@ -2245,6 +2242,8 @@ html.is-speaking .lp-talk .lp-face{animation:lpTalk .24s ease-in-out infinite al
 
 
 html{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+
+html,body{overscroll-behavior-y:none}
 body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
 img{-webkit-user-drag:none;-webkit-touch-callout:none}
 input,textarea,select,[contenteditable="true"],.selectable{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
@@ -3558,6 +3557,17 @@ function viewPicker(){
 /* on phones and tablets: no long-press menu (save image, Google Lens, translate) except in text fields */
 if(typeof document!=="undefined"&&window.matchMedia&&matchMedia("(pointer:coarse)").matches)
  document.addEventListener("contextmenu",e=>{if(!(e.target.closest&&e.target.closest("input,textarea,select,[contenteditable],.selectable")))e.preventDefault();});
+/* older browsers without overscroll-behavior: stop the pull-down at the top of the page that would reload the app */
+if(typeof document!=="undefined"&&!(window.CSS&&CSS.supports&&CSS.supports("overscroll-behavior-y","none"))){
+ let y0=0;
+ document.addEventListener("touchstart",e=>{if(e.touches.length===1)y0=e.touches[0].clientY;},{passive:true});
+ document.addEventListener("touchmove",e=>{
+  if(e.touches.length!==1||!e.cancelable)return;
+  const se=document.scrollingElement||document.documentElement;
+  if(se.scrollTop>0||window.pageYOffset>0||e.touches[0].clientY<=y0)return;
+  for(let n=e.target;n&&n.nodeType===1&&n!==document.body;n=n.parentElement)if(n.scrollTop>0)return;
+  e.preventDefault();},{passive:false});
+}
 
 /* ================= progress report: course level, skills, weekly report ================= */
 const LEVELS=[["Pre-A1","স্টার্টার"],["A1","বিগিনার"],["A2","এলিমেন্টারি"],["B1","ইন্টারমিডিয়েট"],["B2","আপার-ইন্টারমিডিয়েট"]];

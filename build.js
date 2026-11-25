@@ -140,11 +140,8 @@ const pwa = head(pageWith(clips, emojis), `<link rel="manifest" href="manifest.w
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <script>if("serviceWorker" in navigator){
-  /* always look for a new version on open and when the app comes back to the front; when it arrives, refresh once (never in the middle of a lesson or game) */
-  const had=!!navigator.serviceWorker.controller;let ready=false;
-  navigator.serviceWorker.addEventListener("controllerchange",()=>{if(had)ready=true;});
-  const busy=()=>{try{return (typeof L!=="undefined"&&L)||(typeof APP!=="undefined"&&APP.spell&&APP.spell.scr==="game")||(typeof APP!=="undefined"&&APP.book&&APP.book.scr==="ch")||(typeof APP!=="undefined"&&APP.pals&&APP.pals.scr!=="home")||(typeof APP!=="undefined"&&APP.warm);}catch(e){return false;}};
-  setInterval(()=>{if(ready&&!busy()){ready=false;location.reload();}},1500);
+  /* the app loads once when it opens and never reloads itself after that. The page is network-first in sw.js,
+     so every open already gets the newest version; a version that arrives while the app is in use waits for the next open */
   addEventListener("load",()=>navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(reg=>{
     const check=()=>reg.update().catch(()=>{});check();
     document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")check();});

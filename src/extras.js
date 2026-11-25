@@ -191,3 +191,14 @@ function viewPicker(){
 /* on phones and tablets: no long-press menu (save image, Google Lens, translate) except in text fields */
 if(typeof document!=="undefined"&&window.matchMedia&&matchMedia("(pointer:coarse)").matches)
  document.addEventListener("contextmenu",e=>{if(!(e.target.closest&&e.target.closest("input,textarea,select,[contenteditable],.selectable")))e.preventDefault();});
+/* older browsers without overscroll-behavior: stop the pull-down at the top of the page that would reload the app */
+if(typeof document!=="undefined"&&!(window.CSS&&CSS.supports&&CSS.supports("overscroll-behavior-y","none"))){
+ let y0=0;
+ document.addEventListener("touchstart",e=>{if(e.touches.length===1)y0=e.touches[0].clientY;},{passive:true});
+ document.addEventListener("touchmove",e=>{
+  if(e.touches.length!==1||!e.cancelable)return;
+  const se=document.scrollingElement||document.documentElement;
+  if(se.scrollTop>0||window.pageYOffset>0||e.touches[0].clientY<=y0)return;
+  for(let n=e.target;n&&n.nodeType===1&&n!==document.body;n=n.parentElement)if(n.scrollTop>0)return;
+  e.preventDefault();},{passive:false});
+}

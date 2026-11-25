@@ -157,6 +157,8 @@
 /* feel like an app, not a web page: no pinch or double-tap zoom, no text selection (and so no
    Google Translate / Touch to Search popups), no long-press callouts; text fields still work */
 html{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+/* no pull-to-refresh: a swipe down at the top must not reload the app */
+html,body{overscroll-behavior-y:none}
 body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
 img{-webkit-user-drag:none;-webkit-touch-callout:none}
 input,textarea,select,[contenteditable="true"],.selectable{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
