@@ -32,8 +32,8 @@ const CLOUD={
  async signOut(){const {auth,au}=await this.load();await auth.signOut(au);this.user=null;UI.set("acct","");toast("লগআউট হয়েছে। অগ্রগতি এই ডিভাইসেও রাখা আছে।");render();},
  async onUser(u){
   const was=this.user&&this.user.uid;
-  this.user=u?{uid:u.uid,email:u.email,name:u.displayName,photo:u.photoURL}:null;
-  UI.set("acct",u?"1":"");
+  this.user=u?{uid:u.uid,email:u.email,name:u.displayName,photo:u.photoURL,pw:(u.providerData||[]).some(p=>p&&p.providerId==="password")}:null;
+  UI.set("acct",u?"1":"");if(u)UI.set("guest","");
   if(u&&u.uid!==was){await this.claimDevice(u.uid);await this.pull();if(LG.fresh){LG.fresh=false;LG.ok=null;await afterLogin();toast("☁️ "+(u.email||"")+" দিয়ে লগইন হয়েছে");}}
   if(this._ready){this._ready();this._ready=null;}
   render();
@@ -42,7 +42,7 @@ const CLOUD={
  async claimDevice(uid){
   const owner=UI.get("owner");
   if(owner&&owner!==uid){
-   try{Object.keys(localStorage).filter(k=>k.startsWith("aec4:")&&!/^aec4:(theme|rail|qopen|owner|acct)$/.test(k)).forEach(k=>localStorage.removeItem(k));sessionStorage.removeItem("aec4:here");}catch(e){}
+   try{Object.keys(localStorage).filter(k=>k.startsWith("aec4:")&&!/^aec4:(theme|rail|qopen|owner|acct|twa)$/.test(k)).forEach(k=>localStorage.removeItem(k));sessionStorage.removeItem("aec4:here");}catch(e){}
    PROFILES=[];PID=null;S=defaultState();CUSTOM={};MARKS={};L=null;APP.picker=false;APP.story=APP.cards=APP.chat=APP.warm=null;
   }
   UI.set("owner",uid);
@@ -55,7 +55,9 @@ const CLOUD={
  async pushProfile(pid){const d=this.localPack(pid);if(!d.state)return;await this.api.fs.setDoc(this.ref("p",pid),{...d,updated:d.state.updatedAt||Date.now()});},
  async pushRoot(){let bk=null;try{bk=localStorage.getItem("aec4:bookkey");}catch(e){}
   if(!bk&&this.bookKey)bk=this.bookKey;
-  await this.api.fs.setDoc(this.ref(),Object.assign({profiles:clone(PROFILES),email:this.user.email||"",updated:Date.now()},bk?{bookKey:bk}:{}));},
+  /* profile photos stay on this device only: they are never uploaded */
+  const profiles=clone(PROFILES).map(p=>{delete p.photo;return p;});
+  await this.api.fs.setDoc(this.ref(),Object.assign({profiles,email:this.user.email||"",updated:Date.now()},bk?{bookKey:bk}:{}));},
  async pull(){
   if(!this.user)return;this.busy=true;this.err=null;render();
   try{
@@ -78,13 +80,38 @@ const CLOUD={
   }catch(e){this.err="Sync হয়নি ("+((e&&e.code)||"error")+")।";}
   this.busy=false;render();
  },
- queue(){if(!this.user||!this.api)return;clearTimeout(this.timer);this.timer=setTimeout(()=>this.syncNow(true),2000);},
+ queue(){if(!this.user||!this.api||this.deleting)return;clearTimeout(this.timer);this.timer=setTimeout(()=>this.syncNow(true),2000);},
  async syncNow(quiet){
-  if(!this.user)return;
+  if(!this.user||this.deleting)return;
   try{if(PID)await this.pushProfile(PID);await this.pushRoot();this.last=Date.now();this.err=null;if(!quiet){toast("☁️ Sync হয়েছে");render();}}
   catch(e){this.err="Sync হয়নি ("+((e&&e.code)||"error")+")।";if(!quiet)render();}
  },
- async removeProfile(id){if(!this.user)return;try{await this.api.fs.deleteDoc(this.ref("p",id));await this.pushRoot();}catch(e){}}
+ async removeProfile(id){if(!this.user)return;try{await this.api.fs.deleteDoc(this.ref("p",id));await this.pushRoot();}catch(e){}},
+ /* delete the account (Play account-deletion policy): confirm who it is, remove every cloud document (rules need the user
+    still signed in), then the sign-in itself, then everything this device keeps for it */
+ async deleteAccount(pw){
+  const {auth,fs,au,db}=await this.load(),u=au.currentUser;if(!u||this.busy)return;
+  this.busy=true;this.err=null;render();
+  try{
+   if(this.user&&this.user.pw){if(!pw)throw {code:"da/need-pass"};await auth.reauthenticateWithCredential(u,auth.EmailAuthProvider.credential(u.email,pw));}
+   else if(Date.now()-Date.parse(u.metadata&&u.metadata.lastSignInTime||0)>4*60*1000)await auth.reauthenticateWithPopup(u,new auth.GoogleAuthProvider());
+   this.deleting=true;clearTimeout(this.timer);
+   const ids=new Set(PROFILES.map(p=>p.id));
+   try{const root=await fs.getDoc(this.ref());if(root.exists())(root.data().profiles||[]).forEach(p=>ids.add(p.id));}catch(e){}
+   try{(await fs.getDocs(fs.collection(db,"users",u.uid,"p"))).forEach(d=>ids.add(d.id));}catch(e){}
+   for(const id of ids)await fs.deleteDoc(this.ref("p",id));
+   await fs.deleteDoc(this.ref());
+   await auth.deleteUser(u);
+   this.busy=false;this.deleting=false;
+   resetToLogin("Your account and all its data were deleted. অ্যাকাউন্ট আর সব ডেটা মুছে গেছে।");
+  }catch(e){
+   this.busy=false;this.deleting=false;const c=(e&&e.code)||"";
+   this.err=c==="da/need-pass"?"Type your password to delete the account. Password লেখো।"
+    :/requires-recent-login/.test(c)?"Please log out, log in again, then delete. আবার লগইন করে চেষ্টা করো।"
+    :/wrong-password|invalid-credential/.test(c)?"Wrong password. Password ভুল।":authMsg(e);
+   render();
+  }
+ }
 };
 const GLOGO='<svg viewBox="0 0 48 48" width="18" height="18" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
 function gBtn(label,cls=""){return `<button class="gbtn ${cls}" data-act="googleSignIn" ${CLOUD.busy?"disabled":""}>${GLOGO}<span>${CLOUD.busy?"অপেক্ষা করো…":label}</span></button>`;}
@@ -94,7 +121,11 @@ function acctCard(){
   if(u)return `<div class="card acct"><div class="row"><span class="av">${u.photo?`<img src="${esc(u.photo)}" alt="" referrerpolicy="no-referrer">`:"☁️"}</span><div class="grow"><b>${esc(u.name||"Google account")}</b><span class="tiny muted">${esc(u.email||"")}</span></div><span class="chip okchip">Synced</span></div>
     <p class="small muted">এই Gmail দিয়ে যেকোনো ডিভাইসে লগইন করলে সব প্রোফাইলের অগ্রগতি পাবে।${CLOUD.last?` শেষ sync: ${new Date(CLOUD.last).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})}`:""}</p>
     ${CLOUD.err?`<p class="warnbox small">${esc(CLOUD.err)}</p>`:""}
-    <div class="row"><button class="btn sm" data-act="syncNow" ${CLOUD.busy?"disabled":""}>${CLOUD.busy?"Sync হচ্ছে…":"এখনই sync"}</button><button class="btn sm ghost" data-act="googleSignOut">লগআউট</button></div></div>`;
-  return `<div class="card acct"><h3>অ্যাকাউন্ট</h3><p class="small muted">Gmail দিয়ে লগইন করো: ফোন, ল্যাপটপ, যেকোনো ডিভাইসে একই অগ্রগতি থাকবে। লগইন ছাড়াও অ্যাপ চলে।</p>
-    ${CLOUD.err?`<p class="warnbox small">${esc(CLOUD.err)}</p>`:""}${gBtn("Continue with Google","wide")}</div>`;
+    <div class="row"><button class="btn sm" data-act="syncNow" ${CLOUD.busy?"disabled":""}>${CLOUD.busy?"Sync হচ্ছে…":"এখনই sync"}</button><button class="btn sm ghost" data-act="googleSignOut">লগআউট</button></div>
+    ${APP.confirm?.type==="delacct"?`<div class="warnbox small da-box"><b>Delete your account?</b><span>This removes your account and the progress of every profile saved online. It can't be undone. <span class="bn">অ্যাকাউন্ট আর অনলাইনে রাখা সব অগ্রগতি চিরতরে মুছে যাবে।</span></span>
+     ${u.pw?`<input id="da-pass" type="password" placeholder="Your password" autocomplete="current-password" aria-label="Your password">`:""}
+     <div class="row"><button class="btn sm bad" data-act="doDelAcct" ${CLOUD.busy?"disabled":""}>${CLOUD.busy?"Deleting…":"Yes, delete my account"}</button><button class="btn sm ghost" data-act="cancel">Cancel</button></div></div>`
+     :`<button class="lg-link da-link" data-act="delAcct">Delete account</button>`}</div>`;
+  return `<div class="card acct"><h3>Back up progress</h3><p class="small muted">Progress is saved on this phone only. Sign in to keep it safe and use it on any device. <span class="bn">লগইন করলে অগ্রগতি অনলাইনে সেভ থাকবে, যেকোনো ডিভাইসে পাবে।</span></p>
+    ${CLOUD.err?`<p class="warnbox small">${esc(CLOUD.err)}</p>`:""}${gBtn("Continue with Google","wide")}<button class="lg-link" data-act="lgOpen">Sign in with email</button></div>`;
 }

@@ -162,3 +162,16 @@ html,body{overscroll-behavior-y:none}
 body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
 img{-webkit-user-drag:none;-webkit-touch-callout:none}
 input,textarea,select,[contenteditable="true"],.selectable{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+/* optional account: continue without one, back up later */
+.lg-skip{width:100%;margin-top:10px;padding:13px 16px;border-radius:14px;border:1.5px solid var(--line-2);background:transparent;color:inherit;font:600 .98rem var(--font);cursor:pointer}
+.lg-skip:active{transform:scale(.98)}
+.lg-skipnote{margin:8px 2px 0;color:var(--muted);font-size:.8rem;line-height:1.45;text-align:center}
+.lg-skipnote .bn{display:block}
+.lg-foot a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+.acct .lg-link{display:block;margin:8px auto 0}
+.da-link{font-size:.85rem!important;color:var(--bad)!important}
+.da-box{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.da-box .bn{display:block;margin-top:2px}
+.da-box input{width:100%;padding:10px 12px;border-radius:12px;border:1.5px solid var(--line-2);background:var(--card,#fff);color:inherit;font:500 .95rem var(--font)}
+.pk-backup{margin-bottom:12px;border-style:solid;border-color:#ffffff2e;background:#ffffff12}
+.pk-backup .pk-plus{display:grid;place-items:center;border-radius:50%;background:#ffffff14;font-size:24px}

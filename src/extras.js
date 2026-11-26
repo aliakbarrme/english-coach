@@ -186,6 +186,7 @@ function viewPicker(){
       <span class="pk-ring">${avatarHTML(p,"xl")}</span>
       <b class="pk-name">${esc(p.name)}</b><span class="pk-role">${role(p)}</span>
       <span class="pk-stats"><span><em>${p.streak||0}</em>Streak</span><span><em>${p.xp||0}</em>XP</span></span></button></div>`).join("")}</div>
+   ${CLOUD.avail()&&!CLOUD.user?`<button class="pk-add pk-backup" data-act="lgOpen"><span class="pk-plus" aria-hidden="true">☁️</span><span class="grow"><b>Progress is on this phone only</b><small>Sign in to back it up · লগইন করলে অনলাইনে সেভ থাকবে</small></span></button>`:""}
    <button class="pk-add" data-act="addProfile"><span class="pk-plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span><span class="grow"><b>Add a profile</b><small>Partner, kids, anyone</small></span><span class="pk-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 7l5 5-5 5"/></svg></span></button><p class="pk-copy">© 2026 Ali Akbar · BD Webhut</p></main>`;
 }
 /* on phones and tablets: no long-press menu (save image, Google Lens, translate) except in text fields */
@@ -202,3 +203,7 @@ if(typeof document!=="undefined"&&!(window.CSS&&CSS.supports&&CSS.supports("over
   for(let n=e.target;n&&n.nodeType===1&&n!==document.body;n=n.parentElement)if(n.scrollTop>0)return;
   e.preventDefault();},{passive:false});
 }
+/* inside the Android app (Play Store or APK) Chrome opens the page with an android-app:// referrer. Remember it, so the
+   APK download link stays hidden there: an app from Play may only be updated through Play */
+if(typeof document!=="undefined"&&/^android-app:\/\//.test(document.referrer||""))UI.set("twa","1");
+function inAndroidApp(){return UI.get("twa")==="1";}

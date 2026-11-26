@@ -1,5 +1,6 @@
 /* ================= login gate (web app): email/password + Google; logout returns here ================= */
 const LG={tab:"login",err:null,ok:null,busy:false};
+const PRIVACY_URL="https://aliakbarrme.github.io/english-coach/privacy.html";
 function authMsg(e){const c=(e&&e.code)||"";
   const m={"auth/invalid-email":"Email ঠিক নেই।","auth/missing-password":"Password লেখো।","auth/invalid-credential":"Email বা password ভুল।","auth/wrong-password":"Password ভুল।",
    "auth/user-not-found":"এই email-এ কোনো account নেই। Create Account করো।","auth/email-already-in-use":"এই email-এ আগেই account আছে। Login করো।",
@@ -26,8 +27,10 @@ function viewLogin(){
     ${LG.err?`<p class="lg-err">${esc(LG.err)}</p>`:""}${LG.ok?`<p class="lg-ok">${esc(LG.ok)}</p>`:""}
     ${form}
     <div class="orline"><span>or</span></div>
-    <button class="gbtn wide" data-act="lgGoogle" ${LG.busy?"disabled":""}>${GLOGO}<span>Continue with Google</span></button></div>
-   <p class="lg-foot">© 2026 Ali Akbar · BD Webhut</p></main>`;
+    <button class="gbtn wide" data-act="lgGoogle" ${LG.busy?"disabled":""}>${GLOGO}<span>Continue with Google</span></button>
+    <button class="lg-skip" data-act="lgGuest" ${LG.busy?"disabled":""}>Continue without account</button>
+    <p class="lg-skipnote">Progress stays on this phone. Sign in later from <b>Me</b> to back it up. <span class="bn">অ্যাকাউন্ট ছাড়াও চলবে, অগ্রগতি এই ফোনেই থাকবে।</span></p></div>
+   <p class="lg-foot">© 2026 Ali Akbar · BD Webhut · <a href="${PRIVACY_URL}" target="_blank" rel="noopener">Privacy policy</a></p></main>`;
 }
 const EYE_ON='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
 const EYE_OFF='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.6 5.1A10.4 10.4 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.2M6.6 6.6A17.4 17.4 0 0 0 2 12s3.6 7 10 7a9.9 9.9 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="M3 3l18 18"/></svg>';
@@ -58,8 +61,14 @@ async function afterLogin(){
 async function logoutAll(){
   try{await CLOUD.syncNow(true);}catch(e){}
   try{const {auth,au}=await CLOUD.load();await auth.signOut(au);}catch(e){}
-  try{Object.keys(localStorage).filter(k=>k.startsWith("aec4:")&&!/^aec4:(theme|rail|qopen)$/.test(k)).forEach(k=>localStorage.removeItem(k));sessionStorage.removeItem("aec4:here");}catch(e){}
-  CLOUD.user=null;PROFILES=[];PID=null;S=defaultState();CUSTOM={};MARKS={};L=null;
-  Object.assign(APP,{tab:"learn",picker:false,welcome:false,onb:null,story:null,cards:null,chat:null,warm:null,modal:null});
-  LG.tab="login";LG.err=null;LG.ok="তুমি লগআউট হয়েছ।";LASTKEY=null;render();window.scrollTo(0,0);
+  resetToLogin("তুমি লগআউট হয়েছ।");
 }
+/* clear what this device keeps for the account and go back to the login screen */
+function resetToLogin(msg){
+  try{Object.keys(localStorage).filter(k=>k.startsWith("aec4:")&&!/^aec4:(theme|rail|qopen|twa)$/.test(k)).forEach(k=>localStorage.removeItem(k));sessionStorage.removeItem("aec4:here");}catch(e){}
+  CLOUD.user=null;PROFILES=[];PID=null;S=defaultState();CUSTOM={};MARKS={};L=null;
+  Object.assign(APP,{tab:"learn",picker:false,welcome:false,onb:null,story:null,cards:null,chat:null,warm:null,modal:null,confirm:null});
+  LG.tab="login";LG.err=null;LG.ok=msg||null;LASTKEY=null;render();window.scrollTo(0,0);
+}
+/* an account is optional (Play Families policy): without one, progress stays on this device and can be backed up later from Me */
+async function lgGuest(){UI.set("guest","1");LG.err=LG.ok=null;await afterLogin();render();window.scrollTo(0,0);}
